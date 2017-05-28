@@ -1,0 +1,66 @@
+# You must have at least one AVD defined.
+
+ADB = ~/Android/Sdk/platform-tools/adb
+EMULATOR = ~/Android/Sdk/tools/emulator
+GRADLEW = ./SmokeStack/gradlew
+JDK = "${HOME}/Desktop/android-studio/jre"
+
+all:
+	$(GRADLEW) -Dorg.gradle.java.home=$(JDK) \
+	--build-file SmokeStack/build.gradle assembleDebug \
+	--configure-on-demand --daemon --parallel
+
+clean:
+	$(GRADLEW) --build-file SmokeStack/build.gradle clean
+
+clear-smoke-stack:
+	./adb.bash shell pm clear org.purple.smokestack
+
+distclean: clean kill-adb-server kill-gradle-daemon
+	rm -f smokestack.db
+
+kill-adb-server:
+	$(ADB) kill-server
+
+kill-gradle-daemon:
+	$(GRADLEW) --stop
+
+launch-emulator:
+	$(EMULATOR) -netdelay none -netspeed full -avd \
+	`$(EMULATOR) -list-avds | sort | sed "1q;d"` &
+
+list-devices:
+	$(ADB) devices -l
+
+list-files:
+	./adb.bash shell run-as org.purple.smokestack ls -l /data/data/org.purple.smokestack/databases
+
+load-apk: all
+	./adb.bash install -r ./SmokeStack/app/build/apk/smokestack.apk
+	./adb.bash shell am start -S -W \
+	-n org.purple.smokestack/org.purple.smokestack.Settings \
+	-a android.intent.action.MAIN -c android.intent.category.LAUNCHER
+
+load-apk-release: release
+	./adb.bash install -r ./SmokeStack/app/build/apk/smokestack.apk
+	./adb.bash shell am start -S -W \
+	-n org.purple.smokestack/org.purple.smokestack.Settings \
+	-a android.intent.action.MAIN -c android.intent.category.LAUNCHER
+
+pull-database:
+	./adb.bash exec-out run-as org.purple.smokestack cat /data/data/org.purple.smokestack/databases/smokestack.db > smokestack.db
+
+purge:
+	find . -name '*~*' -exec rm -f {} \;
+
+release:
+	$(GRADLEW) -Dorg.gradle.java.home=$(JDK) \
+	--build-file SmokeStack/build.gradle assembleRelease \
+	--configure-on-demand --daemon --parallel
+
+remove-database:
+	./adb.bash shell run-as org.purple.smokestack rm -f /data/data/org.purple.smokestack/databases/smokestack.db
+	./adb.bash shell run-as org.purple.smokestack rm -f /data/data/org.purple.smokestack/databases/smokestack.db-journal
+
+stop-smoke-stack:
+	./adb.bash shell am force-stop org.purple.smokestack
