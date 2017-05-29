@@ -45,7 +45,7 @@
                     android:background="@drawable/sectiongradient"
                     android:text="@string/about"
                     android:textColor="@android:color/white"
-                    android:textSize="25sp"
+                    android:textSize="20sp"
                     android:textStyle="normal|bold" />
 
                 <TextView
@@ -62,7 +62,7 @@
                     android:background="@drawable/sectiongradient"
                     android:text="@string/listeners"
                     android:textColor="@android:color/white"
-                    android:textSize="25sp"
+                    android:textSize="20sp"
                     android:textStyle="normal|bold" />
 
                 <TextView
@@ -184,7 +184,7 @@
                     android:background="@drawable/sectiongradient"
                     android:text="@string/neighbors"
                     android:textColor="@android:color/white"
-                    android:textSize="25sp"
+                    android:textSize="20sp"
                     android:textStyle="normal|bold" />
 
                 <LinearLayout
@@ -389,7 +389,7 @@
                     android:background="@drawable/sectiongradient"
                     android:text="@string/ozones"
                     android:textColor="@android:color/white"
-                    android:textSize="25sp"
+                    android:textSize="20sp"
                     android:textStyle="normal|bold" />
 
                 <android.support.v4.widget.NestedScrollView
@@ -435,7 +435,7 @@
                     android:background="@drawable/sectiongradient"
                     android:text="@string/participants"
                     android:textColor="@android:color/white"
-                    android:textSize="25sp"
+                    android:textSize="20sp"
                     android:textStyle="normal|bold" />
 
                 <LinearLayout
@@ -549,7 +549,7 @@
                     android:background="@drawable/sectiongradient"
                     android:text="@string/password"
                     android:textColor="@android:color/white"
-                    android:textSize="25sp"
+                    android:textSize="20sp"
                     android:textStyle="normal|bold" />
 
                 <LinearLayout
