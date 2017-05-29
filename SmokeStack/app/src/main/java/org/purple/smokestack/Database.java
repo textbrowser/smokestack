@@ -1783,6 +1783,24 @@ public class Database extends SQLiteOpenHelper
 	catch(Exception exception)
 	{
 	}
+
+	/*
+	** Create the stack table.
+	*/
+
+	str = "CREATE TABLE IF NOT EXISTS stack (" +
+	    "message TEXT NOT NULL, " +
+	    "message_digest TEXT NOT NULL PRIMARY KEY, " +
+	    "siphash_id_digest TEXT NOT NULL, " +
+	    "timestamp TEXT NOT NULL)";
+
+	try
+	{
+	    db.execSQL(str);
+	}
+	catch(Exception exception)
+	{
+	}
     }
 
     @Override
@@ -1845,6 +1863,7 @@ public class Database extends SQLiteOpenHelper
 	    m_db.delete("participants", null, null);
 	    m_db.delete("settings", null, null);
 	    m_db.delete("siphash_ids", null, null);
+	    m_db.delete("stack", null, null);
 	    m_db.setTransactionSuccessful();
 	}
 	catch(Exception exception)
@@ -1871,7 +1890,8 @@ public class Database extends SQLiteOpenHelper
 	     "DROP TABLE IF EXISTS ozones",
 	     "DROP TABLE IF EXISTS participants",
 	     "DROP TABLE IF EXISTS settings",
-	     "DROP TABLE IF EXISTS siphash_ids"};
+	     "DROP TABLE IF EXISTS siphash_ids",
+	     "DROP TABLE IF EXISTS stack"};
 
 	for(String string : strings)
 	    try
