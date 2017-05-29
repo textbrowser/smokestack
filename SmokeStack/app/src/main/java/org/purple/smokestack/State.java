@@ -65,11 +65,6 @@ public class State
 	return s_bundle.getChar("is_authenticated") == '1';
     }
 
-    public synchronized boolean neighborsEcho()
-    {
-	return s_bundle.getChar("neighbors_echo") == '1';
-    }
-
     public synchronized void removeKey(String key)
     {
 	s_bundle.remove(key);
@@ -83,11 +78,6 @@ public class State
     public synchronized void setAuthenticated(boolean state)
     {
 	s_bundle.putChar("is_authenticated", state ? '1' : '0');
-    }
-
-    public synchronized void setNeighborsEcho(boolean state)
-    {
-	s_bundle.putChar("neighbors_echo", state ? '1' : '0');
     }
 
     public synchronized void setString(String key, String value)

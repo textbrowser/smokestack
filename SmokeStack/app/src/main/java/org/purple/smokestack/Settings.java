@@ -1160,30 +1160,6 @@ public class Settings extends AppCompatActivity
 		}
 	    });
 
-	checkBox1 = (CheckBox) findViewById(R.id.echo);
-	checkBox1.setOnCheckedChangeListener
-	    (new CompoundButton.OnCheckedChangeListener()
-	    {
-		@Override
-		public void onCheckedChanged
-		    (CompoundButton buttonView, boolean isChecked)
-		{
-		    if(isChecked)
-		    {
-			m_databaseHelper.writeSetting
-			    (null, "neighbors_echo", "true");
-			State.getInstance().setNeighborsEcho(true);
-		    }
-		    else
-		    {
-			m_databaseHelper.writeSetting
-			    (null, "neighbors_echo", "false");
-			Kernel.getInstance().clearNeighborQueues();
-			State.getInstance().setNeighborsEcho(false);
-		    }
-		}
-	    });
-
 	checkBox1 = (CheckBox) findViewById(R.id.neighbor_details);
 	checkBox1.setOnCheckedChangeListener
 	    (new CompoundButton.OnCheckedChangeListener()
@@ -1593,13 +1569,6 @@ public class Settings extends AppCompatActivity
 
 	if(m_databaseHelper.
 	   readSetting(null, "automatic_neighbors_refresh").equals("true"))
-	    checkBox1.setChecked(true);
-	else
-	    checkBox1.setChecked(false);
-
-	checkBox1 = (CheckBox) findViewById(R.id.echo);
-
-	if(m_databaseHelper.readSetting(null, "neighbors_echo").equals("true"))
 	    checkBox1.setChecked(true);
 	else
 	    checkBox1.setChecked(false);

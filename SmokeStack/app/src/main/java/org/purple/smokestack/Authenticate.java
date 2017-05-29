@@ -299,9 +299,6 @@ public class Authenticate extends AppCompatActivity
 	super.onCreate(savedInstanceState);
 	m_databaseHelper = Database.getInstance(getApplicationContext());
         setContentView(R.layout.activity_authenticate);
-	State.getInstance().setNeighborsEcho
-	    (m_databaseHelper.readSetting(null,
-					  "neighbors_echo").equals("true"));
 	prepareListeners();
 
 	boolean isAuthenticated = State.getInstance().isAuthenticated();

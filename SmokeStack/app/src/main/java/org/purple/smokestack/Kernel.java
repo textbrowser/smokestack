@@ -222,8 +222,7 @@ public class Kernel
 
     public void echo(String message, int oid)
     {
-	if((!State.getInstance().neighborsEcho() && oid != -1) ||
-	   message.trim().isEmpty())
+	if(message.trim().isEmpty())
 	    return;
 
 	if(s_databaseHelper.

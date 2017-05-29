@@ -25,7 +25,6 @@
     <string name="details">Details</string>
     <string name="name">Name</string>
     <string name="reset_smokestack">Reset SmokeStack</string>
-    <string name="echo">Echo</string>
     <string name="siphash_identity">SipHash Identity</string>
     <string name="about">About</string>
     <string name="proxy_port">Proxy Port</string>
