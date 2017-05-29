@@ -134,13 +134,13 @@ public class Kernel
 	    ** EPKS
 	    */
 
-	    ArrayList<SipHashIdElement> arrayList = s_databaseHelper.
+	    ArrayList<SipHashIdElement> arrayList1 = s_databaseHelper.
 		readSipHashIds(s_cryptography);
 
-	    if(arrayList == null || arrayList.size() == 0)
+	    if(arrayList1 == null || arrayList1.size() == 0)
 		return false;
 
-	    for(SipHashIdElement sipHashIdElement : arrayList)
+	    for(SipHashIdElement sipHashIdElement : arrayList1)
 	    {
 		if(sipHashIdElement == null)
 		    continue;
@@ -157,11 +157,11 @@ public class Kernel
 							m_stream.length))))
 		    continue;
 
-		bytes = Cryptography.decrypt
+		byte d[] = Cryptography.decrypt
 		    (array1,
 		     Arrays.copyOfRange(sipHashIdElement.m_stream, 0, 32));
 
-		if(s_databaseHelper.writeParticipant(s_cryptography, bytes))
+		if(s_databaseHelper.writeParticipant(s_cryptography, d))
 		{
 		    Intent intent = new Intent
 			("org.purple.smokestack.populate_participants");
@@ -169,11 +169,70 @@ public class Kernel
 		    SmokeStack.getApplication().sendBroadcast(intent);
 		}
 
-		arrayList.clear();
+		arrayList1.clear();
 		return true;
 	    }
 
-	    arrayList.clear();
+	    ArrayList<OzoneElement> arrayList2 = s_databaseHelper.readOzones
+		(s_cryptography);
+
+	    if(arrayList2 == null || arrayList2.size() == 0)
+	    {
+		arrayList1.clear();
+		return false;
+	    }
+
+	    long minutes = TimeUnit.MILLISECONDS.toMinutes
+		(System.currentTimeMillis());
+
+	    for(OzoneElement ozoneElement : arrayList2)
+	    {
+		if(ozoneElement == null)
+		    continue;
+
+		for(SipHashIdElement sipHashIdElement : arrayList1)
+		{
+		    if(sipHashIdElement == null)
+			continue;
+
+		    byte a1[] = Arrays.copyOfRange(bytes,
+						   0,
+						   bytes.length - 64);
+		    byte a2[] = Arrays.copyOfRange(bytes,
+						   bytes.length - 64,
+						   bytes.length);
+
+		    for(int i = 0; i < 2; i++)
+			if(!Cryptography.
+			   memcmp(a2,
+				  Cryptography.
+				  hmac(Miscellaneous.
+				       joinByteArrays(a1,
+						      sipHashIdElement.
+						      m_sipHashId.
+						      getBytes("UTF-8"),
+						      Miscellaneous.
+						      longToByteArray(i +
+								      minutes)),
+				       Arrays.copyOfRange(ozoneElement.
+							  m_addressStream,
+							  32,
+							  ozoneElement.
+							  m_addressStream.
+							  length))))
+			    continue;
+			else
+			{
+			    /*
+			    ** Discovered.
+			    */
+
+			    arrayList1.clear();
+			    arrayList2.clear();
+			    return true;
+			}
+		}
+	    }
 	}
 	catch(Exception exception)
 	{
