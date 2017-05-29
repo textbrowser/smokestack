@@ -497,7 +497,7 @@ public class Cryptography
 
 	return pbkdf2(sha512(data),
 		      Miscellaneous.byteArrayAsHexString(data).toCharArray(),
-		      1000,
+		      SIPHASH_STREAM_CREATION_ITERATION_COUNT,
 		      8 * SipHash.KEY_LENGTH);
     }
 
