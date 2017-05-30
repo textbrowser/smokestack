@@ -1791,8 +1791,10 @@ public class Database extends SQLiteOpenHelper
 	str = "CREATE TABLE IF NOT EXISTS stack (" +
 	    "message TEXT NOT NULL, " +
 	    "message_digest TEXT NOT NULL PRIMARY KEY, " +
+	    "siphash_id TEXT NOT NULL, " +
 	    "siphash_id_digest TEXT NOT NULL, " +
-	    "timestamp TEXT DEFAULT NULL)";
+	    "timestamp TEXT DEFAULT NULL, " +
+	    "verified_digest TEXT NOT NULL)";
 
 	try
 	{
@@ -2082,9 +2084,18 @@ public class Database extends SQLiteOpenHelper
 		 Base64.encodeToString(cryptography.hmac(message),
 				       Base64.DEFAULT));
 	    values.put
+		("siphash_id",
+		 Base64.encodeToString(cryptography.etm(sipHashId.
+							getBytes("UTF-8")),
+				       Base64.DEFAULT));
+	    values.put
 		("siphash_id_digest",
 		 Base64.encodeToString(cryptography.hmac(sipHashId.
 							 getBytes("UTF-8")),
+				       Base64.DEFAULT));
+	    values.put
+		("verified_digest",
+		 Base64.encodeToString(cryptography.hmac("false".getBytes()),
 				       Base64.DEFAULT));
 	    m_db.beginTransactionNonExclusive();
 	    m_db.insert("stack", null, values);
