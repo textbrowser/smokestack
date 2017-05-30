@@ -229,6 +229,10 @@ public class Kernel
 
 			    arrayList1.clear();
 			    arrayList2.clear();
+			    s_databaseHelper.writeMessage
+				(s_cryptography,
+				 sipHashIdElement.m_sipHashId,
+				 a1);
 			    return true;
 			}
 		}

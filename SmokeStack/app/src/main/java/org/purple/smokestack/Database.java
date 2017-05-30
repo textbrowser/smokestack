@@ -1792,7 +1792,7 @@ public class Database extends SQLiteOpenHelper
 	    "message TEXT NOT NULL, " +
 	    "message_digest TEXT NOT NULL PRIMARY KEY, " +
 	    "siphash_id_digest TEXT NOT NULL, " +
-	    "timestamp TEXT NOT NULL)";
+	    "timestamp TEXT DEFAULT NULL)";
 
 	try
 	{
@@ -2050,6 +2050,48 @@ public class Database extends SQLiteOpenHelper
 	}
 	catch(Exception exception)
         {
+	}
+	finally
+	{
+	    m_db.endTransaction();
+	}
+    }
+
+    public void writeMessage(Cryptography cryptography,
+			     String sipHashId,
+			     byte message[])
+    {
+	prepareDb();
+
+	if(cryptography == null ||
+	   m_db == null ||
+	   message == null ||
+	   message.length < 0)
+	    return;
+
+	try
+	{
+	    ContentValues values = new ContentValues();
+
+	    values.put
+		("message",
+		 Base64.encodeToString(cryptography.etm(message),
+				       Base64.DEFAULT));
+	    values.put
+		("message_digest",
+		 Base64.encodeToString(cryptography.hmac(message),
+				       Base64.DEFAULT));
+	    values.put
+		("siphash_id_digest",
+		 Base64.encodeToString(cryptography.hmac(sipHashId.
+							 getBytes("UTF-8")),
+				       Base64.DEFAULT));
+	    m_db.beginTransactionNonExclusive();
+	    m_db.insert("stack", null, values);
+	    m_db.setTransactionSuccessful();
+	}
+	catch(Exception exception)
+	{
 	}
 	finally
 	{
