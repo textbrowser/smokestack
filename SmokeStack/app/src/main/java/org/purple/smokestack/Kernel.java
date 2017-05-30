@@ -182,9 +182,6 @@ public class Kernel
 		return false;
 	    }
 
-	    long minutes = TimeUnit.MILLISECONDS.toMinutes
-		(System.currentTimeMillis());
-
 	    for(OzoneElement ozoneElement : arrayList2)
 	    {
 		if(ozoneElement == null)
@@ -201,6 +198,8 @@ public class Kernel
 		    byte a2[] = Arrays.copyOfRange(bytes,
 						   bytes.length - 64,
 						   bytes.length);
+		    long minutes = TimeUnit.MILLISECONDS.toMinutes
+			(System.currentTimeMillis());
 
 		    for(int i = 0; i < 2; i++)
 			if(!Cryptography.
