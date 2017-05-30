@@ -32,6 +32,7 @@ public class SipHashIdElement
     public String m_name = "";
     public String m_sipHashId = "";
     public boolean m_epksCompleted = false;
+    public byte m_chatEncryptionKeyDigest[] = null;
     public byte m_stream[] = null;
     public int m_oid = -1;
 

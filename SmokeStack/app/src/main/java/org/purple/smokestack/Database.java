@@ -412,9 +412,11 @@ public class Database extends SQLiteOpenHelper
 	{
 	    cursor = m_db.rawQuery
 		("SELECT " +
-		 "(SELECT encryption_public_key_digest || " +
-		 "signature_public_key_digest FROM participants p " +
-		 "WHERE p.siphash_id_digest = s.siphash_id_digest) AS c, " +
+		 "(SELECT p.encryption_public_key_digest || " +
+		 "p.signature_public_key_digest FROM participants p " +
+		 "WHERE p.siphash_id_digest = s.siphash_id_digest) AS a, " +
+		 "(SELECT p.encryption_public_key_digest FROM participants p " +
+		 "WHERE p.siphash_id_digest = s.siphash_id_digest) AS b, " +
 		 "s.name, " +
 		 "s.siphash_id, " +
 		 "s.stream, " +
@@ -451,6 +453,21 @@ public class Database extends SQLiteOpenHelper
 				!string_a.equals(string_b);
 			    continue;
 			}
+			else if(i == 1)
+			{
+			    if(cursor.isNull(i) ||
+			       cursor.getString(i).isEmpty())
+			    {
+				sipHashIdElement.m_chatEncryptionKeyDigest =
+				    null;
+				continue;
+			    }
+
+			    sipHashIdElement.m_chatEncryptionKeyDigest =
+				Base64.decode(cursor.getString(i),
+					      Base64.DEFAULT);
+			    continue;
+			}
 			else if(i == cursor.getColumnCount() - 1)
 			{
 			    sipHashIdElement.m_oid = cursor.getInt(i);
@@ -481,13 +498,15 @@ public class Database extends SQLiteOpenHelper
 			case 0:
 			    break;
 			case 1:
-			    sipHashIdElement.m_name = new String(bytes);
 			    break;
 			case 2:
+			    sipHashIdElement.m_name = new String(bytes);
+			    break;
+			case 3:
 			    sipHashIdElement.m_sipHashId = new String
 				(bytes, "UTF-8");
 			    break;
-			case 3:
+			case 4:
 			    sipHashIdElement.m_stream = Miscellaneous.
 				deepCopy(bytes);
 			    break;
