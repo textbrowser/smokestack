@@ -249,12 +249,18 @@ public class Kernel
 						    73)))
 			 return false;
 
+		     String sipHashId = s_databaseHelper.
+			 sipHashIdFromDigest
+			 (s_cryptography,
+			  Arrays.copyOfRange(aes256, 9, 9 + 64));
+
 		     /*
 		     ** Tag all messages for release.
 		     */
 
 		     s_databaseHelper.tagMessagesForRelease
 			 (s_cryptography,
+			  sipHashId,
 			  Arrays.copyOfRange(aes256, 9, 9 + 64));
 		     return true;
 		 }

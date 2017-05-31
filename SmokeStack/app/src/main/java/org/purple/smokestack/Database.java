@@ -787,6 +787,50 @@ public class Database extends SQLiteOpenHelper
 	return str;
     }
 
+    public String sipHashIdFromDigest(Cryptography cryptography,
+				      byte digest[])
+    {
+	prepareDb();
+
+	if(cryptography == null ||
+	   digest == null ||
+	   digest.length < 0 ||
+	   m_db == null)
+	    return null;
+
+	Cursor cursor = null;
+	String sipHashId = "";
+
+	try
+	{
+	    cursor = m_db.rawQuery
+		("SELECT siphash_id " +
+		 "FROM participants WHERE encryption_public_key_digest = ?",
+		 new String[] {Base64.encodeToString(digest, Base64.DEFAULT)});
+
+	    if(cursor != null && cursor.moveToFirst())
+	    {
+		byte bytes[] = cryptography.mtd
+		    (Base64.decode(cursor.getString(0).getBytes(),
+				   Base64.DEFAULT));
+
+		if(bytes != null)
+		    sipHashId = new String(bytes, "UTF-8");
+	    }
+	}
+	catch(Exception exception)
+	{
+	    sipHashId = "";
+	}
+	finally
+	{
+	    if(cursor != null)
+		cursor.close();
+	}
+
+	return sipHashId;
+    }
+
     public String[] readOutboundMessage(int oid)
     {
 	prepareDb();
@@ -2090,6 +2134,7 @@ public class Database extends SQLiteOpenHelper
     }
 
     public void tagMessagesForRelease(Cryptography cryptography,
+				      String sipHashId,
 				      byte digest[])
     {
 	prepareDb();
@@ -2099,6 +2144,40 @@ public class Database extends SQLiteOpenHelper
 	   digest.length < 0 ||
 	   m_db == null)
 	    return;
+
+	try
+	{
+	    ContentValues values = new ContentValues();
+
+	    values.put
+		("timestamp",
+		 Base64.
+		 encodeToString(cryptography.
+				etm(Miscellaneous.
+				    longToByteArray(System.
+						    currentTimeMillis())),
+				Base64.DEFAULT));
+	    values.put
+		("verified_digest",
+		 Base64.encodeToString(cryptography.hmac("true".getBytes()),
+				       Base64.DEFAULT));
+	    m_db.beginTransactionNonExclusive();
+	    m_db.update
+		("stack", values, "siphash_id_digest = ?",
+		 new String[] {Base64.
+			       encodeToString(cryptography.
+					      hmac(sipHashId.toLowerCase().
+						   trim().getBytes("UTF-8")),
+					      Base64.DEFAULT)});
+	    m_db.setTransactionSuccessful();
+	}
+	catch(Exception exception)
+	{
+	}
+	finally
+	{
+	    m_db.endTransaction();
+	}
     }
 
     public void writeCongestionDigest(long value)
