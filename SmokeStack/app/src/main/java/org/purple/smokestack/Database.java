@@ -38,7 +38,10 @@ import android.util.Patterns;
 import android.util.SparseArray;
 import android.util.SparseIntArray;
 import java.net.InetAddress;
+import java.security.KeyFactory;
 import java.security.PublicKey;
+import java.security.PublicKey;
+import java.security.spec.X509EncodedKeySpec;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -537,6 +540,67 @@ public class Database extends SQLiteOpenHelper
 	}
 
 	return arrayList;
+    }
+
+    public PublicKey signatureKeyForDigest(Cryptography cryptography,
+					   byte digest[])
+    {
+	prepareDb();
+
+	if(cryptography == null ||
+	   digest == null ||
+	   digest.length < 0 ||
+	   m_db == null)
+	    return null;
+
+	Cursor cursor = null;
+	PublicKey publicKey = null;
+
+	try
+	{
+	    cursor = m_db.rawQuery
+		("SELECT " +
+		 "signature_public_key " +
+		 "FROM participants WHERE encryption_public_key_digest = ?",
+		 new String[] {Base64.encodeToString(digest, Base64.DEFAULT)});
+
+	    if(cursor != null && cursor.moveToFirst())
+	    {
+		byte bytes[] = cryptography.mtd
+		    (Base64.decode(cursor.getString(0).getBytes(),
+				   Base64.DEFAULT));
+
+		if(bytes != null)
+		    for(int i = 0; i < 2; i++)
+			try
+			{
+			    if(i == 0)
+				publicKey = KeyFactory.getInstance("EC").
+				    generatePublic
+				    (new X509EncodedKeySpec(bytes));
+			    else
+				publicKey = KeyFactory.getInstance("RSA").
+				    generatePublic
+				    (new X509EncodedKeySpec(bytes));
+
+			    break;
+			}
+			catch(Exception exception)
+			{
+			}
+	    }
+	}
+	catch(Exception exception)
+	{
+	    publicKey = null;
+	}
+	finally
+	{
+	    if(cursor != null)
+		cursor.close();
+	}
+
+	return publicKey;
     }
 
     public SparseIntArray readNeighborOids()

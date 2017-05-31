@@ -32,6 +32,7 @@ import android.util.Base64;
 import android.util.SparseArray;
 import android.util.SparseIntArray;
 import java.net.InetAddress;
+import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.Executors;
@@ -48,6 +49,10 @@ public class Kernel
 	Cryptography.getInstance();
     private final static SipHash s_congestionSipHash = new SipHash
 	(Cryptography.randomBytes(SipHash.KEY_LENGTH));
+    private final static int CHAT_MESSAGE_RETRIEVAL_WINDOW = 30000; /*
+								    ** 30
+								    ** Seconds
+								    */
     private final static int CONGESTION_INTERVAL = 15000; // 15 Seconds
     private final static int CONGESTION_LIFETIME = 30;
     private final static int NEIGHBORS_INTERVAL = 5000; // 5 Seconds
@@ -125,11 +130,6 @@ public class Kernel
 	    if(bytes == null || bytes.length < 128)
 		return false;
 
-	    byte array1[] = Arrays.copyOfRange // Blocks #1, #2, etc.
-		(bytes, 0, bytes.length - 128);
-	    byte array2[] = Arrays.copyOfRange // Second to the last block.
-		(bytes, bytes.length - 128, bytes.length - 64);
-
 	    /*
 	    ** EPKS
 	    */
@@ -139,6 +139,11 @@ public class Kernel
 
 	    if(arrayList1 == null || arrayList1.size() == 0)
 		return false;
+
+	    byte array1[] = Arrays.copyOfRange // Blocks #1, #2, etc.
+		(bytes, 0, bytes.length - 128);
+	    byte array2[] = Arrays.copyOfRange // Second to the last block.
+		(bytes, bytes.length - 128, bytes.length - 64);
 
 	    for(SipHashIdElement sipHashIdElement : arrayList1)
 	    {
@@ -157,11 +162,11 @@ public class Kernel
 							m_stream.length))))
 		    continue;
 
-		byte d[] = Cryptography.decrypt
+		byte aes256[] = Cryptography.decrypt
 		    (array1,
 		     Arrays.copyOfRange(sipHashIdElement.m_stream, 0, 32));
 
-		if(s_databaseHelper.writeParticipant(s_cryptography, d))
+		if(s_databaseHelper.writeParticipant(s_cryptography, aes256))
 		{
 		    Intent intent = new Intent
 			("org.purple.smokestack.populate_participants");
@@ -169,7 +174,6 @@ public class Kernel
 		    SmokeStack.getApplication().sendBroadcast(intent);
 		}
 
-		arrayList1.clear();
 		return true;
 	    }
 
@@ -177,27 +181,82 @@ public class Kernel
 		(s_cryptography);
 
 	    if(arrayList2 == null || arrayList2.size() == 0)
-	    {
-		arrayList1.clear();
 		return false;
-	    }
+
+	    byte a1[] = Arrays.copyOfRange(bytes,
+					   0,
+					   bytes.length - 64);
+	    byte a2[] = Arrays.copyOfRange(bytes,
+					   bytes.length - 64,
+					   bytes.length);
 
 	    for(OzoneElement ozoneElement : arrayList2)
 	    {
 		if(ozoneElement == null)
 		    continue;
 
+		if(Cryptography.
+		   memcmp(a2,
+			  Cryptography.
+			  hmac(a1,
+			       Arrays.copyOfRange(ozoneElement.m_addressStream,
+						  32,
+						  ozoneElement.m_addressStream.
+						  length))))
+		 {
+		     /*
+		     ** A message-retrieval request!
+		     */
+
+		     byte aes256[] = Cryptography.decrypt
+			 (a1,
+			  Arrays.copyOfRange(ozoneElement.m_addressStream,
+					     0,
+					     32));
+
+		     if(aes256 == null)
+			 return false;
+
+		     long current = System.currentTimeMillis();
+		     long timestamp = Miscellaneous.byteArrayToLong
+			 (Arrays.copyOfRange(aes256, 1, 1 + 8));
+
+		     if(current - timestamp < 0)
+		     {
+			 if(timestamp - current > CHAT_MESSAGE_RETRIEVAL_WINDOW)
+			     return false;
+		     }
+		     else if(current - timestamp >
+			     CHAT_MESSAGE_RETRIEVAL_WINDOW)
+			 return false;
+
+		     PublicKey signatureKey = s_databaseHelper.
+			 signatureKeyForDigest
+			 (s_cryptography,
+			  Arrays.copyOfRange(aes256, 9, 9 + 64));
+
+		     if(signatureKey == null)
+			 return false;
+
+		     if(!Cryptography.
+			verifySignature(signatureKey,
+					Arrays.copyOfRange(aes256,
+							   73,
+							   aes256.length),
+					Arrays.
+					copyOfRange(aes256,
+						    0,
+						    73)))
+			 return false;
+
+		     return true;
+		 }
+
 		for(SipHashIdElement sipHashIdElement : arrayList1)
 		{
 		    if(sipHashIdElement == null)
 			continue;
 
-		    byte a1[] = Arrays.copyOfRange(bytes,
-						   0,
-						   bytes.length - 64);
-		    byte a2[] = Arrays.copyOfRange(bytes,
-						   bytes.length - 64,
-						   bytes.length);
 		    long minutes = TimeUnit.MILLISECONDS.toMinutes
 			(System.currentTimeMillis());
 
@@ -226,8 +285,6 @@ public class Kernel
 			    ** Discovered.
 			    */
 
-			    arrayList1.clear();
-			    arrayList2.clear();
 			    s_databaseHelper.writeMessage
 				(s_cryptography,
 				 sipHashIdElement.m_sipHashId,
