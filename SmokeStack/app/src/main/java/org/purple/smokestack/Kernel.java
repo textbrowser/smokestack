@@ -249,8 +249,8 @@ public class Kernel
 						    73)))
 			 return false;
 
-		     String sipHashId = s_databaseHelper.
-			 sipHashIdFromDigest
+		     String sipHashIdDigest = s_databaseHelper.
+			 sipHashIdDigestFromDigest
 			 (s_cryptography,
 			  Arrays.copyOfRange(aes256, 9, 9 + 64));
 
@@ -260,7 +260,7 @@ public class Kernel
 
 		     s_databaseHelper.tagMessagesForRelease
 			 (s_cryptography,
-			  sipHashId,
+			  sipHashIdDigest,
 			  Arrays.copyOfRange(aes256, 9, 9 + 64));
 		     return true;
 		 }

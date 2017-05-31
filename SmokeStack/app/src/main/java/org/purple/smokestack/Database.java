@@ -787,8 +787,8 @@ public class Database extends SQLiteOpenHelper
 	return str;
     }
 
-    public String sipHashIdFromDigest(Cryptography cryptography,
-				      byte digest[])
+    public String sipHashIdDigestFromDigest(Cryptography cryptography,
+					    byte digest[])
     {
 	prepareDb();
 
@@ -799,28 +799,21 @@ public class Database extends SQLiteOpenHelper
 	    return null;
 
 	Cursor cursor = null;
-	String sipHashId = "";
+	String sipHashIdDigest = "";
 
 	try
 	{
 	    cursor = m_db.rawQuery
-		("SELECT siphash_id " +
+		("SELECT siphash_id_digest " +
 		 "FROM participants WHERE encryption_public_key_digest = ?",
 		 new String[] {Base64.encodeToString(digest, Base64.DEFAULT)});
 
 	    if(cursor != null && cursor.moveToFirst())
-	    {
-		byte bytes[] = cryptography.mtd
-		    (Base64.decode(cursor.getString(0).getBytes(),
-				   Base64.DEFAULT));
-
-		if(bytes != null)
-		    sipHashId = new String(bytes, "UTF-8");
-	    }
+		sipHashIdDigest = cursor.getString(0);
 	}
 	catch(Exception exception)
 	{
-	    sipHashId = "";
+	    sipHashIdDigest = "";
 	}
 	finally
 	{
@@ -828,7 +821,7 @@ public class Database extends SQLiteOpenHelper
 		cursor.close();
 	}
 
-	return sipHashId;
+	return sipHashIdDigest;
     }
 
     public String[] readOutboundMessage(int oid)
@@ -2134,7 +2127,7 @@ public class Database extends SQLiteOpenHelper
     }
 
     public void tagMessagesForRelease(Cryptography cryptography,
-				      String sipHashId,
+				      String sipHashIdDigest,
 				      byte digest[])
     {
 	prepareDb();
@@ -2164,11 +2157,7 @@ public class Database extends SQLiteOpenHelper
 	    m_db.beginTransactionNonExclusive();
 	    m_db.update
 		("stack", values, "siphash_id_digest = ? AND timestamp IS NULL",
-		 new String[] {Base64.
-			       encodeToString(cryptography.
-					      hmac(sipHashId.toLowerCase().
-						   trim().getBytes("UTF-8")),
-					      Base64.DEFAULT)});
+		 new String[] {sipHashIdDigest});
 	    m_db.setTransactionSuccessful();
 	}
 	catch(Exception exception)
