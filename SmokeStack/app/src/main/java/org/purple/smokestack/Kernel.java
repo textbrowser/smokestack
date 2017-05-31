@@ -249,6 +249,13 @@ public class Kernel
 						    73)))
 			 return false;
 
+		     /*
+		     ** Tag all messages for release.
+		     */
+
+		     s_databaseHelper.tagMessagesForRelease
+			 (s_cryptography,
+			  Arrays.copyOfRange(aes256, 9, 9 + 64));
 		     return true;
 		 }
 

@@ -2089,6 +2089,18 @@ public class Database extends SQLiteOpenHelper
 	}
     }
 
+    public void tagMessagesForRelease(Cryptography cryptography,
+				      byte digest[])
+    {
+	prepareDb();
+
+	if(cryptography == null ||
+	   digest == null ||
+	   digest.length < 0 ||
+	   m_db == null)
+	    return;
+    }
+
     public void writeCongestionDigest(long value)
     {
 	prepareDb();
