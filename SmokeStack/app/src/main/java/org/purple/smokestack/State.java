@@ -28,65 +28,138 @@
 package org.purple.smokestack;
 
 import android.os.Bundle;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class State
 {
-    private static Bundle s_bundle = null;
+    private Bundle m_bundle = null;
+    private final ReentrantReadWriteLock m_bundleMutex =
+	new ReentrantReadWriteLock();
     private static State s_instance = null;
 
     private State()
     {
+	m_bundle = new Bundle();
 	setAuthenticated(false);
     }
 
     public static synchronized State getInstance()
     {
-	if(s_bundle == null)
-	    s_bundle = new Bundle();
-
 	if(s_instance == null)
 	    s_instance = new State();
 
 	return s_instance;
     }
 
-    public synchronized CharSequence getCharSequence(String key)
+    public CharSequence getCharSequence(String key)
     {
-	return s_bundle.getCharSequence(key, "");
+	m_bundleMutex.readLock().lock();
+
+	try
+	{
+	    return m_bundle.getCharSequence(key, "");
+	}
+	finally
+	{
+	    m_bundleMutex.readLock().unlock();
+	}
     }
 
-    public synchronized String getString(String key)
+    public String getString(String key)
     {
-	return s_bundle.getString(key, "");
+	m_bundleMutex.readLock().lock();
+
+	try
+	{
+	    return m_bundle.getString(key, "");
+	}
+	finally
+	{
+	    m_bundleMutex.readLock().unlock();
+	}
     }
 
-    public synchronized boolean isAuthenticated()
+    public boolean isAuthenticated()
     {
-	return s_bundle.getChar("is_authenticated") == '1';
+	m_bundleMutex.readLock().lock();
+
+	try
+	{
+	    return m_bundle.getChar("is_authenticated", '0') == '1';
+	}
+	finally
+	{
+	    m_bundleMutex.readLock().unlock();
+	}
     }
 
-    public synchronized void removeKey(String key)
+    public void removeKey(String key)
     {
-	s_bundle.remove(key);
+	m_bundleMutex.writeLock().lock();
+
+	try
+	{
+	    m_bundle.remove(key);
+	}
+	finally
+	{
+	    m_bundleMutex.writeLock().unlock();
+	}
     }
 
-    public synchronized void reset()
+    public void reset()
     {
-	s_bundle.clear();
+	m_bundleMutex.writeLock().lock();
+
+	try
+	{
+	    m_bundle.clear();
+	}
+	finally
+	{
+	    m_bundleMutex.writeLock().unlock();
+	}
     }
 
-    public synchronized void setAuthenticated(boolean state)
+    public void setAuthenticated(boolean state)
     {
-	s_bundle.putChar("is_authenticated", state ? '1' : '0');
+	m_bundleMutex.writeLock().lock();
+
+	try
+	{
+	    m_bundle.putChar("is_authenticated", state ? '1' : '0');
+	}
+	finally
+	{
+	    m_bundleMutex.writeLock().unlock();
+	}
     }
 
-    public synchronized void setString(String key, String value)
+    public void setString(String key, String value)
     {
-	s_bundle.putString(key, value);
+	m_bundleMutex.writeLock().lock();
+
+	try
+	{
+	    m_bundle.putString(key, value);
+	}
+	finally
+	{
+	    m_bundleMutex.writeLock().unlock();
+	}
     }
 
-    public synchronized void writeCharSequence(String key, CharSequence text)
+    public void writeCharSequence(String key, CharSequence text)
     {
-	s_bundle.putCharSequence(key, text);
+	m_bundleMutex.writeLock().lock();
+
+	try
+	{
+	    m_bundle.putCharSequence(key, text);
+	}
+	finally
+	{
+	    m_bundleMutex.writeLock().unlock();
+	}
     }
 }
