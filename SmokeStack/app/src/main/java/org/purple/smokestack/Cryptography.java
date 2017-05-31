@@ -38,6 +38,7 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Arrays;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.Mac;
@@ -51,8 +52,10 @@ public class Cryptography
 {
     private SecretKey m_encryptionKey = null;
     private SecretKey m_macKey = null;
-    private final Object m_encryptionKeyMutex = new Object();
-    private final Object m_macKeyMutex = new Object();
+    private final ReentrantReadWriteLock m_encryptionKeyMutex =
+	new ReentrantReadWriteLock();
+    private final ReentrantReadWriteLock m_macKeyMutex =
+	new ReentrantReadWriteLock();
     private final static String HASH_ALGORITHM = "SHA-512";
     private final static String HMAC_ALGORITHM = "HmacSHA512";
     private final static String PKI_ECDSA_SIGNATURE_ALGORITHM =
@@ -104,16 +107,28 @@ public class Cryptography
 	if(data == null || data.length < 0)
 	    return null;
 
-	synchronized(m_encryptionKeyMutex)
+	m_encryptionKeyMutex.readLock().lock();
+
+	try
 	{
 	    if(m_encryptionKey == null)
 		return null;
 	}
+	finally
+	{
+	    m_encryptionKeyMutex.readLock().unlock();
+	}
 
-	synchronized(m_macKeyMutex)
+	m_macKeyMutex.readLock().lock();
+
+	try
 	{
 	    if(m_macKey == null)
 		return null;
+	}
+	finally
+	{
+	    m_macKeyMutex.readLock().unlock();
 	}
 
 	prepareSecureRandom();
@@ -122,7 +137,9 @@ public class Cryptography
 
 	try
 	{
-	    synchronized(m_encryptionKeyMutex)
+	    m_encryptionKeyMutex.readLock().lock();
+
+	    try
 	    {
 		if(m_encryptionKey == null)
 		    return null;
@@ -138,8 +155,14 @@ public class Cryptography
 		bytes = cipher.doFinal(data);
 		bytes = Miscellaneous.joinByteArrays(iv, bytes);
 	    }
+	    finally
+	    {
+		m_encryptionKeyMutex.readLock().unlock();
+	    }
 
-	    synchronized(m_macKeyMutex)
+	    m_macKeyMutex.readLock().lock();
+
+	    try
 	    {
 		if(m_macKey == null)
 		    return null;
@@ -149,6 +172,10 @@ public class Cryptography
 		mac = Mac.getInstance(HMAC_ALGORITHM);
 		mac.init(m_macKey);
 		bytes = Miscellaneous.joinByteArrays(bytes, mac.doFinal(bytes));
+	    }
+	    finally
+	    {
+		m_macKeyMutex.readLock().unlock();
 	    }
 	}
 	catch(Exception exception)
@@ -164,7 +191,9 @@ public class Cryptography
 	if(data == null || data.length < 0)
 	    return null;
 
-	synchronized(m_macKeyMutex)
+	m_macKeyMutex.readLock().lock();
+
+	try
 	{
 	    if(m_macKey == null)
 		return null;
@@ -186,6 +215,10 @@ public class Cryptography
 
 	    return bytes;
 	}
+	finally
+	{
+	    m_macKeyMutex.readLock().unlock();
+	}
     }
 
     public byte[] mtd(byte data[]) // MAC-Then-Decrypt
@@ -197,16 +230,28 @@ public class Cryptography
 	if(data == null || data.length < 0)
 	    return null;
 
-	synchronized(m_encryptionKeyMutex)
+	m_encryptionKeyMutex.readLock().lock();
+
+	try
 	{
 	    if(m_encryptionKey == null)
 		return null;
 	}
+	finally
+	{
+	    m_encryptionKeyMutex.readLock().unlock();
+	}
 
-	synchronized(m_macKeyMutex)
+	m_macKeyMutex.readLock().lock();
+
+	try
 	{
 	    if(m_macKey == null)
 		return null;
+	}
+	finally
+	{
+	    m_macKeyMutex.readLock().unlock();
 	}
 
 	try
@@ -220,8 +265,9 @@ public class Cryptography
 
 	    digest1 = Arrays.copyOfRange
 		(data, data.length - 512 / 8, data.length);
+	    m_macKeyMutex.readLock().lock();
 
-	    synchronized(m_macKeyMutex)
+	    try
 	    {
 		if(m_macKey == null)
 		    return null;
@@ -232,6 +278,10 @@ public class Cryptography
 		mac.init(m_macKey);
 		digest2 = mac.doFinal
 		    (Arrays.copyOf(data, data.length - 512 / 8));
+	    }
+	    finally
+	    {
+		m_macKeyMutex.readLock().unlock();
 	    }
 
 	    if(!memcmp(digest1, digest2))
@@ -246,7 +296,9 @@ public class Cryptography
 
 	try
 	{
-	    synchronized(m_encryptionKeyMutex)
+	    m_encryptionKeyMutex.readLock().lock();
+
+	    try
 	    {
 		if(m_encryptionKey == null)
 		    return null;
@@ -260,6 +312,10 @@ public class Cryptography
 			    new IvParameterSpec(iv));
 		bytes = cipher.doFinal
 		    (Arrays.copyOfRange(data, 16, data.length - 512 / 8));
+	    }
+	    finally
+	    {
+		m_encryptionKeyMutex.readLock().unlock();
 	    }
 	}
 	catch(Exception exception)
@@ -633,30 +689,54 @@ public class Cryptography
 
     public void reset()
     {
-	synchronized(m_encryptionKeyMutex)
+	m_encryptionKeyMutex.writeLock().lock();
+
+	try
 	{
 	    m_encryptionKey = null;
 	}
+	finally
+	{
+	    m_encryptionKeyMutex.writeLock().unlock();
+	}
 
-	synchronized(m_macKeyMutex)
+	m_macKeyMutex.writeLock().lock();
+
+	try
 	{
 	    m_macKey = null;
+	}
+	finally
+	{
+	    m_macKeyMutex.writeLock().unlock();
 	}
     }
 
     public void setEncryptionKey(SecretKey key)
     {
-	synchronized(m_encryptionKeyMutex)
+	m_encryptionKeyMutex.writeLock().lock();
+
+	try
 	{
 	    m_encryptionKey = key;
+	}
+	finally
+	{
+	    m_encryptionKeyMutex.writeLock().unlock();
 	}
     }
 
     public void setMacKey(SecretKey key)
     {
-	synchronized(m_macKeyMutex)
+	m_macKeyMutex.writeLock().lock();
+
+	try
 	{
 	    m_macKey = key;
+	}
+	finally
+	{
+	    m_macKeyMutex.writeLock().unlock();
 	}
     }
 }
