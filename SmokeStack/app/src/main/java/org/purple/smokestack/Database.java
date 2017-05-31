@@ -2163,7 +2163,7 @@ public class Database extends SQLiteOpenHelper
 				       Base64.DEFAULT));
 	    m_db.beginTransactionNonExclusive();
 	    m_db.update
-		("stack", values, "siphash_id_digest = ?",
+		("stack", values, "siphash_id_digest = ? AND timestamp IS NULL",
 		 new String[] {Base64.
 			       encodeToString(cryptography.
 					      hmac(sipHashId.toLowerCase().
