@@ -1706,7 +1706,7 @@ public class Settings extends AppCompatActivity
 	layoutParams.setMarginEnd(5);
 	textView1.setLayoutParams(layoutParams);
         textView1.setText("4710");
-        textView1 = (TextView) findViewById(R.id.neighbors_ip_address);
+        textView1 = (TextView) findViewById(R.id.listeners_ip_address);
 
 	if(isAuthenticated)
 	    textView1.requestFocus();
