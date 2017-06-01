@@ -2127,15 +2127,11 @@ public class Database extends SQLiteOpenHelper
     }
 
     public void tagMessagesForRelease(Cryptography cryptography,
-				      String sipHashIdDigest,
-				      byte digest[])
+				      String sipHashIdDigest)
     {
 	prepareDb();
 
-	if(cryptography == null ||
-	   digest == null ||
-	   digest.length < 0 ||
-	   m_db == null)
+	if(cryptography == null || m_db == null)
 	    return;
 
 	try

@@ -259,9 +259,7 @@ public class Kernel
 		     */
 
 		     s_databaseHelper.tagMessagesForRelease
-			 (s_cryptography,
-			  sipHashIdDigest,
-			  Arrays.copyOfRange(aes256, 9, 9 + 64));
+			 (s_cryptography, sipHashIdDigest);
 		     return true;
 		 }
 
