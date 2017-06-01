@@ -43,6 +43,7 @@ public class Kernel
 {
     private ScheduledExecutorService m_congestionScheduler = null;
     private ScheduledExecutorService m_neighborsScheduler = null;
+    private ScheduledExecutorService m_releaseMessagesScheduler = null;
     private final SparseArray<Neighbor> m_neighbors = new SparseArray<> ();
     private final static Database s_databaseHelper = Database.getInstance();
     private final static Cryptography s_cryptography =
@@ -56,6 +57,7 @@ public class Kernel
     private final static int CONGESTION_INTERVAL = 15000; // 15 Seconds
     private final static int CONGESTION_LIFETIME = 30;
     private final static int NEIGHBORS_INTERVAL = 5000; // 5 Seconds
+    private final static int RELEASE_MESSAGES_INTERVAL = 1500; // 1.5 Seconds
     private static Kernel s_instance = null;
 
     private Kernel()
@@ -91,6 +93,20 @@ public class Kernel
 		}
 	    }, 1500, NEIGHBORS_INTERVAL, TimeUnit.MILLISECONDS);
 	}
+
+	if(m_releaseMessagesScheduler == null)
+	{
+	    m_releaseMessagesScheduler = Executors.
+		newSingleThreadScheduledExecutor();
+	    m_releaseMessagesScheduler.scheduleAtFixedRate(new Runnable()
+	    {
+		@Override
+		public void run()
+		{
+		    releaseMessages();
+		}
+	    }, 1500, RELEASE_MESSAGES_INTERVAL, TimeUnit.MILLISECONDS);
+	}
     }
 
     private void purge()
@@ -111,6 +127,29 @@ public class Kernel
 
 	    m_neighbors.clear();
 	}
+    }
+
+    private void releaseMessages()
+    {
+	ArrayList<byte[]> arrayList = s_databaseHelper.readTaggedMessage
+	    (s_cryptography);
+
+	if(arrayList == null || arrayList.size() != 3)
+	    return;
+
+	byte destination[] = Cryptography.hmac
+	    (arrayList.get(0), Cryptography.sha512(arrayList.get(2)));
+
+	if(destination == null)
+	    return;
+
+	enqueueMessage
+	    (Messages.
+	     bytesToMessageString(Miscellaneous.
+				  joinByteArrays(arrayList.get(0),
+						 destination)));
+	s_databaseHelper.timestampReleasedMessage
+	    (s_cryptography, arrayList.get(1));
     }
 
     public boolean ourMessage(String buffer)

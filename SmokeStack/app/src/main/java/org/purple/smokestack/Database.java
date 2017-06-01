@@ -542,6 +542,92 @@ public class Database extends SQLiteOpenHelper
 	return arrayList;
     }
 
+    public ArrayList<byte[]> readTaggedMessage(Cryptography cryptography)
+    {
+	prepareDb();
+
+	if(cryptography == null || m_db == null)
+	    return null;
+
+	ArrayList<byte[]> arrayList = null;
+	Cursor cursor = null;
+
+	try
+	{
+	    cursor = m_db.rawQuery
+		("SELECT message, message_digest, siphash_id " +
+		 "FROM stack WHERE timestamp IS NULL AND verified_digest = ?",
+		 new String[] {Base64.
+			       encodeToString(cryptography.
+					      hmac("true".getBytes()),
+					      Base64.DEFAULT)});
+
+	    if(cursor != null && cursor.moveToFirst())
+	    {
+		arrayList = new ArrayList<> ();
+
+		boolean error = false;
+
+		for(int i = 0; i < 3; i++)
+		{
+		    byte bytes[] = null;
+
+		    switch(i)
+		    {
+		    case 0:
+			bytes = cryptography.mtd
+			    (Base64.decode(cursor.getString(i).getBytes(),
+					   Base64.DEFAULT));
+
+			if(bytes != null)
+			    arrayList.add(bytes);
+			else
+			    error = true;
+
+			break;
+		    case 1:
+			arrayList.add(cursor.getString(i).getBytes());
+			break;
+		    case 2:
+			bytes = cryptography.mtd
+			    (Base64.decode(cursor.getString(i).getBytes(),
+					   Base64.DEFAULT));
+
+			if(bytes != null)
+			    arrayList.add(bytes);
+			else
+			    error = true;
+
+			break;
+		    }
+
+		    if(error)
+			break;
+		}
+
+		if(error)
+		{
+		    arrayList.clear();
+		    arrayList = null;
+		}
+	    }
+	}
+	catch(Exception exception)
+	{
+	    if(arrayList != null)
+		arrayList.clear();
+
+	    arrayList = null;
+	}
+	finally
+	{
+	    if(cursor != null)
+		cursor.close();
+	}
+
+	return arrayList;
+    }
+
     public PublicKey signatureKeyForDigest(Cryptography cryptography,
 					   byte digest[])
     {
@@ -2149,6 +2235,46 @@ public class Database extends SQLiteOpenHelper
 		 new String[] {sipHashIdDigest,
 			       Base64.encodeToString(cryptography.
 						     hmac("false".getBytes()),
+						     Base64.DEFAULT)});
+	    m_db.setTransactionSuccessful();
+	}
+	catch(Exception exception)
+	{
+	}
+	finally
+	{
+	    m_db.endTransaction();
+	}
+    }
+
+    public void timestampReleasedMessage(Cryptography cryptography,
+					 byte digest[])
+    {
+	prepareDb();
+
+	if(cryptography == null ||
+	   digest == null ||
+	   digest.length < 0 ||
+	   m_db == null)
+	    return;
+
+	try
+	{
+	    ContentValues values = new ContentValues();
+
+	    values.put
+		("timestamp",
+		 Base64.
+		 encodeToString(Miscellaneous.
+				longToByteArray(System.currentTimeMillis()),
+				Base64.DEFAULT));
+	    m_db.beginTransactionNonExclusive();
+	    m_db.update
+		("stack", values, "message_digest = ? AND " +
+		 "timestamp IS NULL AND verified_digest = ?",
+		 new String[] {new String(digest),
+			       Base64.encodeToString(cryptography.
+						     hmac("true".getBytes()),
 						     Base64.DEFAULT)});
 	    m_db.setTransactionSuccessful();
 	}
