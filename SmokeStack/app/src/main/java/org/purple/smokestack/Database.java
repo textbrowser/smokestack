@@ -2139,21 +2139,17 @@ public class Database extends SQLiteOpenHelper
 	    ContentValues values = new ContentValues();
 
 	    values.put
-		("timestamp",
-		 Base64.
-		 encodeToString(cryptography.
-				etm(Miscellaneous.
-				    longToByteArray(System.
-						    currentTimeMillis())),
-				Base64.DEFAULT));
-	    values.put
 		("verified_digest",
 		 Base64.encodeToString(cryptography.hmac("true".getBytes()),
 				       Base64.DEFAULT));
 	    m_db.beginTransactionNonExclusive();
 	    m_db.update
-		("stack", values, "siphash_id_digest = ? AND timestamp IS NULL",
-		 new String[] {sipHashIdDigest});
+		("stack", values, "siphash_id_digest = ? AND " +
+		 "timestamp IS NULL AND verified_digest = ?",
+		 new String[] {sipHashIdDigest,
+			       Base64.encodeToString(cryptography.
+						     hmac("false".getBytes()),
+						     Base64.DEFAULT)});
 	    m_db.setTransactionSuccessful();
 	}
 	catch(Exception exception)
