@@ -42,6 +42,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class Kernel
 {
+    private ArrayList<OzoneElement> m_ozones = null;
+    private ArrayList<SipHashIdElement> m_sipHashIds = null;
     private ScheduledExecutorService m_congestionScheduler = null;
     private ScheduledExecutorService m_neighborsScheduler = null;
     private ScheduledExecutorService m_releaseMessagesScheduler = null;
@@ -70,14 +72,6 @@ public class Kernel
 	populateOzones();
 	populateSipHashIds();
 	prepareSchedulers();
-    }
-
-    private void populateOzones()
-    {
-    }
-
-    private void populateSipHashIds()
-    {
     }
 
     private void prepareSchedulers()
@@ -188,8 +182,18 @@ public class Kernel
 	    ** EPKS
 	    */
 
-	    ArrayList<SipHashIdElement> arrayList1 = s_databaseHelper.
-		readSipHashIds(s_cryptography);
+	    ArrayList<SipHashIdElement> arrayList1 = null;
+
+	    m_sipHashIdsMutex.readLock().lock();
+
+	    try
+	    {
+		arrayList1 = m_sipHashIds;
+	    }
+	    finally
+	    {
+		m_sipHashIdsMutex.readLock().unlock();
+	    }
 
 	    if(arrayList1 == null || arrayList1.size() == 0)
 		return false;
@@ -231,8 +235,18 @@ public class Kernel
 		return true;
 	    }
 
-	    ArrayList<OzoneElement> arrayList2 = s_databaseHelper.readOzones
-		(s_cryptography);
+	    ArrayList<OzoneElement> arrayList2 = null;
+
+	    m_ozonesMutex.readLock().lock();
+
+	    try
+	    {
+		arrayList2 = m_ozones;
+	    }
+	    finally
+	    {
+		m_ozonesMutex.readLock().unlock();
+	    }
 
 	    if(arrayList2 == null || arrayList2.size() == 0)
 		return false;
@@ -441,6 +455,34 @@ public class Kernel
 	    s_databaseHelper.enqueueOutboundMessage(message, neighbors.get(i));
 
 	neighbors.clear();
+    }
+
+    public void populateOzones()
+    {
+	m_ozonesMutex.writeLock().lock();
+
+	try
+	{
+	    m_ozones = s_databaseHelper.readOzones(s_cryptography);
+	}
+	finally
+	{
+	    m_ozonesMutex.writeLock().unlock();
+	}
+    }
+
+    public void populateSipHashIds()
+    {
+	m_sipHashIdsMutex.writeLock().lock();
+
+	try
+	{
+	    m_sipHashIds = s_databaseHelper.readSipHashIds(s_cryptography);
+	}
+	finally
+	{
+	    m_sipHashIdsMutex.writeLock().unlock();
+	}
     }
 
     public void prepareNeighbors()
