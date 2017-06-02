@@ -788,7 +788,7 @@ public class Settings extends AppCompatActivity
 
 	    row.setLayoutParams(layoutParams);
 
-	    for(int j = 0; j < 2; j++)
+	    for(int j = 0; j < 3; j++)
 	    {
 		TextView textView = new TextView(Settings.this);
 
@@ -816,6 +816,17 @@ public class Settings extends AppCompatActivity
 			 delimitString(sipHashIdElement.m_sipHashId.
 				       replace(":", ""), '-', 4).
 			 toUpperCase());
+		}
+		else
+		{
+		    textView.append
+			(String.valueOf(sipHashIdElement.m_inMessages));
+		    textView.append(" / ");
+		    textView.append
+			(String.valueOf(sipHashIdElement.m_outMessages));
+		    textView.append(" / ");
+		    textView.append
+			(String.valueOf(sipHashIdElement.m_totalMessages));
 		}
 
 		textView.setTag(textView.getText());

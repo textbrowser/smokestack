@@ -35,6 +35,9 @@ public class SipHashIdElement
     public byte m_chatEncryptionKeyDigest[] = null;
     public byte m_stream[] = null;
     public int m_oid = -1;
+    public long m_inMessages = 0;
+    public long m_outMessages = 0;
+    public long m_totalMessages = 0;
 
     public SipHashIdElement()
     {

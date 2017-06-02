@@ -417,14 +417,20 @@ public class Database extends SQLiteOpenHelper
 		("SELECT " +
 		 "(SELECT p.encryption_public_key_digest || " +
 		 "p.signature_public_key_digest FROM participants p " +
-		 "WHERE p.siphash_id_digest = s.siphash_id_digest) AS a, " +
+		 "WHERE p.siphash_id_digest = si.siphash_id_digest) AS a, " +
 		 "(SELECT p.encryption_public_key_digest FROM participants p " +
-		 "WHERE p.siphash_id_digest = s.siphash_id_digest) AS b, " +
-		 "s.name, " +
-		 "s.siphash_id, " +
-		 "s.stream, " +
-		 "s.OID " +
-		 "FROM siphash_ids s ORDER BY s.oid", null);
+		 "WHERE p.siphash_id_digest = si.siphash_id_digest) AS b, " +
+		 "(SELECT COUNT(s.OID) FROM stack s WHERE " +
+		 "s.siphash_id_digest = si.siphash_id_digest AND " +
+		 "timestamp IS NULL) AS c, " +
+		 "(SELECT COUNT(s.OID) FROM stack s WHERE " +
+		 "s.siphash_id_digest = si.siphash_id_digest AND " +
+		 "timestamp IS NOT NULL) AS d, " +
+		 "si.name, " +
+		 "si.siphash_id, " +
+		 "si.stream, " +
+		 "si.OID " +
+		 "FROM siphash_ids si ORDER BY si.oid", null);
 
 	    if(cursor != null && cursor.moveToFirst())
 	    {
@@ -471,6 +477,21 @@ public class Database extends SQLiteOpenHelper
 					      Base64.DEFAULT);
 			    continue;
 			}
+			else if(i == 2)
+			{
+			    sipHashIdElement.m_inMessages =
+				cursor.getLong(i);
+			    continue;
+			}
+			else if(i == 3)
+			{
+			    sipHashIdElement.m_outMessages =
+				cursor.getLong(i);
+			    sipHashIdElement.m_totalMessages =
+				sipHashIdElement.m_inMessages +
+				sipHashIdElement.m_outMessages;
+			    continue;
+			}
 			else if(i == cursor.getColumnCount() - 1)
 			{
 			    sipHashIdElement.m_oid = cursor.getInt(i);
@@ -503,13 +524,17 @@ public class Database extends SQLiteOpenHelper
 			case 1:
 			    break;
 			case 2:
-			    sipHashIdElement.m_name = new String(bytes);
 			    break;
 			case 3:
+			    break;
+			case 4:
+			    sipHashIdElement.m_name = new String(bytes);
+			    break;
+			case 5:
 			    sipHashIdElement.m_sipHashId = new String
 				(bytes, "UTF-8");
 			    break;
-			case 4:
+			case 6:
 			    sipHashIdElement.m_stream = Miscellaneous.
 				deepCopy(bytes);
 			    break;

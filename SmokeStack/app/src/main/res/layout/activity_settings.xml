@@ -431,6 +431,13 @@
                     android:textSize="20sp"
                     android:textStyle="normal|bold" />
 
+                <TextView
+                    android:id="@+id/textView2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="5dp"
+                    android:text="@string/retrieved_content_will_be_stored_for_approximately_one_week" />
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -448,6 +455,13 @@
                         android:layout_marginEnd="5dp"
                         android:layout_weight="0.13"
                         android:text="@string/siphash_identity" />
+
+                    <TextView
+                        android:id="@+id/textView3"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.13"
+                        android:text="@string/in_out_total" />
 
                 </LinearLayout>
 
