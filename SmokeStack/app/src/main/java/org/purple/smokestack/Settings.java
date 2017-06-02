@@ -1804,7 +1804,10 @@ public class Settings extends AppCompatActivity
 		case 0:
 		    if(m_databaseHelper.deleteEntry(String.valueOf(itemId),
 						    "ozones"))
+		    {
+			Kernel.getInstance().populateOzones();
 			populateOzoneAddresses();
+		    }
 
 		    break;
 		case 1:
@@ -1812,6 +1815,7 @@ public class Settings extends AppCompatActivity
 						    "siphash_ids"))
 		    {
 			m_databaseHelper.cleanDanglingParticipants();
+			Kernel.getInstance().populateSipHashIds();
 			populateParticipants();
 		    }
 
