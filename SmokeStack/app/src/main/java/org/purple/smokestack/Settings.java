@@ -829,7 +829,11 @@ public class Settings extends AppCompatActivity
 			(String.valueOf(sipHashIdElement.m_totalMessages));
 		}
 
-		textView.setTag(textView.getText());
+		if(j == 0 || j == 1)
+		    textView.setTag(textView.getText());
+		else
+		    textView.setTag(sipHashIdElement.m_name);
+
 		textView.setTextSize(TEXTVIEW_TEXT_SIZE);
 		registerForContextMenu(textView);
 		row.addView(textView);
