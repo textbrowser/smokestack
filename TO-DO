@@ -10,3 +10,4 @@ Remaining Items
 2.     The Settings activity has many views (ANDROID_LINT_MAX_VIEW_COUNT).
 3.     Message accounting.
 4.     Listeners.
+5.     Populate containers in the kernel as required.
