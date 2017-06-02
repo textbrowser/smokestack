@@ -38,12 +38,17 @@ import java.util.Arrays;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class Kernel
 {
     private ScheduledExecutorService m_congestionScheduler = null;
     private ScheduledExecutorService m_neighborsScheduler = null;
     private ScheduledExecutorService m_releaseMessagesScheduler = null;
+    private final ReentrantReadWriteLock m_ozonesMutex = new
+	ReentrantReadWriteLock();
+    private final ReentrantReadWriteLock m_sipHashIdsMutex = new
+	ReentrantReadWriteLock();
     private final SparseArray<Neighbor> m_neighbors = new SparseArray<> ();
     private final static Database s_databaseHelper = Database.getInstance();
     private final static Cryptography s_cryptography =
@@ -62,7 +67,17 @@ public class Kernel
 
     private Kernel()
     {
+	populateOzones();
+	populateSipHashIds();
 	prepareSchedulers();
+    }
+
+    private void populateOzones()
+    {
+    }
+
+    private void populateSipHashIds()
+    {
     }
 
     private void prepareSchedulers()
