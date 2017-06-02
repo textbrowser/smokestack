@@ -1,5 +1,8 @@
 Completed Items
 
+1.     Message accounting.
+2.     Populate containers in the kernel as required.
+
 Future Items
 
 Ignored / Impossible Items
@@ -8,6 +11,4 @@ Remaining Items
 
 1.     Sign release.
 2.     The Settings activity has many views (ANDROID_LINT_MAX_VIEW_COUNT).
-3.     Message accounting.
-4.     Listeners.
-5.     Populate containers in the kernel as required.
+3.     Listeners.
