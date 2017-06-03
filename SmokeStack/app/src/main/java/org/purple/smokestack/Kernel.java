@@ -65,7 +65,7 @@ public class Kernel
     private final static int CONGESTION_INTERVAL = 15000; // 15 Seconds
     private final static int CONGESTION_LIFETIME = 30;
     private final static int NEIGHBORS_INTERVAL = 5000; // 5 Seconds
-    private final static int PURGE_RELEASED_MESSAGES_INTERVAL = 1; // Hours
+    private final static int PURGE_RELEASED_MESSAGES_INTERVAL = 5; // Minutes
     private final static int RELEASE_MESSAGES_INTERVAL = 1500; // 1.5 Seconds
     private static Kernel s_instance = null;
 
@@ -116,7 +116,7 @@ public class Kernel
 		{
 		    s_databaseHelper.purgeReleasedMessages(s_cryptography);
 		}
-	    }, 1500, PURGE_RELEASED_MESSAGES_INTERVAL, TimeUnit.HOURS);
+	    }, 0, PURGE_RELEASED_MESSAGES_INTERVAL, TimeUnit.MINUTES);
 	}
 
 	if(m_releaseMessagesScheduler == null)

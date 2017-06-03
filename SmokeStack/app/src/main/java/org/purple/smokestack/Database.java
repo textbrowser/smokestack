@@ -124,6 +124,7 @@ public class Database extends SQLiteOpenHelper
 	};
     private final static String DATABASE_NAME = "smokestack.db";
     private final static int DATABASE_VERSION = 1;
+    private final static int ONE_WEEK = 604800000;
     private final static int SIPHASH_STREAM_CREATION_ITERATION_COUNT = 4096;
     private final static int WRITE_PARTICIPANT_TIME_DELTA = 60000; // 60 Seconds
     private static Database s_instance = null;
@@ -2084,6 +2085,50 @@ public class Database extends SQLiteOpenHelper
 
 	if(cryptography == null || m_db == null)
 	    return;
+
+	Cursor cursor = null;
+
+	try
+	{
+	    cursor = m_db.rawQuery
+		("SELECT timestamp, OID " +
+		 "FROM stack WHERE timestamp IS NOT NULL AND " +
+		 "verified_digest = ?",
+		 new String[] {Base64.
+			       encodeToString(cryptography.
+					      hmac("true".getBytes()),
+					      Base64.DEFAULT)});
+
+	    if(cursor != null && cursor.moveToFirst())
+		while(!cursor.isAfterLast())
+		{
+		    byte bytes[] = cryptography.mtd
+			(Base64.decode(cursor.getString(0).getBytes(),
+				       Base64.DEFAULT));
+
+		    if(bytes == null)
+			deleteEntry(String.valueOf(cursor.getInt(1)), "stack");
+		    else
+		    {
+			long timestamp = Miscellaneous.byteArrayToLong(bytes);
+
+			if(Math.abs(System.currentTimeMillis() - timestamp) >
+			   ONE_WEEK)
+			    deleteEntry
+				(String.valueOf(cursor.getInt(1)), "stack");
+		    }
+
+		    cursor.moveToNext();
+		}
+	}
+	catch(Exception exception)
+	{
+	}
+	finally
+	{
+	    if(cursor != null)
+		cursor.close();
+	}
     }
 
     public void reset()
@@ -2298,8 +2343,10 @@ public class Database extends SQLiteOpenHelper
 	    values.put
 		("timestamp",
 		 Base64.
-		 encodeToString(Miscellaneous.
-				longToByteArray(System.currentTimeMillis()),
+		 encodeToString(cryptography.
+				etm(Miscellaneous.
+				    longToByteArray(System.
+						    currentTimeMillis())),
 				Base64.DEFAULT));
 	    m_db.beginTransactionNonExclusive();
 	    m_db.update
