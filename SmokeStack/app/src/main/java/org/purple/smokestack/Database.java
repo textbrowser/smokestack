@@ -2078,6 +2078,14 @@ public class Database extends SQLiteOpenHelper
 	}
     }
 
+    public void purgeReleasedMessages(Cryptography cryptography)
+    {
+	prepareDb();
+
+	if(cryptography == null || m_db == null)
+	    return;
+    }
+
     public void reset()
     {
 	prepareDb();

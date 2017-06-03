@@ -46,6 +46,7 @@ public class Kernel
     private ArrayList<SipHashIdElement> m_sipHashIds = null;
     private ScheduledExecutorService m_congestionScheduler = null;
     private ScheduledExecutorService m_neighborsScheduler = null;
+    private ScheduledExecutorService m_purgeReleasedMessagesScheduler = null;
     private ScheduledExecutorService m_releaseMessagesScheduler = null;
     private final ReentrantReadWriteLock m_ozonesMutex = new
 	ReentrantReadWriteLock();
@@ -64,6 +65,7 @@ public class Kernel
     private final static int CONGESTION_INTERVAL = 15000; // 15 Seconds
     private final static int CONGESTION_LIFETIME = 30;
     private final static int NEIGHBORS_INTERVAL = 5000; // 5 Seconds
+    private final static int PURGE_RELEASED_MESSAGES_INTERVAL = 1; // Hours
     private final static int RELEASE_MESSAGES_INTERVAL = 1500; // 1.5 Seconds
     private static Kernel s_instance = null;
 
@@ -101,6 +103,20 @@ public class Kernel
 		    prepareNeighbors();
 		}
 	    }, 1500, NEIGHBORS_INTERVAL, TimeUnit.MILLISECONDS);
+	}
+
+	if(m_purgeReleasedMessagesScheduler == null)
+	{
+	    m_purgeReleasedMessagesScheduler = Executors.
+		newSingleThreadScheduledExecutor();
+	    m_purgeReleasedMessagesScheduler.scheduleAtFixedRate(new Runnable()
+	    {
+		@Override
+		public void run()
+		{
+		    s_databaseHelper.purgeReleasedMessages(s_cryptography);
+		}
+	    }, 1500, PURGE_RELEASED_MESSAGES_INTERVAL, TimeUnit.HOURS);
 	}
 
 	if(m_releaseMessagesScheduler == null)
