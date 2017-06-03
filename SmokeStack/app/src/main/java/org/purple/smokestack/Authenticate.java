@@ -230,12 +230,7 @@ public class Authenticate extends AppCompatActivity
 				    button1.setEnabled(false);
 				    textView1.setEnabled(false);
 				    textView1.setText("");
-
-				    String str = m_databaseHelper.
-					readSetting(null, "lastActivity");
-
-				    if(str.equals("Settings"))
-					showSettingsActivity();
+				    showSettingsActivity();
 				}
 			    }
 			});
@@ -325,7 +320,6 @@ public class Authenticate extends AppCompatActivity
 
         if(id == R.id.action_settings)
 	{
-	    m_databaseHelper.writeSetting(null, "lastActivity", "Settings");
 	    showSettingsActivity();
             return true;
         }
