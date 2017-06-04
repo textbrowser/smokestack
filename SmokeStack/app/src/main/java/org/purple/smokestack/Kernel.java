@@ -356,7 +356,7 @@ public class Kernel
 			(System.currentTimeMillis());
 
 		    for(int i = 0; i < 2; i++)
-			if(!Cryptography.
+			if(Cryptography.
 			   memcmp(a2,
 				  Cryptography.
 				  hmac(Miscellaneous.
@@ -373,8 +373,6 @@ public class Kernel
 							  ozoneElement.
 							  m_addressStream.
 							  length))))
-			    continue;
-			else
 			{
 			    /*
 			    ** Discovered.
