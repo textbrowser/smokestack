@@ -920,6 +920,28 @@ public class Settings extends AppCompatActivity
 	    }
 	});
 
+	button1 = (Button) findViewById(R.id.reset_listener_fields);
+        button1.setOnClickListener(new View.OnClickListener()
+	{
+	    public void onClick(View view)
+	    {
+		RadioButton radioButton1 = (RadioButton) findViewById
+		    (R.id.listeners_ipv4);
+		TextView textView1 = (TextView) findViewById
+		    (R.id.listeners_ip_address);
+		TextView textView2 = (TextView) findViewById
+		    (R.id.listeners_port);
+		TextView textView3 = (TextView) findViewById
+		    (R.id.listeners_scope_id);
+
+		radioButton1.setChecked(true);
+		textView1.setText("");
+		textView2.setText("4710");
+		textView3.setText("");
+		textView1.requestFocus();
+	    }
+	});
+
 	button1 = (Button) findViewById(R.id.reset_neighbor_fields);
         button1.setOnClickListener(new View.OnClickListener()
 	{
