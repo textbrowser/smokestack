@@ -1839,7 +1839,42 @@ public class Settings extends AppCompatActivity
 		    if(m_databaseHelper.
 		       resetRetrievalState(s_cryptography,
 					   String.valueOf(itemId)))
-			populateParticipants();
+		    {
+			MessageTotals messageTotals = m_databaseHelper.
+			    readMessageTotals(String.valueOf(itemId));
+
+			if(messageTotals != null)
+			{
+			    TableLayout tableLayout = (TableLayout)
+				findViewById(R.id.participants);
+
+			    for(int i = 0; i < tableLayout.getChildCount(); i++)
+			    {
+				TableRow row = (TableRow) tableLayout.
+				    getChildAt(i);
+
+				if(row == null)
+				    continue;
+
+				TextView textView = (TextView) row.
+				    getChildAt(2);
+
+				if(textView == null)
+				    continue;
+
+				if(itemId != textView.getId())
+				    continue;
+
+				textView.setText
+				    (messageTotals.m_inMessages + " / " +
+				     messageTotals.m_outMessages + " / " +
+				     messageTotals.m_totalMessages);
+				break;
+			    }
+			}
+		    }
+
+		    break;
 		}
 	    }
 	};

@@ -423,15 +423,15 @@ public class Database extends SQLiteOpenHelper
 		 "WHERE p.siphash_id_digest = si.siphash_id_digest) AS b, " +
 		 "(SELECT COUNT(s.OID) FROM stack s WHERE " +
 		 "s.siphash_id_digest = si.siphash_id_digest AND " +
-		 "timestamp IS NULL) AS c, " +
+		 "s.timestamp IS NULL) AS c, " +
 		 "(SELECT COUNT(s.OID) FROM stack s WHERE " +
 		 "s.siphash_id_digest = si.siphash_id_digest AND " +
-		 "timestamp IS NOT NULL) AS d, " +
+		 "s.timestamp IS NOT NULL) AS d, " +
 		 "si.name, " +
 		 "si.siphash_id, " +
 		 "si.stream, " +
 		 "si.OID " +
-		 "FROM siphash_ids si ORDER BY si.oid", null);
+		 "FROM siphash_ids si ORDER BY si.OID", null);
 
 	    if(cursor != null && cursor.moveToFirst())
 	    {
@@ -652,6 +652,51 @@ public class Database extends SQLiteOpenHelper
 	}
 
 	return arrayList;
+    }
+
+    public MessageTotals readMessageTotals(String oid)
+    {
+	prepareDb();
+
+	if(m_db == null)
+	    return null;
+
+	Cursor cursor = null;
+	MessageTotals messageTotals = null;
+
+	try
+	{
+	    cursor = m_db.rawQuery
+		("SELECT (SELECT COUNT(s.OID) FROM stack s WHERE " +
+		 "s.siphash_id_digest = si.siphash_id_digest AND " +
+		 "s.timestamp IS NULL) AS a, " +
+		 "(SELECT COUNT(s.OID) FROM stack s WHERE " +
+		 "s.siphash_id_digest = si.siphash_id_digest AND " +
+		 "s.timestamp IS NOT NULL) AS b, " +
+		 "si.OID " +
+		 "FROM siphash_ids si WHERE si.OID = ? ORDER BY si.OID",
+		 new String[] {oid});
+
+	    if(cursor != null && cursor.moveToFirst())
+	    {
+		messageTotals = new MessageTotals();
+		messageTotals.m_inMessages = cursor.getLong(0);
+		messageTotals.m_outMessages = cursor.getLong(1);
+		messageTotals.m_totalMessages = messageTotals.m_inMessages +
+		    messageTotals.m_outMessages;
+	    }
+	}
+	catch(Exception exception)
+	{
+	    messageTotals = null;
+	}
+	finally
+	{
+	    if(cursor != null)
+		cursor.close();
+	}
+
+	return messageTotals;
     }
 
     public PublicKey signatureKeyForDigest(Cryptography cryptography,
