@@ -1783,6 +1783,30 @@ public class Database extends SQLiteOpenHelper
 	return s_instance;
     }
 
+    public void cleanDanglingMessages()
+    {
+	prepareDb();
+
+	if(m_db == null)
+	    return;
+
+	try
+	{
+	    m_db.beginTransactionNonExclusive();
+	    m_db.rawQuery("DELETE FROM stack WHERE siphash_id_digest " +
+			  "NOT IN (SELECT siphash_id_digest FROM siphash_ids)",
+			  null);
+	    m_db.setTransactionSuccessful();
+	}
+	catch(Exception exception)
+	{
+	}
+	finally
+	{
+	    m_db.endTransaction();
+	}
+    }
+
     public void cleanDanglingParticipants()
     {
 	prepareDb();
@@ -2112,7 +2136,9 @@ public class Database extends SQLiteOpenHelper
 	    "siphash_id TEXT NOT NULL, " +
 	    "siphash_id_digest TEXT NOT NULL, " +
 	    "timestamp TEXT DEFAULT NULL, " +
-	    "verified_digest TEXT NOT NULL)";
+	    "verified_digest TEXT NOT NULL, " +
+	    "FOREIGN KEY (siphash_id_digest) REFERENCES " +
+	    "siphash_ids(siphash_id_digest) ON DELETE CASCADE)";
 
 	try
 	{

@@ -1767,6 +1767,9 @@ public class Settings extends AppCompatActivity
 	    if(m_databaseHelper.accountPrepared())
 		showAuthenticateActivity();
 
+	m_databaseHelper.cleanDanglingMessages();
+	m_databaseHelper.cleanDanglingParticipants();
+
 	if(isAuthenticated)
 	{
 	    checkBox1 = (CheckBox) findViewById
@@ -1829,6 +1832,7 @@ public class Settings extends AppCompatActivity
 		    if(m_databaseHelper.deleteEntry(String.valueOf(itemId),
 						    "siphash_ids"))
 		    {
+			m_databaseHelper.cleanDanglingMessages();
 			m_databaseHelper.cleanDanglingParticipants();
 			Kernel.getInstance().populateSipHashIds();
 			populateParticipants();
