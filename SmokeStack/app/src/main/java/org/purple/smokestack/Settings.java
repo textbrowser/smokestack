@@ -872,6 +872,15 @@ public class Settings extends AppCompatActivity
 	    }
         });
 
+	button1 = (Button) findViewById(R.id.refresh_listeners);
+	button1.setOnClickListener(new View.OnClickListener()
+	{
+	    public void onClick(View view)
+	    {
+		populateListeners();
+	    }
+        });
+
 	button1 = (Button) findViewById(R.id.refresh_neighbors);
 	button1.setOnClickListener(new View.OnClickListener()
 	{
@@ -1056,6 +1065,7 @@ public class Settings extends AppCompatActivity
 	    public void onCancel(DialogInterface dialog)
 	    {
 		m_databaseHelper.reset();
+		populateListeners();
 		populateNeighbors();
 		populateOzoneAddresses();
 		populateParticipants();
@@ -1433,6 +1443,13 @@ public class Settings extends AppCompatActivity
 			    populateOzoneAddresses();
 			    populateParticipants();
 			    startKernel();
+
+			    if(m_databaseHelper.
+			       readSetting(null, "automatic_listeners_refresh").
+			       equals("true"))
+				startListenersTimers();
+			    else
+				populateListeners();
 
 			    if(m_databaseHelper.
 			       readSetting(null, "automatic_neighbors_refresh").
