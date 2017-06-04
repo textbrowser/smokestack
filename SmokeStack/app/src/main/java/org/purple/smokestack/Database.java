@@ -40,7 +40,6 @@ import android.util.SparseIntArray;
 import java.net.InetAddress;
 import java.security.KeyFactory;
 import java.security.PublicKey;
-import java.security.PublicKey;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.ArrayList;
 import java.util.Collections;
