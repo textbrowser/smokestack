@@ -1835,6 +1835,11 @@ public class Settings extends AppCompatActivity
 		    }
 
 		    break;
+		case 2:
+		    if(m_databaseHelper.
+		       resetRetrievalState(s_cryptography,
+					   String.valueOf(itemId)))
+			populateParticipants();
 		}
 	    }
 	};
@@ -1843,7 +1848,9 @@ public class Settings extends AppCompatActivity
 	** Regular expression?
 	*/
 
-	if(groupId == 0)
+	switch(groupId)
+	{
+	case 0:
 	    Miscellaneous.showPromptDialog
 		(Settings.this,
 		 listener,
@@ -1851,7 +1858,8 @@ public class Settings extends AppCompatActivity
 		 "wish to delete the Ozone \"" +
 		 item.getTitle().toString().replace("Delete Ozone (", "").
 		 replace(")", "") + "\"?");
-	else
+	    break;
+	case 1:
 	    Miscellaneous.showPromptDialog
 		(Settings.this,
 		 listener,
@@ -1859,6 +1867,18 @@ public class Settings extends AppCompatActivity
 		 "wish to delete the participant " +
 		 item.getTitle().toString().replace("Delete Participant (", "").
 		 replace(")", "") + "?");
+	    break;
+	case 2:
+	    Miscellaneous.showPromptDialog
+		(Settings.this,
+		 listener,
+		 "Are you sure that you " +
+		 "wish to reset the retrieval state for " +
+		 item.getTitle().toString().
+		 replace("Reset Retrieval State (", "").
+		 replace(")", "") + "?");
+	    break;
+	}
 
 	return true;
     }
@@ -1909,10 +1929,16 @@ public class Settings extends AppCompatActivity
 	    if(v.getParent().getParent() == findViewById(R.id.ozones))
 		menu.add(0, v.getId(), 0, "Delete Ozone (" + v.getTag() + ")");
 	    else
+	    {
 		menu.add(1,
 			 v.getId(),
 			 0,
 			 "Delete Participant (" + v.getTag() + ")");
+		menu.add(2,
+			 v.getId(),
+			 0,
+			 "Reset Retrieval State (" + v.getTag() + ")");
+	    }
 	}
     }
 

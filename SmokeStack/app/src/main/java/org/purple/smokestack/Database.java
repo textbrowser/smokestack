@@ -1042,6 +1042,47 @@ public class Database extends SQLiteOpenHelper
 	return ok;
     }
 
+    public boolean resetRetrievalState(Cryptography cryptography,
+				       String oid)
+    {
+	prepareDb();
+
+	if(cryptography == null || m_db == null)
+	    return false;
+
+	boolean ok = false;
+
+	try
+	{
+	    ContentValues values = new ContentValues();
+
+	    values.put
+		("verified_digest",
+		 Base64.encodeToString(cryptography.
+				       hmac("false".getBytes()),
+				       Base64.DEFAULT));
+	    values.putNull("timestamp");
+	    m_db.beginTransactionNonExclusive();
+	    ok = m_db.update
+		("stack",
+		 values,
+		 "siphash_id_digest = (SELECT siphash_id_digest " +
+		 "FROM participants WHERE OID = ?)",
+		 new String[] {oid}) > 0;
+	    m_db.setTransactionSuccessful();
+	}
+	catch(Exception exception)
+	{
+	    ok = false;
+	}
+	finally
+	{
+	    m_db.endTransaction();
+	}
+
+	return ok;
+    }
+
     public boolean writeNeighbor(Cryptography cryptography,
 				 String proxyIpAddress,
 				 String proxyPort,
