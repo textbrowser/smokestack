@@ -1959,6 +1959,28 @@ public class Database extends SQLiteOpenHelper
 	String str = "";
 
 	/*
+	** Order is critical.
+	*/
+
+	/*
+	** Create the siphash_ids table.
+	*/
+
+	str = "CREATE TABLE IF NOT EXISTS siphash_ids (" +
+	    "name TEXT NOT NULL, " +
+	    "siphash_id TEXT NOT NULL, " +
+	    "siphash_id_digest TEXT NOT NULL PRIMARY KEY, " +
+	    "stream TEXT NOT NULL)";
+
+	try
+	{
+	    db.execSQL(str);
+	}
+	catch(Exception exception)
+	{
+	}
+
+	/*
 	** Create the congestion_control table.
 	*/
 
@@ -2099,24 +2121,6 @@ public class Database extends SQLiteOpenHelper
 	    "name TEXT NOT NULL, " +
 	    "name_digest TEXT NOT NULL PRIMARY KEY, " +
 	    "value TEXT NOT NULL)";
-
-	try
-	{
-	    db.execSQL(str);
-	}
-	catch(Exception exception)
-	{
-	}
-
-	/*
-	** Create the siphash_ids table.
-	*/
-
-	str = "CREATE TABLE IF NOT EXISTS siphash_ids (" +
-	    "name TEXT NOT NULL, " +
-	    "siphash_id TEXT NOT NULL, " +
-	    "siphash_id_digest TEXT NOT NULL PRIMARY KEY, " +
-	    "stream TEXT NOT NULL)";
 
 	try
 	{
