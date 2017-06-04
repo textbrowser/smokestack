@@ -1112,7 +1112,7 @@ public class Database extends SQLiteOpenHelper
 		("stack",
 		 values,
 		 "siphash_id_digest = (SELECT siphash_id_digest " +
-		 "FROM participants WHERE OID = ?)",
+		 "FROM siphash_ids WHERE OID = ?)",
 		 new String[] {oid}) > 0;
 	    m_db.setTransactionSuccessful();
 	}
