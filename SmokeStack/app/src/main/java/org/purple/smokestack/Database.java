@@ -1997,6 +1997,33 @@ public class Database extends SQLiteOpenHelper
 	}
 
 	/*
+	** Create the listeners table.
+	*/
+
+	str = "CREATE TABLE IF NOT EXISTS listeners (" +
+	    "certificate TEXT NOT NULL, " +
+	    "last_error TEXT NOT NULL, " +
+	    "local_ip_address TEXT NOT NULL, " +
+	    "local_ip_address_digest TEXT NOT NULL, " +
+	    "local_port TEXT NOT NULL, " +
+	    "local_port_digest TEXT NOT NULL, " +
+	    "peers_count TEXT NOT NULL, " +
+	    "private_key TEXT NOT NULL, " +
+	    "public_key TEXT NOT NULL, " +
+	    "status TEXT NOT NULL, " +
+	    "status_control TEXT NOT NULL, " +
+	    "PRIMARY KEY (local_ip_address_digest, " +
+	    "local_port_digest))";
+
+	try
+	{
+	    db.execSQL(str);
+	}
+	catch(Exception exception)
+	{
+	}
+
+	/*
 	** Create the log table.
 	*/
 
