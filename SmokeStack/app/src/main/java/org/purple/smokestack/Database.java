@@ -206,13 +206,13 @@ public class Database extends SQLiteOpenHelper
 			{
 			    error = true;
 
-			    StringBuilder StringBuilder = new StringBuilder();
+			    StringBuilder stringBuilder = new StringBuilder();
 
-			    StringBuilder.append("Database::readNeighbors(): ");
-			    StringBuilder.append("error on column ");
-			    StringBuilder.append(cursor.getColumnName(i));
-			    StringBuilder.append(".");
-			    writeLog(StringBuilder.toString());
+			    stringBuilder.append("Database::readNeighbors(): ");
+			    stringBuilder.append("error on column ");
+			    stringBuilder.append(cursor.getColumnName(i));
+			    stringBuilder.append(".");
+			    writeLog(stringBuilder.toString());
 			    break;
 			}
 
@@ -352,14 +352,14 @@ public class Database extends SQLiteOpenHelper
 			{
 			    error = true;
 
-			    StringBuilder StringBuilder = new StringBuilder();
+			    StringBuilder stringBuilder = new StringBuilder();
 
-			    StringBuilder.append
+			    stringBuilder.append
 				("Database::readOzones(): ");
-			    StringBuilder.append("error on column ");
-			    StringBuilder.append(cursor.getColumnName(i));
-			    StringBuilder.append(".");
-			    writeLog(StringBuilder.toString());
+			    stringBuilder.append("error on column ");
+			    stringBuilder.append(cursor.getColumnName(i));
+			    stringBuilder.append(".");
+			    writeLog(stringBuilder.toString());
 			    break;
 			}
 
@@ -506,14 +506,14 @@ public class Database extends SQLiteOpenHelper
 			{
 			    error = true;
 
-			    StringBuilder StringBuilder = new StringBuilder();
+			    StringBuilder stringBuilder = new StringBuilder();
 
-			    StringBuilder.append
+			    stringBuilder.append
 				("Database::readSipHashIds(): ");
-			    StringBuilder.append("error on column ");
-			    StringBuilder.append(cursor.getColumnName(i));
-			    StringBuilder.append(".");
-			    writeLog(StringBuilder.toString());
+			    stringBuilder.append("error on column ");
+			    stringBuilder.append(cursor.getColumnName(i));
+			    stringBuilder.append(".");
+			    writeLog(stringBuilder.toString());
 			    break;
 			}
 
@@ -1261,13 +1261,13 @@ public class Database extends SQLiteOpenHelper
 
 		if(bytes == null)
 		{
-		    StringBuilder StringBuilder = new StringBuilder();
+		    StringBuilder stringBuilder = new StringBuilder();
 
-		    StringBuilder.append
+		    stringBuilder.append
 			("Database::writeNeighbor(): error with ");
-		    StringBuilder.append(sparseArray.get(i));
-		    StringBuilder.append(" field.");
-		    writeLog(StringBuilder.toString());
+		    stringBuilder.append(sparseArray.get(i));
+		    stringBuilder.append(" field.");
+		    writeLog(stringBuilder.toString());
 		    throw new Exception();
 		}
 
@@ -1358,13 +1358,13 @@ public class Database extends SQLiteOpenHelper
 
 		if(bytes == null)
 		{
-		    StringBuilder StringBuilder = new StringBuilder();
+		    StringBuilder stringBuilder = new StringBuilder();
 
-		    StringBuilder.append
+		    stringBuilder.append
 			("Database::writeOzone(): error with ");
-		    StringBuilder.append(sparseArray.get(i));
-		    StringBuilder.append(" field.");
-		    writeLog(StringBuilder.toString());
+		    stringBuilder.append(sparseArray.get(i));
+		    stringBuilder.append(" field.");
+		    writeLog(stringBuilder.toString());
 		    throw new Exception();
 		}
 
@@ -1656,13 +1656,13 @@ public class Database extends SQLiteOpenHelper
 
 		if(bytes == null)
 		{
-		    StringBuilder StringBuilder = new StringBuilder();
+		    StringBuilder stringBuilder = new StringBuilder();
 
-		    StringBuilder.append
+		    stringBuilder.append
 			("Database::writeSipHashParticipant(): error with ");
-		    StringBuilder.append(sparseArray.get(i));
-		    StringBuilder.append(" field.");
-		    writeLog(StringBuilder.toString());
+		    stringBuilder.append(sparseArray.get(i));
+		    stringBuilder.append(" field.");
+		    writeLog(stringBuilder.toString());
 		    throw new Exception();
 		}
 
@@ -1747,11 +1747,11 @@ public class Database extends SQLiteOpenHelper
 
 	try
 	{
-	    StringBuilder StringBuilder = new StringBuilder();
+	    StringBuilder stringBuilder = new StringBuilder();
 
-	    StringBuilder.append("SELECT COUNT(*) FROM ");
-	    StringBuilder.append(table);
-	    cursor = m_db.rawQuery(StringBuilder.toString(), null);
+	    stringBuilder.append("SELECT COUNT(*) FROM ");
+	    stringBuilder.append(table);
+	    cursor = m_db.rawQuery(stringBuilder.toString(), null);
 
 	    if(cursor != null && cursor.moveToFirst())
 		c = cursor.getInt(0);
@@ -2235,6 +2235,7 @@ public class Database extends SQLiteOpenHelper
 	    return;
 
 	Cursor cursor = null;
+	StringBuilder stringBuilder = new StringBuilder();
 
 	try
 	{
@@ -2255,15 +2256,23 @@ public class Database extends SQLiteOpenHelper
 				       Base64.DEFAULT));
 
 		    if(bytes == null)
-			deleteEntry(String.valueOf(cursor.getInt(1)), "stack");
+		    {
+			if(!stringBuilder.isEmpty())
+			    stringBuilder.append(",");
+
+			stringBuilder.append(cursor.getInt(1));
+		    }
 		    else
 		    {
 			long timestamp = Miscellaneous.byteArrayToLong(bytes);
 
 			if(Math.abs(System.currentTimeMillis() - timestamp) >
 			   ONE_WEEK)
-			    deleteEntry
-				(String.valueOf(cursor.getInt(1)), "stack");
+			{
+			    if(!stringBuilder.isEmpty())
+				stringBuilder.append(",");
+
+			    stringBuilder.append(cursor.getInt(1));
 		    }
 
 		    cursor.moveToNext();
@@ -2276,6 +2285,25 @@ public class Database extends SQLiteOpenHelper
 	{
 	    if(cursor != null)
 		cursor.close();
+	}
+
+	if(!stringBuilder.isEmpty())
+	{
+	    m_db.beginTransactionNonExclusive();
+
+	    try
+	    {
+		m_db.rawQuery("DELETE FROM stack WHERE OID IN (?)",
+			      new String[] {stringBuilder.toString()});
+		m_db.setTransactionSuccessful();
+	    }
+	    catch(Exception exception)
+	    {
+	    }
+	    finally
+	    {
+		m_db.endTransaction();
+	    }
 	}
     }
 

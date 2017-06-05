@@ -3,6 +3,8 @@ Completed Items
 1.     Message accounting.
 2.     Populate containers in the kernel as required.
 3.     Purge expired messages.
+4.     Create a single statement in purgeReleasedMessages() to delete
+       specific OIDs.
 
 Future Items
 
@@ -13,5 +15,3 @@ Remaining Items
 1.     Sign release.
 2.     The Settings activity has many views (ANDROID_LINT_MAX_VIEW_COUNT).
 3.     Listeners.
-4.     Create a single statement in purgeReleasedMessages() to delete
-       specific OIDs.
