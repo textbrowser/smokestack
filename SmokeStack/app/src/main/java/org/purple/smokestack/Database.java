@@ -2257,7 +2257,7 @@ public class Database extends SQLiteOpenHelper
 
 		    if(bytes == null)
 		    {
-			if(!stringBuilder.isEmpty())
+			if(stringBuilder.length() > 0)
 			    stringBuilder.append(",");
 
 			stringBuilder.append(cursor.getInt(1));
@@ -2269,7 +2269,7 @@ public class Database extends SQLiteOpenHelper
 			if(Math.abs(System.currentTimeMillis() - timestamp) >
 			   ONE_WEEK)
 			{
-			    if(!stringBuilder.isEmpty())
+			    if(stringBuilder.length() > 0)
 				stringBuilder.append(",");
 
 			    stringBuilder.append(cursor.getInt(1));
@@ -2288,7 +2288,7 @@ public class Database extends SQLiteOpenHelper
 		cursor.close();
 	}
 
-	if(!stringBuilder.isEmpty())
+	if(stringBuilder.length() > 0)
 	{
 	    m_db.beginTransactionNonExclusive();
 
