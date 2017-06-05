@@ -405,7 +405,7 @@ public class Cryptography
 	    "cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc" +
 	    "83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd4" +
 	    "7417a81a538327af927da3e";
-	StringBuilder StringBuilder = new StringBuilder();
+	StringBuilder stringBuilder = new StringBuilder();
 
 	if(bytes != null)
 	{
@@ -419,16 +419,16 @@ public class Cryptography
 	{
 	    for(int i = 0; i < fingerprint.length(); i += 2)
 		if(i < fingerprint.length() - 2)
-		    StringBuilder.append(fingerprint.substring(i, i + 2)).
+		    stringBuilder.append(fingerprint.substring(i, i + 2)).
 			append(":");
 		else
-		    StringBuilder.append(fingerprint.substring(i, i + 2));
+		    stringBuilder.append(fingerprint.substring(i, i + 2));
 	}
 	catch(Exception exception)
 	{
 	}
 
-	return StringBuilder.toString();
+	return stringBuilder.toString();
     }
 
     public static boolean memcmp(byte a[], byte b[])
