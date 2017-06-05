@@ -1068,9 +1068,10 @@ public class Database extends SQLiteOpenHelper
 
 	boolean ok = false;
 
+	m_db.beginTransactionNonExclusive();
+
 	try
 	{
-	    m_db.beginTransactionNonExclusive();
 	    ok = m_db.delete(table, "OID = ?", new String[] {oid}) > 0;
 	    m_db.setTransactionSuccessful();
 	}
@@ -1095,6 +1096,8 @@ public class Database extends SQLiteOpenHelper
 	    return false;
 
 	boolean ok = false;
+	
+	m_db.beginTransactionNonExclusive();
 
 	try
 	{
@@ -1106,7 +1109,6 @@ public class Database extends SQLiteOpenHelper
 				       hmac("false".getBytes()),
 				       Base64.DEFAULT));
 	    values.putNull("timestamp");
-	    m_db.beginTransactionNonExclusive();
 	    ok = m_db.update
 		("stack",
 		 values,
@@ -1279,8 +1281,7 @@ public class Database extends SQLiteOpenHelper
 	    ok = false;
 	}
 
-	if(ok)
-	    m_db.beginTransactionNonExclusive();
+	m_db.beginTransactionNonExclusive();
 
 	try
 	{
@@ -1377,8 +1378,7 @@ public class Database extends SQLiteOpenHelper
 	    ok = false;
 	}
 
-	if(ok)
-	    m_db.beginTransactionNonExclusive();
+	m_db.beginTransactionNonExclusive();
 
 	try
 	{
@@ -1412,6 +1412,8 @@ public class Database extends SQLiteOpenHelper
 	   data.length < 0 ||
 	   m_db == null)
 	    return false;
+
+	m_db.beginTransactionNonExclusive();
 
 	try
 	{
@@ -1559,7 +1561,6 @@ public class Database extends SQLiteOpenHelper
 			   Base64.encodeToString(bytes, Base64.DEFAULT));
 	    }
 
-	    m_db.beginTransactionNonExclusive();
 	    m_db.insert("participants", null, values);
 	    m_db.setTransactionSuccessful();
 	}
@@ -1675,8 +1676,7 @@ public class Database extends SQLiteOpenHelper
 	    ok = false;
 	}
 
-	if(ok)
-	    m_db.beginTransactionNonExclusive();
+	m_db.beginTransactionNonExclusive();
 
 	try
 	{
@@ -1789,9 +1789,10 @@ public class Database extends SQLiteOpenHelper
 	if(m_db == null)
 	    return;
 
+	m_db.beginTransactionNonExclusive();
+
 	try
 	{
-	    m_db.beginTransactionNonExclusive();
 	    m_db.rawQuery("DELETE FROM stack WHERE siphash_id_digest " +
 			  "NOT IN (SELECT siphash_id_digest FROM siphash_ids)",
 			  null);
@@ -1813,9 +1814,10 @@ public class Database extends SQLiteOpenHelper
 	if(m_db == null)
 	    return;
 
+	m_db.beginTransactionNonExclusive();
+
 	try
 	{
-	    m_db.beginTransactionNonExclusive();
 	    m_db.rawQuery("DELETE FROM participants WHERE siphash_id_digest " +
 			  "NOT IN (SELECT siphash_id_digest FROM siphash_ids)",
 			  null);
@@ -1837,13 +1839,14 @@ public class Database extends SQLiteOpenHelper
 	if(message.trim().isEmpty() || m_db == null)
 	    return;
 
+	m_db.beginTransactionNonExclusive();
+
 	try
 	{
 	    ContentValues values = new ContentValues();
 
 	    values.put("message", message);
 	    values.put("neighbor_oid", oid);
-	    m_db.beginTransactionNonExclusive();
 	    m_db.insert("outbound_queue", null, values);
 	    m_db.setTransactionSuccessful();
 	}
@@ -1865,6 +1868,8 @@ public class Database extends SQLiteOpenHelper
 	if(cryptography == null || m_db == null)
 	    return;
 
+	m_db.beginTransactionNonExclusive();
+
 	try
 	{
 	    ContentValues values = new ContentValues();
@@ -1874,7 +1879,6 @@ public class Database extends SQLiteOpenHelper
 		 Base64.encodeToString(cryptography.
 				       etm(controlStatus.trim().getBytes()),
 				       Base64.DEFAULT));
-	    m_db.beginTransactionNonExclusive();
 	    m_db.update("neighbors", values, "OID = ?", new String[] {oid});
 	    m_db.setTransactionSuccessful();
 	}
@@ -1896,6 +1900,8 @@ public class Database extends SQLiteOpenHelper
 	if(cryptography == null || m_db == null)
 	    return;
 
+	m_db.beginTransactionNonExclusive();
+
 	try
 	{
 	    ContentValues values = new ContentValues();
@@ -1911,7 +1917,6 @@ public class Database extends SQLiteOpenHelper
 		     Base64.encodeToString(cryptography.etm(certificate),
 					   Base64.DEFAULT));
 
-	    m_db.beginTransactionNonExclusive();
 	    m_db.update("neighbors", values, "OID = ?", new String[] {oid});
 	    m_db.setTransactionSuccessful();
 	}
@@ -2198,13 +2203,14 @@ public class Database extends SQLiteOpenHelper
 	if(m_db == null)
 	    return;
 
+	m_db.beginTransactionNonExclusive();
+
 	try
 	{
 	    /*
 	    ** The bound string value must be cast to an integer.
 	    */
 
-	    m_db.beginTransactionNonExclusive();
 	    m_db.delete
 		("congestion_control",
 		 "ABS(STRFTIME('%s', 'now') - STRFTIME('%s', timestamp)) > " +
@@ -2280,10 +2286,12 @@ public class Database extends SQLiteOpenHelper
 	if(m_db == null)
 	    return;
 
+	m_db.beginTransactionNonExclusive();
+
 	try
 	{
-	    m_db.beginTransactionNonExclusive();
 	    m_db.delete("congestion_control", null, null);
+	    m_db.delete("listeners", null, null);
 	    m_db.delete("log", null, null);
 	    m_db.delete("neighbors", null, null);
 	    m_db.delete("outbound_queue", null, null);
@@ -2312,6 +2320,7 @@ public class Database extends SQLiteOpenHelper
 
 	String strings[] = new String[]
 	    {"DROP TABLE IF EXISTS congestion_control",
+	     "DROP TABLE IF EXISTS listeners",
 	     "DROP TABLE IF EXISTS log",
 	     "DROP TABLE IF EXISTS neighbors",
 	     "DROP TABLE IF EXISTS outbound_queue",
@@ -2349,6 +2358,8 @@ public class Database extends SQLiteOpenHelper
 
 	if(cryptography == null || m_db == null)
 	    return;
+
+	m_db.beginTransactionNonExclusive();
 
 	try
 	{
@@ -2419,7 +2430,6 @@ public class Database extends SQLiteOpenHelper
 		 Base64.encodeToString(cryptography.
 				       etm(uptime.trim().getBytes()),
 				       Base64.DEFAULT));
-	    m_db.beginTransactionNonExclusive();
 	    m_db.update("neighbors", values, "OID = ?", new String[] {oid});
 	    m_db.setTransactionSuccessful();
 	}
@@ -2440,6 +2450,8 @@ public class Database extends SQLiteOpenHelper
 	if(cryptography == null || m_db == null)
 	    return;
 
+	m_db.beginTransactionNonExclusive();
+
 	try
 	{
 	    ContentValues values = new ContentValues();
@@ -2448,7 +2460,6 @@ public class Database extends SQLiteOpenHelper
 		("verified_digest",
 		 Base64.encodeToString(cryptography.hmac("true".getBytes()),
 				       Base64.DEFAULT));
-	    m_db.beginTransactionNonExclusive();
 	    m_db.update
 		("stack", values, "siphash_id_digest = ? AND " +
 		 "timestamp IS NULL AND verified_digest = ?",
@@ -2478,6 +2489,8 @@ public class Database extends SQLiteOpenHelper
 	   m_db == null)
 	    return;
 
+	m_db.beginTransactionNonExclusive();
+
 	try
 	{
 	    ContentValues values = new ContentValues();
@@ -2490,7 +2503,6 @@ public class Database extends SQLiteOpenHelper
 				    longToByteArray(System.
 						    currentTimeMillis())),
 				Base64.DEFAULT));
-	    m_db.beginTransactionNonExclusive();
 	    m_db.update
 		("stack", values, "message_digest = ? AND " +
 		 "timestamp IS NULL AND verified_digest = ?",
@@ -2516,6 +2528,8 @@ public class Database extends SQLiteOpenHelper
 	if(m_db == null)
 	    return;
 
+	m_db.beginTransactionNonExclusive();
+
 	try
 	{
 	    ContentValues values = new ContentValues();
@@ -2524,7 +2538,6 @@ public class Database extends SQLiteOpenHelper
 		("digest",
 		 Base64.encodeToString(Miscellaneous.
 				       longToByteArray(value), Base64.DEFAULT));
-	    m_db.beginTransactionNonExclusive();
 	    m_db.insert("congestion_control", null, values);
 	    m_db.setTransactionSuccessful();
 	}
@@ -2544,12 +2557,13 @@ public class Database extends SQLiteOpenHelper
 	if(m_db == null)
 	    return;
 
+	m_db.beginTransactionNonExclusive();
+
 	try
 	{
 	    ContentValues values = new ContentValues();
 
 	    values.put("event", event.trim());
-	    m_db.beginTransactionNonExclusive();
 	    m_db.insert("log", null, values);
 	    m_db.setTransactionSuccessful();
 	}
@@ -2573,6 +2587,8 @@ public class Database extends SQLiteOpenHelper
 	   message == null ||
 	   message.length < 0)
 	    return;
+
+	m_db.beginTransactionNonExclusive();
 
 	try
 	{
@@ -2600,7 +2616,6 @@ public class Database extends SQLiteOpenHelper
 		("verified_digest",
 		 Base64.encodeToString(cryptography.hmac("false".getBytes()),
 				       Base64.DEFAULT));
-	    m_db.beginTransactionNonExclusive();
 	    m_db.insert("stack", null, values);
 	    m_db.setTransactionSuccessful();
 	}
@@ -2621,6 +2636,8 @@ public class Database extends SQLiteOpenHelper
 
 	if(m_db == null)
 	    return;
+
+	m_db.beginTransactionNonExclusive();
 
 	try
 	{
@@ -2662,7 +2679,6 @@ public class Database extends SQLiteOpenHelper
 	    values.put("name", a);
 	    values.put("name_digest", b);
 	    values.put("value", c);
-	    m_db.beginTransactionNonExclusive();
 	    m_db.replace("settings", null, values);
 	    m_db.setTransactionSuccessful();
 	}
