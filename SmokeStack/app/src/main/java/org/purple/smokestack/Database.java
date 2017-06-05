@@ -2273,6 +2273,7 @@ public class Database extends SQLiteOpenHelper
 				stringBuilder.append(",");
 
 			    stringBuilder.append(cursor.getInt(1));
+			}
 		    }
 
 		    cursor.moveToNext();
