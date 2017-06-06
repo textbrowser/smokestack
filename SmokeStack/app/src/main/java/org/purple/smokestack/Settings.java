@@ -61,7 +61,6 @@ import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -376,7 +375,6 @@ public class Settings extends AppCompatActivity
 	    return;
 	}
 
-	DecimalFormat decimalFormat = new DecimalFormat("0.00");
 	StringBuilder stringBuilder = new StringBuilder();
 	int i = 0;
 
@@ -564,6 +562,8 @@ public class Settings extends AppCompatActivity
 
 	    if(neighborElement.m_status.equals("connected"))
 		textView.setTextColor(Color.rgb(0, 100, 0)); // Dark Green
+	    else if(neighborElement.m_status.equals("connecting"))
+		textView.setTextColor(Color.rgb(255, 140, 0)); // Dark Orange
 	    else
 		textView.setTextColor(Color.rgb(139, 0, 0)); // Dark Red
 
@@ -682,17 +682,23 @@ public class Settings extends AppCompatActivity
 
 	    try
 	    {
+		long uptime = Long.parseLong(neighborElement.m_uptime);
+
 		stringBuilder.append
-		    (decimalFormat.format(Long.
-					  parseLong(neighborElement.m_uptime) /
-					  6e+10));
+		    (String.
+		     format("%d:%02d",
+			    TimeUnit.NANOSECONDS.toMinutes(uptime),
+			    TimeUnit.NANOSECONDS.toSeconds(uptime) -
+			    TimeUnit.MINUTES.
+			    toSeconds(TimeUnit.NANOSECONDS.
+				      toMinutes(uptime))));
 	    }
 	    catch(Exception exception)
 	    {
-		stringBuilder.append("0.00");
+		stringBuilder.append("0:00");
 	    }
 
-	    stringBuilder.append(" Minutes\n");
+	    stringBuilder.append(" Minutes:Seconds\n");
 	    textView.setGravity(Gravity.CENTER_VERTICAL);
 	    textView.setLayoutParams
 		(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 1));
