@@ -268,7 +268,10 @@ public class Settings extends AppCompatActivity
 				 "An error occurred while attempting " +
 				 "to save the specified SipHash Identity.");
 			else
+			{
+			    Kernel.getInstance().populateSipHashIds();
 			    populateParticipants();
+			}
 		    }
 		});
 	    }
@@ -1065,7 +1068,10 @@ public class Settings extends AppCompatActivity
 		    textView.requestFocus();
 		}
 		else
+		{
+		    Kernel.getInstance().populateOzones();
 		    populateOzoneAddresses();
+		}
 	    }
 	});
 
