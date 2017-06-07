@@ -5,6 +5,7 @@ Completed Items
 3.     Purge expired messages.
 4.     Create a single statement in purgeReleasedMessages() to delete
        specific OIDs.
+5.     Allow removal of messages per participant.
 
 Future Items
 
@@ -15,4 +16,3 @@ Remaining Items
 1.     Sign release.
 2.     The Settings activity has many views (ANDROID_LINT_MAX_VIEW_COUNT).
 3.     Listeners.
-4.     Allow removal of messages per participant.

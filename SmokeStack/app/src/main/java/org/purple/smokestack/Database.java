@@ -1087,6 +1087,38 @@ public class Database extends SQLiteOpenHelper
 	return ok;
     }
 
+    public boolean removeMessages(String oid)
+    {
+	prepareDb();
+
+	if(m_db == null)
+	    return false;
+
+	boolean ok = false;
+
+	m_db.beginTransactionNonExclusive();
+
+	try
+	{
+	    ok = m_db.delete
+		("stack",
+		 "siphash_id_digest = (SELECT siphash_id_digest " +
+		 "FROM siphash_ids WHERE OID = ?)",
+		 new String[] {oid}) > 0;
+	    m_db.setTransactionSuccessful();
+	}
+	catch(Exception exception)
+	{
+	    ok = false;
+	}
+	finally
+	{
+	    m_db.endTransaction();
+	}
+
+	return ok;
+    }
+
     public boolean resetRetrievalState(Cryptography cryptography,
 				       String oid)
     {

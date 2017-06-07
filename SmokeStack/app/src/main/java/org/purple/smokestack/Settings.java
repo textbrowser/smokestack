@@ -1873,6 +1873,34 @@ public class Settings extends AppCompatActivity
 
 		    break;
 		case 1:
+		    if(m_databaseHelper.removeMessages(String.valueOf(itemId)))
+		    {
+			TableLayout tableLayout = (TableLayout)
+			    findViewById(R.id.participants);
+
+			for(int i = 0; i < tableLayout.getChildCount(); i++)
+			{
+			    TableRow row = (TableRow) tableLayout.
+				getChildAt(i);
+
+			    if(row == null)
+				continue;
+
+			    TextView textView = (TextView) row.getChildAt(2);
+
+			    if(textView == null)
+				continue;
+
+			    if(itemId != textView.getId())
+				continue;
+
+			    textView.setText("0 / 0 / 0");
+			    break;
+			}
+		    }
+
+		    break;
+		case 2:
 		    if(m_databaseHelper.deleteEntry(String.valueOf(itemId),
 						    "siphash_ids"))
 		    {
@@ -1883,7 +1911,7 @@ public class Settings extends AppCompatActivity
 		    }
 
 		    break;
-		case 2:
+		case 3:
 		    if(m_databaseHelper.
 		       resetRetrievalState(s_cryptography,
 					   String.valueOf(itemId)))
@@ -1947,11 +1975,20 @@ public class Settings extends AppCompatActivity
 		(Settings.this,
 		 listener,
 		 "Are you sure that you " +
+		 "wish to delete the messages of participant " +
+		 item.getTitle().toString().replace("Delete Messages (", "").
+		 replace(")", "") + "?");
+	    break;
+	case 2:
+	    Miscellaneous.showPromptDialog
+		(Settings.this,
+		 listener,
+		 "Are you sure that you " +
 		 "wish to delete the participant " +
 		 item.getTitle().toString().replace("Delete Participant (", "").
 		 replace(")", "") + "?");
 	    break;
-	case 2:
+	case 3:
 	    Miscellaneous.showPromptDialog
 		(Settings.this,
 		 listener,
@@ -2016,8 +2053,12 @@ public class Settings extends AppCompatActivity
 		menu.add(1,
 			 v.getId(),
 			 0,
-			 "Delete Participant (" + v.getTag() + ")");
+			 "Delete Messages (" + v.getTag() + ")");
 		menu.add(2,
+			 v.getId(),
+			 0,
+			 "Delete Participant (" + v.getTag() + ")");
+		menu.add(3,
 			 v.getId(),
 			 0,
 			 "Reset Retrieval State (" + v.getTag() + ")");
