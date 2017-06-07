@@ -224,7 +224,8 @@ public class Database extends SQLiteOpenHelper
 			switch(i)
 			{
 			case 0:
-			    neighborElement.m_outboundQueued = cursor.getInt(1);
+			    neighborElement.m_outboundQueued = cursor.
+				getLong(1);
 			    break;
 			case 1:
 			    neighborElement.m_bytesRead = new String(bytes);
@@ -1775,7 +1776,7 @@ public class Database extends SQLiteOpenHelper
 	return bytes;
     }
 
-    public int count(String table)
+    public long count(String table)
     {
 	prepareDb();
 
@@ -1783,7 +1784,7 @@ public class Database extends SQLiteOpenHelper
 	    return -1;
 
 	Cursor cursor = null;
-	int c = 0;
+	long c = 0;
 
 	try
 	{
@@ -1794,7 +1795,7 @@ public class Database extends SQLiteOpenHelper
 	    cursor = m_db.rawQuery(stringBuilder.toString(), null);
 
 	    if(cursor != null && cursor.moveToFirst())
-		c = cursor.getInt(0);
+		c = cursor.getLong(0);
 	}
 	catch(Exception exception)
 	{
