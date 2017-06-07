@@ -1829,13 +1829,16 @@ public class Database extends SQLiteOpenHelper
 	if(m_db == null)
 	    return;
 
+	Cursor cursor = null;
+
 	m_db.beginTransactionNonExclusive();
 
 	try
 	{
-	    m_db.rawQuery("DELETE FROM stack WHERE siphash_id_digest " +
-			  "NOT IN (SELECT siphash_id_digest FROM siphash_ids)",
-			  null);
+	    cursor = m_db.rawQuery
+		("DELETE FROM stack WHERE siphash_id_digest " +
+		 "NOT IN (SELECT siphash_id_digest FROM siphash_ids)",
+		 null);
 	    m_db.setTransactionSuccessful();
 	}
 	catch(Exception exception)
@@ -1843,6 +1846,9 @@ public class Database extends SQLiteOpenHelper
 	}
 	finally
 	{
+	    if(cursor != null)
+		cursor.close();
+
 	    m_db.endTransaction();
 	}
     }
@@ -1854,13 +1860,16 @@ public class Database extends SQLiteOpenHelper
 	if(m_db == null)
 	    return;
 
+	Cursor cursor = null;
+
 	m_db.beginTransactionNonExclusive();
 
 	try
 	{
-	    m_db.rawQuery("DELETE FROM outbound_queue WHERE neighbor_oid " +
-			  "NOT IN (SELECT OID FROM neighbors)",
-			  null);
+	    cursor = m_db.rawQuery
+		("DELETE FROM outbound_queue WHERE neighbor_oid " +
+		 "NOT IN (SELECT OID FROM neighbors)",
+		 null);
 	    m_db.setTransactionSuccessful();
 	}
 	catch(Exception exception)
@@ -1868,6 +1877,9 @@ public class Database extends SQLiteOpenHelper
 	}
 	finally
 	{
+	    if(cursor != null)
+		cursor.close();
+
 	    m_db.endTransaction();
 	}
     }
@@ -1879,13 +1891,16 @@ public class Database extends SQLiteOpenHelper
 	if(m_db == null)
 	    return;
 
+	Cursor cursor = null;
+
 	m_db.beginTransactionNonExclusive();
 
 	try
 	{
-	    m_db.rawQuery("DELETE FROM participants WHERE siphash_id_digest " +
-			  "NOT IN (SELECT siphash_id_digest FROM siphash_ids)",
-			  null);
+	    cursor = m_db.rawQuery
+		("DELETE FROM participants WHERE siphash_id_digest " +
+		 "NOT IN (SELECT siphash_id_digest FROM siphash_ids)",
+		 null);
 	    m_db.setTransactionSuccessful();
 	}
 	catch(Exception exception)
@@ -1893,6 +1908,9 @@ public class Database extends SQLiteOpenHelper
 	}
 	finally
 	{
+	    if(cursor != null)
+		cursor.close();
+
 	    m_db.endTransaction();
 	}
     }
@@ -2191,7 +2209,7 @@ public class Database extends SQLiteOpenHelper
 	str = "CREATE TABLE IF NOT EXISTS participants (" +
 	    "encryption_public_key TEXT NOT NULL, " +
 	    "encryption_public_key_digest TEXT NOT NULL, " +
-	    "function_digest, " + // chat, e-mail, etc.
+	    "function_digest NOT NULL, " + // chat, e-mail, etc.
 	    "signature_public_key TEXT NOT NULL, " +
 	    "signature_public_key_digest TEXT NOT NULL, " +
 	    "siphash_id TEXT NOT NULL, " +
@@ -2351,6 +2369,8 @@ public class Database extends SQLiteOpenHelper
 	{
 	    if(cursor != null)
 		cursor.close();
+
+	    cursor = null;
 	}
 
 	if(stringBuilder.length() > 0)
@@ -2359,8 +2379,9 @@ public class Database extends SQLiteOpenHelper
 
 	    try
 	    {
-		m_db.rawQuery("DELETE FROM stack WHERE OID IN (?)",
-			      new String[] {stringBuilder.toString()});
+		cursor = m_db.rawQuery
+		    ("DELETE FROM stack WHERE OID IN (?)",
+		     new String[] {stringBuilder.toString()});
 		m_db.setTransactionSuccessful();
 	    }
 	    catch(Exception exception)
@@ -2368,6 +2389,9 @@ public class Database extends SQLiteOpenHelper
 	    }
 	    finally
 	    {
+		if(cursor != null)
+		    cursor.close();
+
 		m_db.endTransaction();
 	    }
 	}
