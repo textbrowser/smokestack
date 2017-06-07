@@ -524,6 +524,8 @@ public class Settings extends AppCompatActivity
 				    deleteEntry(String.valueOf(parent.getId()),
 						"neighbors"))
 			    {
+				m_databaseHelper.cleanDanglingOutboundQueued();
+
 				/*
 				** Prepare the kernel's neighbors container
 				** if a neighbor was deleted as the OID
@@ -699,6 +701,9 @@ public class Settings extends AppCompatActivity
 	    }
 
 	    stringBuilder.append(" Minute(s):Second(s)\n");
+	    stringBuilder.append("Outbound Queued: ");
+	    stringBuilder.append(neighborElement.m_outboundQueued);
+	    stringBuilder.append("\n");
 	    textView.setGravity(Gravity.CENTER_VERTICAL);
 	    textView.setLayoutParams
 		(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 1));
@@ -915,8 +920,8 @@ public class Settings extends AppCompatActivity
 
 		Intent intent = getIntent();
 
-		finish();
 		startActivity(intent);
+		finish();
 	    }
 	};
 
@@ -1482,6 +1487,7 @@ public class Settings extends AppCompatActivity
 	Intent intent = new Intent(Settings.this, Authenticate.class);
 
 	startActivity(intent);
+	finish();
     }
 
     private void startKernel()
@@ -1812,6 +1818,7 @@ public class Settings extends AppCompatActivity
 		showAuthenticateActivity();
 
 	m_databaseHelper.cleanDanglingMessages();
+	m_databaseHelper.cleanDanglingOutboundQueued();
 	m_databaseHelper.cleanDanglingParticipants();
 
 	if(isAuthenticated)

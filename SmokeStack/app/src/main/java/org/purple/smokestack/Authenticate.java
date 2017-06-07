@@ -260,8 +260,8 @@ public class Authenticate extends AppCompatActivity
 
 		Intent intent = new Intent(Authenticate.this, Settings.class);
 
-		finish();
 		startActivity(intent);
+		finish();
 	    }
 	};
 
@@ -286,6 +286,7 @@ public class Authenticate extends AppCompatActivity
 	Intent intent = new Intent(Authenticate.this, Settings.class);
 
 	startActivity(intent);
+	finish();
     }
 
     @Override
