@@ -2060,21 +2060,21 @@ public class Settings extends AppCompatActivity
 	    super.onCreateContextMenu(menu, v, menuInfo);
 
 	    if(v.getParent().getParent() == findViewById(R.id.ozones))
-		menu.add(0, v.getId(), 0, "Delete Ozone (" + v.getTag() + ")");
+		menu.add(0, v.getId(), 0, "Delete Ozone (" + tag + ")");
 	    else
 	    {
 		menu.add(1,
 			 v.getId(),
 			 0,
-			 "Delete Messages (" + v.getTag() + ")");
+			 "Delete Messages (" + tag + ")");
 		menu.add(2,
 			 v.getId(),
 			 0,
-			 "Delete Participant (" + v.getTag() + ")");
+			 "Delete Participant (" + tag + ")");
 		menu.add(3,
 			 v.getId(),
 			 0,
-			 "Reset Retrieval State (" + v.getTag() + ")");
+			 "Reset Retrieval State (" + tag + ")");
 	    }
 	}
     }
