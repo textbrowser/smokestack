@@ -1444,6 +1444,7 @@ public class Database extends SQLiteOpenHelper
     }
 
     public boolean writeParticipant(Cryptography cryptography,
+				    boolean ignoreSignatures,
 				    byte data[])
     {
 	prepareDb();
@@ -1509,13 +1510,17 @@ public class Database extends SQLiteOpenHelper
 		    ii += 1;
 		    break;
 		case 3:
-		    publicKeySignature = Base64.decode
-			(string.getBytes(), Base64.NO_WRAP);
+		    if(!ignoreSignatures)
+		    {
+			publicKeySignature = Base64.decode
+			    (string.getBytes(), Base64.NO_WRAP);
 
-		    if(!Cryptography.verifySignature(publicKey,
-						     publicKeySignature,
-						     publicKey.getEncoded()))
-			return false;
+			if(!Cryptography.verifySignature(publicKey,
+							 publicKeySignature,
+							 publicKey.
+							 getEncoded()))
+			    return false;
+		    }
 
 		    ii += 1;
 		    break;
@@ -1529,13 +1534,17 @@ public class Database extends SQLiteOpenHelper
 		    ii += 1;
 		    break;
 		case 5:
-		    signatureKeySignature = Base64.decode
-			(string.getBytes(), Base64.NO_WRAP);
+		    if(!ignoreSignatures)
+		    {
+			signatureKeySignature = Base64.decode
+			    (string.getBytes(), Base64.NO_WRAP);
 
-		    if(!Cryptography.verifySignature(signatureKey,
-						     signatureKeySignature,
-						     signatureKey.getEncoded()))
-			return false;
+			if(!Cryptography.verifySignature(signatureKey,
+							 signatureKeySignature,
+							 signatureKey.
+							 getEncoded()))
+			    return false;
+		    }
 
 		    break;
 		}

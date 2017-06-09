@@ -240,7 +240,8 @@ public class Kernel
 		    (array1,
 		     Arrays.copyOfRange(sipHashIdElement.m_stream, 0, 32));
 
-		if(s_databaseHelper.writeParticipant(s_cryptography, aes256))
+		if(s_databaseHelper.
+		   writeParticipant(s_cryptography, true, aes256))
 		{
 		    Intent intent = new Intent
 			("org.purple.smokestack.populate_participants");
