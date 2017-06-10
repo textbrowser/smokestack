@@ -51,6 +51,7 @@ public class Kernel
     private ScheduledExecutorService m_neighborsScheduler = null;
     private ScheduledExecutorService m_purgeReleasedMessagesScheduler = null;
     private ScheduledExecutorService m_releaseMessagesScheduler = null;
+    private WakeLock m_wakeLock = null;
     private final ReentrantReadWriteLock m_ozonesMutex = new
 	ReentrantReadWriteLock();
     private final ReentrantReadWriteLock m_sipHashIdsMutex = new
@@ -80,10 +81,10 @@ public class Kernel
 
 	PowerManager powerManager = (PowerManager)
 	    SmokeStack.getApplication().getSystemService(Context.POWER_SERVICE);
-	WakeLock wakeLock = powerManager.newWakeLock
-	    (PowerManager.PARTIAL_WAKE_LOCK, "SmokeStackLockTag");
 
-	wakeLock.acquire();
+	m_wakeLock = powerManager.newWakeLock
+	    (PowerManager.PARTIAL_WAKE_LOCK, "SmokeStackLockTag");
+	m_wakeLock.acquire();
 
 	/*
 	** Other tasks.
