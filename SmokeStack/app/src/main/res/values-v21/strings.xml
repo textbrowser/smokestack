@@ -10,7 +10,6 @@
     <string name="siphash_identity">SipHash Identity</string>
     <string name="automatic_refresh">Automatic Refresh</string>
     <string name="refresh">Refresh</string>
-    <string name="ipv6_scope_id">IPv6 Scope ID</string>
     <string name="ip_address">IP Address</string>
     <string name="port">Port</string>
     <string name="ipv6">IPv6</string>
