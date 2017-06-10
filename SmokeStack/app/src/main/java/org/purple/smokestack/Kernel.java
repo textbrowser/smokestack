@@ -79,12 +79,19 @@ public class Kernel
 	** Never, ever sleep.
 	*/
 
-	PowerManager powerManager = (PowerManager)
-	    SmokeStack.getApplication().getSystemService(Context.POWER_SERVICE);
+	try
+	{
+	    PowerManager powerManager = (PowerManager)
+		SmokeStack.getApplication().
+		getSystemService(Context.POWER_SERVICE);
 
-	m_wakeLock = powerManager.newWakeLock
-	    (PowerManager.PARTIAL_WAKE_LOCK, "SmokeStackLockTag");
-	m_wakeLock.acquire();
+	    m_wakeLock = powerManager.newWakeLock
+		(PowerManager.PARTIAL_WAKE_LOCK, "SmokeStackLockTag");
+	    m_wakeLock.acquire();
+	}
+	catch(Exception exception)
+	{
+	}
 
 	/*
 	** Other tasks.
@@ -260,7 +267,9 @@ public class Kernel
 		     Arrays.copyOfRange(sipHashIdElement.m_stream, 0, 32));
 
 		if(s_databaseHelper.
-		   writeParticipant(s_cryptography, true, aes256))
+		   writeParticipant(s_cryptography,
+				    sipHashIdElement.m_acceptWithoutSignatures,
+				    aes256))
 		{
 		    Intent intent = new Intent
 			("org.purple.smokestack.populate_participants");

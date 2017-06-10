@@ -6,6 +6,7 @@ Completed Items
 4.     Create a single statement in purgeReleasedMessages() to delete
        specific OIDs.
 5.     Allow removal of messages per participant.
+6.     Optional signatures on shared key pairs.
 
 Future Items
 
@@ -16,4 +17,3 @@ Remaining Items
 1.     Sign release.
 2.     The Settings activity has many views (ANDROID_LINT_MAX_VIEW_COUNT).
 3.     Listeners.
-4.     Optional signatures on shared key pairs.

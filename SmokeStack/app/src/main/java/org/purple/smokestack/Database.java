@@ -435,6 +435,7 @@ public class Database extends SQLiteOpenHelper
 		 "(SELECT COUNT(s.OID) FROM stack s WHERE " +
 		 "s.siphash_id_digest = si.siphash_id_digest AND " +
 		 "s.timestamp IS NOT NULL) AS d, " +
+		 "si.accept_without_signatures, " +
 		 "si.name, " +
 		 "si.siphash_id, " +
 		 "si.stream, " +
@@ -537,13 +538,17 @@ public class Database extends SQLiteOpenHelper
 			case 3:
 			    break;
 			case 4:
-			    sipHashIdElement.m_name = new String(bytes);
+			    sipHashIdElement.m_acceptWithoutSignatures =
+				new String(bytes).equals("true");
 			    break;
 			case 5:
+			    sipHashIdElement.m_name = new String(bytes);
+			    break;
+			case 6:
 			    sipHashIdElement.m_sipHashId = new String
 				(bytes, "UTF-8");
 			    break;
-			case 6:
+			case 7:
 			    sipHashIdElement.m_stream = Miscellaneous.
 				deepCopy(bytes);
 			    break;
@@ -1632,7 +1637,8 @@ public class Database extends SQLiteOpenHelper
 
     public boolean writeSipHashParticipant(Cryptography cryptography,
 					   String name,
-					   String sipHashId)
+					   String sipHashId,
+					   boolean acceptWithoutSignatures)
     {
 	prepareDb();
 
@@ -1669,14 +1675,19 @@ public class Database extends SQLiteOpenHelper
 		name = "unknown";
 
 	    sipHashId = sipHashId.toLowerCase().trim();
-	    sparseArray.append(0, "name");
-	    sparseArray.append(1, "siphash_id");
-	    sparseArray.append(2, "siphash_id_digest");
-	    sparseArray.append(3, "stream");
+	    sparseArray.append(0, "accept_without_signatures");
+	    sparseArray.append(1, "name");
+	    sparseArray.append(2, "siphash_id");
+	    sparseArray.append(3, "siphash_id_digest");
+	    sparseArray.append(4, "stream");
 
 	    for(int i = 0; i < sparseArray.size(); i++)
 	    {
-		if(sparseArray.get(i).equals("name"))
+		if(sparseArray.get(i).equals("accept_without_signatures"))
+		    bytes = cryptography.etm
+			(acceptWithoutSignatures ?
+			 "true".getBytes() : "false".getBytes());
+		else if(sparseArray.get(i).equals("name"))
 		    bytes = cryptography.etm(name.getBytes());
 		else if(sparseArray.get(i).equals("siphash_id"))
 		    bytes = cryptography.etm
@@ -2064,6 +2075,7 @@ public class Database extends SQLiteOpenHelper
 	*/
 
 	str = "CREATE TABLE IF NOT EXISTS siphash_ids (" +
+	    "accept_without_signatures TEXT NOT NULL, " +
 	    "name TEXT NOT NULL, " +
 	    "siphash_id TEXT NOT NULL, " +
 	    "siphash_id_digest TEXT NOT NULL PRIMARY KEY, " +

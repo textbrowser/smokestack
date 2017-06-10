@@ -239,10 +239,14 @@ public class Settings extends AppCompatActivity
 	{
 	    private String m_name = "";
 	    private String m_siphashId = "";
+	    private boolean m_acceptWithoutSignatures = false;
 	    private boolean m_error = false;
 
-	    SingleShot(String name, String sipHashId)
+	    SingleShot(String name,
+		       String sipHashId,
+		       boolean acceptWithoutSignatures)
 	    {
+		m_acceptWithoutSignatures = acceptWithoutSignatures;
 		m_name = name;
 		m_siphashId = sipHashId;
 	    }
@@ -250,9 +254,11 @@ public class Settings extends AppCompatActivity
 	    @Override
 	    public void run()
 	    {
-		if(!m_databaseHelper.writeSipHashParticipant(s_cryptography,
-							     m_name,
-							     m_siphashId))
+		if(!m_databaseHelper.
+		   writeSipHashParticipant(s_cryptography,
+					   m_name,
+					   m_siphashId,
+					   m_acceptWithoutSignatures))
 		    m_error = true;
 
 		Settings.this.runOnUiThread(new Runnable()
@@ -278,8 +284,12 @@ public class Settings extends AppCompatActivity
 	}
 
 	Thread thread = new Thread
-	    (new SingleShot(((TextView) findViewById(R.id.participant_name)).
-			    getText().toString(), string));
+	    (new
+	     SingleShot(((TextView) findViewById(R.id.participant_name)).
+			getText().toString(), string,
+			((CheckBox) findViewById(R.id.
+						 accept_without_signatures)).
+			isChecked()));
 
 	thread.start();
     }
@@ -1003,11 +1013,14 @@ public class Settings extends AppCompatActivity
 	{
 	    public void onClick(View view)
 	    {
+		CheckBox checkBox1 = (CheckBox) findViewById
+		    (R.id.accept_without_signatures);
 		TextView textView1 = (TextView) findViewById
 		    (R.id.participant_name);
 		TextView textView2 = (TextView) findViewById
 		    (R.id.participant_siphash_id);
 
+		checkBox1.setChecked(false);
 		textView1.setText("");
 		textView2.setText("");
 		textView1.requestFocus();
