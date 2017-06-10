@@ -35,4 +35,5 @@
     <string name="local">Local</string>
     <string name="retrieved_content_will_be_stored_for_approximately_one_week">Retrieved content will be stored for approximately one week.</string>
     <string name="in_out_total">In / Out / Total</string>
+    <string name="scope_id">Scope ID</string>
 </resources>

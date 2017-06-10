@@ -14,4 +14,5 @@
     <string name="port">Port</string>
     <string name="ipv6">IPv6</string>
     <string name="ipv4">IPv4</string>
+    <string name="scope_id">Scope ID</string>
 </resources>
