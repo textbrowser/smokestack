@@ -101,19 +101,20 @@
                     android:layout_height="wrap_content"
                     android:text="@string/refresh" />
 
+                <EditText
+                    android:id="@+id/listeners_ip_address"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="5dp"
+                    android:ems="10"
+                    android:hint="@string/ip_address"
+                    android:inputType="textPersonName"
+                    android:nextFocusDown="@+id/listeners_port" />
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="horizontal">
-
-                    <EditText
-                        android:id="@+id/listeners_ip_address"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:ems="10"
-                        android:hint="@string/ip_address"
-                        android:inputType="textPersonName" />
 
                     <EditText
                         android:id="@+id/listeners_port"
@@ -122,7 +123,8 @@
                         android:layout_weight="1"
                         android:ems="10"
                         android:hint="@string/port"
-                        android:inputType="number" />
+                        android:inputType="number"
+                        android:nextFocusDown="@+id/listeners_scope_id" />
 
                     <EditText
                         android:id="@+id/listeners_scope_id"
@@ -132,7 +134,8 @@
                         android:layout_weight="1"
                         android:ems="10"
                         android:hint="@string/ipv6_scope_id"
-                        android:inputType="textPersonName" />
+                        android:inputType="textPersonName"
+                        android:nextFocusDown="@+id/neighbors_ip_address" />
                 </LinearLayout>
 
                 <RadioGroup
@@ -258,22 +261,23 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/refresh_neighbors" />
+
                 </LinearLayout>
+
+                <EditText
+                    android:id="@+id/neighbors_ip_address"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="5dp"
+                    android:ems="10"
+                    android:hint="@string/ip_address"
+                    android:inputType="textPersonName"
+                    android:nextFocusDown="@+id/neighbors_port" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="horizontal">
-
-                    <EditText
-                        android:id="@+id/neighbors_ip_address"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:ems="10"
-                        android:hint="@string/ip_address"
-                        android:inputType="textPersonName"
-                        android:nextFocusDown="@+id/neighbors_port" />
 
                     <EditText
                         android:id="@+id/neighbors_port"
@@ -351,7 +355,7 @@
                         android:ems="10"
                         android:hint="@string/proxy_port"
                         android:inputType="number"
-                        android:nextFocusDown="@+id/participant_name" />
+                        android:nextFocusDown="@+id/ozone" />
 
                     <Spinner
                         android:id="@+id/proxy_type"
