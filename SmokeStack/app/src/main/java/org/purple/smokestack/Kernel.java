@@ -27,7 +27,10 @@
 
 package org.purple.smokestack;
 
+import android.content.Context;
 import android.content.Intent;
+import android.os.PowerManager;
+import android.os.PowerManager.WakeLock;
 import android.util.Base64;
 import android.util.SparseArray;
 import android.util.SparseIntArray;
@@ -71,6 +74,21 @@ public class Kernel
 
     private Kernel()
     {
+	/*
+	** Never, ever sleep.
+	*/
+
+	PowerManager powerManager = (PowerManager)
+	    SmokeStack.getApplication().getSystemService(Context.POWER_SERVICE);
+	WakeLock wakeLock = powerManager.newWakeLock
+	    (PowerManager.PARTIAL_WAKE_LOCK, "SmokeStackLockTag");
+
+	wakeLock.acquire();
+
+	/*
+	** Other tasks.
+	*/
+
 	populateOzones();
 	populateSipHashIds();
 	prepareSchedulers();
