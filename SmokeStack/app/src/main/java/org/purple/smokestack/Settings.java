@@ -1716,14 +1716,14 @@ public class Settings extends AppCompatActivity
 		if(checkedId == R.id.neighbors_ipv4)
 		{
 		    marginEnd = 5;
+		    textView1.setEnabled(false);
 		    textView1.setText("");
-		    textView1.setVisibility(View.GONE);
 		    textView1 = (TextView) findViewById(R.id.neighbors_port);
 		    textView1.setNextFocusDownId(R.id.proxy_ip_address);
 		}
 		else
 		{
-		    textView1.setVisibility(View.VISIBLE);
+		    textView1.setEnabled(true);
 		    textView1 = (TextView) findViewById(R.id.neighbors_port);
 		    textView1.setNextFocusDownId(R.id.neighbors_scope_id);
 		}
@@ -1753,11 +1753,9 @@ public class Settings extends AppCompatActivity
 	textView1 = (TextView) findViewById(R.id.about);
 	textView1.setText(About.about());
 	textView1 = (TextView) findViewById(R.id.listeners_scope_id);
-        textView1.setEnabled(isAuthenticated);
-        textView1.setVisibility(View.GONE);
+        textView1.setEnabled(false);
 	textView1 = (TextView) findViewById(R.id.neighbors_scope_id);
-        textView1.setEnabled(isAuthenticated);
-        textView1.setVisibility(View.GONE);
+        textView1.setEnabled(false);
         textView1 = (TextView) findViewById(R.id.listeners_port);
         textView1.setEnabled(isAuthenticated);
 	textView1.setFilters(new InputFilter[] { s_portFilter });
