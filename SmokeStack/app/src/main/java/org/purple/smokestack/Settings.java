@@ -1700,22 +1700,46 @@ public class Settings extends AppCompatActivity
 	spinner1 = (Spinner) findViewById(R.id.iteration_count);
 	spinner1.setAdapter(arrayAdapter);
 
-        RadioGroup radioGroup1 = (RadioGroup) findViewById
-	    (R.id.neighbors_ipv_radio_group);
+        RadioGroup radioGroup1 = null;
 
+	radioGroup1 = (RadioGroup) findViewById(R.id.listeners_ipv_radio_group);
         radioGroup1.setOnCheckedChangeListener
 	    (new RadioGroup.OnCheckedChangeListener()
 	{
 	    public void onCheckedChanged(RadioGroup group,
 					 int checkedId)
 	    {
-		int marginEnd = 0;
+		TextView textView1 = (TextView) findViewById
+		    (R.id.listeners_scope_id);
+
+		if(checkedId == R.id.listeners_ipv4)
+		{
+		    textView1.setEnabled(false);
+		    textView1.setText("");
+		    textView1 = (TextView) findViewById(R.id.listeners_port);
+		    textView1.setNextFocusDownId(R.id.neighbors_ip_address);
+		}
+		else
+		{
+		    textView1.setEnabled(true);
+		    textView1 = (TextView) findViewById(R.id.listeners_port);
+		    textView1.setNextFocusDownId(R.id.listeners_scope_id);
+		}
+	    }
+	});
+
+	radioGroup1 = (RadioGroup) findViewById(R.id.neighbors_ipv_radio_group);
+        radioGroup1.setOnCheckedChangeListener
+	    (new RadioGroup.OnCheckedChangeListener()
+	{
+	    public void onCheckedChanged(RadioGroup group,
+					 int checkedId)
+	    {
 		TextView textView1 = (TextView) findViewById
 		    (R.id.neighbors_scope_id);
 
 		if(checkedId == R.id.neighbors_ipv4)
 		{
-		    marginEnd = 5;
 		    textView1.setEnabled(false);
 		    textView1.setText("");
 		    textView1 = (TextView) findViewById(R.id.neighbors_port);
@@ -1727,14 +1751,6 @@ public class Settings extends AppCompatActivity
 		    textView1 = (TextView) findViewById(R.id.neighbors_port);
 		    textView1.setNextFocusDownId(R.id.neighbors_scope_id);
 		}
-
-		LayoutParams layoutParams = new LayoutParams
-		    (LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-		TextView textView2 = (TextView) findViewById
-		    (R.id.neighbors_port);
-
-		layoutParams.setMarginEnd(marginEnd);
-		textView2.setLayoutParams(layoutParams);
 	    }
 	});
 
@@ -1759,21 +1775,11 @@ public class Settings extends AppCompatActivity
         textView1 = (TextView) findViewById(R.id.listeners_port);
         textView1.setEnabled(isAuthenticated);
 	textView1.setFilters(new InputFilter[] { s_portFilter });
-
-	LayoutParams layoutParams = new LayoutParams
-	    (LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-
-	layoutParams.setMarginEnd(5);
-	textView1.setLayoutParams(layoutParams);
         textView1.setText("4710");
         textView1 = (TextView) findViewById(R.id.neighbors_port);
 	textView1.setNextFocusDownId(R.id.proxy_ip_address);
         textView1.setEnabled(isAuthenticated);
 	textView1.setFilters(new InputFilter[] { s_portFilter });
-	layoutParams = new LayoutParams
-	    (LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-	layoutParams.setMarginEnd(5);
-	textView1.setLayoutParams(layoutParams);
         textView1.setText("4710");
         textView1 = (TextView) findViewById(R.id.listeners_ip_address);
 
