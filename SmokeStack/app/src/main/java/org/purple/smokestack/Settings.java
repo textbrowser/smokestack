@@ -1909,6 +1909,7 @@ public class Settings extends AppCompatActivity
     protected void onDestroy()
     {
 	super.onDestroy();
+	stopListenersTimers();
 	stopNeighborsTimers();
     }
 
