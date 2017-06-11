@@ -2259,6 +2259,29 @@ public class Database extends SQLiteOpenHelper
 	}
     }
 
+    public void clearTable(String table)
+    {
+	prepareDb();
+
+	if(m_db == null)
+	    return;
+
+	m_db.beginTransactionNonExclusive();
+
+	try
+	{
+	    m_db.delete(table, null, null);
+	    m_db.setTransactionSuccessful();
+	}
+	catch(Exception exception)
+	{
+	}
+	finally
+	{
+	    m_db.endTransaction();
+	}
+    }
+
     public void enqueueOutboundMessage(String message, int oid)
     {
 	prepareDb();

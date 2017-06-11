@@ -141,6 +141,8 @@ public class Settings extends AppCompatActivity
 	    return null;
 	}
     };
+    private final static int CHECKBOX_TEXT_SIZE = 13;
+    private final static int CHECKBOX_WIDTH = 500;
     private final static int OZONE_STREAM_CREATION_ITERATION_COUNT = 4096;
     private final static int TEXTVIEW_TEXT_SIZE = 13;
     private final static int TEXTVIEW_WIDTH = 500;
@@ -403,6 +405,216 @@ public class Settings extends AppCompatActivity
 
     private void populateListeners()
     {
+	ArrayList<ListenerElement> arrayList =
+	    m_databaseHelper.readListeners(s_cryptography);
+	final TableLayout tableLayout = (TableLayout)
+	    findViewById(R.id.listeners);
+
+	if(arrayList == null || arrayList.size() == 0)
+	{
+	    tableLayout.removeAllViews();
+	    return;
+	}
+
+	StringBuilder stringBuilder = new StringBuilder();
+	int i = 0;
+
+	/*
+	** Remove table entries which do not exist in smokestack.db.
+	*/
+
+	for(i = tableLayout.getChildCount() - 1; i >= 0; i--)
+	{
+	    TableRow row = (TableRow) tableLayout.getChildAt(i);
+
+	    if(row == null)
+		continue;
+
+	    CheckBox checkBox = (CheckBox) row.getChildAt(1);
+
+	    if(checkBox == null)
+	    {
+		tableLayout.removeView(row);
+		continue;
+	    }
+
+	    boolean found = false;
+
+	    for(ListenerElement listenerElement : arrayList)
+	    {
+		stringBuilder.setLength(0);
+		stringBuilder.append(listenerElement.m_localIpAddress);
+
+		if(listenerElement.m_ipVersion.equals("IPv6"))
+		    if(!listenerElement.m_localScopeId.isEmpty())
+		    {
+			stringBuilder.append("-");
+			stringBuilder.append(listenerElement.m_localScopeId);
+		    }
+
+		stringBuilder.append(":");
+		stringBuilder.append(listenerElement.m_localPort);
+
+		if(checkBox.getText().toString().
+		   contains(stringBuilder.toString()))
+		{
+		    found = true;
+		    break;
+		}
+	    }
+
+	    if(!found)
+		tableLayout.removeView(row);
+	}
+
+	i = 0;
+
+	for(ListenerElement listenerElement : arrayList)
+	{
+	    if(listenerElement == null)
+		continue;
+
+	    CheckBox checkBox = null;
+	    TableRow row = null;
+
+	    for(int j = 0; j < tableLayout.getChildCount(); j++)
+	    {
+		TableRow r = (TableRow) tableLayout.getChildAt(j);
+
+		if(r == null)
+		    continue;
+
+		CheckBox c = (CheckBox) r.getChildAt(1);
+
+		if(c == null)
+		    continue;
+
+		stringBuilder.setLength(0);
+		stringBuilder.append(listenerElement.m_localIpAddress);
+
+		if(listenerElement.m_ipVersion.equals("IPv6"))
+		    if(!listenerElement.m_localScopeId.isEmpty())
+		    {
+			stringBuilder.append("-");
+			stringBuilder.append(listenerElement.m_localScopeId);
+		    }
+
+		stringBuilder.append(":");
+		stringBuilder.append(listenerElement.m_localPort);
+
+		if(c.getText().toString().contains(stringBuilder.toString()))
+		{
+		    checkBox = c;
+		    break;
+		}
+	    }
+
+	    if(checkBox == null)
+	    {
+		TableRow.LayoutParams layoutParams = new
+		    TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT);
+
+		row = new TableRow(Settings.this);
+		row.setId(listenerElement.m_oid);
+		row.setLayoutParams(layoutParams);
+		checkBox = new CheckBox(Settings.this);
+	    }
+
+	    if(listenerElement.m_status.equals("connected"))
+		checkBox.setTextColor(Color.rgb(0, 100, 0)); // Dark Green
+	    else
+		checkBox.setTextColor(Color.rgb(139, 0, 0)); // Dark Red
+
+	    stringBuilder.setLength(0);
+	    stringBuilder.append("Control: ");
+
+	    try
+	    {
+		stringBuilder.append
+		    (listenerElement.m_statusControl.substring(0, 1).
+		     toUpperCase());
+		stringBuilder.append
+		    (listenerElement.m_statusControl.substring(1));
+	    }
+	    catch(Exception exception)
+	    {
+		stringBuilder.append("Disconnect");
+	    }
+
+	    stringBuilder.append("\n");
+	    stringBuilder.append("Status: ");
+
+	    try
+	    {
+		stringBuilder.append
+		    (listenerElement.m_status.substring(0, 1).toUpperCase());
+		stringBuilder.append(listenerElement.m_status.substring(1));
+	    }
+	    catch(Exception exception)
+	    {
+		stringBuilder.append("Disconnected");
+	    }
+
+	    stringBuilder.append("\n");
+
+	    if(!listenerElement.m_error.isEmpty())
+	    {
+		stringBuilder.append("Error: ");
+		stringBuilder.append(listenerElement.m_error);
+		stringBuilder.append("\n");
+	    }
+
+	    stringBuilder.append(listenerElement.m_localIpAddress);
+
+	    if(listenerElement.m_ipVersion.equals("IPv6"))
+		if(!listenerElement.m_localScopeId.isEmpty())
+		{
+		    stringBuilder.append("-");
+		    stringBuilder.append(listenerElement.m_localScopeId);
+		}
+
+	    stringBuilder.append(":");
+	    stringBuilder.append(listenerElement.m_localPort);
+	    stringBuilder.append("\nPeers Count: ");
+	    stringBuilder.append(listenerElement.m_peersCount);
+	    stringBuilder.append("\nUptime: ");
+
+	    try
+	    {
+		long uptime = Long.parseLong(listenerElement.m_uptime);
+
+		stringBuilder.append
+		    (String.
+		     format("%d:%02d",
+			    TimeUnit.NANOSECONDS.toMinutes(uptime),
+			    TimeUnit.NANOSECONDS.toSeconds(uptime) -
+			    TimeUnit.MINUTES.
+			    toSeconds(TimeUnit.NANOSECONDS.
+				      toMinutes(uptime))));
+	    }
+	    catch(Exception exception)
+	    {
+		stringBuilder.append("0:00");
+	    }
+
+	    stringBuilder.append(" Min.\n");
+	    checkBox.setGravity(Gravity.CENTER_VERTICAL);
+	    checkBox.setLayoutParams
+		(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 1));
+	    checkBox.setText(stringBuilder);
+	    checkBox.setTextSize(CHECKBOX_TEXT_SIZE);
+	    checkBox.setWidth(CHECKBOX_WIDTH);
+
+	    if(row != null)
+	    {
+		row.addView(checkBox);
+		tableLayout.addView(row, i);
+	    }
+
+	    i += 1;
+	}
+
+	arrayList.clear();
     }
 
     private void populateNeighbors()
@@ -425,7 +637,7 @@ public class Settings extends AppCompatActivity
 	** Remove table entries which do not exist in smokestack.db.
 	*/
 
-	for(i = 0; i < tableLayout.getChildCount(); i++)
+	for(i = tableLayout.getChildCount() - 1; i >= 0; i--)
 	{
 	    TableRow row = (TableRow) tableLayout.getChildAt(i);
 
@@ -435,7 +647,10 @@ public class Settings extends AppCompatActivity
 	    TextView textView = (TextView) row.getChildAt(1);
 
 	    if(textView == null)
+	    {
+		tableLayout.removeView(row);
 		continue;
+	    }
 
 	    boolean found = false;
 
@@ -1882,6 +2097,7 @@ public class Settings extends AppCompatActivity
 	m_databaseHelper.cleanDanglingMessages();
 	m_databaseHelper.cleanDanglingOutboundQueued();
 	m_databaseHelper.cleanDanglingParticipants();
+	m_databaseHelper.clearTable("log");
 
 	if(isAuthenticated)
 	{
