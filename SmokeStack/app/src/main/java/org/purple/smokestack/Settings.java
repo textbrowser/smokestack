@@ -430,7 +430,7 @@ public class Settings extends AppCompatActivity
 	    if(row == null)
 		continue;
 
-	    CheckBox checkBox = (CheckBox) row.getChildAt(1);
+	    CheckBox checkBox = (CheckBox) row.getChildAt(0);
 
 	    if(checkBox == null)
 	    {
@@ -484,7 +484,7 @@ public class Settings extends AppCompatActivity
 		if(r == null)
 		    continue;
 
-		CheckBox c = (CheckBox) r.getChildAt(1);
+		CheckBox c = (CheckBox) r.getChildAt(0);
 
 		if(c == null)
 		    continue;
@@ -519,6 +519,8 @@ public class Settings extends AppCompatActivity
 		row.setLayoutParams(layoutParams);
 		checkBox = new CheckBox(Settings.this);
 	    }
+
+	    registerForContextMenu(checkBox);
 
 	    if(listenerElement.m_status.equals("connected"))
 		checkBox.setTextColor(Color.rgb(0, 100, 0)); // Dark Green
@@ -601,6 +603,9 @@ public class Settings extends AppCompatActivity
 	    checkBox.setGravity(Gravity.CENTER_VERTICAL);
 	    checkBox.setLayoutParams
 		(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 1));
+	    checkBox.setTag
+		(listenerElement.m_localIpAddress + ":" +
+		 listenerElement.m_localPort);
 	    checkBox.setText(stringBuilder);
 	    checkBox.setTextSize(CHECKBOX_TEXT_SIZE);
 	    checkBox.setWidth(CHECKBOX_WIDTH);
@@ -2332,22 +2337,30 @@ public class Settings extends AppCompatActivity
 	{
 	    super.onCreateContextMenu(menu, v, menuInfo);
 
-	    if(v.getParent().getParent() == findViewById(R.id.ozones))
-		menu.add(0, v.getId(), 0, "Delete Ozone (" + tag + ")");
-	    else
+	    try
 	    {
-		menu.add(1,
-			 v.getId(),
-			 0,
-			 "Delete Messages (" + tag + ")");
-		menu.add(2,
-			 v.getId(),
-			 0,
-			 "Delete Participant (" + tag + ")");
-		menu.add(3,
-			 v.getId(),
-			 0,
-			 "Reset Retrieval State (" + tag + ")");
+		if(v.getParent().getParent() == findViewById(R.id.listeners))
+		    menu.add(4, v.getId(), 0, "Delete Listener (" + tag + ")");
+		else if(v.getParent().getParent() == findViewById(R.id.ozones))
+		    menu.add(0, v.getId(), 0, "Delete Ozone (" + tag + ")");
+		else
+		{
+		    menu.add(1,
+			     v.getId(),
+			     0,
+			     "Delete Messages (" + tag + ")");
+		    menu.add(2,
+			     v.getId(),
+			     0,
+			     "Delete Participant (" + tag + ")");
+		    menu.add(3,
+			     v.getId(),
+			     0,
+			     "Reset Retrieval State (" + tag + ")");
+		}
+	    }
+	    catch(Exception exception)
+	    {
 	    }
 	}
     }
