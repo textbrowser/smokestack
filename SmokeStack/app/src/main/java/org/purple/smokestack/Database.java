@@ -1175,6 +1175,136 @@ public class Database extends SQLiteOpenHelper
 	return ok;
     }
 
+    public boolean writeListener(Cryptography cryptography,
+				 String ipAddress,
+				 String ipPort,
+				 String ipScopeId,
+				 String version)
+    {
+	prepareDb();
+
+	if(cryptography == null || m_db == null)
+	    return false;
+
+	ContentValues values = null;
+	boolean ok = true;
+
+	try
+	{
+	    values = new ContentValues();
+	}
+	catch(Exception exception)
+	{
+	    ok = false;
+	}
+
+	if(!ok)
+	    return ok;
+
+	/*
+	** Content values should prevent SQL injections.
+	*/
+
+	try
+	{
+	    SparseArray<String> sparseArray = new SparseArray<> ();
+	    byte bytes[] = null;
+
+	    sparseArray.append(0, "certificate");
+	    sparseArray.append(1, "ip_version");
+	    sparseArray.append(2, "last_error");
+	    sparseArray.append(3, "local_ip_address");
+	    sparseArray.append(4, "local_ip_address_digest");
+	    sparseArray.append(5, "local_port");
+	    sparseArray.append(6, "local_port_digest");
+	    sparseArray.append(7, "peers_count");
+	    sparseArray.append(8, "private_key");
+	    sparseArray.append(9, "public_key");
+            sparseArray.append(10, "status");
+            sparseArray.append(11, "status_control");
+
+	    if(!ipAddress.toLowerCase().trim().matches(".*[a-z].*"))
+	    {
+		Matcher matcher = Patterns.IP_ADDRESS.matcher(ipAddress.trim());
+
+		if(!matcher.matches())
+		{
+		    if(version.toLowerCase().equals("ipv4"))
+			ipAddress = "0.0.0.0";
+		    else
+			ipAddress = "0:0:0:0:0:ffff:0:0";
+		}
+	    }
+
+	    for(int i = 0; i < sparseArray.size(); i++)
+	    {
+		if(sparseArray.get(i).equals("ip_version"))
+		    bytes = cryptography.etm(version.trim().getBytes());
+		else if(sparseArray.get(i).equals("local_ip_address"))
+		    bytes = cryptography.etm(ipAddress.trim().getBytes());
+		else if(sparseArray.get(i).equals("local_ip_address_digest"))
+		    bytes = cryptography.hmac(ipAddress.trim().getBytes());
+		else if(sparseArray.get(i).equals("local_port"))
+		    bytes = cryptography.etm(ipPort.trim().getBytes());
+		else if(sparseArray.get(i).equals("local_port_digest"))
+		    bytes = cryptography.hmac(ipPort.trim().getBytes());
+		else if(sparseArray.get(i).equals("peers_count"))
+		    bytes = cryptography.etm("0".getBytes());
+		else if(sparseArray.get(i).equals("status"))
+		    bytes = cryptography.etm("disconnected".getBytes());
+		else if(sparseArray.get(i).equals("status_control"))
+		    bytes = cryptography.etm("listen".getBytes());
+		else
+		    bytes = cryptography.etm("".getBytes());
+
+		if(bytes == null)
+		{
+		    StringBuilder stringBuilder = new StringBuilder();
+
+		    stringBuilder.append
+			("Database::writeListener(): error with ");
+		    stringBuilder.append(sparseArray.get(i));
+		    stringBuilder.append(" field.");
+		    writeLog(stringBuilder.toString());
+		    throw new Exception();
+		}
+
+		String str = Base64.encodeToString(bytes, Base64.DEFAULT);
+
+		values.put(sparseArray.get(i), str);
+	    }
+	}
+	catch(Exception exception)
+	{
+	    ok = false;
+	}
+
+	m_db.beginTransactionNonExclusive();
+
+	try
+	{
+	    if(ok)
+	    {
+		m_db.insert("listeners", null, values);
+		m_db.setTransactionSuccessful();
+	    }
+	}
+	catch(SQLiteConstraintException exception)
+	{
+	    ok = exception.getMessage().toLowerCase().contains("unique");
+	}
+	catch(Exception exception)
+        {
+	    ok = false;
+	}
+	finally
+	{
+	    m_db.endTransaction();
+	}
+
+	return ok;
+    }
+
     public boolean writeNeighbor(Cryptography cryptography,
 				 String proxyIpAddress,
 				 String proxyPort,
@@ -2111,6 +2241,7 @@ public class Database extends SQLiteOpenHelper
 
 	str = "CREATE TABLE IF NOT EXISTS listeners (" +
 	    "certificate TEXT NOT NULL, " +
+	    "ip_version TEXT NOT NULL, " +
 	    "last_error TEXT NOT NULL, " +
 	    "local_ip_address TEXT NOT NULL, " +
 	    "local_ip_address_digest TEXT NOT NULL, " +

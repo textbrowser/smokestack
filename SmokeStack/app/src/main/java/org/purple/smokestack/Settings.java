@@ -146,6 +146,38 @@ public class Settings extends AppCompatActivity
     private final static int TEXTVIEW_WIDTH = 500;
     private final static int TIMER_INTERVAL = 2500; // 2.5 Seconds
 
+    private void addListener()
+    {
+	CheckBox checkBox1 = (CheckBox) findViewById
+	    (R.id.automatic_refresh_listeners);
+	RadioGroup radioGroup1 = (RadioGroup) findViewById
+	    (R.id.listeners_ipv_radio_group);
+	String ipVersion = "";
+	TextView textView1 = (TextView) findViewById(R.id.listeners_ip_address);
+	TextView textView2 = (TextView) findViewById(R.id.listeners_port);
+	TextView textView3 = (TextView) findViewById(R.id.listeners_scope_id);
+
+	if(radioGroup1.getCheckedRadioButtonId() == R.id.listeners_ipv4)
+	    ipVersion = "IPv4";
+	else
+	    ipVersion = "IPv6";
+
+	if(textView1.getText().toString().trim().isEmpty())
+	    Miscellaneous.showErrorDialog
+		(Settings.this, "Please provide a listener IP address.");
+	else if(!m_databaseHelper.
+		writeListener(s_cryptography,
+			      textView1.getText().toString(),
+			      textView2.getText().toString(),
+			      textView3.getText().toString(),
+			      ipVersion))
+	    Miscellaneous.showErrorDialog
+		(Settings.this,
+		 "An error occurred while saving the listener information.");
+	else if(!checkBox1.isChecked())
+	    populateListeners();
+    }
+
     private void addNeighbor()
     {
 	CheckBox checkBox1 = (CheckBox) findViewById
@@ -174,13 +206,11 @@ public class Settings extends AppCompatActivity
 		writeNeighbor(s_cryptography,
 			      proxyIpAddress.getText().toString(),
 			      proxyPort.getText().toString(),
-			      spinner2.getSelectedItem().
-			      toString(),
+			      spinner2.getSelectedItem().toString(),
 			      textView1.getText().toString(),
 			      textView2.getText().toString(),
 			      textView3.getText().toString(),
-			      spinner1.getSelectedItem().
-			      toString(),
+			      spinner1.getSelectedItem().toString(),
 			      ipVersion))
 	    Miscellaneous.showErrorDialog
 		(Settings.this,
@@ -876,6 +906,15 @@ public class Settings extends AppCompatActivity
     {
 	Button button1 = null;
 	Spinner spinner1 = (Spinner) findViewById(R.id.neighbors_transport);
+
+	button1 = (Button) findViewById(R.id.add_listener);
+	button1.setOnClickListener(new View.OnClickListener()
+	{
+	    public void onClick(View view)
+	    {
+		addListener();
+	    }
+        });
 
 	button1 = (Button) findViewById(R.id.add_neighbor);
 	button1.setOnClickListener(new View.OnClickListener()
