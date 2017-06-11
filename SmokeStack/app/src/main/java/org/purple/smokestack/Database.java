@@ -49,6 +49,42 @@ import java.util.regex.Matcher;
 public class Database extends SQLiteOpenHelper
 {
     private SQLiteDatabase m_db = null;
+    private final static Comparator<ListenerElement>
+	s_readListenersComparator = new Comparator<ListenerElement> ()
+	{
+	    @Override
+	    public int compare(ListenerElement e1, ListenerElement e2)
+	    {
+		/*
+		** Sort by IP address and port.
+		*/
+
+		try
+		{
+		    byte bytes1[] = InetAddress.getByName(e1.m_localIpAddress).
+		    getAddress();
+		    byte bytes2[] = InetAddress.getByName(e2.m_localIpAddress).
+		    getAddress();
+		    int length = Math.max(bytes1.length, bytes2.length);
+
+		    for(int i = 0; i < length; i++)
+		    {
+			byte b1 = (i >= length - bytes1.length) ?
+			    bytes1[i - (length - bytes1.length)] : 0;
+			byte b2 = (i >= length - bytes2.length) ?
+			    bytes2[i - (length - bytes2.length)] : 0;
+
+			if(b1 != b2)
+			    return (0xff & b1) - (0xff & b2);
+		    }
+		}
+		catch(Exception exception)
+		{
+		}
+
+		return e1.m_localPort.compareTo(e2.m_localPort);
+	    }
+	};
     private final static Comparator<NeighborElement>
 	s_readNeighborsComparator = new Comparator<NeighborElement> ()
 	{
