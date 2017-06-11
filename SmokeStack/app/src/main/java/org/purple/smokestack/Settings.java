@@ -513,11 +513,26 @@ public class Settings extends AppCompatActivity
 	    {
 		TableRow.LayoutParams layoutParams = new
 		    TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT);
+		final String oid = String.valueOf(listenerElement.m_oid);
 
 		row = new TableRow(Settings.this);
 		row.setId(listenerElement.m_oid);
 		row.setLayoutParams(layoutParams);
 		checkBox = new CheckBox(Settings.this);
+		checkBox.setOnCheckedChangeListener
+		    (new CompoundButton.OnCheckedChangeListener()
+		    {
+			@Override
+			public void onCheckedChanged
+			    (CompoundButton buttonView, boolean isChecked)
+			{
+			    m_databaseHelper.listenerNeighborControlStatus
+				(s_cryptography,
+				 isChecked ? "listen" : "disconnect",
+				 oid,
+				 "listeners");
+			}
+		    });
 	    }
 
 	    registerForContextMenu(checkBox);
@@ -782,10 +797,11 @@ public class Settings extends AppCompatActivity
 						   long id)
 			{
 			    if(position == 1) // Connect
-				m_databaseHelper.neighborControlStatus
+				m_databaseHelper.listenerNeighborControlStatus
 				    (s_cryptography,
 				     "connect",
-				     String.valueOf(parent.getId()));
+				     String.valueOf(parent.getId()),
+				     "neighbors");
 			    else if(position == 2 && // Delete
 				    m_databaseHelper.
 				    deleteEntry(String.valueOf(parent.getId()),
@@ -807,10 +823,11 @@ public class Settings extends AppCompatActivity
 				tableLayout.removeView(row);
 			    }
 			    else if(position == 3) // Disconnect
-				m_databaseHelper.neighborControlStatus
+				m_databaseHelper.listenerNeighborControlStatus
 				    (s_cryptography,
 				     "disconnect",
-				     String.valueOf(parent.getId()));
+				     String.valueOf(parent.getId()),
+				     "neighbors");
 			    else if(position == 4) // Reset SSL/TLS Credentials
 				m_databaseHelper.neighborRecordCertificate
 				    (s_cryptography,

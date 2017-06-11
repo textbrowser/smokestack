@@ -2310,9 +2310,10 @@ public class Database extends SQLiteOpenHelper
 	}
     }
 
-    public void neighborControlStatus(Cryptography cryptography,
-				      String controlStatus,
-				      String oid)
+    public void listenerNeighborControlStatus(Cryptography cryptography,
+					      String controlStatus,
+					      String oid,
+					      String table)
     {
 	prepareDb();
 
@@ -2330,7 +2331,7 @@ public class Database extends SQLiteOpenHelper
 		 Base64.encodeToString(cryptography.
 				       etm(controlStatus.trim().getBytes()),
 				       Base64.DEFAULT));
-	    m_db.update("neighbors", values, "OID = ?", new String[] {oid});
+	    m_db.update(table, values, "OID = ?", new String[] {oid});
 	    m_db.setTransactionSuccessful();
 	}
 	catch(Exception exception)
