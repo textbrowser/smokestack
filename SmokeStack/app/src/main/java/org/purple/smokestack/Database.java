@@ -1222,6 +1222,7 @@ public class Database extends SQLiteOpenHelper
 	    sparseArray.append(9, "public_key");
             sparseArray.append(10, "status");
             sparseArray.append(11, "status_control");
+	    sparseArray.append(12, "uptime");
 
 	    if(!ipAddress.toLowerCase().trim().matches(".*[a-z].*"))
 	    {
@@ -2252,6 +2253,7 @@ public class Database extends SQLiteOpenHelper
 	    "public_key TEXT NOT NULL, " +
 	    "status TEXT NOT NULL, " +
 	    "status_control TEXT NOT NULL, " +
+	    "uptime TEXT NOT NULL, " +
 	    "PRIMARY KEY (local_ip_address_digest, " +
 	    "local_port_digest))";
 
