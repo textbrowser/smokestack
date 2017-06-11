@@ -528,6 +528,10 @@ public class Kernel
 	}
     }
 
+    public void prepareListeners()
+    {
+    }
+
     public void prepareNeighbors()
     {
 	ArrayList<NeighborElement> neighbors =

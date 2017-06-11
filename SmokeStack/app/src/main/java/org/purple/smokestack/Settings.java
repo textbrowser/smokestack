@@ -604,6 +604,7 @@ public class Settings extends AppCompatActivity
 		(listenerElement.m_statusControl.toLowerCase().
 		 equals("listen"));
 	    checkBox.setGravity(Gravity.CENTER_VERTICAL);
+	    checkBox.setId(listenerElement.m_oid);
 	    checkBox.setLayoutParams
 		(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 1));
 	    checkBox.setTag
@@ -2291,6 +2292,26 @@ public class Settings extends AppCompatActivity
 		 item.getTitle().toString().
 		 replace("Reset Retrieval State (", "").
 		 replace(")", "") + "?");
+	    break;
+	case 4:
+	    if(m_databaseHelper.
+	       deleteEntry(String.valueOf(itemId), "listeners"))
+	    {
+		/*
+		** Prepare the kernel's listeners container
+		** if a listener was deleted as the OID
+		** field may represent a recycled value.
+		*/
+
+		Kernel.getInstance().prepareListeners();
+
+		TableLayout tableLayout = (TableLayout)
+		    findViewById(R.id.listeners);
+		TableRow row = (TableRow) findViewById(itemId);
+
+		tableLayout.removeView(row);
+	    }
+
 	    break;
 	}
 

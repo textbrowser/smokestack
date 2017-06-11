@@ -211,7 +211,8 @@ public class Database extends SQLiteOpenHelper
 		 "public_key, " +
 		 "status, " +
 		 "status_control, " +
-		 "uptime " +
+		 "uptime, " +
+		 "OID " +
 		 "FROM listeners", null);
 
 	    if(cursor != null && cursor.moveToFirst())
