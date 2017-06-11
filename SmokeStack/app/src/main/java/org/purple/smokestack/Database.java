@@ -56,7 +56,7 @@ public class Database extends SQLiteOpenHelper
 	    public int compare(ListenerElement e1, ListenerElement e2)
 	    {
 		/*
-		** Sort by IP address and port.
+		** Sort by IP address, port, and scope ID.
 		*/
 
 		try
@@ -82,7 +82,12 @@ public class Database extends SQLiteOpenHelper
 		{
 		}
 
-		return e1.m_localPort.compareTo(e2.m_localPort);
+		int i = e1.m_localPort.compareTo(e2.m_localPort);
+
+		if(i != 0)
+		    return i;
+
+		return e1.m_localScopeId.compareTo(e2.m_localScopeId);
 	    }
 	};
     private final static Comparator<NeighborElement>
@@ -179,6 +184,154 @@ public class Database extends SQLiteOpenHelper
 	    catch(Exception exception)
 	    {
 	    }
+    }
+
+    public ArrayList<ListenerElement> readListeners(Cryptography cryptography)
+    {
+	prepareDb();
+
+	if(cryptography == null || m_db == null)
+	    return null;
+
+	Cursor cursor = null;
+	ArrayList<ListenerElement> arrayList = null;
+
+	try
+	{
+	    cursor = m_db.rawQuery
+		("SELECT " +
+		 "certificate, " +
+		 "ip_version, " +
+		 "last_error, " +
+		 "local_ip_address, " +
+		 "local_port, " +
+		 "local_scope_id, " +
+		 "peers_count, " +
+		 "private_key, " +
+		 "public_key, " +
+		 "status, " +
+		 "status_control, " +
+		 "uptime " +
+		 "FROM listeners", null);
+
+	    if(cursor != null && cursor.moveToFirst())
+	    {
+		arrayList = new ArrayList<> ();
+
+		while(!cursor.isAfterLast())
+		{
+		    ListenerElement listenerElement = new ListenerElement();
+		    boolean error = false;
+
+		    for(int i = 0; i < cursor.getColumnCount(); i++)
+		    {
+			if(i == cursor.getColumnCount() - 1)
+			{
+			    listenerElement.m_oid = cursor.getInt(i);
+			    continue;
+			}
+
+			byte bytes[] = null;
+
+			if(i != 0)
+			    bytes = cryptography.mtd
+				(Base64.decode(cursor.getString(i).getBytes(),
+					       Base64.DEFAULT));
+
+			if(bytes == null && i != 0)
+			{
+			    error = true;
+
+			    StringBuilder stringBuilder = new StringBuilder();
+
+			    stringBuilder.append("Database::readListeners(): ");
+			    stringBuilder.append("error on column ");
+			    stringBuilder.append(cursor.getColumnName(i));
+			    stringBuilder.append(".");
+			    writeLog(stringBuilder.toString());
+			    break;
+			}
+
+			switch(i)
+			{
+			case 0:
+			    listenerElement.m_certificate = Miscellaneous.
+				deepCopy(bytes);
+			    break;
+			case 1:
+			    listenerElement.m_ipVersion = new String(bytes);
+			    break;
+			case 2:
+			    listenerElement.m_error = new String(bytes);
+			    break;
+			case 3:
+			    listenerElement.m_localIpAddress = new String
+				(bytes);
+			    break;
+			case 4:
+			    listenerElement.m_localPort = new String(bytes);
+			    break;
+			case 5:
+			    listenerElement.m_localScopeId = new String
+				(bytes);
+			    break;
+			case 6:
+			    try
+			    {
+				listenerElement.m_peersCount =
+				    Long.parseLong(new String(bytes));
+			    }
+			    catch(Exception exception)
+			    {
+				listenerElement.m_peersCount = 0;
+			    }
+
+			    break;
+			case 7:
+			    listenerElement.m_privateKey = Miscellaneous.
+				deepCopy(bytes);
+			    break;
+			case 8:
+			    listenerElement.m_publicKey = Miscellaneous.
+				deepCopy(bytes);
+			    break;
+			case 9:
+			    listenerElement.m_status = new String(bytes);
+			    break;
+			case 10:
+			    listenerElement.m_statusControl = new String
+				(bytes);
+			    break;
+			case 11:
+			    listenerElement.m_uptime = new String(bytes);
+			    break;
+			}
+		    }
+
+		    if(!error)
+			arrayList.add(listenerElement);
+
+		    cursor.moveToNext();
+		}
+
+		if(arrayList.size() > 1)
+		    Collections.sort(arrayList, s_readListenersComparator);
+	    }
+	}
+	catch(Exception exception)
+	{
+	    if(arrayList != null)
+		arrayList.clear();
+
+	    arrayList = null;
+	}
+	finally
+	{
+	    if(cursor != null)
+		cursor.close();
+	}
+
+	return arrayList;
     }
 
     public ArrayList<NeighborElement> readNeighbors(Cryptography cryptography)
@@ -1253,12 +1406,13 @@ public class Database extends SQLiteOpenHelper
 	    sparseArray.append(4, "local_ip_address_digest");
 	    sparseArray.append(5, "local_port");
 	    sparseArray.append(6, "local_port_digest");
-	    sparseArray.append(7, "peers_count");
-	    sparseArray.append(8, "private_key");
-	    sparseArray.append(9, "public_key");
-            sparseArray.append(10, "status");
-            sparseArray.append(11, "status_control");
-	    sparseArray.append(12, "uptime");
+	    sparseArray.append(7, "local_scope_id");
+	    sparseArray.append(8, "peers_count");
+	    sparseArray.append(9, "private_key");
+	    sparseArray.append(10, "public_key");
+            sparseArray.append(11, "status");
+            sparseArray.append(12, "status_control");
+	    sparseArray.append(13, "uptime");
 
 	    if(!ipAddress.toLowerCase().trim().matches(".*[a-z].*"))
 	    {
@@ -1285,6 +1439,8 @@ public class Database extends SQLiteOpenHelper
 		    bytes = cryptography.etm(ipPort.trim().getBytes());
 		else if(sparseArray.get(i).equals("local_port_digest"))
 		    bytes = cryptography.hmac(ipPort.trim().getBytes());
+		else if(sparseArray.get(i).equals("local_scope_id"))
+		    bytes = cryptography.etm(ipScopeId.trim().getBytes());
 		else if(sparseArray.get(i).equals("peers_count"))
 		    bytes = cryptography.etm("0".getBytes());
 		else if(sparseArray.get(i).equals("status"))
@@ -2284,6 +2440,7 @@ public class Database extends SQLiteOpenHelper
 	    "local_ip_address_digest TEXT NOT NULL, " +
 	    "local_port TEXT NOT NULL, " +
 	    "local_port_digest TEXT NOT NULL, " +
+	    "local_scope_id TEXT NOT NULL, " +
 	    "peers_count TEXT NOT NULL, " +
 	    "private_key TEXT NOT NULL, " +
 	    "public_key TEXT NOT NULL, " +
