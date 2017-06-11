@@ -600,6 +600,9 @@ public class Settings extends AppCompatActivity
 	    }
 
 	    stringBuilder.append(" Min.\n");
+	    checkBox.setChecked
+		(listenerElement.m_statusControl.toLowerCase().
+		 equals("listen"));
 	    checkBox.setGravity(Gravity.CENTER_VERTICAL);
 	    checkBox.setLayoutParams
 		(new TableRow.LayoutParams(0, LayoutParams.WRAP_CONTENT, 1));
