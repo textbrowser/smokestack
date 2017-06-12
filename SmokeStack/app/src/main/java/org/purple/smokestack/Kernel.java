@@ -48,6 +48,7 @@ public class Kernel
     private ArrayList<OzoneElement> m_ozones = null;
     private ArrayList<SipHashIdElement> m_sipHashIds = null;
     private ScheduledExecutorService m_congestionScheduler = null;
+    private ScheduledExecutorService m_listenersScheduler = null;
     private ScheduledExecutorService m_neighborsScheduler = null;
     private ScheduledExecutorService m_purgeReleasedMessagesScheduler = null;
     private ScheduledExecutorService m_releaseMessagesScheduler = null;
@@ -57,6 +58,8 @@ public class Kernel
     private final ReentrantReadWriteLock m_sipHashIdsMutex = new
 	ReentrantReadWriteLock();
     private final SparseArray<Neighbor> m_neighbors = new SparseArray<> ();
+    private final SparseArray<TcpListener> m_tcpListeners =
+	new SparseArray<> ();
     private final static Database s_databaseHelper = Database.getInstance();
     private final static Cryptography s_cryptography =
 	Cryptography.getInstance();
@@ -68,6 +71,7 @@ public class Kernel
 								    */
     private final static int CONGESTION_INTERVAL = 15000; // 15 Seconds
     private final static int CONGESTION_LIFETIME = 30;
+    private final static int LISTENERS_INTERVAL = 5000; // 5 Seconds
     private final static int NEIGHBORS_INTERVAL = 5000; // 5 Seconds
     private final static int PURGE_RELEASED_MESSAGES_INTERVAL = 5; // Minutes
     private final static int RELEASE_MESSAGES_INTERVAL = 1500; // 1.5 Seconds

@@ -27,16 +27,24 @@
 
 package org.purple.smokestack;
 
+import java.net.InetAddress;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import javax.net.ssl.SSLServerSocket;
+import javax.net.ssl.SSLServerSocketFactory;
 
 public class TcpListener
 {
-    private AtomicInteger m_listen = null;
     private AtomicInteger m_oid;
+    private SSLServerSocket m_socket = null;
+    private ScheduledExecutorService m_acceptScheduler = null;
     private String m_ipAddress = "";
     private String m_ipPort = "";
     private String m_scopeId = "";
     private String m_version = "";
+    private final static int ACCEPT_INTERVAL = 100; // Milliseconds
 
     public TcpListener(String ipAddress,
 		       String ipPort,
@@ -44,9 +52,41 @@ public class TcpListener
 		       String version,
 		       int oid)
     {
+	m_acceptScheduler = Executors.newSingleThreadScheduledExecutor();
+	m_acceptScheduler.scheduleAtFixedRate(new Runnable()
+	{
+	    @Override
+	    public void run()
+	    {
+		try
+		{
+		    if(Thread.currentThread().isInterrupted())
+			return;
+		    else
+			Thread.sleep(5);
+		}
+		catch(InterruptedException exception)
+		{
+		    Thread.currentThread().interrupt();
+		}
+		catch(Exception exception)
+		{
+		}
+
+		try
+		{
+		    if(m_socket == null)
+			return;
+
+		    m_socket.accept();
+		}
+		catch(Exception exception)
+		{
+		}
+	    }
+	}, 0, ACCEPT_INTERVAL, TimeUnit.MILLISECONDS);
 	m_ipAddress = ipAddress;
 	m_ipPort = ipPort;
-	m_listen = new AtomicInteger(0);
 	m_oid = new AtomicInteger(oid);
 	m_scopeId = scopeId;
 	m_version = version;
@@ -54,11 +94,39 @@ public class TcpListener
 
     public void disconnect()
     {
-	m_listen.set(0);
+	try
+	{
+	    if(m_socket != null)
+		m_socket.close();
+	}
+	catch(Exception exception)
+	{
+	}
+	finally
+	{
+	    m_socket = null;
+	}
     }
 
     public void listen()
     {
-	m_listen.set(1);
+	try
+	{
+	    if(m_socket != null)
+		return;
+
+	    SSLServerSocketFactory sslServerSocketFactory =
+		(SSLServerSocketFactory) SSLServerSocketFactory.getDefault();
+
+	    m_socket = (SSLServerSocket) sslServerSocketFactory.
+		createServerSocket
+		(Integer.parseInt(m_ipPort),
+		 0,
+		 InetAddress.getByName(m_ipAddress));
+	}
+	catch(Exception exception)
+	{
+	    disconnect();
+	}
     }
 }
