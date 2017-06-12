@@ -31,6 +31,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class TcpListener
 {
+    private AtomicInteger m_listen = null;
     private AtomicInteger m_oid;
     private String m_ipAddress = "";
     private String m_ipPort = "";
@@ -45,8 +46,19 @@ public class TcpListener
     {
 	m_ipAddress = ipAddress;
 	m_ipPort = ipPort;
+	m_listen = new AtomicInteger(0);
 	m_oid = new AtomicInteger(oid);
 	m_scopeId = scopeId;
 	m_version = version;
+    }
+
+    public void disconnect()
+    {
+	m_listen.set(0);
+    }
+
+    public void listen()
+    {
+	m_listen.set(1);
     }
 }
