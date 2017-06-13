@@ -24,7 +24,6 @@
     <string name="details">Details</string>
     <string name="name">Name</string>
     <string name="reset_smokestack">Reset SmokeStack</string>
-    <string name="siphash_identity">SipHash Identity</string>
     <string name="about">About</string>
     <string name="proxy_port">Proxy Port</string>
     <string name="proxy_ip_address">Proxy IP Address</string>
@@ -37,4 +36,5 @@
     <string name="in_out_total">In / Out / Total</string>
     <string name="scope_id">Scope ID</string>
     <string name="accept_without_signatures">Accept Without Signatures</string>
+    <string name="siphash_id">SipHash ID</string>
 </resources>

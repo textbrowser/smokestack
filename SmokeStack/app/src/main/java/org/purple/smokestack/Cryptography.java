@@ -28,6 +28,8 @@
 package org.purple.smokestack;
 
 import java.security.KeyFactory;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
@@ -40,6 +42,7 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.Arrays;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
 import javax.crypto.KeyGenerator;
 import javax.crypto.Mac;
 import javax.crypto.SecretKey;
@@ -324,6 +327,19 @@ public class Cryptography
 	}
 
 	return bytes;
+    }
+
+    public static KeyPair generatePrivatePublicKeyPair(String algorithm,
+						       int keySize)
+	throws NoSuchAlgorithmException
+    {
+	prepareSecureRandom();
+
+	KeyPairGenerator keyPairGenerator = KeyPairGenerator.
+	    getInstance(algorithm);
+
+	keyPairGenerator.initialize(keySize, s_secureRandom);
+	return keyPairGenerator.generateKeyPair();
     }
 
     public static PublicKey publicKeyFromBytes(byte publicBytes[])

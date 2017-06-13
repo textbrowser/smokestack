@@ -58,8 +58,7 @@ public class Kernel
     private final ReentrantReadWriteLock m_sipHashIdsMutex = new
 	ReentrantReadWriteLock();
     private final SparseArray<Neighbor> m_neighbors = new SparseArray<> ();
-    private final SparseArray<TcpListener> m_tcpListeners =
-	new SparseArray<> ();
+    private final SparseArray<TcpListener> m_listeners = new SparseArray<> ();
     private final static Database s_databaseHelper = Database.getInstance();
     private final static Cryptography s_cryptography =
 	Cryptography.getInstance();
@@ -122,6 +121,19 @@ public class Kernel
 	    }, 1500, CONGESTION_INTERVAL, TimeUnit.MILLISECONDS);
 	}
 
+	if(m_listenersScheduler == null)
+	{
+	    m_listenersScheduler = Executors.newSingleThreadScheduledExecutor();
+	    m_listenersScheduler.scheduleAtFixedRate(new Runnable()
+	    {
+		@Override
+		public void run()
+		{
+		    prepareListeners();
+		}
+	    }, 1500, LISTENERS_INTERVAL, TimeUnit.MILLISECONDS);
+	}
+
 	if(m_neighborsScheduler == null)
 	{
 	    m_neighborsScheduler = Executors.newSingleThreadScheduledExecutor();
@@ -164,7 +176,27 @@ public class Kernel
 	}
     }
 
-    private void purge()
+    private void purgeListeners()
+    {
+	/*
+	** Disconnect all existing sockets.
+	*/
+
+	synchronized(m_listeners)
+	{
+	    for(int i = 0; i < m_listeners.size(); i++)
+	    {
+		int j = m_listeners.keyAt(i);
+
+		if(m_listeners.get(j) != null)
+		    m_listeners.get(j).abort();
+	    }
+
+	    m_listeners.clear();
+	}
+    }
+
+    private void purgeNeighbors()
     {
 	/*
 	** Disconnect all existing sockets.
@@ -534,6 +566,89 @@ public class Kernel
 
     public void prepareListeners()
     {
+	ArrayList<ListenerElement> listeners =
+	    s_databaseHelper.readListeners(s_cryptography);
+
+	if(listeners == null || listeners.size() == 0)
+	{
+	    purgeListeners();
+	    return;
+	}
+
+	synchronized(m_listeners)
+	{
+	    for(int i = m_listeners.size() - 1; i >= 0; i--)
+	    {
+		/*
+		** Remove listener objects which do not exist in the
+		** database.
+		*/
+
+		boolean found = false;
+		int oid = m_listeners.keyAt(i);
+
+		for(ListenerElement listenerElement : listeners)
+		    if(listenerElement != null && listenerElement.m_oid == oid)
+		    {
+			found = true;
+			break;
+		    }
+
+		if(!found)
+		{
+		    if(m_listeners.get(oid) != null)
+			m_listeners.get(oid).abort();
+
+		    m_listeners.remove(oid);
+		}
+	    }
+	}
+
+	for(ListenerElement listenerElement : listeners)
+	{
+	    if(listenerElement == null)
+		continue;
+	    else
+	    {
+		synchronized(m_listeners)
+		{
+		    if(m_listeners.get(listenerElement.m_oid) != null)
+			continue;
+		}
+
+		if(listenerElement.m_statusControl.toLowerCase().
+		   equals("delete") ||
+		   listenerElement.m_statusControl.toLowerCase().
+		   equals("disconnect"))
+		{
+		    if(listenerElement.m_statusControl.toLowerCase().
+		       equals("disconnect"))
+			s_databaseHelper.saveListenerInformation
+			    (s_cryptography,
+			     "",              // Error
+			     "0",             // Peers Count
+			     "disconnected",  // Status
+			     "0",             // Uptime
+			     String.valueOf(listenerElement.m_oid));
+
+		    continue;
+		}
+	    }
+
+	    TcpListener listener = new TcpListener
+		(listenerElement.m_localIpAddress,
+		 listenerElement.m_localPort,
+		 listenerElement.m_localScopeId,
+		 listenerElement.m_ipVersion,
+		 listenerElement.m_oid);
+
+	    synchronized(m_listeners)
+	    {
+		m_listeners.append(listenerElement.m_oid, listener);
+	    }
+	}
+
+	listeners.clear();
     }
 
     public void prepareNeighbors()
@@ -543,7 +658,7 @@ public class Kernel
 
 	if(neighbors == null || neighbors.size() == 0)
 	{
-	    purge();
+	    purgeNeighbors();
 	    return;
 	}
 
@@ -559,8 +674,8 @@ public class Kernel
 		boolean found = false;
 		int oid = m_neighbors.keyAt(i);
 
-		for(NeighborElement neighbor : neighbors)
-		    if(neighbor != null && neighbor.m_oid == oid)
+		for(NeighborElement neighborElement : neighbors)
+		    if(neighborElement != null && neighborElement.m_oid == oid)
 		    {
 			found = true;
 			break;

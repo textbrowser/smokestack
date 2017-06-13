@@ -210,7 +210,8 @@ public abstract class Neighbor
 		}
 
 		String statusControl = m_databaseHelper.
-		    readNeighborStatusControl(m_cryptography, m_oid.get());
+		    readListenerNeighborStatusControl
+		    (m_cryptography, "neighbors", m_oid.get());
 
 		switch(statusControl)
 		{

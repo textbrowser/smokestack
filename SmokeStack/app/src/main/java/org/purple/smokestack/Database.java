@@ -1049,7 +1049,8 @@ public class Database extends SQLiteOpenHelper
 	return name;
     }
 
-    public String readNeighborStatusControl(Cryptography cryptography, int oid)
+    public String readListenerNeighborStatusControl
+	(Cryptography cryptography, String table, int oid)
     {
 	prepareDb();
 
@@ -1062,7 +1063,7 @@ public class Database extends SQLiteOpenHelper
 	try
 	{
 	    cursor = m_db.rawQuery
-		("SELECT status_control FROM neighbors WHERE OID = ?",
+		("SELECT status_control FROM " + table + " WHERE OID = ?",
 		 new String[] {String.valueOf(oid)});
 
 	    if(cursor != null && cursor.moveToFirst())
@@ -2833,6 +2834,61 @@ public class Database extends SQLiteOpenHelper
 	onCreate(m_db);
     }
 
+    public void saveListenerInformation(Cryptography cryptography,
+					String error,
+					String peersCount,
+					String status,
+					String uptime,
+					String oid)
+    {
+	prepareDb();
+
+	if(cryptography == null || m_db == null)
+	    return;
+
+	m_db.beginTransactionNonExclusive();
+
+	try
+	{
+	    ContentValues values = new ContentValues();
+
+	    if(!status.equals("listening"))
+	    {
+		error = error.trim(); // Do not clear the error.
+		peersCount = "";
+		uptime = "";
+	    }
+
+	    values.put
+		("last_error",
+		 Base64.encodeToString(cryptography.etm(error.getBytes()),
+				       Base64.DEFAULT));
+	    values.put
+		("peers_count",
+		 Base64.encodeToString(cryptography.etm(peersCount.getBytes()),
+				       Base64.DEFAULT));
+	    values.put
+		("status",
+		 Base64.encodeToString(cryptography.
+				       etm(status.trim().getBytes()),
+				       Base64.DEFAULT));
+	    values.put
+		("uptime",
+		 Base64.encodeToString(cryptography.
+				       etm(uptime.trim().getBytes()),
+				       Base64.DEFAULT));
+	    m_db.update("listeners", values, "OID = ?", new String[] {oid});
+	    m_db.setTransactionSuccessful();
+	}
+	catch(Exception exception)
+	{
+	}
+	finally
+	{
+	    m_db.endTransaction();
+	}
+    }
+
     public void saveNeighborInformation(Cryptography cryptography,
 					String bytesRead,
 					String bytesWritten,
@@ -2861,7 +2917,7 @@ public class Database extends SQLiteOpenHelper
 		bytesRead = "";
 		bytesWritten = "";
 		echoQueueSize = "0";
-		error = error; // Do not clear the error.
+		error = error.trim(); // Do not clear the error.
 		ipAddress = "";
 		ipPort = "";
 		sessionCipher = "";

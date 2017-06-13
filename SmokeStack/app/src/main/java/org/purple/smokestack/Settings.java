@@ -254,7 +254,7 @@ public class Settings extends AppCompatActivity
 	{
 	    Miscellaneous.showErrorDialog
 		(Settings.this,
-		 "A SipHash Identity must be of the form 0102-0304-0506-0708.");
+		 "A SipHash ID must be of the form 0102-0304-0506-0708.");
 	    return;
 	}
 
@@ -304,7 +304,7 @@ public class Settings extends AppCompatActivity
 			    Miscellaneous.showErrorDialog
 				(Settings.this,
 				 "An error occurred while attempting " +
-				 "to save the specified SipHash Identity.");
+				 "to save the specified SipHash ID.");
 			else
 			{
 			    Kernel.getInstance().populateSipHashIds();
@@ -537,7 +537,7 @@ public class Settings extends AppCompatActivity
 
 	    registerForContextMenu(checkBox);
 
-	    if(listenerElement.m_status.equals("connected"))
+	    if(listenerElement.m_status.equals("listening"))
 		checkBox.setTextColor(Color.rgb(0, 100, 0)); // Dark Green
 	    else
 		checkBox.setTextColor(Color.rgb(139, 0, 0)); // Dark Red
@@ -1454,12 +1454,12 @@ public class Settings extends AppCompatActivity
 
 		textView.setBackgroundColor(Color.rgb(135, 206, 250));
 		textView.setText
-		    ("A SipHash Identity is a sequence of digits and " +
+		    ("A SipHash ID is a sequence of digits and " +
 		     "letters assigned to a specific subscriber " +
 		     "(public key pair). " +
 		     "The tokens allow participants to exchange public " +
 		     "key pairs via the EPKS protocol. " +
-		     "An example SipHash Identity is ABAB-0101-CDCD-0202.");
+		     "An example SipHash ID is ABAB-0101-CDCD-0202.");
 		textView.setTextSize(16);
 		popupWindow.setContentView(textView);
 		popupWindow.setOutsideTouchable(true);
