@@ -659,6 +659,9 @@ public class Kernel
 		 listenerElement.m_localPort,
 		 listenerElement.m_localScopeId,
 		 listenerElement.m_ipVersion,
+		 listenerElement.m_certificate,
+		 listenerElement.m_privateKey,
+		 listenerElement.m_publicKey,
 		 listenerElement.m_oid);
 
 	    synchronized(m_listeners)

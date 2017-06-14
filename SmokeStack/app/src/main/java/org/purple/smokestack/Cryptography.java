@@ -32,12 +32,14 @@ import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.Signature;
 import java.security.spec.EncodedKeySpec;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
+import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Arrays;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -340,6 +342,31 @@ public class Cryptography
 
 	keyPairGenerator.initialize(keySize, s_secureRandom);
 	return keyPairGenerator.generateKeyPair();
+    }
+
+    public static KeyPair generatePrivatePublicKeyPair(String algorithm,
+						       byte privateBytes[],
+						       byte publicBytes[])
+    {
+	try
+	{
+	    EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec
+		(privateBytes);
+	    EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(publicBytes);
+	    KeyFactory generator = KeyFactory.getInstance(algorithm);
+	    PrivateKey privateKey = generator.generatePrivate(privateKeySpec);
+	    PublicKey publicKey = generator.generatePublic(publicKeySpec);
+
+	    return new KeyPair(publicKey, privateKey);
+	}
+	catch(Exception exception)
+	{
+	    Database.getInstance().writeLog
+		("Cryptography::generatePrivatePublicKeyPair(): " +
+		 "exception raised.");
+	}
+
+	return null;
     }
 
     public static PublicKey publicKeyFromBytes(byte publicBytes[])

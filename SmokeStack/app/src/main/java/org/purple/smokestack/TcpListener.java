@@ -28,12 +28,14 @@
 package org.purple.smokestack;
 
 import android.os.Build;
+import java.io.ByteArrayInputStream;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.security.KeyPair;
 import java.security.KeyStore;
 import java.security.SecureRandom;
 import java.security.Security;
+import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Date;
@@ -109,10 +111,13 @@ public class TcpListener
 		       String ipPort,
 		       String scopeId,
 		       String version,
+		       byte certificate[],
+		       byte privateKey[],
+		       byte publicKey[],
 		       int oid)
     {
 	m_oid = new AtomicInteger(oid);
-	prepareCertificate();
+	prepareCertificate(certificate, privateKey, publicKey);
 	m_acceptScheduler = Executors.newSingleThreadScheduledExecutor();
 	m_ipAddress = ipAddress;
 	m_ipPort = ipPort;
@@ -270,7 +275,9 @@ public class TcpListener
 	return false;
     }
 
-    private void prepareCertificate()
+    private void prepareCertificate(byte certificateBytes[],
+				    byte privateKey[],
+				    byte publicKey[])
     {
 	try
 	{
@@ -285,8 +292,40 @@ public class TcpListener
 
 	try
 	{
-	    keyPair = Cryptography.generatePrivatePublicKeyPair
-		("RSA", 2048);
+	    if(certificateBytes == null ||
+	       certificateBytes.length <= 0 ||
+	       privateKey == null ||
+	       privateKey.length <= 0 ||
+	       publicKey == null ||
+	       publicKey.length <= 0)
+		keyPair = Cryptography.generatePrivatePublicKeyPair
+		    ("RSA", 2048);
+	    else
+	    {
+		keyPair = Cryptography.generatePrivatePublicKeyPair
+		    ("RSA", privateKey, publicKey);
+
+		if(keyPair != null)
+		{
+		    ByteArrayInputStream byteArrayInputStream = new
+			ByteArrayInputStream(certificateBytes);
+		    CertificateFactory certificateFactory = CertificateFactory.
+			getInstance("X.509");
+		    X509Certificate certificate = (X509Certificate)
+			certificateFactory.
+			generateCertificate(byteArrayInputStream);
+
+		    m_keyStore = KeyStore.getInstance
+			(KeyStore.getDefaultType());
+		    m_keyStore.load(null, null);
+		    m_keyStore.deleteEntry(m_ipAddress);
+		    m_keyStore.setKeyEntry(m_ipAddress,
+					   keyPair.getPrivate(),
+					   null,
+					   new X509Certificate[] {certificate});
+		    return;
+		}
+	    }
 	}
 	catch(Exception exception)
 	{
