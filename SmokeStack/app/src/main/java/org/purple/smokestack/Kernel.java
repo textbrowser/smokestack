@@ -47,6 +47,7 @@ public class Kernel
 {
     private ArrayList<OzoneElement> m_ozones = null;
     private ArrayList<SipHashIdElement> m_sipHashIds = null;
+    private ArrayList<TcpNeighbor> m_serverNeighbors = new ArrayList<> ();
     private ScheduledExecutorService m_congestionScheduler = null;
     private ScheduledExecutorService m_listenersScheduler = null;
     private ScheduledExecutorService m_neighborsScheduler = null;
@@ -54,6 +55,8 @@ public class Kernel
     private ScheduledExecutorService m_releaseMessagesScheduler = null;
     private WakeLock m_wakeLock = null;
     private final ReentrantReadWriteLock m_ozonesMutex = new
+	ReentrantReadWriteLock();
+    private final ReentrantReadWriteLock m_serverNeighborsMutex = new
 	ReentrantReadWriteLock();
     private final ReentrantReadWriteLock m_sipHashIdsMutex = new
 	ReentrantReadWriteLock();
@@ -199,7 +202,7 @@ public class Kernel
     private void purgeNeighbors()
     {
 	/*
-	** Disconnect all existing sockets.
+	** Disconnect all non-server sockets.
 	*/
 
 	synchronized(m_neighbors)
@@ -244,9 +247,6 @@ public class Kernel
 	if(s_databaseHelper.containsCongestionDigest(s_congestionSipHash.
 						     hmac(buffer.getBytes())))
 	    return true;
-
-	s_databaseHelper.writeCongestionDigest
-	    (s_congestionSipHash.hmac(buffer.getBytes()));
 
 	try
 	{
@@ -313,6 +313,8 @@ public class Kernel
 		    SmokeStack.getApplication().sendBroadcast(intent);
 		}
 
+		s_databaseHelper.writeCongestionDigest
+		    (s_congestionSipHash.hmac(buffer.getBytes()));
 		return true;
 	    }
 
@@ -409,6 +411,8 @@ public class Kernel
 
 		     s_databaseHelper.tagMessagesForRelease
 			 (s_cryptography, sipHashIdDigest);
+		     s_databaseHelper.writeCongestionDigest
+			 (s_congestionSipHash.hmac(buffer.getBytes()));
 		     return true;
 		 }
 
@@ -443,6 +447,8 @@ public class Kernel
 			    ** Discovered.
 			    */
 
+			    s_databaseHelper.writeCongestionDigest
+				(s_congestionSipHash.hmac(buffer.getBytes()));
 			    s_databaseHelper.writeMessage
 				(s_cryptography,
 				 sipHashIdElement.m_sipHashId,
@@ -517,6 +523,19 @@ public class Kernel
 		   m_neighbors.get(j).getOid() != oid)
 		    m_neighbors.get(j).scheduleSend(message);
 	    }
+	}
+
+	m_serverNeighborsMutex.readLock().lock();
+
+	try
+	{
+	    for(int i = 0; i < m_serverNeighbors.size(); i++)
+		if(m_serverNeighbors.get(i) != null)
+		    m_serverNeighbors.get(i).scheduleSend(message);
+	}
+	finally
+	{
+	    m_serverNeighborsMutex.readLock().unlock();
 	}
     }
 
@@ -776,5 +795,39 @@ public class Kernel
 	}
 
 	neighbors.clear();
+    }
+
+    public void recordNeighbor(TcpNeighbor neighbor)
+    {
+	if(neighbor == null)
+	    return;
+
+	m_serverNeighborsMutex.writeLock().lock();
+
+	try
+	{
+	    m_serverNeighbors.add(neighbor);
+	}
+	finally
+	{
+	    m_serverNeighborsMutex.writeLock().unlock();
+	}
+    }
+
+    public void removeNeighbor(TcpNeighbor neighbor)
+    {
+	if(neighbor == null)
+	    return;
+
+	m_serverNeighborsMutex.writeLock().lock();
+
+	try
+	{
+	    m_serverNeighbors.remove(neighbor);
+	}
+	finally
+	{
+	    m_serverNeighborsMutex.writeLock().unlock();
+	}
     }
 }

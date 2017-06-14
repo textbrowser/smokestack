@@ -174,6 +174,7 @@ public class TcpListener
 			newSingleThreadScheduledExecutor();
 		    TcpNeighbor neighbor = new TcpNeighbor(sslSocket);
 
+		    Kernel.getInstance().recordNeighbor(neighbor);
 		    scheduler.schedule
 			(new ClientTask(neighbor), 0, TimeUnit.MILLISECONDS);
 		    m_sockets.add(neighbor);
@@ -240,6 +241,7 @@ public class TcpListener
 			    m_sockets.remove(i);
 			else if(!neighbor.connected())
 			{
+			    Kernel.getInstance().removeNeighbor(neighbor);
 			    neighbor.abort();
 			    m_sockets.remove(i);
 			}
@@ -446,6 +448,8 @@ public class TcpListener
 
 		if(neighbor != null)
 		    neighbor.abort();
+
+		Kernel.getInstance().removeNeighbor(neighbor);
 	    }
 	}
 	finally

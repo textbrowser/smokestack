@@ -167,7 +167,7 @@ public class TcpNeighbor extends Neighbor
 	    m_bytesRead.set(0);
 	    m_bytesWritten.set(0);
 
-	    if(m_oid.get() != -1)
+	    if(m_oid.get() >= 0)
 		m_isValidCertificate.set(0);
 
 	    m_socket = null;
@@ -211,6 +211,7 @@ public class TcpNeighbor extends Neighbor
 	*/
 
 	super("", "", "", "TCP", "", -1);
+	m_isServer.set(1);
 	m_isValidCertificate = new AtomicInteger(1);
 	m_readSocketScheduler = Executors.newSingleThreadScheduledExecutor();
 	m_socket = socket;
@@ -520,7 +521,7 @@ public class TcpNeighbor extends Neighbor
 	disconnect();
 	super.abort();
 
-	if(m_oid.get() != -1)
+	if(m_oid.get() >= 0)
 	    m_isValidCertificate.set(0);
 
 	m_readSocketScheduler.shutdown();
@@ -538,7 +539,7 @@ public class TcpNeighbor extends Neighbor
     {
 	if(connected())
 	    return;
-	else if(m_oid.get() == -1)
+	else if(m_oid.get() < 0)
 	    return;
 
 	setError("");

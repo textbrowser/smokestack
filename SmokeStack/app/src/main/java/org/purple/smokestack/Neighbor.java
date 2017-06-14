@@ -51,6 +51,7 @@ public abstract class Neighbor
     private final static int SEND_OUTBOUND_TIMER_INTERVAL = 200; // Milliseconds
     private final static int SILENCE = 90000; // 90 Seconds
     private final static int TIMER_INTERVAL = 2500; // 2.5 Seconds
+    protected AtomicInteger m_isServer = new AtomicInteger(0);
     protected AtomicInteger m_oid = null;
     protected AtomicLong m_bytesRead = null;
     protected AtomicLong m_bytesWritten = null;
@@ -209,7 +210,7 @@ public abstract class Neighbor
 		{
 		}
 
-		if(m_oid.get() != -1)
+		if(m_oid.get() >= 0)
 		{
 		    String statusControl = m_databaseHelper.
 			readListenerNeighborStatusControl
@@ -266,7 +267,7 @@ public abstract class Neighbor
 		    sendCapabilities();
 		}
 
-		if(m_oid.get() != -1)
+		if(m_oid.get() >= 0)
 		{
 		    /*
 		    ** Retrieve the first database message.
@@ -396,6 +397,11 @@ public abstract class Neighbor
 	    m_error.setLength(0);
 	    m_error.append(error);
 	}
+    }
+
+    public boolean isServer()
+    {
+	return m_isServer.get() == 1;
     }
 
     public int getOid()
