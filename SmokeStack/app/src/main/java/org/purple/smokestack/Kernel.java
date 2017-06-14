@@ -197,6 +197,17 @@ public class Kernel
 
 	    m_listeners.clear();
 	}
+
+	m_serverNeighborsMutex.writeLock().lock();
+
+	try
+	{
+	    m_serverNeighbors.clear();
+	}
+	finally
+	{
+	    m_serverNeighborsMutex.writeLock().unlock();
+	}
     }
 
     private void purgeNeighbors()
@@ -827,6 +838,10 @@ public class Kernel
 	try
 	{
 	    m_serverNeighbors.remove(neighbor);
+
+	    for(int i = m_serverNeighbors.size() - 1; i >= 0; i--)
+		if(m_serverNeighbors.get(i) == null)
+		    m_serverNeighbors.remove(i);
 	}
 	finally
 	{
