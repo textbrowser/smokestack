@@ -38,7 +38,9 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Random;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -53,7 +55,7 @@ import org.spongycastle.asn1.x500.X500NameBuilder;
 import org.spongycastle.asn1.x500.style.BCStyle;
 import org.spongycastle.asn1.x509.SubjectPublicKeyInfo;
 import org.spongycastle.cert.X509CertificateHolder;
-import org.spongycastle.cert.X509v1CertificateBuilder;
+import org.spongycastle.cert.X509v3CertificateBuilder;
 import org.spongycastle.cert.jcajce.JcaX509CertificateConverter;
 import org.spongycastle.jce.provider.BouncyCastleProvider;
 import org.spongycastle.operator.ContentSigner;
@@ -61,6 +63,11 @@ import org.spongycastle.operator.jcajce.JcaContentSignerBuilder;
 
 public class TcpListener
 {
+    static
+    {
+	Security.addProvider(new BouncyCastleProvider());
+    }
+
     private AtomicInteger m_oid;
     private Cryptography m_cryptography = Cryptography.getInstance();
     private Database m_databaseHelper = Database.getInstance();
@@ -72,7 +79,7 @@ public class TcpListener
     private String m_ipPort = "";
     private String m_scopeId = "";
     private String m_version = "";
-    private final ArrayList<SSLSocket> m_sockets = new ArrayList<> ();
+    private final ArrayList<TcpNeighbor> m_sockets = new ArrayList<> ();
     private final AtomicInteger m_listen = new AtomicInteger(0);
     private final AtomicLong m_startTime = new AtomicLong(System.nanoTime());
     private final ReentrantReadWriteLock m_socketsMutex =
@@ -81,15 +88,36 @@ public class TcpListener
     private final static int ACCEPT_INTERVAL = 100; // Milliseconds
     private final static int TIMER_INTERVAL = 2500; // 2.5 Seconds
 
+    private class ClientTask implements Runnable
+    {
+	private TcpNeighbor m_neightbor = null;
+
+	public ClientTask(TcpNeighbor neightbor)
+	{
+	    m_neightbor = neightbor;
+        }
+
+        @Override
+        public void run()
+	{
+	    if(m_neightbor != null)
+		m_neightbor.startHandshake();
+        }
+    }
+
     public TcpListener(String ipAddress,
 		       String ipPort,
 		       String scopeId,
 		       String version,
 		       int oid)
     {
+	prepareCertificate();
 	m_acceptScheduler = Executors.newSingleThreadScheduledExecutor();
 	m_acceptScheduler.scheduleAtFixedRate(new Runnable()
 	{
+	    private ExecutorService m_executorService =
+		Executors.newFixedThreadPool(100);
+
 	    @Override
 	    public void run()
 	    {
@@ -111,29 +139,40 @@ public class TcpListener
 		if(m_listen.get() == 0)
 		    return;
 
+		SSLSocket sslSocket = null;
+
 		try
 		{
 		    if(m_socket == null)
 			return;
-
-		    SSLSocket sslSocket = (SSLSocket) m_socket.accept();
-
-		    if(sslSocket != null)
-		    {
-			m_socketsMutex.writeLock().lock();
-
-			try
-			{
-			    m_sockets.add(sslSocket);
-			}
-			finally
-			{
-			    m_socketsMutex.writeLock().unlock();
-			}
-		    }
+		    else
+			sslSocket = (SSLSocket) m_socket.accept();
 		}
 		catch(Exception exception)
 		{
+		}
+
+		if(sslSocket == null)
+		    return;
+
+		m_socketsMutex.writeLock().lock();
+
+		try
+		{
+		    ScheduledExecutorService scheduler = Executors.
+			newSingleThreadScheduledExecutor();
+		    TcpNeighbor neighbor = new TcpNeighbor(sslSocket);
+
+		    scheduler.schedule
+			(new ClientTask(neighbor), 0, TimeUnit.MILLISECONDS);
+		    m_sockets.add(neighbor);
+		}
+		catch(Exception exception)
+		{
+		}
+		finally
+		{
+		    m_socketsMutex.writeLock().unlock();
 		}
 	    }
 	}, 0, ACCEPT_INTERVAL, TimeUnit.MILLISECONDS);
@@ -182,12 +221,33 @@ public class TcpListener
 		    return;
 		}
 
+		m_socketsMutex.writeLock().lock();
+
+		try
+		{
+		    for(int i = m_sockets.size() - 1; i >= 0; i--)
+		    {
+			TcpNeighbor neighbor = m_sockets.get(i);
+
+			if(neighbor == null)
+			    m_sockets.remove(i);
+			else if(!neighbor.connected())
+			{
+			    neighbor.abort();
+			    m_sockets.remove(i);
+			}
+		    }
+		}
+		finally
+		{
+		    m_socketsMutex.writeLock().unlock();
+		}
+
 		saveStatistics();
 	    }
 	}, 0, TIMER_INTERVAL, TimeUnit.MILLISECONDS);
 	m_scopeId = scopeId;
 	m_version = version;
-	prepareCertificate();
     }
 
     private boolean listening()
@@ -212,7 +272,6 @@ public class TcpListener
 	}
 	catch(Exception exception)
 	{
-	    return;
 	}
 
 	KeyPair keyPair = null;
@@ -225,6 +284,8 @@ public class TcpListener
 	catch(Exception exception)
 	{
 	    keyPair = null;
+	    setError("An error (" + exception.getMessage() +
+		     ") occurred while preparing the key pair.");
 	}
 
 	if(keyPair == null)
@@ -238,17 +299,17 @@ public class TcpListener
 		(System.currentTimeMillis() - 24 * 60 * 60 * 1000);
 	    X500NameBuilder nameBuilder = new X500NameBuilder(BCStyle.INSTANCE);
 
-	    nameBuilder.addRDN(BCStyle.L, "SmokeStack");
-	    nameBuilder.addRDN(BCStyle.O, "SmokeStack");
-	    nameBuilder.addRDN(BCStyle.OU, "SmokeStack");
+	    /*
+	    ** Prepare self-signing.
+	    */
 
 	    ContentSigner contentSigner = null;
 	    Random random = new Random();
 	    SubjectPublicKeyInfo subjectPublicKeyInfo = SubjectPublicKeyInfo.
 		getInstance(keyPair.getPublic().getEncoded());
 	    X500Name name = nameBuilder.build();
-	    X509v1CertificateBuilder v1CertificateBuilder =
-		new X509v1CertificateBuilder
+	    X509v3CertificateBuilder v3CertificateBuilder =
+		new X509v3CertificateBuilder
 		(name,
 		 BigInteger.valueOf(random.nextLong()),
 		 startDate,
@@ -256,27 +317,29 @@ public class TcpListener
 		 name,
 		 subjectPublicKeyInfo);
 
-	    Security.addProvider(new BouncyCastleProvider());
 	    contentSigner = new JcaContentSignerBuilder
 		("SHA512WithRSAEncryption").setProvider("SC").build
 		(keyPair.getPrivate());
 
 	    X509Certificate certificate = null;
-	    X509CertificateHolder certificateHolder = v1CertificateBuilder.
+	    X509CertificateHolder certificateHolder = v3CertificateBuilder.
 		build(contentSigner);
 
 	    certificate = new JcaX509CertificateConverter().setProvider("SC").
 		getCertificate(certificateHolder);
 	    m_keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
 	    m_keyStore.load(null, null);
-	    m_keyStore.setKeyEntry("certificate",
-				   keyPair.getPrivate(), 
+	    m_keyStore.deleteEntry(m_ipAddress);
+	    m_keyStore.setKeyEntry(m_ipAddress,
+				   keyPair.getPrivate(),
 				   null,
-				   new X509Certificate[] {certificate}); 
+				   new X509Certificate[] {certificate});
 	}
 	catch(Exception exception)
 	{
 	    m_keyStore = null;
+	    setError("An error (" + exception.getMessage() +
+		     ") occurred while preparing the key store.");
 	}
     }
 
@@ -368,18 +431,10 @@ public class TcpListener
 	{
 	    for(int i = m_sockets.size() - 1; i >= 0; i--)
 	    {
-		SSLSocket sslSocket = m_sockets.remove(i);
+		TcpNeighbor neighbor = m_sockets.remove(i);
 
-		if(sslSocket != null)
-		    try
-		    {
-			sslSocket.getInputStream().close();
-			sslSocket.getOutputStream().close();
-			sslSocket.close();
-		    }
-		    catch(Exception exception)
-		    {
-		    }
+		if(neighbor != null)
+		    neighbor.abort();
 	    }
 	}
 	finally
@@ -394,7 +449,7 @@ public class TcpListener
 
 	try
 	{
-	    if(m_keyStore == null || m_socket != null)
+	    if(m_socket != null)
 		return;
 
 	    SSLContext sslContext = null;

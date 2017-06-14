@@ -166,7 +166,10 @@ public class TcpNeighbor extends Neighbor
 	{
 	    m_bytesRead.set(0);
 	    m_bytesWritten.set(0);
-	    m_isValidCertificate.set(0);
+
+	    if(m_oid.get() != -1)
+		m_isValidCertificate.set(0);
+
 	    m_socket = null;
 	    m_startTime.set(System.nanoTime());
 	}
@@ -199,6 +202,107 @@ public class TcpNeighbor extends Neighbor
 	    setError("A socket error occurred on sendCapabilities().");
 	    disconnect();
 	}
+    }
+
+    public TcpNeighbor(SSLSocket socket)
+    {
+	/*
+	** We're a server socket.
+	*/
+
+	super("", "", "", "TCP", "", -1);
+	m_isValidCertificate = new AtomicInteger(1);
+	m_readSocketScheduler = Executors.newSingleThreadScheduledExecutor();
+	m_socket = socket;
+
+	if(m_socket != null)
+	    try
+	    {
+		m_socket.setSoTimeout(SO_TIMEOUT);
+		m_socket.setTcpNoDelay(true);
+	    }
+	    catch(Exception exception)
+	    {
+	    }
+
+	/*
+	** Launch the schedulers.
+	*/
+
+	m_readSocketScheduler.scheduleAtFixedRate(new Runnable()
+	{
+	    @Override
+	    public void run()
+	    {
+		try
+		{
+		    if(Thread.currentThread().isInterrupted())
+			return;
+		    else
+			Thread.sleep(5);
+		}
+		catch(InterruptedException exception)
+		{
+		    Thread.currentThread().interrupt();
+		}
+		catch(Exception exception)
+		{
+		}
+
+		if(!connected())
+		    return;
+
+		try
+		{
+		    long bytesRead = 0;
+
+		    if(m_socket == null ||
+		       m_socket.getInputStream() == null)
+			return;
+		    else if(m_socket.getSoTimeout() == 0)
+			m_socket.setSoTimeout(SO_TIMEOUT);
+
+		    int i = 0;
+
+		    try
+		    {
+			i = m_socket.getInputStream().read(m_bytes);
+		    }
+		    catch(java.net.SocketTimeoutException exception)
+		    {
+		    }
+
+		    if(i < 0)
+			bytesRead = -1;
+		    else if(i > 0)
+			bytesRead += i;
+
+		    if(bytesRead < 0)
+		    {
+			setError("A socket read() error occurred.");
+			disconnect();
+			return;
+		    }
+
+		    m_bytesRead.getAndAdd(bytesRead);
+		    m_lastTimeRead.set(System.nanoTime());
+
+		    synchronized(m_stringBuilder)
+		    {
+			m_stringBuilder.append
+			    (new String(m_bytes, 0, (int) bytesRead));
+		    }
+		}
+		catch(java.net.SocketException exception)
+		{
+		    setError("A socket error occurred while reading data.");
+		    disconnect();
+		}
+		catch(Exception exception)
+		{
+		}
+	    }
+	}, 0, READ_SOCKET_INTERVAL, TimeUnit.MILLISECONDS);
     }
 
     public TcpNeighbor(String proxyIpAddress,
@@ -415,7 +519,10 @@ public class TcpNeighbor extends Neighbor
     {
 	disconnect();
 	super.abort();
-	m_isValidCertificate.set(0);
+
+	if(m_oid.get() != -1)
+	    m_isValidCertificate.set(0);
+
 	m_readSocketScheduler.shutdown();
 
 	try
@@ -430,6 +537,8 @@ public class TcpNeighbor extends Neighbor
     public void connect()
     {
 	if(connected())
+	    return;
+	else if(m_oid.get() == -1)
 	    return;
 
 	setError("");
@@ -483,6 +592,18 @@ public class TcpNeighbor extends Neighbor
 		     exception.getMessage() +
 		     ") occurred while attempting a connection.");
 	    disconnect();
+	}
+    }
+
+    public void startHandshake()
+    {
+	try
+	{
+	    if(m_socket != null)
+		m_socket.startHandshake();
+	}
+	catch(Exception exception)
+	{
 	}
     }
 }

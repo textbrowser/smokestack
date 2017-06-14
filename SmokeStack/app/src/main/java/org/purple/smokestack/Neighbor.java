@@ -209,28 +209,32 @@ public abstract class Neighbor
 		{
 		}
 
-		String statusControl = m_databaseHelper.
-		    readListenerNeighborStatusControl
-		    (m_cryptography, "neighbors", m_oid.get());
-
-		switch(statusControl)
+		if(m_oid.get() != -1)
 		{
-		case "connect":
-		    connect();
-		    break;
-		case "disconnect":
-		    disconnect();
-		    break;
-		default:
-		    /*
-		    ** Abort!
-		    */
+		    String statusControl = m_databaseHelper.
+			readListenerNeighborStatusControl
+			(m_cryptography, "neighbors", m_oid.get());
 
-		    disconnect();
-		    return;
+		    switch(statusControl)
+		    {
+		    case "connect":
+			connect();
+			break;
+		    case "disconnect":
+			disconnect();
+			break;
+		    default:
+			/*
+			** Abort!
+			*/
+
+			disconnect();
+			return;
+		    }
+
+		    saveStatistics();
 		}
 
-		saveStatistics();
 		terminateOnSilence();
 	    }
 	}, 0, TIMER_INTERVAL, TimeUnit.MILLISECONDS);
@@ -262,21 +266,24 @@ public abstract class Neighbor
 		    sendCapabilities();
 		}
 
-		/*
-		** Retrieve the first database message.
-		*/
+		if(m_oid.get() != -1)
+		{
+		    /*
+		    ** Retrieve the first database message.
+		    */
 
-		String array[] = m_databaseHelper.readOutboundMessage
-		    (m_oid.get());
+		    String array[] = m_databaseHelper.readOutboundMessage
+			(m_oid.get());
 
-		/*
-		** If the message is sent successfully, remove it.
-		*/
+		    /*
+		    ** If the message is sent successfully, remove it.
+		    */
 
-		if(array != null)
-		    if(send(array[0]))
-			m_databaseHelper.deleteEntry
-			    (array[1], "outbound_queue");
+		    if(array != null)
+			if(send(array[0]))
+			    m_databaseHelper.deleteEntry
+				(array[1], "outbound_queue");
+		}
 
 		/*
 		** Echo packets.
