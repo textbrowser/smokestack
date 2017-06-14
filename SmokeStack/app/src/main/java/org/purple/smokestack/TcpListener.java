@@ -111,8 +111,19 @@ public class TcpListener
 		       String version,
 		       int oid)
     {
+	m_oid = new AtomicInteger(oid);
 	prepareCertificate();
 	m_acceptScheduler = Executors.newSingleThreadScheduledExecutor();
+	m_ipAddress = ipAddress;
+	m_ipPort = ipPort;
+	m_scheduler = Executors.newSingleThreadScheduledExecutor();
+	m_scopeId = scopeId;
+	m_version = version;
+
+	/*
+	** Launch the schedulers.
+	*/
+
 	m_acceptScheduler.scheduleAtFixedRate(new Runnable()
 	{
 	    private ExecutorService m_executorService =
@@ -176,10 +187,6 @@ public class TcpListener
 		}
 	    }
 	}, 0, ACCEPT_INTERVAL, TimeUnit.MILLISECONDS);
-	m_ipAddress = ipAddress;
-	m_ipPort = ipPort;
-	m_oid = new AtomicInteger(oid);
-	m_scheduler = Executors.newSingleThreadScheduledExecutor();
 	m_scheduler.scheduleAtFixedRate(new Runnable()
 	{
 	    @Override
@@ -246,8 +253,6 @@ public class TcpListener
 		saveStatistics();
 	    }
 	}, 0, TIMER_INTERVAL, TimeUnit.MILLISECONDS);
-	m_scopeId = scopeId;
-	m_version = version;
     }
 
     private boolean listening()
@@ -334,6 +339,12 @@ public class TcpListener
 				   keyPair.getPrivate(),
 				   null,
 				   new X509Certificate[] {certificate});
+	    m_databaseHelper.writeListenerCertificateDetails
+		(m_cryptography,
+		 certificate.getEncoded(),
+		 keyPair.getPrivate().getEncoded(),
+		 keyPair.getPublic().getEncoded(),
+		 m_oid.get());
 	}
 	catch(Exception exception)
 	{

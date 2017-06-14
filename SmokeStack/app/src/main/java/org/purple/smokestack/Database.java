@@ -3097,6 +3097,57 @@ public class Database extends SQLiteOpenHelper
 	}
     }
 
+    public void writeListenerCertificateDetails(Cryptography cryptography,
+						byte certificate[],
+						byte privateKey[],
+						byte publicKey[],
+						int oid)
+    {
+	prepareDb();
+
+	if(cryptography == null ||
+	   certificate == null ||
+	   certificate.length < 0 ||
+	   m_db == null ||
+	   privateKey == null ||
+	   privateKey.length < 0 ||
+	   publicKey == null ||
+	   publicKey.length < 0)
+	    return;
+
+	m_db.beginTransactionNonExclusive();
+
+	try
+	{
+	    ContentValues values = new ContentValues();
+
+	    values.put
+		("certificate",
+		 Base64.encodeToString(cryptography.etm(certificate),
+				       Base64.DEFAULT));
+	    values.put
+		("private_key",
+		 Base64.encodeToString(cryptography.etm(privateKey),
+				       Base64.DEFAULT));
+	    values.put
+		("public_key",
+		 Base64.encodeToString(cryptography.etm(publicKey),
+				       Base64.DEFAULT));
+	    m_db.update("listeners",
+			values,
+			"OID = ?",
+			new String[] {String.valueOf(oid)});
+	    m_db.setTransactionSuccessful();
+	}
+	catch(Exception exception)
+	{
+	}
+	finally
+	{
+	    m_db.endTransaction();
+	}
+    }
+
     public void writeLog(String event)
     {
 	prepareDb();
