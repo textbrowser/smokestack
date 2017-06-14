@@ -955,7 +955,7 @@ public class Settings extends AppCompatActivity
 	    }
 
 	    stringBuilder.append("\n");
-	    stringBuilder.append("Temporary Queue Size: ");
+	    stringBuilder.append("Temp. Queued: ");
 	    stringBuilder.append(neighborElement.m_echoQueueSize);
 	    stringBuilder.append(" / ");
 	    stringBuilder.append(Neighbor.MAXIMUM_QUEUED_ECHO_PACKETS);
