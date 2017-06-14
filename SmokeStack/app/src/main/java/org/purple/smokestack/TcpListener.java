@@ -301,9 +301,9 @@ public class TcpListener
 	try
 	{
 	    Date endDate = new Date
-		(System.currentTimeMillis() + 24 * 60 * 60 * 365 * 1000);
+		(System.currentTimeMillis() + 24L * 60L * 60L * 365L * 1000L);
 	    Date startDate = new Date
-		(System.currentTimeMillis() - 24 * 60 * 60 * 1000);
+		(System.currentTimeMillis() - 24L * 60L * 60L * 1000L);
 	    X500NameBuilder nameBuilder = new X500NameBuilder(BCStyle.INSTANCE);
 
 	    /*
