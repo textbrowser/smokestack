@@ -131,9 +131,6 @@ public class TcpListener
 
 	m_acceptScheduler.scheduleAtFixedRate(new Runnable()
 	{
-	    private ExecutorService m_executorService =
-		Executors.newFixedThreadPool(100);
-
 	    @Override
 	    public void run()
 	    {
