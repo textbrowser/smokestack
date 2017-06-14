@@ -211,7 +211,6 @@ public class TcpNeighbor extends Neighbor
 	*/
 
 	super("", "", "", "TCP", "", -1);
-	m_isServer.set(1);
 	m_isValidCertificate = new AtomicInteger(1);
 	m_readSocketScheduler = Executors.newSingleThreadScheduledExecutor();
 	m_socket = socket;
