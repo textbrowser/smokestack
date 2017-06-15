@@ -69,8 +69,6 @@ public class TcpListener
     }
 
     private AtomicInteger m_oid;
-    private Cryptography m_cryptography = Cryptography.getInstance();
-    private Database m_databaseHelper = Database.getInstance();
     private KeyStore m_keyStore = null;
     private SSLServerSocket m_socket = null;
     private ScheduledExecutorService m_acceptScheduler = null;
@@ -82,6 +80,8 @@ public class TcpListener
     private final ArrayList<TcpNeighbor> m_sockets = new ArrayList<> ();
     private final AtomicInteger m_listen = new AtomicInteger(0);
     private final AtomicLong m_startTime = new AtomicLong(System.nanoTime());
+    private final Cryptography m_cryptography = Cryptography.getInstance();
+    private final Database m_databaseHelper = Database.getInstance();
     private final ReentrantReadWriteLock m_socketsMutex =
 	new ReentrantReadWriteLock();
     private final StringBuilder m_error = new StringBuilder();

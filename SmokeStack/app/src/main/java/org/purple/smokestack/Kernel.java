@@ -47,13 +47,13 @@ public class Kernel
 {
     private ArrayList<OzoneElement> m_ozones = null;
     private ArrayList<SipHashIdElement> m_sipHashIds = null;
-    private ArrayList<TcpNeighbor> m_serverNeighbors = new ArrayList<> ();
     private ScheduledExecutorService m_congestionScheduler = null;
     private ScheduledExecutorService m_listenersScheduler = null;
     private ScheduledExecutorService m_neighborsScheduler = null;
     private ScheduledExecutorService m_purgeReleasedMessagesScheduler = null;
     private ScheduledExecutorService m_releaseMessagesScheduler = null;
     private WakeLock m_wakeLock = null;
+    private final ArrayList<TcpNeighbor> m_serverNeighbors = new ArrayList<> ();
     private final ReentrantReadWriteLock m_ozonesMutex = new
 	ReentrantReadWriteLock();
     private final ReentrantReadWriteLock m_serverNeighborsMutex = new
