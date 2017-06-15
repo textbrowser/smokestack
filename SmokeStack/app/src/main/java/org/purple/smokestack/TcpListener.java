@@ -324,13 +324,10 @@ public class TcpListener
 	}
 	catch(Exception exception)
 	{
-	    keyPair = null;
 	    setError("An error (" + exception.getMessage() +
 		     ") occurred while preparing the key pair.");
-	}
-
-	if(keyPair == null)
 	    return;
+	}
 
 	try
 	{
