@@ -1213,14 +1213,18 @@ public class Settings extends AppCompatActivity
 	{
 	    public void onCancel(DialogInterface dialog)
 	    {
-		State.getInstance().reset();
-		m_databaseHelper.resetAndDrop();
-		s_cryptography.reset();
+		if(State.getInstance().getString("dialog_accepted").
+		   equals("true"))
+		{
+		    State.getInstance().reset();
+		    m_databaseHelper.resetAndDrop();
+		    s_cryptography.reset();
 
-		Intent intent = getIntent();
+		    Intent intent = getIntent();
 
-		startActivity(intent);
-		finish();
+		    startActivity(intent);
+		    finish();
+		}
 	    }
 	};
 
@@ -1379,12 +1383,16 @@ public class Settings extends AppCompatActivity
 	{
 	    public void onCancel(DialogInterface dialog)
 	    {
-		m_databaseHelper.reset();
-		populateListeners();
-		populateNeighbors();
-		populateOzoneAddresses();
-		populateParticipants();
-		prepareCredentials();
+		if(State.getInstance().getString("dialog_accepted").
+		   equals("true"))
+		{
+		    m_databaseHelper.reset();
+		    populateListeners();
+		    populateNeighbors();
+		    populateOzoneAddresses();
+		    populateParticipants();
+		    prepareCredentials();
+		}
 	    }
 	};
 
@@ -2182,62 +2190,21 @@ public class Settings extends AppCompatActivity
 		switch(groupId)
 	        {
 		case 0:
-		    if(m_databaseHelper.deleteEntry(String.valueOf(itemId),
-						    "ozones"))
-		    {
-			Kernel.getInstance().populateOzones();
-			populateOzoneAddresses();
-		    }
+		    if(State.getInstance().getString("dialog_accepted").
+		       equals("true"))
+			if(m_databaseHelper.deleteEntry(String.valueOf(itemId),
+							"ozones"))
+			{
+			    Kernel.getInstance().populateOzones();
+			    populateOzoneAddresses();
+			}
 
 		    break;
 		case 1:
-		    if(m_databaseHelper.removeMessages(String.valueOf(itemId)))
-		    {
-			TableLayout tableLayout = (TableLayout)
-			    findViewById(R.id.participants);
-
-			for(int i = 0; i < tableLayout.getChildCount(); i++)
-			{
-			    TableRow row = (TableRow) tableLayout.
-				getChildAt(i);
-
-			    if(row == null)
-				continue;
-
-			    TextView textView = (TextView) row.getChildAt(2);
-
-			    if(textView == null)
-				continue;
-
-			    if(itemId != textView.getId())
-				continue;
-
-			    textView.setText("0 / 0 / 0");
-			    break;
-			}
-		    }
-
-		    break;
-		case 2:
-		    if(m_databaseHelper.deleteEntry(String.valueOf(itemId),
-						    "siphash_ids"))
-		    {
-			m_databaseHelper.cleanDanglingMessages();
-			m_databaseHelper.cleanDanglingParticipants();
-			Kernel.getInstance().populateSipHashIds();
-			populateParticipants();
-		    }
-
-		    break;
-		case 3:
-		    if(m_databaseHelper.
-		       resetRetrievalState(s_cryptography,
-					   String.valueOf(itemId)))
-		    {
-			MessageTotals messageTotals = m_databaseHelper.
-			    readMessageTotals(String.valueOf(itemId));
-
-			if(messageTotals != null)
+		    if(State.getInstance().getString("dialog_accepted").
+		       equals("true"))
+			if(m_databaseHelper.
+			   removeMessages(String.valueOf(itemId)))
 			{
 			    TableLayout tableLayout = (TableLayout)
 				findViewById(R.id.participants);
@@ -2250,8 +2217,8 @@ public class Settings extends AppCompatActivity
 				if(row == null)
 				    continue;
 
-				TextView textView = (TextView) row.
-				    getChildAt(2);
+				TextView textView = (TextView)
+				    row.getChildAt(2);
 
 				if(textView == null)
 				    continue;
@@ -2259,14 +2226,67 @@ public class Settings extends AppCompatActivity
 				if(itemId != textView.getId())
 				    continue;
 
-				textView.setText
-				    (messageTotals.m_inMessages + " / " +
-				     messageTotals.m_outMessages + " / " +
-				     messageTotals.m_totalMessages);
+				textView.setText("0 / 0 / 0");
 				break;
 			    }
 			}
-		    }
+
+		    break;
+		case 2:
+		    if(State.getInstance().getString("dialog_accepted").
+		       equals("true"))
+			if(m_databaseHelper.deleteEntry(String.valueOf(itemId),
+							"siphash_ids"))
+			{
+			    m_databaseHelper.cleanDanglingMessages();
+			    m_databaseHelper.cleanDanglingParticipants();
+			    Kernel.getInstance().populateSipHashIds();
+			    populateParticipants();
+			}
+
+		    break;
+		case 3:
+		    if(State.getInstance().getString("dialog_accepted").
+		       equals("true"))
+			if(m_databaseHelper.
+			   resetRetrievalState(s_cryptography,
+					       String.valueOf(itemId)))
+			{
+			    MessageTotals messageTotals = m_databaseHelper.
+				readMessageTotals(String.valueOf(itemId));
+
+			    if(messageTotals != null)
+			    {
+				TableLayout tableLayout = (TableLayout)
+				    findViewById(R.id.participants);
+
+				for(int i = 0;
+				    i < tableLayout.getChildCount();
+				    i++)
+				{
+				    TableRow row = (TableRow) tableLayout.
+					getChildAt(i);
+
+				    if(row == null)
+					continue;
+
+				    TextView textView = (TextView) row.
+					getChildAt(2);
+
+				    if(textView == null)
+					continue;
+
+				    if(itemId != textView.getId())
+					continue;
+
+				    textView.setText
+					(messageTotals.m_inMessages + " / " +
+					 messageTotals.m_outMessages + " / " +
+					 messageTotals.m_totalMessages);
+				    break;
+				}
+			    }
+			}
 
 		    break;
 		}

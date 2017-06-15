@@ -30,6 +30,9 @@ package org.purple.smokestack;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import java.nio.ByteBuffer;
 import java.text.DecimalFormat;
 
@@ -294,13 +297,16 @@ public class Miscellaneous
 	 String prompt)
     {
 	AlertDialog alertDialog = new AlertDialog.Builder(context).create();
+	CheckBox checkBox = new CheckBox(context);
 
+	State.getInstance().removeKey("dialog_accepted");
 	alertDialog.setButton
 	    (AlertDialog.BUTTON_NEGATIVE, "No",
 	     new DialogInterface.OnClickListener()
 	     {
 		 public void onClick(DialogInterface dialog, int which)
 		 {
+		     State.getInstance().removeKey("dialog_accepted");
 		     dialog.dismiss();
 		 }
 	     });
@@ -310,6 +316,7 @@ public class Miscellaneous
 	     {
 		 public void onClick(DialogInterface dialog, int which)
 		 {
+		     State.getInstance().setString("dialog_accepted", "true");
 		     dialog.cancel();
 		 }
 	     });
@@ -319,6 +326,23 @@ public class Miscellaneous
 							 ** for a response.
 							 */
 	alertDialog.setTitle("Confirmation");
+	alertDialog.setView(checkBox);
 	alertDialog.show();
+
+	final Button button = alertDialog.getButton
+	    (AlertDialog.BUTTON_POSITIVE);
+
+	button.setEnabled(false);
+	checkBox.setOnCheckedChangeListener
+	    (new CompoundButton.OnCheckedChangeListener()
+	    {
+		@Override
+		public void onCheckedChanged
+		    (CompoundButton buttonView, boolean isChecked)
+		{
+		    button.setEnabled(isChecked);
+		}
+	    });
+	checkBox.setText("Confirm");
     }
 }
