@@ -45,7 +45,6 @@ import java.util.Arrays;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
-import javax.crypto.KeyGenerator;
 import javax.crypto.Mac;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
