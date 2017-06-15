@@ -2130,10 +2130,6 @@ public class Settings extends AppCompatActivity
 	else
 	    spinner1.setSelection(0);
 
-	if(!State.getInstance().isAuthenticated())
-	    if(m_databaseHelper.accountPrepared())
-		showAuthenticateActivity();
-
 	m_databaseHelper.cleanDanglingMessages();
 	m_databaseHelper.cleanDanglingOutboundQueued();
 	m_databaseHelper.cleanDanglingParticipants();
@@ -2159,6 +2155,14 @@ public class Settings extends AppCompatActivity
 	    populateParticipants();
 	    startKernel();
 	}
+
+	/*
+	** Show the Authenticate activity if an account is present.
+	*/
+
+	if(!State.getInstance().isAuthenticated())
+	    if(m_databaseHelper.accountPrepared())
+		showAuthenticateActivity();
     }
 
     @Override
