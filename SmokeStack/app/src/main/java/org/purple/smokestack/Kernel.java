@@ -202,6 +202,14 @@ public class Kernel
 
 	try
 	{
+	    /*
+	    ** TcpListener will disconnect its sockets.
+	    */
+
+	    for(int i = 0; i < m_serverNeighbors.size(); i++)
+		if(m_serverNeighbors.get(i) != null)
+		    m_serverNeighbors.get(i).abort();
+
 	    m_serverNeighbors.clear();
 	}
 	finally
