@@ -38,6 +38,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public abstract class Neighbor
 {
+    private ArrayList<String> m_echoQueue = null;
     private ArrayList<String> m_queue = null;
     private ScheduledExecutorService m_parsingScheduler = null;
     private ScheduledExecutorService m_scheduler = null;
@@ -45,6 +46,7 @@ public abstract class Neighbor
     private String m_scopeId = "";
     private UUID m_uuid = null;
     private final String m_echoMode = "full";
+    private final static Object m_echoQueueMutex = new Object();
     private final static Object m_queueMutex = new Object();
     private final static int LANE_WIDTH = 100000;
     private final static int PARSING_INTERVAL = 100; // Milliseconds
@@ -87,9 +89,9 @@ public abstract class Neighbor
 	    error = m_error.toString();
 	}
 
-	synchronized(m_queueMutex)
+	synchronized(m_echoQueueMutex)
 	{
-	    echoQueueSize = String.valueOf(m_queue.size());
+	    echoQueueSize = String.valueOf(m_echoQueue.size());
 	}
 
 	m_databaseHelper.saveNeighborInformation
@@ -126,6 +128,7 @@ public abstract class Neighbor
 	m_bytesWritten = new AtomicLong(0);
 	m_cryptography = Cryptography.getInstance();
 	m_databaseHelper = Database.getInstance();
+	m_echoQueue = new ArrayList<> ();
 	m_ipAddress = ipAddress;
 	m_ipPort = ipPort;
 	m_lastTimeRead = new AtomicLong(System.nanoTime());
@@ -289,6 +292,16 @@ public abstract class Neighbor
 		** Echo packets.
 		*/
 
+		synchronized(m_echoQueueMutex)
+		{
+		    if(!m_echoQueue.isEmpty())
+			send(m_echoQueue.remove(0)); // Ignore results.
+		}
+
+		/*
+		** Transfer real-time packets.
+		*/
+
 		synchronized(m_queueMutex)
 		{
 		    if(!m_queue.isEmpty())
@@ -403,11 +416,20 @@ public abstract class Neighbor
 	return m_oid.get();
     }
 
-    public void clearQueue()
+    public void clearEchoQueue()
     {
-	synchronized(m_queueMutex)
+	synchronized(m_echoQueueMutex)
 	{
-	    m_queue.clear();
+	    m_echoQueue.clear();
+	}
+    }
+
+    public void scheduleEchoSend(String message)
+    {
+	synchronized(m_echoQueueMutex)
+	{
+	    if(m_echoQueue.size() < MAXIMUM_QUEUED_ECHO_PACKETS)
+		m_echoQueue.add(message);
 	}
     }
 
@@ -415,8 +437,7 @@ public abstract class Neighbor
     {
 	synchronized(m_queueMutex)
 	{
-	    if(m_queue.size() < MAXIMUM_QUEUED_ECHO_PACKETS)
-		m_queue.add(message);
+	    m_queue.add(message);
 	}
     }
 }

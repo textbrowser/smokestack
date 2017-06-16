@@ -252,11 +252,11 @@ public class Kernel
 	if(destination == null)
 	    return;
 
-	enqueueMessage
-	    (Messages.
-	     bytesToMessageString(Miscellaneous.
-				  joinByteArrays(arrayList.get(0),
-						 destination)));
+	String message = Messages.
+	    bytesToMessageString(Miscellaneous.
+				 joinByteArrays(arrayList.get(0), destination));
+
+	enqueueMessage(message);
 	s_databaseHelper.timestampReleasedMessage
 	    (s_cryptography, arrayList.get(1));
     }
@@ -517,7 +517,7 @@ public class Kernel
 		int j = m_neighbors.keyAt(i);
 
 		if(m_neighbors.get(j) != null)
-		    m_neighbors.get(j).clearQueue();
+		    m_neighbors.get(j).clearEchoQueue();
 	    }
 	}
     }
@@ -540,7 +540,7 @@ public class Kernel
 
 		if(m_neighbors.get(j) != null &&
 		   m_neighbors.get(j).getOid() != oid)
-		    m_neighbors.get(j).scheduleSend(message);
+		    m_neighbors.get(j).scheduleEchoSend(message);
 	    }
 	}
 
@@ -550,7 +550,7 @@ public class Kernel
 	{
 	    for(int i = 0; i < m_serverNeighbors.size(); i++)
 		if(m_serverNeighbors.get(i) != null)
-		    m_serverNeighbors.get(i).scheduleSend(message);
+		    m_serverNeighbors.get(i).scheduleEchoSend(message);
 	}
 	finally
 	{
@@ -565,13 +565,27 @@ public class Kernel
 
 	SparseIntArray neighbors = s_databaseHelper.readNeighborOids();
 
-	if(neighbors == null || neighbors.size() == 0)
-	    return;
+	if(neighbors != null && neighbors.size() > 0)
+	{
+	    for(int i = 0; i < neighbors.size(); i++)
+		s_databaseHelper.enqueueOutboundMessage
+		    (message, neighbors.get(i));
 
-	for(int i = 0; i < neighbors.size(); i++)
-	    s_databaseHelper.enqueueOutboundMessage(message, neighbors.get(i));
+	    neighbors.clear();
+	}
 
-	neighbors.clear();
+	m_serverNeighborsMutex.readLock().lock();
+
+	try
+	{
+	    for(int i = 0; i < m_serverNeighbors.size(); i++)
+		if(m_serverNeighbors.get(i) != null)
+		    m_serverNeighbors.get(i).scheduleSend(message);
+	}
+	finally
+	{
+	    m_serverNeighborsMutex.readLock().unlock();
+	}
     }
 
     public void populateOzones()
