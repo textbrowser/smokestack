@@ -263,8 +263,9 @@ public class Kernel
 
     public boolean ourMessage(String buffer)
     {
-	if(s_databaseHelper.containsCongestionDigest(s_congestionSipHash.
-						     hmac(buffer.getBytes())))
+	long value = s_congestionSipHash.hmac(buffer.getBytes());
+
+	if(s_databaseHelper.containsCongestionDigest(value))
 	    return true;
 
 	try
@@ -332,8 +333,7 @@ public class Kernel
 		    SmokeStack.getApplication().sendBroadcast(intent);
 		}
 
-		s_databaseHelper.writeCongestionDigest
-		    (s_congestionSipHash.hmac(buffer.getBytes()));
+		s_databaseHelper.writeCongestionDigest(value);
 		return true;
 	    }
 
@@ -430,8 +430,7 @@ public class Kernel
 
 		     s_databaseHelper.tagMessagesForRelease
 			 (s_cryptography, sipHashIdDigest);
-		     s_databaseHelper.writeCongestionDigest
-			 (s_congestionSipHash.hmac(buffer.getBytes()));
+		     s_databaseHelper.writeCongestionDigest(value);
 		     return true;
 		 }
 
@@ -466,8 +465,7 @@ public class Kernel
 			    ** Discovered.
 			    */
 
-			    s_databaseHelper.writeCongestionDigest
-				(s_congestionSipHash.hmac(buffer.getBytes()));
+			    s_databaseHelper.writeCongestionDigest(value);
 			    s_databaseHelper.writeMessage
 				(s_cryptography,
 				 sipHashIdElement.m_sipHashId,
