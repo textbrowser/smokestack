@@ -3072,7 +3072,7 @@ public class Database extends SQLiteOpenHelper
 	if(m_db == null)
 	    return;
 
-	m_db.beginTransaction(); // Exclusive transaction.
+	m_db.beginTransactionNonExclusive();
 
 	try
 	{
