@@ -6,19 +6,9 @@ GRADLEW = ./SmokeStack/gradlew
 JDK = "${HOME}/Desktop/android-studio/jre"
 
 all:
-	mkdir -p SmokeStack/app/src/main/assets
-	zip -r smokestack.src.d.zip -r \
-	Android \
-	Documentation \
-	Makefile \
-	Makefile.linux \
-	SmokeStack/app/src \
-	TO-DO \
-	adb.bash && mv smokestack.src.d.zip SmokeStack/app/src/main/assets/.
 	$(GRADLEW) -Dorg.gradle.java.home=$(JDK) \
 	--build-file SmokeStack/build.gradle assembleDebug \
 	--configure-on-demand --daemon --parallel
-	rm -f SmokeStack/app/src/main/assets/smokestack.src.d.zip
 
 clean:
 	rm -f SmokeStack/app/src/main/assets/smokestack.src.d.zip
@@ -66,9 +56,19 @@ purge:
 	find . -name '*~*' -exec rm -f {} \;
 
 release:
+	mkdir -p SmokeStack/app/src/main/assets
+	zip -r smokestack.src.d.zip -r \
+	Android \
+	Documentation \
+	Makefile \
+	Makefile.linux \
+	SmokeStack/app \
+	TO-DO \
+	adb.bash && mv smokestack.src.d.zip SmokeStack/app/src/main/assets/.
 	$(GRADLEW) -Dorg.gradle.java.home=$(JDK) \
 	--build-file SmokeStack/build.gradle assembleRelease \
 	--configure-on-demand --daemon --parallel
+	rm -f SmokeStack/app/src/main/assets/smokestack.src.d.zip
 
 remove-database:
 	./adb.bash shell run-as org.purple.smokestack rm -f /data/data/org.purple.smokestack/databases/smokestack.db
