@@ -538,9 +538,9 @@ public class Settings extends AppCompatActivity
 	    registerForContextMenu(checkBox);
 
 	    if(listenerElement.m_status.equals("listening"))
-		checkBox.setTextColor(Color.rgb(0, 100, 0)); // Dark Green
+		checkBox.setTextColor(Color.rgb(144, 238, 144)); // Light Green
 	    else
-		checkBox.setTextColor(Color.rgb(139, 0, 0)); // Dark Red
+		checkBox.setTextColor(Color.rgb(240, 128, 128)); // Light Coral
 
 	    stringBuilder.setLength(0);
 	    stringBuilder.append("Control: ");
@@ -849,13 +849,13 @@ public class Settings extends AppCompatActivity
 	    switch(neighborElement.m_status)
 	    {
             case "connected":
-                textView.setTextColor(Color.rgb(0, 100, 0)); // Dark Green
+                textView.setTextColor(Color.rgb(144, 238, 144)); // Light Green
                 break;
             case "connecting":
                 textView.setTextColor(Color.rgb(255, 140, 0)); // Dark Orange
                 break;
             default:
-                textView.setTextColor(Color.rgb(139, 0, 0)); // Dark Red
+                textView.setTextColor(Color.rgb(240, 128, 128)); // Light Coral
                 break;
 	    }
 

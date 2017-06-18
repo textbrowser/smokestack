@@ -19,8 +19,10 @@
     </android.support.design.widget.AppBarLayout>
 
     <RelativeLayout
+        android:id="@+id/view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="#3B5378"
         android:fadeScrollbars="false"
         android:paddingBottom="@dimen/activity_vertical_margin"
         android:paddingLeft="@dimen/activity_horizontal_margin"
@@ -55,6 +57,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="5dp"
+                    android:textColor="#fdb632"
                     android:textIsSelectable="true" />
 
                 <TextView
@@ -73,7 +76,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="5dp"
-                    android:text="@string/local" />
+                    android:text="@string/local"
+                    android:textColor="#fdb632" />
 
                 <android.support.v4.widget.NestedScrollView
                     android:layout_width="match_parent"
@@ -92,7 +96,8 @@
                     android:id="@+id/automatic_refresh_listeners"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/automatic_refresh" />
+                    android:text="@string/automatic_refresh"
+                    android:textColor="#fdb632" />
 
                 <Button
                     android:id="@+id/refresh_listeners"
@@ -109,7 +114,9 @@
                     android:ems="10"
                     android:hint="@string/ip_address"
                     android:inputType="textPersonName"
-                    android:nextFocusDown="@+id/listeners_port" />
+                    android:nextFocusDown="@+id/listeners_port"
+                    android:textColor="#fdb632"
+                    android:textColorHint="#fdb632" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -124,7 +131,9 @@
                         android:ems="10"
                         android:hint="@string/port"
                         android:inputType="number"
-                        android:nextFocusDown="@+id/listeners_scope_id" />
+                        android:nextFocusDown="@+id/listeners_scope_id"
+                        android:textColor="#fdb632"
+                        android:textColorHint="#fdb632" />
 
                     <EditText
                         android:id="@+id/listeners_scope_id"
@@ -135,7 +144,9 @@
                         android:ems="10"
                         android:hint="@string/scope_id"
                         android:inputType="textPersonName"
-                        android:nextFocusDown="@+id/neighbors_ip_address" />
+                        android:nextFocusDown="@+id/neighbors_ip_address"
+                        android:textColor="#fdb632"
+                        android:textColorHint="#fdb632" />
                 </LinearLayout>
 
                 <RadioGroup
@@ -151,7 +162,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="@string/ipv4" />
+                        android:text="@string/ipv4"
+                        android:textColor="#fdb632" />
 
                     <RadioButton
                         android:id="@+id/listeners_ipv6"
@@ -159,7 +171,8 @@
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="5dp"
                         android:layout_weight="1"
-                        android:text="@string/ipv6" />
+                        android:text="@string/ipv6"
+                        android:textColor="#fdb632" />
 
                 </RadioGroup>
 
@@ -205,14 +218,16 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="0.31"
-                        android:text="@string/control" />
+                        android:text="@string/control"
+                        android:textColor="#fdb632" />
 
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="5dp"
                         android:layout_weight="0.31"
-                        android:text="@string/remote" />
+                        android:text="@string/remote"
+                        android:textColor="#fdb632" />
                 </LinearLayout>
 
                 <android.support.v4.widget.NestedScrollView
@@ -240,14 +255,16 @@
                         android:id="@+id/automatic_refresh_neighbors"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        android:text="@string/automatic_refresh" />
+                        android:text="@string/automatic_refresh"
+                        android:textColor="#fdb632" />
 
                     <CheckBox
                         android:id="@+id/neighbor_details"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_marginEnd="5dp"
-                        android:text="@string/details" />
+                        android:text="@string/details"
+                        android:textColor="#fdb632" />
 
                 </LinearLayout>
 
@@ -273,7 +290,9 @@
                     android:ems="10"
                     android:hint="@string/ip_address"
                     android:inputType="textPersonName"
-                    android:nextFocusDown="@+id/neighbors_port" />
+                    android:nextFocusDown="@+id/neighbors_port"
+                    android:textColor="#fdb632"
+                    android:textColorHint="#fdb632" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -287,7 +306,9 @@
                         android:layout_weight="1"
                         android:ems="10"
                         android:hint="@string/port"
-                        android:inputType="number" />
+                        android:inputType="number"
+                        android:textColor="#fdb632"
+                        android:textColorHint="#fdb632" />
 
                     <EditText
                         android:id="@+id/neighbors_scope_id"
@@ -298,7 +319,9 @@
                         android:ems="10"
                         android:hint="@string/scope_id"
                         android:inputType="textPersonName"
-                        android:nextFocusDown="@+id/proxy_ip_address" />
+                        android:nextFocusDown="@+id/proxy_ip_address"
+                        android:textColor="#fdb632"
+                        android:textColorHint="#fdb632" />
                 </LinearLayout>
 
                 <RadioGroup
@@ -315,21 +338,24 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:checked="true"
-                        android:text="@string/ipv4" />
+                        android:text="@string/ipv4"
+                        android:textColor="#fdb632" />
 
                     <RadioButton
                         android:id="@+id/neighbors_ipv6"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="@string/ipv6" />
+                        android:text="@string/ipv6"
+                        android:textColor="#fdb632" />
 
                     <Spinner
                         android:id="@+id/neighbors_transport"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="5dp"
-                        android:layout_weight="1" />
+                        android:layout_weight="1"
+                        android:background="#fdb632" />
 
                 </RadioGroup>
 
@@ -341,7 +367,9 @@
                     android:ems="10"
                     android:hint="@string/proxy_ip_address"
                     android:inputType="textPersonName"
-                    android:nextFocusDown="@+id/proxy_port" />
+                    android:nextFocusDown="@+id/proxy_port"
+                    android:textColor="#fdb632"
+                    android:textColorHint="#fdb632" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -356,14 +384,17 @@
                         android:ems="10"
                         android:hint="@string/proxy_port"
                         android:inputType="number"
-                        android:nextFocusDown="@+id/ozone" />
+                        android:nextFocusDown="@+id/ozone"
+                        android:textColor="#fdb632"
+                        android:textColorHint="#fdb632" />
 
                     <Spinner
                         android:id="@+id/proxy_type"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="5dp"
-                        android:layout_weight="1" />
+                        android:layout_weight="1"
+                        android:background="#fdb632" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -423,7 +454,9 @@
                         android:layout_weight="1"
                         android:ems="10"
                         android:hint="@string/address"
-                        android:inputType="textPersonName" />
+                        android:inputType="textPersonName"
+                        android:textColor="#fdb632"
+                        android:textColorHint="#fdb632" />
 
                     <Button
                         android:id="@+id/save_ozone"
@@ -451,7 +484,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="5dp"
-                    android:text="@string/retrieved_content_will_be_stored_for_approximately_one_week" />
+                    android:text="@string/retrieved_content_will_be_stored_for_approximately_one_week"
+                    android:textColor="#fdb632" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -462,21 +496,24 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="0.13"
-                        android:text="@string/name" />
+                        android:text="@string/name"
+                        android:textColor="#fdb632" />
 
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="5dp"
                         android:layout_weight="0.13"
-                        android:text="@string/siphash_id" />
+                        android:text="@string/siphash_id"
+                        android:textColor="#fdb632" />
 
                     <TextView
                         android:id="@+id/textView3"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="0.13"
-                        android:text="@string/in_out_total" />
+                        android:text="@string/in_out_total"
+                        android:textColor="#fdb632" />
 
                 </LinearLayout>
 
@@ -522,7 +559,9 @@
                         android:ems="10"
                         android:hint="@string/name"
                         android:inputType="textPersonName"
-                        android:nextFocusDown="@+id/participant_siphash_id" />
+                        android:nextFocusDown="@+id/participant_siphash_id"
+                        android:textColor="#fdb632"
+                        android:textColorHint="#fdb632" />
 
                     <EditText
                         android:id="@+id/participant_siphash_id"
@@ -532,7 +571,9 @@
                         android:layout_weight="1"
                         android:ems="10"
                         android:hint="@string/siphash_id"
-                        android:inputType="textPersonName" />
+                        android:inputType="textPersonName"
+                        android:textColor="#fdb632"
+                        android:textColorHint="#fdb632" />
 
                     <Button
                         android:id="@+id/siphash_help"
@@ -548,7 +589,8 @@
                     android:id="@+id/accept_without_signatures"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/accept_without_signatures" />
+                    android:text="@string/accept_without_signatures"
+                    android:textColor="#fdb632" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -591,6 +633,7 @@
                         android:layout_width="179dp"
                         android:layout_height="wrap_content"
                         android:text="@string/iteration_count"
+                        android:textColor="#fdb632"
                         android:textSize="14sp" />
 
                     <Spinner
@@ -598,7 +641,8 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="5dp"
-                        android:layout_weight="1" />
+                        android:layout_weight="1"
+                        android:background="#fdb632" />
 
                 </LinearLayout>
 
@@ -609,7 +653,9 @@
                     android:layout_marginEnd="5dp"
                     android:ems="10"
                     android:hint="@string/password"
-                    android:inputType="textPassword" />
+                    android:inputType="textPassword"
+                    android:textColor="#fdb632"
+                    android:textColorHint="#fdb632" />
 
                 <EditText
                     android:id="@+id/password2"
@@ -618,7 +664,9 @@
                     android:layout_marginEnd="5dp"
                     android:ems="10"
                     android:hint="@string/password_confirmation"
-                    android:inputType="textPassword" />
+                    android:inputType="textPassword"
+                    android:textColor="#fdb632"
+                    android:textColorHint="#fdb632" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
