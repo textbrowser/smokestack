@@ -69,6 +69,38 @@ import javax.crypto.SecretKey;
 
 public class Settings extends AppCompatActivity
 {
+    private class PopulateListeners implements Runnable
+    {
+	private ArrayList<ListenerElement> m_arrayList = null;
+
+	public PopulateListeners(ArrayList<ListenerElement> arrayList)
+	{
+	    m_arrayList = arrayList;
+	}
+
+	@Override
+	public void run()
+	{
+	    populateListeners(m_arrayList);
+	}
+    }
+
+    private class PopulateNeighbors implements Runnable
+    {
+	private ArrayList<NeighborElement> m_arrayList = null;
+
+	public PopulateNeighbors(ArrayList<NeighborElement> arrayList)
+	{
+	    m_arrayList = arrayList;
+	}
+
+	@Override
+	public void run()
+	{
+	    populateNeighbors(m_arrayList);
+	}
+    }
+
     private class SettingsBroadcastReceiver extends BroadcastReceiver
     {
 	public SettingsBroadcastReceiver()
@@ -177,7 +209,7 @@ public class Settings extends AppCompatActivity
 		(Settings.this,
 		 "An error occurred while saving the listener information.");
 	else if(!checkBox1.isChecked())
-	    populateListeners();
+	    populateListeners(null);
     }
 
     private void addNeighbor()
@@ -218,7 +250,7 @@ public class Settings extends AppCompatActivity
 		(Settings.this,
 		 "An error occurred while saving the neighbor information.");
 	else if(!checkBox1.isChecked())
-	    populateNeighbors();
+	    populateNeighbors(null);
     }
 
     private void addParticipant()
@@ -403,10 +435,11 @@ public class Settings extends AppCompatActivity
 	textView1.setEnabled(state);
     }
 
-    private void populateListeners()
+    private void populateListeners(ArrayList<ListenerElement> arrayList)
     {
-	ArrayList<ListenerElement> arrayList =
-	    m_databaseHelper.readListeners(s_cryptography);
+	if(arrayList == null)
+	    arrayList = m_databaseHelper.readListeners(s_cryptography);
+
 	final TableLayout tableLayout = (TableLayout)
 	    findViewById(R.id.listeners);
 
@@ -641,10 +674,11 @@ public class Settings extends AppCompatActivity
 	arrayList.clear();
     }
 
-    private void populateNeighbors()
+    private void populateNeighbors(ArrayList<NeighborElement> arrayList)
     {
-	ArrayList<NeighborElement> arrayList =
-	    m_databaseHelper.readNeighbors(s_cryptography);
+	if(arrayList == null)
+	    arrayList = m_databaseHelper.readNeighbors(s_cryptography);
+
 	final TableLayout tableLayout = (TableLayout)
 	    findViewById(R.id.neighbors);
 
@@ -1186,7 +1220,7 @@ public class Settings extends AppCompatActivity
 	{
 	    public void onClick(View view)
 	    {
-		populateListeners();
+		populateListeners(null);
 	    }
         });
 
@@ -1195,7 +1229,7 @@ public class Settings extends AppCompatActivity
 	{
 	    public void onClick(View view)
 	    {
-		populateNeighbors();
+		populateNeighbors(null);
 	    }
         });
 
@@ -1387,8 +1421,8 @@ public class Settings extends AppCompatActivity
 		   equals("true"))
 		{
 		    m_databaseHelper.reset();
-		    populateListeners();
-		    populateNeighbors();
+		    populateListeners(null);
+		    populateNeighbors(null);
 		    populateOzoneAddresses();
 		    populateParticipants();
 		    prepareCredentials();
@@ -1549,7 +1583,7 @@ public class Settings extends AppCompatActivity
 			(R.id.automatic_refresh_neighbors);
 
 		    if(!checkBox.isChecked())
-			populateNeighbors();
+			populateNeighbors(null);
 		}
 	    });
 
@@ -1772,14 +1806,14 @@ public class Settings extends AppCompatActivity
 			       equals("true"))
 				startListenersTimers();
 			    else
-				populateListeners();
+				populateListeners(null);
 
 			    if(m_databaseHelper.
 			       readSetting(null, "automatic_neighbors_refresh").
 			       equals("true"))
 				startNeighborsTimers();
 			    else
-				populateNeighbors();
+				populateNeighbors(null);
 			}
 		    }
 		});
@@ -1815,19 +1849,12 @@ public class Settings extends AppCompatActivity
 	    m_listenersScheduler = Executors.newSingleThreadScheduledExecutor();
 	    m_listenersScheduler.scheduleAtFixedRate(new Runnable()
 	    {
-		private final Runnable runnable = new Runnable()
-		{
-		    @Override
-		    public void run()
-		    {
-			populateListeners();
-		    }
-		};
-
 		@Override
 		public void run()
 		{
-		    Settings.this.runOnUiThread(runnable);
+		    Settings.this.runOnUiThread
+			(new PopulateListeners(m_databaseHelper.
+					       readListeners(s_cryptography)));
 		}
 	    }, 0, TIMER_INTERVAL, TimeUnit.MILLISECONDS);
         }
@@ -1840,19 +1867,12 @@ public class Settings extends AppCompatActivity
 	    m_neighborsScheduler = Executors.newSingleThreadScheduledExecutor();
 	    m_neighborsScheduler.scheduleAtFixedRate(new Runnable()
 	    {
-		private final Runnable runnable = new Runnable()
-		{
-		    @Override
-		    public void run()
-		    {
-			populateNeighbors();
-		    }
-		};
-
 		@Override
 		public void run()
 		{
-		    Settings.this.runOnUiThread(runnable);
+		    Settings.this.runOnUiThread
+			(new PopulateNeighbors(m_databaseHelper.
+					       readNeighbors(s_cryptography)));
 		}
 	    }, 0, TIMER_INTERVAL, TimeUnit.MILLISECONDS);
         }
@@ -2149,8 +2169,8 @@ public class Settings extends AppCompatActivity
 	    if(checkBox1.isChecked())
 		startNeighborsTimers();
 
-	    populateListeners();
-	    populateNeighbors();
+	    populateListeners(null);
+	    populateNeighbors(null);
 	    populateOzoneAddresses();
 	    populateParticipants();
 	    startKernel();
