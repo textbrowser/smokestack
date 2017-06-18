@@ -254,7 +254,10 @@ public class Settings extends AppCompatActivity
     }
 
     private void addParticipant()
-    {
+    {	
+	if(Settings.this.isFinishing())
+	    return;
+
 	String string = "";
 	StringBuilder stringBuilder = new StringBuilder();
 	TextView textView1 = (TextView) findViewById
@@ -1356,6 +1359,9 @@ public class Settings extends AppCompatActivity
 	{
 	    public void onClick(View view)
 	    {
+		if(Settings.this.isFinishing())
+		    return;
+
 		String string = "";
 		TextView textView = (TextView) findViewById(R.id.ozone);
 		boolean ok = true;
@@ -1491,6 +1497,9 @@ public class Settings extends AppCompatActivity
 	{
 	    public void onClick(View view)
 	    {
+		if(Settings.this.isFinishing())
+		    return;
+
 		PopupWindow popupWindow = new PopupWindow(Settings.this);
 		TextView textView = new TextView(Settings.this);
 
@@ -1650,6 +1659,9 @@ public class Settings extends AppCompatActivity
 
     private void prepareCredentials()
     {
+	if(Settings.this.isFinishing())
+	    return;
+
 	final ProgressDialog dialog = new ProgressDialog(Settings.this);
 	final Spinner spinner1 = (Spinner) findViewById(R.id.iteration_count);
 	final TextView textView1 = (TextView) findViewById
