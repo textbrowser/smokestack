@@ -296,35 +296,38 @@ public abstract class Neighbor
 		** Echo packets.
 		*/
 
+		String message = "";
+
 		synchronized(m_echoQueueMutex)
 		{
 		    if(!m_echoQueue.isEmpty())
-		    {
-			String message = m_echoQueue.remove(0);
+			message = m_echoQueue.remove(0);
+		}
 
-			if(!m_userDefined.get())
-			    try
-			    {
-				byte bytes[] = Base64.decode
-				    (Messages.
-				     stripMessage(message), Base64.DEFAULT);
+		if(!message.isEmpty())
+		{
+		    if(!m_userDefined.get())
+			try
+			{
+			    byte bytes[] = Base64.decode
+				(Messages.
+				 stripMessage(message), Base64.DEFAULT);
 
-				/*
-				** Determine if the message's destination
-				** is correct.
-				*/
+			    /*
+			    ** Determine if the message's destination
+			    ** is correct.
+			    */
 
-				if(m_databaseHelper.
-				   containsRoutingIdentity(m_uuid.toString(),
-							   bytes))
-				    send(message); // Ignore results.
-			    }
-			    catch(Exception exception)
-			    {
-			    }
-			else
-			    send(message); // Ignore results.
-		    }
+			    if(m_databaseHelper.
+			       containsRoutingIdentity(m_uuid.toString(),
+						       bytes))
+				send(message); // Ignore results.
+			}
+			catch(Exception exception)
+			{
+			}
+		    else
+			send(message); // Ignore results.
 		}
 
 		/*
