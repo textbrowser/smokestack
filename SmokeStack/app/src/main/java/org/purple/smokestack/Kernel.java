@@ -356,12 +356,8 @@ public class Kernel
 	    if(arrayList2 == null || arrayList2.size() == 0)
 		return false;
 
-	    byte a1[] = Arrays.copyOfRange(bytes,
-					   0,
-					   bytes.length - 64);
-	    byte a2[] = Arrays.copyOfRange(bytes,
-					   bytes.length - 64,
-					   bytes.length);
+	    array1 = Arrays.copyOfRange(bytes, 0, bytes.length - 64);
+	    array2 = Arrays.copyOfRange(bytes, bytes.length - 64, bytes.length);
 
 	    for(OzoneElement ozoneElement : arrayList2)
 	    {
@@ -369,9 +365,9 @@ public class Kernel
 		    continue;
 
 		if(Cryptography.
-		   memcmp(a2,
+		   memcmp(array2,
 			  Cryptography.
-			  hmac(a1,
+			  hmac(array1,
 			       Arrays.copyOfRange(ozoneElement.m_addressStream,
 						  32,
 						  ozoneElement.m_addressStream.
@@ -382,7 +378,7 @@ public class Kernel
 		     */
 
 		     byte aes256[] = Cryptography.decrypt
-			 (a1,
+			 (array1,
 			  Arrays.copyOfRange(ozoneElement.m_addressStream,
 					     0,
 					     32));
@@ -447,10 +443,10 @@ public class Kernel
 
 		    for(int i = 0; i < 2; i++)
 			if(Cryptography.
-			   memcmp(a2,
+			   memcmp(array2,
 				  Cryptography.
 				  hmac(Miscellaneous.
-				       joinByteArrays(a1,
+				       joinByteArrays(array1,
 						      sipHashIdElement.
 						      m_sipHashId.
 						      getBytes("UTF-8"),
@@ -472,7 +468,7 @@ public class Kernel
 			    s_databaseHelper.writeMessage
 				(s_cryptography,
 				 sipHashIdElement.m_sipHashId,
-				 a1);
+				 array1);
 			    return true;
 			}
 		}
