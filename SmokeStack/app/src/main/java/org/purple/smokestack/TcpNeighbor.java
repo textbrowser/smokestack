@@ -36,7 +36,7 @@ import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicBoolean;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.TrustManager;
@@ -44,7 +44,7 @@ import javax.net.ssl.X509TrustManager;
 
 public class TcpNeighbor extends Neighbor
 {
-    private AtomicInteger m_isValidCertificate = null;
+    private AtomicBoolean m_isValidCertificate = null;
     private InetSocketAddress m_inetSocketAddress = null;
     private InetSocketAddress m_proxyInetSocketAddress = null;
     private SSLSocket m_socket = null;
@@ -106,7 +106,7 @@ public class TcpNeighbor extends Neighbor
 
     protected boolean send(String message)
     {
-	if(m_isValidCertificate.get() == 0)
+	if(!m_isValidCertificate.get())
 	    return false;
 
 	if(!connected())
@@ -168,7 +168,7 @@ public class TcpNeighbor extends Neighbor
 	    m_bytesWritten.set(0);
 
 	    if(m_oid.get() >= 0)
-		m_isValidCertificate.set(0);
+		m_isValidCertificate.set(false);
 
 	    m_socket = null;
 	    m_startTime.set(System.nanoTime());
@@ -177,7 +177,7 @@ public class TcpNeighbor extends Neighbor
 
     protected void sendCapabilities()
     {
-	if(m_isValidCertificate.get() == 0)
+	if(!m_isValidCertificate.get())
 	    return;
 
 	if(!connected())
@@ -211,7 +211,7 @@ public class TcpNeighbor extends Neighbor
 	*/
 
 	super("", "", "", "TCP", "", -1);
-	m_isValidCertificate = new AtomicInteger(1);
+	m_isValidCertificate = new AtomicBoolean(true);
 	m_readSocketScheduler = Executors.newSingleThreadScheduledExecutor();
 	m_socket = socket;
 	m_userDefined = false;
@@ -346,7 +346,7 @@ public class TcpNeighbor extends Neighbor
 	    m_inetSocketAddress = null;
 	}
 
-	m_isValidCertificate = new AtomicInteger(0);
+	m_isValidCertificate = new AtomicBoolean(false);
 
 	if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
 	    m_protocols = new String[] {"TLSv1", "TLSv1.1", "TLSv1.2"};
@@ -374,7 +374,7 @@ public class TcpNeighbor extends Neighbor
 	    @Override
 	    public void run()
 	    {
-		if(m_isValidCertificate.get() == 0)
+		if(!m_isValidCertificate.get())
 		    return;
 
 		try
@@ -464,9 +464,9 @@ public class TcpNeighbor extends Neighbor
 		    (X509Certificate chain[], String authType)
 		{
 		    if(authType == null || authType.length() == 0)
-			m_isValidCertificate.set(0);
+			m_isValidCertificate.set(false);
 		    else if(chain == null || chain.length == 0)
-			m_isValidCertificate.set(0);
+			m_isValidCertificate.set(false);
 		    else
 		    {
 			try
@@ -483,7 +483,7 @@ public class TcpNeighbor extends Neighbor
 				    (Cryptography.getInstance(),
 				     String.valueOf(m_oid.get()),
 				     chain[0].getEncoded());
-				m_isValidCertificate.set(1);
+				m_isValidCertificate.set(true);
 			    }
 			    else if(!Cryptography.memcmp(bytes,
 							 chain[0].getEncoded()))
@@ -492,19 +492,19 @@ public class TcpNeighbor extends Neighbor
 					 "certificate does not match the " +
 					 "certificate that was provided by " +
 					 "the server.");
-				m_isValidCertificate.set(0);
+				m_isValidCertificate.set(false);
 			    }
 			    else
-				m_isValidCertificate.set(1);
+				m_isValidCertificate.set(true);
 			}
 			catch(Exception exception)
 			{
 			    setError("The server's certificate has expired.");
-			    m_isValidCertificate.set(0);
+			    m_isValidCertificate.set(false);
 			}
 		    }
 
-		    if(m_isValidCertificate.get() == 0)
+		    if(!m_isValidCertificate.get())
 			synchronized(m_errorMutex)
 			{
 			    if(m_error.length() == 0)
@@ -522,7 +522,7 @@ public class TcpNeighbor extends Neighbor
 	super.abort();
 
 	if(m_oid.get() >= 0)
-	    m_isValidCertificate.set(0);
+	    m_isValidCertificate.set(false);
 
 	m_readSocketScheduler.shutdown();
 
