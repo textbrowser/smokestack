@@ -288,10 +288,12 @@ public class Kernel
 			(clientIdentity, Messages.stripMessage(buffer));
 
 		    /*
-		    ** Echo the identity to other clients.
+		    ** Do not echo the identity stream to other neighbors
+		    ** as a separate thread will distribute harvested
+		    ** identities.
 		    */
 
-		    return false;
+		    return true;
 		}
 
 	    byte bytes[] =

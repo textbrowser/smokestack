@@ -214,7 +214,7 @@ public class TcpNeighbor extends Neighbor
 	m_isValidCertificate = new AtomicBoolean(true);
 	m_readSocketScheduler = Executors.newSingleThreadScheduledExecutor();
 	m_socket = socket;
-	m_userDefined = false;
+	m_userDefined.set(false);
 
 	if(m_socket != null)
 	    try

@@ -42,6 +42,7 @@ import java.security.KeyFactory;
 import java.security.PublicKey;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.UUID;
@@ -1260,6 +1261,54 @@ public class Database extends SQLiteOpenHelper
 	}
 
 	return contains;
+    }
+
+    public boolean containsRoutingIdentity(String clientIdentity,
+					   byte data[])
+    {
+	prepareDb();
+
+	if(clientIdentity.length() == 0 ||
+	   data == null ||
+	   data.length < 0 ||
+	   m_db == null)
+	    return false;
+
+	Cursor cursor = null;
+
+	try
+	{
+	    byte array1[] = Arrays.copyOfRange(data, 0, data.length - 64);
+	    byte array2[] = Arrays.copyOfRange
+		(data, data.length - 64, data.length);
+
+	    cursor = m_db.rawQuery
+		("SELECT identity FROM routing_identities WHERE " +
+		 "client_identity = ?", new String[] {clientIdentity});
+
+	    if(cursor != null && cursor.moveToFirst())
+		while(!cursor.isAfterLast())
+		{
+		    byte bytes[] = Base64.decode(cursor.getString(0),
+						 Base64.DEFAULT);
+
+		    if(Cryptography.memcmp(Cryptography.hmac(array1, bytes),
+					   array2))
+			return true;
+
+		    cursor.moveToNext();
+		}
+	}
+	catch(Exception exception)
+	{
+	}
+	finally
+	{
+	    if(cursor != null)
+		cursor.close();
+	}
+
+	return false;
     }
 
     public boolean deleteEntry(String oid, String table)
@@ -3128,7 +3177,7 @@ public class Database extends SQLiteOpenHelper
 	    ContentValues values = new ContentValues();
 
 	    values.put("client_identity", clientIdentity.toString());
-	    values.put("identity", identity.replace("\n", ""));
+	    values.put("identity", identity);
 	    m_db.insert("routing_identities", null, values);
 	    m_db.setTransactionSuccessful();
 	}

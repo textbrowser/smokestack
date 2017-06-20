@@ -29,10 +29,12 @@ package org.purple.smokestack;
 
 import android.util.Base64;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -53,6 +55,7 @@ public abstract class Neighbor
     private final static int SEND_OUTBOUND_TIMER_INTERVAL = 200; // Milliseconds
     private final static int SILENCE = 90000; // 90 Seconds
     private final static int TIMER_INTERVAL = 2500; // 2.5 Seconds
+    protected AtomicBoolean m_userDefined = null;
     protected AtomicInteger m_oid = null;
     protected AtomicLong m_bytesRead = null;
     protected AtomicLong m_bytesWritten = null;
@@ -64,7 +67,6 @@ public abstract class Neighbor
     protected String m_ipAddress = "";
     protected String m_ipPort = "";
     protected String m_version = "";
-    protected boolean m_userDefined = true;
     protected byte m_bytes[] = null;
     protected final StringBuilder m_error = new StringBuilder();
     protected final StringBuilder m_stringBuilder = new StringBuilder();
@@ -140,6 +142,7 @@ public abstract class Neighbor
 	m_scopeId = scopeId;
 	m_sendOutboundScheduler = Executors.newSingleThreadScheduledExecutor();
 	m_startTime = new AtomicLong(System.nanoTime());
+	m_userDefined = new AtomicBoolean(true);
 	m_uuid = UUID.randomUUID();
 	m_version = version;
 
@@ -181,9 +184,8 @@ public abstract class Neighbor
 			String buffer = m_stringBuilder.
 			    substring(0, indexOf + EOM.length());
 
-			if(!Kernel.getInstance().ourMessage(buffer,
-							    m_uuid,
-							    m_userDefined))
+			if(!Kernel.getInstance().
+			   ourMessage(buffer, m_uuid, m_userDefined.get()))
 			    echo(buffer);
 
 			m_stringBuilder.delete(0, buffer.length());
@@ -298,7 +300,32 @@ public abstract class Neighbor
 		synchronized(m_echoQueueMutex)
 		{
 		    if(!m_echoQueue.isEmpty())
-			send(m_echoQueue.remove(0)); // Ignore results.
+		    {
+			String message = m_echoQueue.remove(0);
+
+			if(!m_userDefined.get())
+			    try
+			    {
+				byte bytes[] = Base64.decode
+				    (Messages.
+				     stripMessage(message), Base64.DEFAULT);
+
+				/*
+				** Determine if the message's destination
+				** is correct.
+				*/
+
+				if(m_databaseHelper.
+				   containsRoutingIdentity(m_uuid.toString(),
+							   bytes))
+				    send(message); // Ignore results.
+			    }
+			    catch(Exception exception)
+			    {
+			    }
+			else
+			    send(message); // Ignore results.
+		    }
 		}
 
 		/*
