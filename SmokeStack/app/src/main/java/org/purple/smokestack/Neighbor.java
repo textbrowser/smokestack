@@ -64,6 +64,7 @@ public abstract class Neighbor
     protected String m_ipAddress = "";
     protected String m_ipPort = "";
     protected String m_version = "";
+    protected boolean m_userDefined = true;
     protected byte m_bytes[] = null;
     protected final StringBuilder m_error = new StringBuilder();
     protected final StringBuilder m_stringBuilder = new StringBuilder();
@@ -180,7 +181,9 @@ public abstract class Neighbor
 			String buffer = m_stringBuilder.
 			    substring(0, indexOf + EOM.length());
 
-			if(!Kernel.getInstance().ourMessage(buffer))
+			if(!Kernel.getInstance().ourMessage(buffer,
+							    m_uuid,
+							    m_userDefined))
 			    echo(buffer);
 
 			m_stringBuilder.delete(0, buffer.length());

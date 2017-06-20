@@ -2599,6 +2599,23 @@ public class Database extends SQLiteOpenHelper
 	}
 
 	/*
+	** Create the routing_identities table.
+	*/
+
+	str = "CREATE TABLE IF NOT EXISTS routing_identities (" +
+	    "client_identity TEXT NOT NULL, " +
+	    "identity TEXT NOT NULL, " +
+	    "PRIMARY KEY (client_identity, identity))";
+
+	try
+	{
+	    db.execSQL(str);
+	}
+	catch(Exception exception)
+	{
+	}
+
+	/*
 	** Create the settings table.
 	*/
 
@@ -2786,6 +2803,7 @@ public class Database extends SQLiteOpenHelper
 	    m_db.delete("outbound_queue", null, null);
 	    m_db.delete("ozones", null, null);
 	    m_db.delete("participants", null, null);
+	    m_db.delete("routing_identities", null, null);
 	    m_db.delete("settings", null, null);
 	    m_db.delete("siphash_ids", null, null);
 	    m_db.delete("stack", null, null);
@@ -2815,6 +2833,7 @@ public class Database extends SQLiteOpenHelper
 	     "DROP TABLE IF EXISTS outbound_queue",
 	     "DROP TABLE IF EXISTS ozones",
 	     "DROP TABLE IF EXISTS participants",
+	     "DROP TABLE IF EXISTS routing_identities",
 	     "DROP TABLE IF EXISTS settings",
 	     "DROP TABLE IF EXISTS siphash_ids",
 	     "DROP TABLE IF EXISTS stack"};

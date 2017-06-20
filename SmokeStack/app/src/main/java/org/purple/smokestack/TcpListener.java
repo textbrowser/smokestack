@@ -43,6 +43,7 @@ import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -78,7 +79,7 @@ public class TcpListener
     private String m_scopeId = "";
     private String m_version = "";
     private final ArrayList<TcpNeighbor> m_sockets = new ArrayList<> ();
-    private final AtomicInteger m_listen = new AtomicInteger(0);
+    private final AtomicBoolean m_listen = new AtomicBoolean(false);
     private final AtomicLong m_startTime = new AtomicLong(System.nanoTime());
     private final Cryptography m_cryptography = Cryptography.getInstance();
     private final Database m_databaseHelper = Database.getInstance();
@@ -147,7 +148,7 @@ public class TcpListener
 		{
 		}
 
-		if(m_listen.get() == 0)
+		if(!m_listen.get())
 		    return;
 
 		SSLSocket sslSocket = null;
@@ -453,7 +454,7 @@ public class TcpListener
 
     public void disconnect()
     {
-	m_listen.set(0);
+	m_listen.set(false);
 
 	try
 	{
@@ -491,7 +492,7 @@ public class TcpListener
 
     public void listen()
     {
-	m_listen.set(1);
+	m_listen.set(true);
 
 	try
 	{
