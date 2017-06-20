@@ -2166,6 +2166,7 @@ public class Settings extends AppCompatActivity
 	m_databaseHelper.cleanDanglingOutboundQueued();
 	m_databaseHelper.cleanDanglingParticipants();
 	m_databaseHelper.clearTable("log");
+	m_databaseHelper.clearTable("routing_identities");
 
 	if(isAuthenticated)
 	{

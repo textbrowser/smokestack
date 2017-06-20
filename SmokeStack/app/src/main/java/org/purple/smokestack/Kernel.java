@@ -273,6 +273,22 @@ public class Kernel
 
 	try
 	{
+	    if(!userDefined)
+		/*
+		** A server socket!
+		*/
+
+		if(buffer.contains("type=0095"))
+		{
+		    /*
+		    ** A client has shared an identity stream.
+		    */
+
+		    s_databaseHelper.writeIdentity
+			(clientIdentity, Messages.stripMessage(buffer));
+		    return true;
+		}
+
 	    byte bytes[] =
 		Base64.decode(Messages.stripMessage(buffer), Base64.DEFAULT);
 

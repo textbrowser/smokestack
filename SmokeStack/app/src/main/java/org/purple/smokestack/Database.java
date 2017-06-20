@@ -44,6 +44,7 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.UUID;
 import java.util.regex.Matcher;
 
 public class Database extends SQLiteOpenHelper
@@ -3102,6 +3103,33 @@ public class Database extends SQLiteOpenHelper
 		 Base64.encodeToString(Miscellaneous.
 				       longToByteArray(value), Base64.DEFAULT));
 	    m_db.insert("congestion_control", null, values);
+	    m_db.setTransactionSuccessful();
+	}
+	catch(Exception exception)
+        {
+	}
+	finally
+	{
+	    m_db.endTransaction();
+	}
+    }
+
+    public void writeIdentity(UUID clientIdentity, String identity)
+    {
+	prepareDb();
+
+	if(m_db == null)
+	    return;
+
+	m_db.beginTransactionNonExclusive();
+
+	try
+	{
+	    ContentValues values = new ContentValues();
+
+	    values.put("client_identity", clientIdentity.toString());
+	    values.put("identity", identity.replace("\n", ""));
+	    m_db.insert("routing_identities", null, values);
 	    m_db.setTransactionSuccessful();
 	}
 	catch(Exception exception)
