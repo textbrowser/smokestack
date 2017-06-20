@@ -102,6 +102,8 @@ public class UdpMulticastNeighbor extends Neighbor
 
     protected void disconnect()
     {
+	m_databaseHelper.deleteRoutingEntry(m_uuid.toString());
+
 	try
 	{
 	    if(m_socket != null)

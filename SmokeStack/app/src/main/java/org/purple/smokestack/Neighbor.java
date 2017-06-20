@@ -45,7 +45,6 @@ public abstract class Neighbor
     private ScheduledExecutorService m_scheduler = null;
     private ScheduledExecutorService m_sendOutboundScheduler = null;
     private String m_scopeId = "";
-    private UUID m_uuid = null;
     private final String m_echoMode = "full";
     private final static Object m_echoQueueMutex = new Object();
     private final static Object m_queueMutex = new Object();
@@ -66,6 +65,7 @@ public abstract class Neighbor
     protected String m_ipAddress = "";
     protected String m_ipPort = "";
     protected String m_version = "";
+    protected UUID m_uuid = null;
     protected byte m_bytes[] = null;
     protected final StringBuilder m_error = new StringBuilder();
     protected final StringBuilder m_stringBuilder = new StringBuilder();

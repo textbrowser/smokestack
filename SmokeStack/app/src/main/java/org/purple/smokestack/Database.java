@@ -2331,6 +2331,30 @@ public class Database extends SQLiteOpenHelper
 	}
     }
 
+    public void deleteRoutingEntry(String clientIdentity)
+    {
+	prepareDb();
+
+	if(m_db == null)
+	    return;
+
+	m_db.beginTransactionNonExclusive();
+
+	try
+	{
+	    m_db.delete("routing_identities", "client_identity = ?",
+			new String[] {clientIdentity});
+	    m_db.setTransactionSuccessful();
+	}
+	catch(Exception exception)
+	{
+	}
+	finally
+	{
+	    m_db.endTransaction();
+	}
+    }
+
     public void enqueueOutboundMessage(String message, int oid)
     {
 	prepareDb();
