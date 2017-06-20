@@ -286,7 +286,12 @@ public class Kernel
 
 		    s_databaseHelper.writeIdentity
 			(clientIdentity, Messages.stripMessage(buffer));
-		    return true;
+
+		    /*
+		    ** Echo the identity to other clients.
+		    */
+
+		    return false;
 		}
 
 	    byte bytes[] =
