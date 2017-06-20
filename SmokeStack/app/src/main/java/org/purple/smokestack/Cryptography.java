@@ -64,8 +64,6 @@ public class Cryptography
     private final static String HMAC_ALGORITHM = "HmacSHA512";
     private final static String PKI_ECDSA_SIGNATURE_ALGORITHM =
 	"SHA512withECDSA";
-    private final static String PKI_RSA_ENCRYPTION_ALGORITHM =
-	"RSA/NONE/OAEPwithSHA-512andMGF1Padding";
     private final static String PKI_RSA_SIGNATURE_ALGORITHM =
 	/*
 	** SHA512withRSA/PSS requires API 23+.
@@ -397,22 +395,6 @@ public class Cryptography
 	return null;
     }
 
-    public static PublicKey publicRSAKeyFromBytes(byte publicBytes[])
-    {
-	try
-	{
-	    EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(publicBytes);
-	    KeyFactory generator = KeyFactory.getInstance("RSA");
-
-	    return generator.generatePublic(publicKeySpec);
-	}
-	catch(Exception exception)
-	{
-	}
-
-	return null;
-    }
-
     public static SecretKey generateEncryptionKey(byte salt[],
 						  char password[],
 						  int iterations)
@@ -553,41 +535,6 @@ public class Cryptography
 	return bytes;
     }
 
-    public static byte[] encrypt(byte data[], byte keyBytes[])
-    {
-	if(data == null ||
-	   data.length < 0 ||
-	   keyBytes == null ||
-	   keyBytes.length < 0)
-	    return null;
-
-	prepareSecureRandom();
-
-	byte bytes[] = null;
-
-	try
-	{
-	    Cipher cipher = null;
-	    SecretKey secretKey = new SecretKeySpec
-		(keyBytes, SYMMETRIC_ALGORITHM);
-	    byte iv[] = new byte[16];
-
-	    cipher = Cipher.getInstance(SYMMETRIC_CIPHER_TRANSFORMATION);
-	    s_secureRandom.nextBytes(iv);
-	    cipher.init(Cipher.ENCRYPT_MODE,
-			secretKey,
-			new IvParameterSpec(iv));
-	    bytes = cipher.doFinal(data);
-	    bytes = Miscellaneous.joinByteArrays(iv, bytes);
-	}
-	catch(Exception exception)
-	{
-	    bytes = null;
-	}
-
-	return bytes;
-    }
-
     public static byte[] keyForSipHash(byte data[])
     {
 	if(data == null || data.length < 0)
@@ -689,36 +636,6 @@ public class Cryptography
 	}
 
 	return bytes;
-    }
-
-    public static byte[] sha256KeyBytes()
-    {
-	try
-	{
-	    KeyGenerator keyGenerator = KeyGenerator.getInstance("HmacSHA256");
-
-	    keyGenerator.init(256);
-	    return keyGenerator.generateKey().getEncoded();
-	}
-	catch(Exception exception)
-	{
-	    return null;
-	}
-    }
-
-    public static byte[] sha512KeyBytes()
-    {
-	try
-	{
-	    KeyGenerator keyGenerator = KeyGenerator.getInstance("HmacSHA512");
-
-	    keyGenerator.init(512);
-	    return keyGenerator.generateKey().getEncoded();
-	}
-	catch(Exception exception)
-	{
-	    return null;
-	}
     }
 
     public static synchronized Cryptography getInstance()

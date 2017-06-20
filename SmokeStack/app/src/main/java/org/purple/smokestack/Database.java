@@ -234,7 +234,7 @@ public class Database extends SQLiteOpenHelper
 			    continue;
 			}
 
-			byte bytes[] = bytes = cryptography.mtd
+			byte bytes[] = cryptography.mtd
 			    (Base64.decode(cursor.getString(i).getBytes(),
 					   Base64.DEFAULT));
 
