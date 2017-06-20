@@ -3118,7 +3118,7 @@ public class Database extends SQLiteOpenHelper
     {
 	prepareDb();
 
-	if(m_db == null)
+	if(clientIdentity == null || identity.length() == 0 || m_db == null)
 	    return;
 
 	m_db.beginTransactionNonExclusive();
