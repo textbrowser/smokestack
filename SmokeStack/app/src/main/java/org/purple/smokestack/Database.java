@@ -2841,19 +2841,18 @@ public class Database extends SQLiteOpenHelper
 
 	    try
 	    {
-		cursor = m_db.rawQuery
-		    ("DELETE FROM stack WHERE OID IN (?)",
-		     new String[] {stringBuilder.toString()});
+		writeLog(stringBuilder.toString());
+		m_db.delete
+		    ("stack", "OID IN (" + stringBuilder.toString() + ")",
+		     null);
 		m_db.setTransactionSuccessful();
 	    }
 	    catch(Exception exception)
 	    {
+		writeLog(exception.getMessage());
 	    }
 	    finally
 	    {
-		if(cursor != null)
-		    cursor.close();
-
 		m_db.endTransaction();
 	    }
 	}
