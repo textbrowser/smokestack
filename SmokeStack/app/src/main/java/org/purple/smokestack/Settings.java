@@ -628,6 +628,14 @@ public class Settings extends AppCompatActivity
 
 	    stringBuilder.append(":");
 	    stringBuilder.append(listenerElement.m_localPort);
+
+	    if(listenerElement.m_certificate != null)
+	    {
+		stringBuilder.append("\nCertificate Fingerprint: ");
+		stringBuilder.append
+		    (Cryptography.fingerPrint(listenerElement.m_certificate));
+	    }
+
 	    stringBuilder.append("\nPeers Count: ");
 	    stringBuilder.append(listenerElement.m_peersCount);
 	    stringBuilder.append("\nUptime: ");
