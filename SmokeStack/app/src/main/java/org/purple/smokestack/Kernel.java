@@ -278,7 +278,7 @@ public class Kernel
 		** A server socket!
 		*/
 
-		if(buffer.contains("type=0095"))
+		if(buffer.contains("type=0095a&content"))
 		{
 		    /*
 		    ** A client has shared an identity stream.

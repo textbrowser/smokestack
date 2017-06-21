@@ -31,6 +31,7 @@ import android.util.Base64;
 
 public class Messages
 {
+    public final static String EOM = "\r\n\r\n\r\n";
     public final static byte CHAT_KEY_TYPE[] = new byte[] {0x00};
     public final static int EPKS_GROUP_ONE_ELEMENT_COUNT = 6;
 
@@ -80,13 +81,13 @@ public class Messages
 		("Content-Type: application/x-www-form-urlencoded\r\n");
 	    results.append("Content-Length: %1\r\n");
 	    results.append("\r\n");
-	    results.append("type=0095&content=%2\r\n");
+	    results.append("type=0095a&content=%2\r\n");
 	    results.append("\r\n\r\n");
 
 	    String base64 = Base64.encodeToString(bytes, Base64.DEFAULT);
 	    int indexOf = results.indexOf("%1");
 	    int length = base64.length() +
-		"type=0095&content=\r\n\r\n\r\n".length();
+		"type=0095a&content=\r\n\r\n\r\n".length();
 
 	    results = results.replace
 		(indexOf, indexOf + 2, String.valueOf(length));

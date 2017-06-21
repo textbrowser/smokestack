@@ -70,7 +70,6 @@ public abstract class Neighbor
     protected final StringBuilder m_error = new StringBuilder();
     protected final StringBuilder m_stringBuilder = new StringBuilder();
     protected final static Object m_errorMutex = new Object();
-    protected final static String EOM = "\r\n\r\n\r\n";
     protected final static int MAXIMUM_BYTES = 32 * 1024 * 1024; // 32 MiB
     protected final static int READ_SOCKET_INTERVAL = 150; // 150 Milliseconds
     protected final static int SO_TIMEOUT = 100; // 100 Milliseconds
@@ -176,19 +175,19 @@ public abstract class Neighbor
 		    ** Detect our end-of-message delimiter.
 		    */
 
-		    int indexOf = m_stringBuilder.indexOf(EOM);
+		    int indexOf = m_stringBuilder.indexOf(Messages.EOM);
 
 		    while(indexOf >= 0)
 		    {
 			String buffer = m_stringBuilder.
-			    substring(0, indexOf + EOM.length());
+			    substring(0, indexOf + Messages.EOM.length());
 
 			if(!Kernel.getInstance().
 			   ourMessage(buffer, m_uuid, m_userDefined.get()))
 			    echo(buffer);
 
 			m_stringBuilder.delete(0, buffer.length());
-			indexOf = m_stringBuilder.indexOf(EOM);
+			indexOf = m_stringBuilder.indexOf(Messages.EOM);
 		    }
 
 		    if(m_stringBuilder.length() > MAXIMUM_BYTES)
