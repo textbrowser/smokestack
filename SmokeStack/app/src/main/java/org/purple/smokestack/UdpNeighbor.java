@@ -133,36 +133,6 @@ public class UdpNeighbor extends Neighbor
 	}
     }
 
-    protected void sendCapabilities()
-    {
-	if(!connected())
-	    return;
-
-	try
-	{
-	    String capabilities = "";
-
-	    if(m_inetAddress == null || m_socket == null)
-		return;
-
-	    capabilities = getCapabilities();
-
-	    DatagramPacket datagramPacket = new DatagramPacket
-		(capabilities.getBytes(),
-		 capabilities.getBytes().length,
-		 m_inetAddress,
-		 Integer.parseInt(m_ipPort));
-
-	    m_socket.send(datagramPacket);
-	    m_bytesWritten.getAndAdd(capabilities.length());
-	}
-	catch(Exception exception)
-	{
-	    setError("A socket error occurred on sendCapabilities().");
-	    disconnect();
-	}
-    }
-
     public UdpNeighbor(String ipAddress,
 		       String ipPort,
 		       String scopeId,

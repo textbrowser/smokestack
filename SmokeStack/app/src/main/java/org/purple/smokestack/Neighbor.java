@@ -269,7 +269,7 @@ public abstract class Neighbor
 		if(System.nanoTime() - m_accumulatedTime >= 1e+10)
 		{
 		    m_accumulatedTime = System.nanoTime();
-		    sendCapabilities();
+		    send(getCapabilities());
 		}
 
 		if(m_oid.get() >= 0)
@@ -393,7 +393,6 @@ public abstract class Neighbor
     protected abstract int getLocalPort();
     protected abstract void connect();
     protected abstract void disconnect();
-    protected abstract void sendCapabilities();
 
     protected synchronized void abort()
     {
