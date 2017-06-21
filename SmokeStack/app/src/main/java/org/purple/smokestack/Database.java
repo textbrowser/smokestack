@@ -2849,7 +2849,6 @@ public class Database extends SQLiteOpenHelper
 	    }
 	    catch(Exception exception)
 	    {
-		writeLog(exception.getMessage());
 	    }
 	    finally
 	    {
