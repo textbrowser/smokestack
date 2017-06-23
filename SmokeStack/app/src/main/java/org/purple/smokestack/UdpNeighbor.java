@@ -139,7 +139,7 @@ public class UdpNeighbor extends Neighbor
 		       String version,
 		       int oid)
     {
-	super(ipAddress, ipPort, scopeId, "UDP", version, oid);
+	super(ipAddress, ipPort, scopeId, "UDP", version, true, oid);
 
 	try
 	{

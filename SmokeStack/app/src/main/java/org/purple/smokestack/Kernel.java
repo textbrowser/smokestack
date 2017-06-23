@@ -280,6 +280,8 @@ public class Kernel
 
 		if(buffer.contains("type=0095a&content"))
 		{
+		    s_databaseHelper.writeCongestionDigest(value);
+
 		    /*
 		    ** A client has shared an identity stream.
 		    */
@@ -293,6 +295,11 @@ public class Kernel
 		    ** identities.
 		    */
 
+		    return true;
+		}
+		else if(buffer.contains("type=0095b&content"))
+		{
+		    s_databaseHelper.writeCongestionDigest(value);
 		    return true;
 		}
 

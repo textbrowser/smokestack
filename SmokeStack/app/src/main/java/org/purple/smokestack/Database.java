@@ -188,6 +188,53 @@ public class Database extends SQLiteOpenHelper
 	    }
     }
 
+    public ArrayList<byte[]> readIdentities()
+    {
+	prepareDb();
+
+	if(m_db == null)
+	    return null;
+
+	Cursor cursor = null;
+	ArrayList<byte[]> arrayList = null;
+
+	try
+	{
+	    cursor = m_db.rawQuery
+		("SELECT identity FROM routing_identities", null);
+
+	    if(cursor != null && cursor.moveToFirst())
+	    {
+		arrayList = new ArrayList<> ();
+
+		while(!cursor.isAfterLast())
+		{
+		    byte bytes[] = Base64.decode
+			(cursor.getString(0).getBytes(), Base64.DEFAULT);
+
+		    if(bytes != null)
+			arrayList.add(bytes);
+
+		    cursor.moveToNext();
+		}
+	    }
+	}
+	catch(Exception exception)
+	{
+	    if(arrayList != null)
+		arrayList.clear();
+
+	    arrayList = null;
+	}
+	finally
+	{
+	    if(cursor != null)
+		cursor.close();
+	}
+
+	return arrayList;
+    }
+
     public ArrayList<ListenerElement> readListeners(Cryptography cryptography)
     {
 	prepareDb();

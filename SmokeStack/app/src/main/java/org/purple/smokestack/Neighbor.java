@@ -41,6 +41,7 @@ public abstract class Neighbor
 {
     private ArrayList<String> m_echoQueue = null;
     private ArrayList<String> m_queue = null;
+    private ScheduledExecutorService m_identitiesScheduler = null;
     private ScheduledExecutorService m_parsingScheduler = null;
     private ScheduledExecutorService m_scheduler = null;
     private ScheduledExecutorService m_sendOutboundScheduler = null;
@@ -48,6 +49,7 @@ public abstract class Neighbor
     private final String m_echoMode = "full";
     private final static Object m_echoQueueMutex = new Object();
     private final static Object m_queueMutex = new Object();
+    private final static int IDENTITIES_TIMER_INTERVAL = 10000; // 10 Seconds
     private final static int LANE_WIDTH = 100000;
     private final static int PARSING_INTERVAL = 100; // Milliseconds
     private final static int SEND_OUTBOUND_TIMER_INTERVAL = 200; // Milliseconds
@@ -122,6 +124,7 @@ public abstract class Neighbor
 		       String scopeId,
 		       String transport,
 		       String version,
+		       boolean userDefined,
 		       int oid)
     {
 	m_bytes = new byte[64 * 1024];
@@ -140,13 +143,70 @@ public abstract class Neighbor
 	m_scopeId = scopeId;
 	m_sendOutboundScheduler = Executors.newSingleThreadScheduledExecutor();
 	m_startTime = new AtomicLong(System.nanoTime());
-	m_userDefined = new AtomicBoolean(true);
+	m_userDefined = new AtomicBoolean(userDefined);
 	m_uuid = UUID.randomUUID();
 	m_version = version;
 
 	/*
 	** Start the schedules.
 	*/
+
+	if(m_userDefined.get())
+	{
+	    m_identitiesScheduler = Executors.
+		newSingleThreadScheduledExecutor();
+	    m_identitiesScheduler.scheduleAtFixedRate(new Runnable()
+	    {
+		@Override
+
+		public void run()
+		{
+		    try
+		    {
+			if(Thread.currentThread().isInterrupted())
+			    return;
+			else
+			    Thread.sleep(5);
+		    }
+		    catch(InterruptedException exception)
+		    {
+			Thread.currentThread().interrupt();
+		    }
+		    catch(Exception exception)
+		    {
+		    }
+
+		    ArrayList<byte[]> arrayList = m_databaseHelper.
+			readIdentities();
+
+		    if(arrayList == null || arrayList.size() == 0)
+			return;
+
+		    byte bytes[] = null;
+
+		    try
+		    {
+			int length = arrayList.get(0).length;
+
+			bytes = new byte[arrayList.size() * length];
+
+			for(int i = 0; i < arrayList.size(); i++)
+			    System.arraycopy
+				(arrayList.get(i),
+				 0,
+				 bytes,
+				 i * length,
+				 length);
+		    }
+		    catch(Exception exception)
+		    {
+		    }
+
+		    arrayList.clear();
+		    send(Messages.identitiesMessage(bytes));
+		}
+	    }, 0, IDENTITIES_TIMER_INTERVAL, TimeUnit.MILLISECONDS);
+	}
 
 	m_parsingScheduler.scheduleAtFixedRate(new Runnable()
 	{
@@ -396,6 +456,19 @@ public abstract class Neighbor
 
     protected synchronized void abort()
     {
+	if(m_identitiesScheduler != null)
+	{
+	    m_identitiesScheduler.shutdown();
+
+	    try
+	    {
+		m_identitiesScheduler.awaitTermination(60, TimeUnit.SECONDS);
+	    }
+	    catch(Exception exception)
+	    {
+	    }
+	}
+
 	m_parsingScheduler.shutdown();
 
 	try

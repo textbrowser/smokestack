@@ -183,7 +183,7 @@ public class TcpNeighbor extends Neighbor
 	** We're a server socket.
 	*/
 
-	super("", "", "", "TCP", "", -1);
+	super("", "", "", "TCP", "", false, -1);
 	m_isValidCertificate = new AtomicBoolean(true);
 	m_readSocketScheduler = Executors.newSingleThreadScheduledExecutor();
 	m_socket = socket;
@@ -288,7 +288,7 @@ public class TcpNeighbor extends Neighbor
 		       String version,
 		       int oid)
     {
-	super(ipAddress, ipPort, scopeId, "TCP", version, oid);
+	super(ipAddress, ipPort, scopeId, "TCP", version, true, oid);
 
 	try
 	{
