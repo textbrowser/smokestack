@@ -300,6 +300,8 @@ public class Kernel
 		else if(buffer.contains("type=0095b&content"))
 		{
 		    s_databaseHelper.writeCongestionDigest(value);
+		    s_databaseHelper.deleteRoutingEntry
+			(clientIdentity.toString());
 
 		    byte bytes[] = Base64.decode
 			(Messages.stripMessage(buffer), Base64.NO_WRAP);
