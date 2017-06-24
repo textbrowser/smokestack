@@ -201,7 +201,7 @@ public class Database extends SQLiteOpenHelper
 	try
 	{
 	    cursor = m_db.rawQuery
-		("SELECT UNIQUE(identity) FROM routing_identities", null);
+		("SELECT DISTINCT(identity) FROM routing_identities", null);
 
 	    if(cursor != null && cursor.moveToFirst())
 	    {
