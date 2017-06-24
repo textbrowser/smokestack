@@ -29,6 +29,7 @@ package org.purple.smokestack;
 
 import android.util.Base64;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -176,34 +177,76 @@ public abstract class Neighbor
 		    {
 		    }
 
-		    ArrayList<byte[]> arrayList = m_databaseHelper.
-			readIdentities();
-
-		    if(arrayList == null || arrayList.size() == 0)
-			return;
-
-		    byte bytes[] = null;
-
-		    try
 		    {
-			int length = arrayList.get(0).length;
+			ArrayList<OzoneElement> arrayList = m_databaseHelper.
+			    readOzones(m_cryptography);
 
-			bytes = new byte[arrayList.size() * length];
+			if(arrayList == null || arrayList.size() == 0)
+			    return;
 
-			for(int i = 0; i < arrayList.size(); i++)
-			    System.arraycopy
-				(arrayList.get(i),
-				 0,
-				 bytes,
-				 i * length,
-				 length);
+			byte bytes[] = null;
+
+			try
+			{
+			    int length = 64; // SHA-512
+
+			    bytes = new byte[arrayList.size() * length];
+
+			    for(int i = 0; i < arrayList.size(); i++)
+				System.arraycopy
+				    (Arrays.copyOfRange(arrayList.get(i).
+							m_addressStream,
+							32,
+							arrayList.get(i).
+							m_addressStream.
+							length),
+				     0,
+				     bytes,
+				     i * length,
+				     length);
+			}
+			catch(Exception exception)
+			{
+			}
+
+			arrayList.clear();
+
+			if(bytes != null)
+			    send(Messages.identitiesMessage(bytes));
 		    }
-		    catch(Exception exception)
+
 		    {
-		    }
+			ArrayList<byte[]> arrayList = m_databaseHelper.
+			    readIdentities();
 
-		    arrayList.clear();
-		    send(Messages.identitiesMessage(bytes));
+			if(arrayList == null || arrayList.size() == 0)
+			    return;
+
+			byte bytes[] = null;
+
+			try
+			{
+			    int length = arrayList.get(0).length;
+
+			    bytes = new byte[arrayList.size() * length];
+
+			    for(int i = 0; i < arrayList.size(); i++)
+				System.arraycopy
+				    (arrayList.get(i),
+				     0,
+				     bytes,
+				     i * length,
+				     length);
+			}
+			catch(Exception exception)
+			{
+			}
+
+			arrayList.clear();
+
+			if(bytes != null)
+			    send(Messages.identitiesMessage(bytes));
+		    }
 		}
 	    }, 0, IDENTITIES_TIMER_INTERVAL, TimeUnit.MILLISECONDS);
 	}

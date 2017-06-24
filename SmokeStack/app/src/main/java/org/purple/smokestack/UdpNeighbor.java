@@ -70,6 +70,9 @@ public class UdpNeighbor extends Neighbor
 
     protected boolean send(String message)
     {
+	if(message == null || message.isEmpty())
+	    return false;
+
 	if(!connected())
 	    return false;
 

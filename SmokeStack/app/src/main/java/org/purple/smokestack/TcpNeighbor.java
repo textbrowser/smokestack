@@ -106,6 +106,9 @@ public class TcpNeighbor extends Neighbor
 
     protected boolean send(String message)
     {
+	if(message == null || message.isEmpty())
+	    return false;
+
 	if(!m_isValidCertificate.get())
 	    return false;
 
