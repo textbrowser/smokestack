@@ -300,6 +300,11 @@ public class Kernel
 		else if(buffer.contains("type=0095b&content"))
 		{
 		    s_databaseHelper.writeCongestionDigest(value);
+
+		    byte bytes[] = Base64.decode
+			(Messages.stripMessage(buffer), Base64.NO_WRAP);
+
+		    s_databaseHelper.writeIdentities(clientIdentity, bytes);
 		    return true;
 		}
 
@@ -351,6 +356,8 @@ public class Kernel
 							m_stream.length))))
 		    continue;
 
+		s_databaseHelper.writeCongestionDigest(value);
+
 		byte aes256[] = Cryptography.decrypt
 		    (array1,
 		     Arrays.copyOfRange(sipHashIdElement.m_stream, 0, 32));
@@ -366,7 +373,6 @@ public class Kernel
 		    SmokeStack.getApplication().sendBroadcast(intent);
 		}
 
-		s_databaseHelper.writeCongestionDigest(value);
 		return true;
 	    }
 
@@ -448,6 +454,8 @@ public class Kernel
 						    73)))
 			 return false;
 
+		     s_databaseHelper.writeCongestionDigest(value);
+
 		     String sipHashIdDigest = s_databaseHelper.
 			 sipHashIdDigestFromDigest
 			 (s_cryptography,
@@ -459,7 +467,6 @@ public class Kernel
 
 		     s_databaseHelper.tagMessagesForRelease
 			 (s_cryptography, sipHashIdDigest);
-		     s_databaseHelper.writeCongestionDigest(value);
 		     return true;
 		 }
 

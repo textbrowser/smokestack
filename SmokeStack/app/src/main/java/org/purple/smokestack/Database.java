@@ -201,7 +201,7 @@ public class Database extends SQLiteOpenHelper
 	try
 	{
 	    cursor = m_db.rawQuery
-		("SELECT identity FROM routing_identities", null);
+		("SELECT UNIQUE(identity) FROM routing_identities", null);
 
 	    if(cursor != null && cursor.moveToFirst())
 	    {
@@ -3221,6 +3221,44 @@ public class Database extends SQLiteOpenHelper
 		 Base64.encodeToString(Miscellaneous.
 				       longToByteArray(value), Base64.DEFAULT));
 	    m_db.insert("congestion_control", null, values);
+	    m_db.setTransactionSuccessful();
+	}
+	catch(Exception exception)
+        {
+	}
+	finally
+	{
+	    m_db.endTransaction();
+	}
+    }
+
+    public void writeIdentities(UUID clientIdentity, byte bytes[])
+    {
+	prepareDb();
+
+	if(bytes == null ||
+	   bytes.length < 0 ||
+	   clientIdentity == null ||
+	   m_db == null)
+	    return;
+
+	m_db.beginTransactionNonExclusive();
+
+	try
+	{
+	    ContentValues values = new ContentValues();
+
+	    for(int i = 0; i < bytes.length; i += 64)
+	    {
+		values.clear();
+		values.put("client_identity", clientIdentity.toString());
+		values.put
+		    ("identity",
+		     Base64.encodeToString(Arrays.copyOfRange(bytes, i, i + 64),
+					   Base64.DEFAULT));
+		m_db.insert("routing_identities", null, values);
+	    }
+
 	    m_db.setTransactionSuccessful();
 	}
 	catch(Exception exception)
