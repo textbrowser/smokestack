@@ -175,6 +175,7 @@ public class TcpNeighbor extends Neighbor
 	    if(m_oid.get() >= 0)
 		m_isValidCertificate.set(false);
 
+	    m_requestUnsolicitedSent.set(false);
 	    m_socket = null;
 	    m_startTime.set(System.nanoTime());
 	}
