@@ -56,6 +56,8 @@ public abstract class Neighbor
     private final static int SEND_OUTBOUND_TIMER_INTERVAL = 200; // Milliseconds
     private final static int SILENCE = 90000; // 90 Seconds
     private final static int TIMER_INTERVAL = 2500; // 2.5 Seconds
+    protected AtomicBoolean m_allowUnsolicited = null;
+    protected AtomicBoolean m_requestUnsolicitedSent = null;
     protected AtomicBoolean m_userDefined = null;
     protected AtomicInteger m_oid = null;
     protected AtomicLong m_bytesRead = null;
@@ -128,6 +130,7 @@ public abstract class Neighbor
 		       boolean userDefined,
 		       int oid)
     {
+	m_allowUnsolicited = new AtomicBoolean(false);
 	m_bytes = new byte[64 * 1024];
 	m_bytesRead = new AtomicLong(0);
 	m_bytesWritten = new AtomicLong(0);
@@ -140,6 +143,7 @@ public abstract class Neighbor
 	m_oid = new AtomicInteger(oid);
 	m_parsingScheduler = Executors.newSingleThreadScheduledExecutor();
 	m_queue = new ArrayList<> ();
+	m_requestUnsolicitedSent = new AtomicBoolean(false);
 	m_scheduler = Executors.newSingleThreadScheduledExecutor();
 	m_scopeId = scopeId;
 	m_sendOutboundScheduler = Executors.newSingleThreadScheduledExecutor();
@@ -177,76 +181,36 @@ public abstract class Neighbor
 		    {
 		    }
 
+		    ArrayList<byte[]> arrayList = m_databaseHelper.
+			readIdentities();
+
+		    if(arrayList == null || arrayList.size() == 0)
+			return;
+
+		    byte bytes[] = null;
+
+		    try
 		    {
-			ArrayList<OzoneElement> arrayList = m_databaseHelper.
-			    readOzones(m_cryptography);
+			int length = arrayList.get(0).length;
 
-			if(arrayList == null || arrayList.size() == 0)
-			    return;
+			bytes = new byte[arrayList.size() * length];
 
-			byte bytes[] = null;
-
-			try
-			{
-			    int length = 64; // SHA-512
-
-			    bytes = new byte[arrayList.size() * length];
-
-			    for(int i = 0; i < arrayList.size(); i++)
-				System.arraycopy
-				    (Arrays.copyOfRange(arrayList.get(i).
-							m_addressStream,
-							32,
-							arrayList.get(i).
-							m_addressStream.
-							length),
-				     0,
-				     bytes,
-				     i * length,
-				     length);
-			}
-			catch(Exception exception)
-			{
-			}
-
-			arrayList.clear();
-
-			if(bytes != null)
-			    send(Messages.identitiesMessage(bytes));
+			for(int i = 0; i < arrayList.size(); i++)
+			    System.arraycopy
+				(arrayList.get(i),
+				 0,
+				 bytes,
+				 i * length,
+				 length);
+		    }
+		    catch(Exception exception)
+		    {
 		    }
 
-		    {
-			ArrayList<byte[]> arrayList = m_databaseHelper.
-			    readIdentities();
+		    arrayList.clear();
 
-			if(arrayList == null || arrayList.size() == 0)
-			    return;
-
-			byte bytes[] = null;
-
-			try
-			{
-			    int length = arrayList.get(0).length;
-
-			    bytes = new byte[arrayList.size() * length];
-
-			    for(int i = 0; i < arrayList.size(); i++)
-				System.arraycopy
-				    (arrayList.get(i),
-				     0,
-				     bytes,
-				     i * length,
-				     length);
-			}
-			catch(Exception exception)
-			{
-			}
-
-			arrayList.clear();
-
-			if(bytes != null)
-			    send(Messages.identitiesMessage(bytes));
-		    }
+		    if(bytes != null)
+			send(Messages.identitiesMessage(bytes));
 		}
 	    }, 0, IDENTITIES_TIMER_INTERVAL, TimeUnit.MILLISECONDS);
 	}
@@ -285,12 +249,19 @@ public abstract class Neighbor
 			String buffer = m_stringBuilder.
 			    substring(0, indexOf + Messages.EOM.length());
 
+			m_stringBuilder.delete(0, buffer.length());
+			indexOf = m_stringBuilder.indexOf(Messages.EOM);
+
 			if(!Kernel.getInstance().
 			   ourMessage(buffer, m_uuid, m_userDefined.get()))
 			    echo(buffer);
+			else if(!m_userDefined.get())
+			    /*
+			    ** The client is allowing unsolicited data.
+			    */
 
-			m_stringBuilder.delete(0, buffer.length());
-			indexOf = m_stringBuilder.indexOf(Messages.EOM);
+			    if(buffer.contains("type=0096&content"))
+				m_allowUnsolicited.set(true);
 		    }
 
 		    if(m_stringBuilder.length() > MAXIMUM_BYTES)
@@ -373,6 +344,11 @@ public abstract class Neighbor
 		{
 		    m_accumulatedTime = System.nanoTime();
 		    send(getCapabilities());
+
+		    if(m_userDefined.get())
+			if(!m_requestUnsolicitedSent.get())
+			    m_requestUnsolicitedSent.set
+				(send(Messages.requestUnsolicited()));
 		}
 
 		if(m_oid.get() >= 0)
@@ -409,27 +385,32 @@ public abstract class Neighbor
 		if(!message.isEmpty())
 		{
 		    if(!m_userDefined.get())
-			try
-			{
-			    byte bytes[] = Base64.decode
-				(Messages.
-				 stripMessage(message), Base64.DEFAULT);
+		    {
+			if(m_allowUnsolicited.get())
+			    send(message);
+			else
+			    try
+			    {
+				byte bytes[] = Base64.decode
+				    (Messages.
+				     stripMessage(message), Base64.DEFAULT);
 
-			    /*
-			    ** Determine if the message's destination
-			    ** is correct.
-			    */
+				/*
+				** Determine if the message's destination
+				** is correct.
+				*/
 
-			    if(m_databaseHelper.
-			       containsRoutingIdentity(m_uuid.toString(),
-						       bytes))
-				send(message); // Ignore results.
-			}
-			catch(Exception exception)
-			{
-			}
+				if(m_databaseHelper.
+				   containsRoutingIdentity(m_uuid.toString(),
+							   bytes))
+				    send(message); // Ignore the results.
+			    }
+			    catch(Exception exception)
+			    {
+			    }
+		    }
 		    else
-			send(message); // Ignore results.
+			send(message); // Ignore the results.
 		}
 
 		/*

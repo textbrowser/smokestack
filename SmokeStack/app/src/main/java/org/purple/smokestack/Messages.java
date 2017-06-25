@@ -104,6 +104,39 @@ public class Messages
 	return "";
     }
 
+    public static String requestUnsolicited()
+    {
+	try
+	{
+	    StringBuilder results = new StringBuilder();
+
+	    results.append("POST HTTP/1.1\r\n");
+	    results.append
+		("Content-Type: application/x-www-form-urlencoded\r\n");
+	    results.append("Content-Length: %1\r\n");
+	    results.append("\r\n");
+	    results.append("type=0096&content=%2\r\n");
+	    results.append("\r\n\r\n");
+
+	    String base64 = Base64.encodeToString
+		("true".getBytes(), Base64.NO_WRAP);
+	    int indexOf = results.indexOf("%1");
+	    int length = base64.length() +
+		"type=0096&content=\r\n\r\n\r\n".length();
+
+	    results = results.replace
+		(indexOf, indexOf + 2, String.valueOf(length));
+	    indexOf = results.indexOf("%2");
+	    results = results.replace(indexOf, indexOf + 2, base64);
+	    return results.toString();
+	}
+	catch(Exception exception)
+	{
+	}
+
+	return "";
+    }
+
     public static String stripMessage(String message)
     {
 	/*

@@ -309,6 +309,8 @@ public class Kernel
 		    s_databaseHelper.writeIdentities(clientIdentity, bytes);
 		    return true;
 		}
+		else if(buffer.contains("type=0096&content"))
+		    return true;
 
 	    byte bytes[] =
 		Base64.decode(Messages.stripMessage(buffer), Base64.DEFAULT);
