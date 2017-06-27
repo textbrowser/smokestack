@@ -3242,7 +3242,7 @@ public class Database extends SQLiteOpenHelper
 	   m_db == null)
 	    return;
 
-	m_db.beginTransactionNonExclusive();
+	m_db.beginTransaction();
 
 	try
 	{
@@ -3277,7 +3277,7 @@ public class Database extends SQLiteOpenHelper
 	if(clientIdentity == null || identity.length() == 0 || m_db == null)
 	    return;
 
-	m_db.beginTransactionNonExclusive();
+	m_db.beginTransaction();
 
 	try
 	{
