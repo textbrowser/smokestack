@@ -3220,7 +3220,12 @@ public class Database extends SQLiteOpenHelper
 		("digest",
 		 Base64.encodeToString(Miscellaneous.
 				       longToByteArray(value), Base64.DEFAULT));
-	    m_db.insert("congestion_control", null, values);
+
+	    /*
+	    ** Fewer exceptions. The timestamp will not be replaced.
+	    */
+
+	    m_db.replace("congestion_control", null, values);
 	    m_db.setTransactionSuccessful();
 	}
 	catch(Exception exception)
