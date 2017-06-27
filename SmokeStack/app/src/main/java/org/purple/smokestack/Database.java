@@ -3256,7 +3256,7 @@ public class Database extends SQLiteOpenHelper
 		    ("identity",
 		     Base64.encodeToString(Arrays.copyOfRange(bytes, i, i + 64),
 					   Base64.DEFAULT));
-		m_db.insert("routing_identities", null, values);
+		m_db.replace("routing_identities", null, values);
 	    }
 
 	    m_db.setTransactionSuccessful();
@@ -3285,7 +3285,7 @@ public class Database extends SQLiteOpenHelper
 
 	    values.put("client_identity", clientIdentity.toString());
 	    values.put("identity", identity);
-	    m_db.insert("routing_identities", null, values);
+	    m_db.replace("routing_identities", null, values);
 	    m_db.setTransactionSuccessful();
 	}
 	catch(Exception exception)
