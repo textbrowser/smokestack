@@ -384,7 +384,7 @@ public abstract class Neighbor
 
 		if(!message.isEmpty())
 		{
-		    if(!m_userDefined.get())
+		    if(!m_userDefined.get()) // A server.
 		    {
 			if(m_allowUnsolicited.get())
 			    send(message);

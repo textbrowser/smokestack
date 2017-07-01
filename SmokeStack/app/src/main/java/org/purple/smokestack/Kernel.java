@@ -77,7 +77,8 @@ public class Kernel
     private final static int LISTENERS_INTERVAL = 5000; // 5 Seconds
     private final static int NEIGHBORS_INTERVAL = 5000; // 5 Seconds
     private final static int PURGE_RELEASED_MESSAGES_INTERVAL = 5; // Minutes
-    private final static int RELEASE_MESSAGES_INTERVAL = 1500; // 1.5 Seconds
+    private final static int RELEASE_MESSAGES_INTERVAL =
+	250; // 250 Milliseconds
     private static Kernel s_instance = null;
 
     private Kernel()
@@ -162,7 +163,7 @@ public class Kernel
 		{
 		    s_databaseHelper.purgeReleasedMessages(s_cryptography);
 		}
-	    }, 0, PURGE_RELEASED_MESSAGES_INTERVAL, TimeUnit.MINUTES);
+	    }, 1500, PURGE_RELEASED_MESSAGES_INTERVAL, TimeUnit.MINUTES);
 	}
 
 	if(m_releaseMessagesScheduler == null)
@@ -466,7 +467,7 @@ public class Kernel
 			  Arrays.copyOfRange(aes256, 9, 9 + 64));
 
 		     /*
-		     ** Tag all messages for release.
+		     ** Tag all of sipHashIdDigest's messages for release.
 		     */
 
 		     s_databaseHelper.tagMessagesForRelease
