@@ -33,7 +33,6 @@ import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 import android.util.Base64;
 import android.util.SparseArray;
-import android.util.SparseIntArray;
 import java.net.InetAddress;
 import java.security.PublicKey;
 import java.util.ArrayList;
@@ -599,15 +598,19 @@ public class Kernel
 	if(message.trim().isEmpty())
 	    return;
 
-	SparseIntArray neighbors = s_databaseHelper.readNeighborOids();
+	ArrayList<NeighborElement> arrayList =
+	    s_databaseHelper.readNeighborOids(s_cryptography);
 
-	if(neighbors != null && neighbors.size() > 0)
+	if(arrayList != null && arrayList.size() > 0)
 	{
-	    for(int i = 0; i < neighbors.size(); i++)
-		s_databaseHelper.enqueueOutboundMessage
-		    (message, neighbors.get(i));
+	    for(int i = 0; i < arrayList.size(); i++)
+		if(arrayList.get(i) != null &&
+		   arrayList.get(i).m_statusControl.toLowerCase().
+		   equals("connect"))
+		    s_databaseHelper.enqueueOutboundMessage
+			(message, arrayList.get(i).m_oid);
 
-	    neighbors.clear();
+	    arrayList.clear();
 	}
 
 	m_serverNeighborsMutex.readLock().lock();
