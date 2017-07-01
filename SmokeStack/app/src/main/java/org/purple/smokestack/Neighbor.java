@@ -53,7 +53,7 @@ public abstract class Neighbor
     private final static int IDENTITIES_TIMER_INTERVAL = 10000; // 10 Seconds
     private final static int LANE_WIDTH = 100000;
     private final static int PARSING_INTERVAL = 100; // Milliseconds
-    private final static int SEND_OUTBOUND_TIMER_INTERVAL = 200; // Milliseconds
+    private final static int SEND_OUTBOUND_TIMER_INTERVAL = 100; // Milliseconds
     private final static int SILENCE = 90000; // 90 Seconds
     private final static int TIMER_INTERVAL = 2500; // 2.5 Seconds
     protected AtomicBoolean m_allowUnsolicited = null;
@@ -133,7 +133,7 @@ public abstract class Neighbor
 		       int oid)
     {
 	m_allowUnsolicited = new AtomicBoolean(false);
-	m_bytes = new byte[64 * 1024];
+	m_bytes = new byte[256 * 1024];
 	m_bytesRead = new AtomicLong(0);
 	m_bytesWritten = new AtomicLong(0);
 	m_clientSupportsCD = new AtomicBoolean(false);
@@ -429,7 +429,7 @@ public abstract class Neighbor
 		synchronized(m_queueMutex)
 		{
 		    if(!m_queue.isEmpty())
-			send(m_queue.remove(0)); // Ignore results.
+			send(m_queue.remove(0)); // Ignore the results.
 		}
 	    }
 	}, 0, SEND_OUTBOUND_TIMER_INTERVAL, TimeUnit.MILLISECONDS);

@@ -3502,7 +3502,7 @@ public class Database extends SQLiteOpenHelper
 		("verified_digest",
 		 Base64.encodeToString(cryptography.hmac("false".getBytes()),
 				       Base64.DEFAULT));
-	    m_db.insert("stack", null, values);
+	    m_db.replace("stack", null, values);
 	    m_db.setTransactionSuccessful();
 	}
 	catch(Exception exception)
