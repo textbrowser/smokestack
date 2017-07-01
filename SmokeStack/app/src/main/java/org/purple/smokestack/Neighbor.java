@@ -57,6 +57,8 @@ public abstract class Neighbor
     private final static int SILENCE = 90000; // 90 Seconds
     private final static int TIMER_INTERVAL = 2500; // 2.5 Seconds
     protected AtomicBoolean m_allowUnsolicited = null;
+    protected AtomicBoolean m_clientSupportsCD =
+	null; // Cryptographic Discovery
     protected AtomicBoolean m_requestUnsolicitedSent = null;
     protected AtomicBoolean m_userDefined = null;
     protected AtomicInteger m_oid = null;
@@ -134,6 +136,7 @@ public abstract class Neighbor
 	m_bytes = new byte[64 * 1024];
 	m_bytesRead = new AtomicLong(0);
 	m_bytesWritten = new AtomicLong(0);
+	m_clientSupportsCD = new AtomicBoolean(false);
 	m_cryptography = Cryptography.getInstance();
 	m_databaseHelper = Database.getInstance();
 	m_echoQueue = new ArrayList<> ();
@@ -256,12 +259,17 @@ public abstract class Neighbor
 			   ourMessage(buffer, m_uuid, m_userDefined.get()))
 			    echo(buffer);
 			else if(!m_userDefined.get())
+			{
+			    if(buffer.contains("type=0095a&content"))
+				m_clientSupportsCD.set(true);
+
 			    /*
 			    ** The client is allowing unsolicited data.
 			    */
 
-			    if(buffer.contains("type=0096&content"))
+			    else if(buffer.contains("type=0096&content"))
 				m_allowUnsolicited.set(true);
+			}
 		    }
 
 		    if(m_stringBuilder.length() > MAXIMUM_BYTES)
@@ -386,7 +394,8 @@ public abstract class Neighbor
 		{
 		    if(!m_userDefined.get()) // A server.
 		    {
-			if(m_allowUnsolicited.get())
+			if(m_allowUnsolicited.get() ||
+			   !m_clientSupportsCD.get())
 			    send(message);
 			else
 			    try

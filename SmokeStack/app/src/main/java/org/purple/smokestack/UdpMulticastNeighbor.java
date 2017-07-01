@@ -123,8 +123,10 @@ public class UdpMulticastNeighbor extends Neighbor
 	}
 	finally
 	{
+	    m_allowUnsolicited.set(false);
 	    m_bytesRead.set(0);
 	    m_bytesWritten.set(0);
+	    m_clientSupportsCD.set(false);
 	    m_requestUnsolicitedSent.set(false);
 	    m_socket = null;
 	    m_startTime.set(System.nanoTime());

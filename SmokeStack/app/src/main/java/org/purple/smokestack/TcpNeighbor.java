@@ -169,8 +169,10 @@ public class TcpNeighbor extends Neighbor
 	}
 	finally
 	{
+	    m_allowUnsolicited.set(false);
 	    m_bytesRead.set(0);
 	    m_bytesWritten.set(0);
+	    m_clientSupportsCD.set(false);
 
 	    if(m_oid.get() >= 0)
 		m_isValidCertificate.set(false);
