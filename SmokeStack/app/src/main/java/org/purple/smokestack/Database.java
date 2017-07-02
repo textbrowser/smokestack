@@ -900,7 +900,8 @@ public class Database extends SQLiteOpenHelper
 	return arrayList;
     }
 
-    public ArrayList<byte[]> readTaggedMessage(Cryptography cryptography)
+    public ArrayList<byte[]> readTaggedMessage(String sipHashIdDigest,
+					       Cryptography cryptography)
     {
 	prepareDb();
 
@@ -914,8 +915,10 @@ public class Database extends SQLiteOpenHelper
 	{
 	    cursor = m_db.rawQuery
 		("SELECT message, message_digest, siphash_id " +
-		 "FROM stack WHERE timestamp IS NULL AND verified_digest = ?",
-		 new String[] {Base64.
+		 "FROM stack WHERE siphash_id_digest = ? AND " +
+		 "timestamp IS NULL AND verified_digest = ?",
+		 new String[] {sipHashIdDigest,
+			       Base64.
 			       encodeToString(cryptography.
 					      hmac("true".getBytes()),
 					      Base64.DEFAULT)});

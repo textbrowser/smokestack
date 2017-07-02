@@ -10,6 +10,7 @@ Completed Items
 7.     Listeners.
 8.     m_isValidCertificate should be an AtomicBoolean.
 9.     Discovery via cryptography.
+10.    Per-participant message retrieval schedulers.
 
 Future Items
 
@@ -19,4 +20,3 @@ Remaining Items
 
 1.     Signed release.
 2.     The Settings activity has many views (ANDROID_LINT_MAX_VIEW_COUNT).
-3.     Per-participant message retrieval schedulers.

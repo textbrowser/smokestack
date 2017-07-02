@@ -37,9 +37,12 @@ import java.net.InetAddress;
 import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -47,14 +50,17 @@ public class Kernel
 {
     private ArrayList<OzoneElement> m_ozones = null;
     private ArrayList<SipHashIdElement> m_sipHashIds = null;
+    private Hashtable<String, ScheduledFuture>
+	m_releaseMessagesSchedulers = null;
     private ScheduledExecutorService m_congestionScheduler = null;
     private ScheduledExecutorService m_listenersScheduler = null;
     private ScheduledExecutorService m_neighborsScheduler = null;
     private ScheduledExecutorService m_purgeReleasedMessagesScheduler = null;
-    private ScheduledExecutorService m_releaseMessagesScheduler = null;
     private WakeLock m_wakeLock = null;
     private final ArrayList<TcpNeighbor> m_serverNeighbors = new ArrayList<> ();
     private final ReentrantReadWriteLock m_ozonesMutex = new
+	ReentrantReadWriteLock();
+    private final ReentrantReadWriteLock m_releaseMessagesSchedulersMutex = new
 	ReentrantReadWriteLock();
     private final ReentrantReadWriteLock m_serverNeighborsMutex = new
 	ReentrantReadWriteLock();
@@ -75,13 +81,14 @@ public class Kernel
     private final static int CONGESTION_LIFETIME = 30;
     private final static int LISTENERS_INTERVAL = 5000; // 5 Seconds
     private final static int NEIGHBORS_INTERVAL = 5000; // 5 Seconds
-    private final static int PURGE_RELEASED_MESSAGES_INTERVAL = 5; // Minutes
-    private final static int RELEASE_MESSAGES_INTERVAL =
-	250; // 250 Milliseconds
+    private final static int PURGE_RELEASED_MESSAGES_INTERVAL =
+	30000; // 30 Seconds
     private static Kernel s_instance = null;
 
     private Kernel()
     {
+	m_releaseMessagesSchedulers = new Hashtable<> ();
+
 	/*
 	** Never, ever sleep.
 	*/
@@ -107,6 +114,67 @@ public class Kernel
 	populateOzones();
 	populateSipHashIds();
 	prepareSchedulers();
+    }
+
+    private void prepareReleaseMessagesScheduler(String string)
+    {
+	if(string == null || string.isEmpty())
+	    return;
+
+	m_releaseMessagesSchedulersMutex.writeLock().lock();
+
+	try
+	{
+	    if(m_releaseMessagesSchedulers.containsKey(string))
+		return;
+
+	    final String sipHashIdDigest = string;
+
+	    m_releaseMessagesSchedulers.put
+		(sipHashIdDigest,
+		 Executors.newSingleThreadScheduledExecutor().
+		 schedule(new Runnable()
+		{
+		    @Override
+		    public void run()
+		    {
+			while(true)
+			    try
+			    {
+				ArrayList<byte[]> arrayList = s_databaseHelper.
+				    readTaggedMessage
+				    (sipHashIdDigest, s_cryptography);
+
+				if(arrayList == null || arrayList.size() != 3)
+				    break;
+
+				byte destination[] = Cryptography.hmac
+				    (arrayList.get(0),
+				     Cryptography.sha512(arrayList.get(2)));
+
+				if(destination == null)
+				    break;
+
+				String message = Messages.bytesToMessageString
+				    (Miscellaneous.
+				     joinByteArrays(arrayList.get(0),
+						    destination));
+
+				enqueueMessage(message);
+				s_databaseHelper.timestampReleasedMessage
+				    (s_cryptography, arrayList.get(1));
+				Thread.sleep(250);
+			    }
+			    catch(Exception exception)
+			    {
+			    }
+		    }
+		}, 1500, TimeUnit.MILLISECONDS));
+	}
+	finally
+	{
+	    m_releaseMessagesSchedulersMutex.writeLock().unlock();
+	}
     }
 
     private void prepareSchedulers()
@@ -160,23 +228,40 @@ public class Kernel
 		@Override
 		public void run()
 		{
+		    m_releaseMessagesSchedulersMutex.writeLock().lock();
+
+		    try
+		    {
+			if(!m_releaseMessagesSchedulers.isEmpty())
+			{
+			    /*
+			    ** Remove completed schedules.
+			    */
+
+			    Iterator<Hashtable.Entry<String, ScheduledFuture> >
+				it = m_releaseMessagesSchedulers.entrySet().
+				iterator();
+
+			    while(it.hasNext())
+			    {
+				Hashtable.Entry<String, ScheduledFuture>
+				    entry = it.next();
+
+				if(entry.getValue() == null)
+				    it.remove();
+				else if(entry.getValue().isDone())
+				    it.remove();
+			    }
+			}
+		    }
+		    finally
+		    {
+			m_releaseMessagesSchedulersMutex.writeLock().unlock();
+		    }
+
 		    s_databaseHelper.purgeReleasedMessages(s_cryptography);
 		}
-	    }, 1500, PURGE_RELEASED_MESSAGES_INTERVAL, TimeUnit.MINUTES);
-	}
-
-	if(m_releaseMessagesScheduler == null)
-	{
-	    m_releaseMessagesScheduler = Executors.
-		newSingleThreadScheduledExecutor();
-	    m_releaseMessagesScheduler.scheduleAtFixedRate(new Runnable()
-	    {
-		@Override
-		public void run()
-		{
-		    releaseMessages();
-		}
-	    }, 1500, RELEASE_MESSAGES_INTERVAL, TimeUnit.MILLISECONDS);
+	    }, 1500, PURGE_RELEASED_MESSAGES_INTERVAL, TimeUnit.MILLISECONDS);
 	}
     }
 
@@ -237,29 +322,6 @@ public class Kernel
 
 	    m_neighbors.clear();
 	}
-    }
-
-    private void releaseMessages()
-    {
-	ArrayList<byte[]> arrayList = s_databaseHelper.readTaggedMessage
-	    (s_cryptography);
-
-	if(arrayList == null || arrayList.size() != 3)
-	    return;
-
-	byte destination[] = Cryptography.hmac
-	    (arrayList.get(0), Cryptography.sha512(arrayList.get(2)));
-
-	if(destination == null)
-	    return;
-
-	String message = Messages.
-	    bytesToMessageString(Miscellaneous.
-				 joinByteArrays(arrayList.get(0), destination));
-
-	enqueueMessage(message);
-	s_databaseHelper.timestampReleasedMessage
-	    (s_cryptography, arrayList.get(1));
     }
 
     public boolean ourMessage(String buffer,
@@ -475,6 +537,7 @@ public class Kernel
 
 		     s_databaseHelper.tagMessagesForRelease
 			 (s_cryptography, sipHashIdDigest);
+		     prepareReleaseMessagesScheduler(sipHashIdDigest);
 		     return true;
 		 }
 
