@@ -428,7 +428,7 @@ public class Kernel
 					     32));
 
 		     if(aes256 == null)
-			 return false;
+			 return true;
 
 		     long current = System.currentTimeMillis();
 		     long timestamp = Miscellaneous.byteArrayToLong
@@ -437,11 +437,11 @@ public class Kernel
 		     if(current - timestamp < 0)
 		     {
 			 if(timestamp - current > CHAT_MESSAGE_RETRIEVAL_WINDOW)
-			     return false;
+			     return true;
 		     }
 		     else if(current - timestamp >
 			     CHAT_MESSAGE_RETRIEVAL_WINDOW)
-			 return false;
+			 return true;
 
 		     PublicKey signatureKey = s_databaseHelper.
 			 signatureKeyForDigest
@@ -449,7 +449,7 @@ public class Kernel
 			  Arrays.copyOfRange(aes256, 9, 9 + 64));
 
 		     if(signatureKey == null)
-			 return false;
+			 return true;
 
 		     if(!Cryptography.
 			verifySignature(signatureKey,
@@ -460,7 +460,7 @@ public class Kernel
 					copyOfRange(aes256,
 						    0,
 						    73)))
-			 return false;
+			 return true;
 
 		     s_databaseHelper.writeCongestionDigest(value);
 
