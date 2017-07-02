@@ -78,11 +78,11 @@ public class Kernel
 								    ** Seconds
 								    */
     private final static int CONGESTION_INTERVAL = 15000; // 15 Seconds
-    private final static int CONGESTION_LIFETIME = 30;
+    private final static int CONGESTION_LIFETIME = 60;
     private final static int LISTENERS_INTERVAL = 5000; // 5 Seconds
     private final static int NEIGHBORS_INTERVAL = 5000; // 5 Seconds
     private final static int PURGE_RELEASED_MESSAGES_INTERVAL =
-	30000; // 30 Seconds
+	10000; // 10 Seconds
     private static Kernel s_instance = null;
 
     private Kernel()
