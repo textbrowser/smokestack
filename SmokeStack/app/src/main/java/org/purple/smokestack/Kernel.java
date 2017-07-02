@@ -396,6 +396,10 @@ public class Kernel
 	    if(arrayList2 == null || arrayList2.size() == 0)
 		return false;
 
+	    /*
+	    ** Message retrieval and storage.
+	    */
+
 	    array1 = Arrays.copyOfRange(bytes, 0, bytes.length - 64);
 	    array2 = Arrays.copyOfRange(bytes, bytes.length - 64, bytes.length);
 
