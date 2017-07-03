@@ -2932,6 +2932,37 @@ public class Database extends SQLiteOpenHelper
 	}
     }
 
+    public void purgeExpiredRoutingEntries(int lifetime)
+    {
+	prepareDb();
+
+	if(m_db == null)
+	    return;
+
+	m_db.beginTransactionNonExclusive();
+
+	try
+	{
+	    /*
+	    ** The bound string value must be cast to an integer.
+	    */
+
+	    m_db.delete
+		("routing_identities",
+		 "ABS(STRFTIME('%s', 'now') - STRFTIME('%s', timestamp)) > " +
+		 "CAST(? AS INTEGER)",
+		 new String[] {String.valueOf(lifetime)});
+	    m_db.setTransactionSuccessful();
+	}
+	catch(Exception exception)
+	{
+	}
+	finally
+	{
+	    m_db.endTransaction();
+	}
+    }
+
     public void purgeReleasedMessages(Cryptography cryptography)
     {
 	prepareDb();

@@ -55,6 +55,7 @@ public class Kernel
     private ScheduledExecutorService m_congestionScheduler = null;
     private ScheduledExecutorService m_listenersScheduler = null;
     private ScheduledExecutorService m_neighborsScheduler = null;
+    private ScheduledExecutorService m_purgeExpiredRoutingEntries = null;
     private ScheduledExecutorService m_purgeReleasedMessagesScheduler = null;
     private WakeLock m_wakeLock = null;
     private final ArrayList<TcpNeighbor> m_serverNeighbors = new ArrayList<> ();
@@ -83,6 +84,8 @@ public class Kernel
     private final static int NEIGHBORS_INTERVAL = 5000; // 5 Seconds
     private final static int PURGE_RELEASED_MESSAGES_INTERVAL =
 	10000; // 10 Seconds
+    private final static int ROUTING_ENTRY_LIFETIME = 60;
+    private final static int ROUTING_INTERVAL = 15000; // 15 Seconds
     private static Kernel s_instance = null;
 
     private Kernel()
@@ -263,6 +266,21 @@ public class Kernel
 		    s_databaseHelper.purgeReleasedMessages(s_cryptography);
 		}
 	    }, 1500, PURGE_RELEASED_MESSAGES_INTERVAL, TimeUnit.MILLISECONDS);
+	}
+
+	if(m_purgeExpiredRoutingEntries == null)
+	{
+	    m_purgeExpiredRoutingEntries = Executors.
+		newSingleThreadScheduledExecutor();
+	    m_purgeExpiredRoutingEntries.scheduleAtFixedRate(new Runnable()
+	    {
+		@Override
+		public void run()
+		{
+		    s_databaseHelper.purgeExpiredRoutingEntries
+			(ROUTING_ENTRY_LIFETIME);
+		}
+	    }, 1500, ROUTING_INTERVAL, TimeUnit.MILLISECONDS);
 	}
     }
 
