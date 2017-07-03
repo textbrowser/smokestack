@@ -963,39 +963,46 @@ public class Database extends SQLiteOpenHelper
 	    {
 		arrayList = new ArrayList<> ();
 
-		boolean error = false;
-
-		for(int i = 0; i < 3; i++)
+		while(!cursor.isAfterLast())
 		{
-		    byte bytes[] = null;
+		    boolean error = false;
 
-		    switch(i)
+		    for(int i = 0; i < 2; i++)
 		    {
-		    case 0:
-			bytes = cryptography.mtd
-			    (Base64.decode(cursor.getString(i).getBytes(),
-					   Base64.DEFAULT));
+			byte bytes[] = null;
 
-			if(bytes != null)
-			    arrayList.add(bytes);
-			else
-			    error = true;
+			switch(i)
+			{
+			case 0:
+			    bytes = cryptography.mtd
+				(Base64.decode(cursor.getString(i).getBytes(),
+					       Base64.DEFAULT));
 
-			break;
-		    case 1:
-			arrayList.add(cursor.getString(i).getBytes());
-			break;
+			    if(bytes != null)
+				arrayList.add(bytes);
+			    else
+				error = true;
+
+			    break;
+			case 1:
+			    arrayList.add(cursor.getString(i).getBytes());
+			    break;
+			}
+
+			if(error)
+			    break;
 		    }
 
 		    if(error)
+			arrayList.clear();
+		    else
 			break;
+
+		    cursor.moveToNext();
 		}
 
-		if(error)
-		{
-		    arrayList.clear();
+		if(arrayList.isEmpty())
 		    arrayList = null;
-		}
 	    }
 	}
 	catch(Exception exception)
