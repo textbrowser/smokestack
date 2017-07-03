@@ -150,7 +150,7 @@ public class Kernel
 				    readTaggedMessage
 				    (sipHashIdDigest, s_cryptography);
 
-				if(arrayList == null || arrayList.size() != 3)
+				if(arrayList == null || arrayList.size() != 2)
 				    break;
 
 				byte destination[] = Cryptography.hmac
