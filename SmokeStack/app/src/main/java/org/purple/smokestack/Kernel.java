@@ -84,7 +84,7 @@ public class Kernel
     private final static int NEIGHBORS_INTERVAL = 5000; // 5 Seconds
     private final static int PURGE_RELEASED_MESSAGES_INTERVAL =
 	10000; // 10 Seconds
-    private final static int ROUTING_ENTRY_LIFETIME = 60;
+    private final static int ROUTING_ENTRY_LIFETIME = CONGESTION_LIFETIME;
     private final static int ROUTING_INTERVAL = 15000; // 15 Seconds
     private static Kernel s_instance = null;
 
@@ -349,9 +349,6 @@ public class Kernel
     {
 	long value = s_congestionSipHash.hmac(buffer.getBytes());
 
-	if(s_databaseHelper.containsCongestionDigest(value))
-	    return true;
-
 	try
 	{
 	    if(!userDefined)
@@ -392,6 +389,9 @@ public class Kernel
 		}
 		else if(buffer.contains("type=0096&content"))
 		    return true;
+
+	    if(s_databaseHelper.containsCongestionDigest(value))
+		return true;
 
 	    byte bytes[] =
 		Base64.decode(Messages.stripMessage(buffer), Base64.DEFAULT);

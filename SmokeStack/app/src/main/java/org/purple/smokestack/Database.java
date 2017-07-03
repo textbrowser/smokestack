@@ -41,10 +41,13 @@ import java.net.InetAddress;
 import java.security.KeyFactory;
 import java.security.PublicKey;
 import java.security.spec.X509EncodedKeySpec;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
+import java.util.TimeZone;
 import java.util.UUID;
 import java.util.regex.Matcher;
 
@@ -3396,6 +3399,10 @@ public class Database extends SQLiteOpenHelper
 	try
 	{
 	    ContentValues values = new ContentValues();
+	    SimpleDateFormat simpleDateFormat = new SimpleDateFormat
+		("yyyy-MM-dd HH:mm:ss");
+
+	    simpleDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
 
 	    for(int i = 0; i < bytes.length; i += 64)
 	    {
@@ -3405,6 +3412,7 @@ public class Database extends SQLiteOpenHelper
 		    ("identity",
 		     Base64.encodeToString(Arrays.copyOfRange(bytes, i, i + 64),
 					   Base64.DEFAULT));
+		values.put("timestamp", simpleDateFormat.format(new Date()));
 		m_db.replace("routing_identities", null, values);
 	    }
 
@@ -3431,9 +3439,13 @@ public class Database extends SQLiteOpenHelper
 	try
 	{
 	    ContentValues values = new ContentValues();
+	    SimpleDateFormat simpleDateFormat = new SimpleDateFormat
+		("yyyy-MM-dd HH:mm:ss");
 
+	    simpleDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
 	    values.put("client_identity", clientIdentity.toString());
 	    values.put("identity", identity);
+	    values.put("timestamp", simpleDateFormat.format(new Date()));
 	    m_db.replace("routing_identities", null, values);
 	    m_db.setTransactionSuccessful();
 	}
