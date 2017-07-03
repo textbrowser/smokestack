@@ -188,6 +188,39 @@ public class Database extends SQLiteOpenHelper
 	    }
     }
 
+    private void updateRoutingIdentityTimestamp(String clientIdentity,
+						String identity)
+    {
+	prepareDb();
+
+	if(m_db == null)
+	    return;
+
+	Cursor cursor = null;
+
+	m_db.beginTransactionNonExclusive();
+
+	try
+	{
+	    cursor = m_db.rawQuery
+		("UPDATE routing_identities SET " +
+		 "timestamp = CURRENT_TIMESTAMP " +
+		 "WHERE client_identity = ? AND identity = ?",
+		 new String[] {clientIdentity, identity});
+	    m_db.setTransactionSuccessful();
+	}
+	catch(Exception exception)
+	{
+	}
+	finally
+	{
+	    if(cursor != null)
+		cursor.close();
+
+	    m_db.endTransaction();
+	}
+    }
+
     public ArrayList<byte[]> readIdentities()
     {
 	prepareDb();
@@ -1427,7 +1460,11 @@ public class Database extends SQLiteOpenHelper
 
 		    if(Cryptography.memcmp(Cryptography.hmac(array1, bytes),
 					   array2))
+		    {
+			updateRoutingIdentityTimestamp
+			    (clientIdentity, cursor.getString(0));
 			return true;
+		    }
 
 		    cursor.moveToNext();
 		}
