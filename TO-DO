@@ -20,3 +20,4 @@ Remaining Items
 
 1.     Signed release.
 2.     The Settings activity has many views (ANDROID_LINT_MAX_VIEW_COUNT).
+3.     Entries in routing_identities expire.

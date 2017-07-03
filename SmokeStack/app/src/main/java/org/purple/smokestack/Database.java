@@ -2812,6 +2812,7 @@ public class Database extends SQLiteOpenHelper
 	str = "CREATE TABLE IF NOT EXISTS routing_identities (" +
 	    "client_identity TEXT NOT NULL, " +
 	    "identity TEXT NOT NULL, " +
+	    "timestamp DATETIME DEFAULT CURRENT_TIMESTAMP, " +
 	    "PRIMARY KEY (client_identity, identity))";
 
 	try
