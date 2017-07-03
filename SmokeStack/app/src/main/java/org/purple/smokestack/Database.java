@@ -947,7 +947,7 @@ public class Database extends SQLiteOpenHelper
 	try
 	{
 	    cursor = m_db.rawQuery
-		("SELECT message, message_digest, siphash_id " +
+		("SELECT message, message_digest " +
 		 "FROM stack WHERE siphash_id_digest = ? AND " +
 		 "timestamp IS NULL AND verified_digest = ?",
 		 new String[] {sipHashIdDigest,
@@ -981,17 +981,6 @@ public class Database extends SQLiteOpenHelper
 			break;
 		    case 1:
 			arrayList.add(cursor.getString(i).getBytes());
-			break;
-		    case 2:
-			bytes = cryptography.mtd
-			    (Base64.decode(cursor.getString(i).getBytes(),
-					   Base64.DEFAULT));
-
-			if(bytes != null)
-			    arrayList.add(bytes);
-			else
-			    error = true;
-
 			break;
 		    }
 

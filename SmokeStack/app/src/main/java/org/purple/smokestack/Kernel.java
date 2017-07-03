@@ -116,19 +116,21 @@ public class Kernel
 	prepareSchedulers();
     }
 
-    private void prepareReleaseMessagesScheduler(String string)
+    private void prepareReleaseMessagesScheduler(final String sipHashIdDigest,
+						 final byte identity[])
     {
-	if(string == null || string.isEmpty())
+	if(identity == null ||
+	   identity.length <= 0 ||
+	   sipHashIdDigest == null ||
+	   sipHashIdDigest.isEmpty())
 	    return;
 
 	m_releaseMessagesSchedulersMutex.writeLock().lock();
 
 	try
 	{
-	    if(m_releaseMessagesSchedulers.containsKey(string))
+	    if(m_releaseMessagesSchedulers.containsKey(sipHashIdDigest))
 		return;
-
-	    final String sipHashIdDigest = string;
 
 	    m_releaseMessagesSchedulers.put
 		(sipHashIdDigest,
@@ -149,8 +151,7 @@ public class Kernel
 				    break;
 
 				byte destination[] = Cryptography.hmac
-				    (arrayList.get(0),
-				     Cryptography.sha512(arrayList.get(2)));
+				    (arrayList.get(0), identity);
 
 				if(destination == null)
 				    break;
@@ -163,7 +164,7 @@ public class Kernel
 				enqueueMessage(message);
 				s_databaseHelper.timestampReleasedMessage
 				    (s_cryptography, arrayList.get(1));
-				Thread.sleep(250);
+				Thread.sleep(200);
 			    }
 			    catch(Exception exception)
 			    {
@@ -505,10 +506,15 @@ public class Kernel
 			     CHAT_MESSAGE_RETRIEVAL_WINDOW)
 			 return true;
 
+		     byte identity[] = Arrays.copyOfRange(aes256, 9, 9 + 64);
+
+		     if(identity == null || identity.length != 64)
+			 return true;
+
 		     PublicKey signatureKey = s_databaseHelper.
 			 signatureKeyForDigest
 			 (s_cryptography,
-			  Arrays.copyOfRange(aes256, 9, 9 + 64));
+			  Arrays.copyOfRange(aes256, 73, 73 + 64));
 
 		     if(signatureKey == null)
 			 return true;
@@ -516,12 +522,12 @@ public class Kernel
 		     if(!Cryptography.
 			verifySignature(signatureKey,
 					Arrays.copyOfRange(aes256,
-							   73,
+							   137,
 							   aes256.length),
 					Arrays.
 					copyOfRange(aes256,
 						    0,
-						    73)))
+						    137)))
 			 return true;
 
 		     s_databaseHelper.writeCongestionDigest(value);
@@ -529,7 +535,7 @@ public class Kernel
 		     String sipHashIdDigest = s_databaseHelper.
 			 sipHashIdDigestFromDigest
 			 (s_cryptography,
-			  Arrays.copyOfRange(aes256, 9, 9 + 64));
+			  Arrays.copyOfRange(aes256, 73, 73 + 64));
 
 		     /*
 		     ** Tag all of sipHashIdDigest's messages for release.
@@ -537,7 +543,7 @@ public class Kernel
 
 		     s_databaseHelper.tagMessagesForRelease
 			 (s_cryptography, sipHashIdDigest);
-		     prepareReleaseMessagesScheduler(sipHashIdDigest);
+		     prepareReleaseMessagesScheduler(sipHashIdDigest, identity);
 		     return true;
 		 }
 
