@@ -382,7 +382,7 @@ public class Kernel
 			(clientIdentity.toString());
 
 		    byte bytes[] = Base64.decode
-			(Messages.stripMessage(buffer), Base64.NO_WRAP);
+			(Messages.stripMessage(buffer), Base64.DEFAULT);
 
 		    s_databaseHelper.writeIdentities(clientIdentity, bytes);
 		    return true;

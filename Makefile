@@ -15,6 +15,9 @@ clean:
 clear-smoke-stack:
 	$(MAKE) -f $(MAKEFILE) clear-smoke-stack
 
+debug-with-source:
+	$(MAKE) -f $(MAKEFILE) debug-with-source
+
 distclean:
 	$(MAKE) -f $(MAKEFILE) distclean
 
