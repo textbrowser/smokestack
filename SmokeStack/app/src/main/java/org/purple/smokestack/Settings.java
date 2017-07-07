@@ -1148,7 +1148,11 @@ public class Settings extends AppCompatActivity
 		    textView.setText(sipHashIdElement.m_name);
 		else if(j == 1)
 		{
-		    if(sipHashIdElement.m_epksCompleted)
+		    if(sipHashIdElement.m_epksCompleted &&
+		       sipHashIdElement.m_keysSigned)
+			textView.setCompoundDrawablesWithIntrinsicBounds
+			    (R.drawable.keys_signed, 0, 0, 0);
+		    else if(sipHashIdElement.m_epksCompleted)
 			textView.setCompoundDrawablesWithIntrinsicBounds
 			    (R.drawable.lock, 0, 0, 0);
 		    else
