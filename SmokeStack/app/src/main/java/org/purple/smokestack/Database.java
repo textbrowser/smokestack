@@ -842,10 +842,10 @@ public class Database extends SQLiteOpenHelper
 		 "WHERE p.siphash_id_digest = si.siphash_id_digest) AS c, " +
 		 "(SELECT COUNT(s.OID) FROM stack s WHERE " +
 		 "s.siphash_id_digest = si.siphash_id_digest AND " +
-		 "s.timestamp IS NULL) AS c, " +
+		 "s.timestamp IS NULL) AS d, " +
 		 "(SELECT COUNT(s.OID) FROM stack s WHERE " +
 		 "s.siphash_id_digest = si.siphash_id_digest AND " +
-		 "s.timestamp IS NOT NULL) AS d, " +
+		 "s.timestamp IS NOT NULL) AS e, " +
 		 "si.accept_without_signatures, " +
 		 "si.name, " +
 		 "si.siphash_id, " +
