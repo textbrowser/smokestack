@@ -1440,6 +1440,85 @@ public class Database extends SQLiteOpenHelper
 	return array;
     }
 
+    public String[] readPublicKeyPair(Cryptography cryptography,
+				      String sipHashId)
+    {
+	prepareDb();
+
+	if(cryptography == null ||
+	   m_db == null)
+	    return null;
+
+		prepareDb();
+
+	if(cryptography == null || m_db == null)
+	    return null;
+
+	Cursor cursor = null;
+	String array[] = null;
+
+	try
+	{
+	    cursor = m_db.rawQuery
+		("SELECT " +
+		 "key_type, " +
+		 "public_key_string, " +
+		 "public_key_signature_string, " +
+		 "signature_public_key_string, " +
+		 "signature_public_key_signature_string " +
+		 "FROM public_key_pairs WHERE siphash_id_digest = ?",
+		 new String[] {Base64.
+			       encodeToString(cryptography.
+					      hmac(sipHashId.toLowerCase().
+						   trim().getBytes("UTF-8")),
+					      Base64.DEFAULT)});
+
+	    if(cursor != null && cursor.moveToFirst())
+	    {
+		array = new String[5];
+
+		boolean error = false;
+
+		for(int i = 0; i < cursor.getColumnCount(); i++)
+		{
+		    byte bytes[] = cryptography.mtd
+			(Base64.decode(cursor.getString(i).getBytes(),
+				       Base64.DEFAULT));
+
+		    if(bytes == null)
+		    {
+			error = true;
+
+			StringBuilder stringBuilder = new StringBuilder();
+
+			stringBuilder.append("Database::readPublicKeyPair(): ");
+			stringBuilder.append("error on column ");
+			stringBuilder.append(cursor.getColumnName(i));
+			stringBuilder.append(".");
+			writeLog(stringBuilder.toString());
+			break;
+		    }
+		    else
+			array[i] = new String(bytes);
+		}
+
+		if(error)
+		    array = null;
+	    }
+	}
+	catch(Exception exception)
+	{
+	    array = null;
+	}
+	finally
+	{
+	    if(cursor != null)
+		cursor.close();
+	}
+
+	return array;
+    }
+
     public boolean accountPrepared()
     {
 	return !readSetting(null, "encryptionSalt").isEmpty() &&

@@ -502,6 +502,41 @@ public class Cryptography
 	return ok;
     }
 
+    public static byte[] encrypt(byte data[], byte keyBytes[])
+    {
+	if(data == null ||
+	   data.length < 0 ||
+	   keyBytes == null ||
+	   keyBytes.length < 0)
+	    return null;
+
+	prepareSecureRandom();
+
+	byte bytes[] = null;
+
+	try
+	{
+	    Cipher cipher = null;
+	    SecretKey secretKey = new SecretKeySpec
+		(keyBytes, SYMMETRIC_ALGORITHM);
+	    byte iv[] = new byte[16];
+
+	    cipher = Cipher.getInstance(SYMMETRIC_CIPHER_TRANSFORMATION);
+	    s_secureRandom.nextBytes(iv);
+	    cipher.init(Cipher.ENCRYPT_MODE,
+			secretKey,
+			new IvParameterSpec(iv));
+	    bytes = cipher.doFinal(data);
+	    bytes = Miscellaneous.joinByteArrays(iv, bytes);
+	}
+	catch(Exception exception)
+	{
+	    bytes = null;
+	}
+
+	return bytes;
+    }
+
     public static byte[] decrypt(byte data[], byte keyBytes[])
     {
 	if(data == null ||
@@ -635,6 +670,35 @@ public class Cryptography
 	}
 
 	return bytes;
+    }
+
+    public static byte[] sipHashIdStream(String sipHashId)
+    {
+	byte bytes[] = null;
+	byte salt[] = null;
+	byte temporary[] = null;
+
+	try
+	{
+	    salt = sha512(sipHashId.getBytes("UTF-8"));
+	    temporary = pbkdf2(salt,
+			       sipHashId.toCharArray(),
+			       SIPHASH_STREAM_CREATION_ITERATION_COUNT,
+			       160); // SHA-1
+
+	    if(temporary != null)
+		bytes = pbkdf2(salt,
+			       new String(temporary).toCharArray(),
+			       1,
+			       768); // 8 * (32 + 64) Bits
+
+	    return bytes;
+	}
+	catch(Exception exception)
+	{
+	}
+
+	return null;
     }
 
     public static synchronized Cryptography getInstance()

@@ -28,11 +28,14 @@
 package org.purple.smokestack;
 
 import android.util.Base64;
+import java.util.Arrays;
 
 public class Messages
 {
     public final static String EOM = "\r\n\r\n\r\n";
     public final static byte CHAT_KEY_TYPE[] = new byte[] {0x00};
+    public final static byte CHAT_MESSAGE_RETRIEVAL[] = new byte[] {0x00};
+    public final static byte PKP_MESSAGE_REQUEST[] = new byte[] {0x01};
     public final static int EPKS_GROUP_ONE_ELEMENT_COUNT = 6;
 
     public static String bytesToMessageString(byte bytes[])
@@ -149,5 +152,110 @@ public class Messages
 	    message = message.substring(indexOf + 8);
 
 	return message.trim();
+    }
+
+    public static byte[] epksMessage(String sipHashId,
+				     String strings[])
+    {
+	if(strings == null ||
+	   strings.length != EPKS_GROUP_ONE_ELEMENT_COUNT - 1)
+	    return null;
+
+	/*
+	** keyStream
+	** [0 ... 31] - AES-256 Encryption Key
+	** [32 ... 95] - SHA-512 HMAC Key
+	*/
+
+	try
+	{
+	    byte keyStream[] = Cryptography.sipHashIdStream(sipHashId);
+
+	    if(keyStream == null)
+		return null;
+
+	    StringBuilder stringBuilder = new StringBuilder();
+
+	    /*
+	    ** [ A Timestamp ]
+	    */
+
+	    stringBuilder.append
+		(Base64.encodeToString(Miscellaneous.
+				       longToByteArray(System.
+						       currentTimeMillis()),
+				       Base64.NO_WRAP));
+	    stringBuilder.append("\n");
+
+	    /*
+	    ** [ Key Type ]
+	    */
+
+	    stringBuilder.append(strings[0]);
+	    stringBuilder.append("\n");
+
+	    /*
+	    ** [ Encryption Public Key ]
+	    */
+
+	    stringBuilder.append(strings[1]);
+	    stringBuilder.append("\n");
+
+	    /*
+	    ** [ Encryption Public Key Signature ]
+	    */
+
+	    stringBuilder.append(strings[2]);
+	    stringBuilder.append("\n");
+
+	    /*
+	    ** [ Signature Public Key ]
+	    */
+
+	    stringBuilder.append(strings[3]);
+	    stringBuilder.append("\n");
+
+	    /*
+	    ** [ Signature Public Key Signature ]
+	    */
+
+	    stringBuilder.append(strings[4]);
+
+	    byte aes256[] = Cryptography.encrypt
+		(stringBuilder.toString().getBytes(),
+		 Arrays.copyOfRange(keyStream, 0, 32));
+
+	    stringBuilder.setLength(0);
+	    stringBuilder = null;
+
+	    if(aes256 == null)
+		return null;
+
+	    /*
+	    ** [ SHA-512 HMAC ]
+	    */
+
+	    byte sha512[] = Cryptography.hmac
+		(aes256,
+		 Arrays.copyOfRange(keyStream, 32, keyStream.length));
+
+	    if(sha512 == null)
+		return null;
+
+	    /*
+	    ** [ Destination ]
+	    */
+
+	    byte destination[] = Cryptography.hmac
+		(Miscellaneous.joinByteArrays(aes256, sha512),
+		 Cryptography.sha512(sipHashId.getBytes("UTF-8")));
+
+	    return Miscellaneous.joinByteArrays(aes256, sha512, destination);
+	}
+	catch(Exception exception)
+	{
+	}
+
+	return null;
     }
 }

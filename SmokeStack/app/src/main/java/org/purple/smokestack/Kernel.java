@@ -82,6 +82,7 @@ public class Kernel
     private final static int CONGESTION_LIFETIME = 60;
     private final static int LISTENERS_INTERVAL = 5000; // 5 Seconds
     private final static int NEIGHBORS_INTERVAL = 5000; // 5 Seconds
+    private final static int PKP_MESSAGE_RETRIEVAL_WINDOW = 30000; // 30 Seconds
     private final static int PURGE_RELEASED_MESSAGES_INTERVAL =
 	5000; // 5 Seconds
     private final static int ROUTING_ENTRY_LIFETIME = CONGESTION_LIFETIME;
@@ -400,7 +401,7 @@ public class Kernel
 		return false;
 
 	    /*
-	    ** EPKS
+	    ** EPKS?
 	    */
 
 	    ArrayList<SipHashIdElement> arrayList1 = null;
@@ -508,61 +509,107 @@ public class Kernel
 					     0,
 					     32));
 
-		     if(aes256 == null)
+		     if(aes256 == null || aes256.length < 25)
 			 return true;
 
-		     long current = System.currentTimeMillis();
-		     long timestamp = Miscellaneous.byteArrayToLong
-			 (Arrays.copyOfRange(aes256, 1, 1 + 8));
-
-		     if(current - timestamp < 0)
+		     if(aes256[0] == Messages.CHAT_MESSAGE_RETRIEVAL[0])
 		     {
-			 if(timestamp - current > CHAT_MESSAGE_RETRIEVAL_WINDOW)
+			 long current = System.currentTimeMillis();
+			 long timestamp = Miscellaneous.byteArrayToLong
+			     (Arrays.copyOfRange(aes256, 1, 1 + 8));
+
+			 if(current - timestamp < 0)
+			 {
+			     if(timestamp - current >
+				CHAT_MESSAGE_RETRIEVAL_WINDOW)
+				 return true;
+			 }
+			 else if(current - timestamp >
+				 CHAT_MESSAGE_RETRIEVAL_WINDOW)
 			     return true;
+
+			 byte identity[] = Arrays.copyOfRange
+			     (aes256, 9, 9 + 64);
+
+			 if(identity == null || identity.length != 64)
+			     return true;
+
+			 PublicKey signatureKey = s_databaseHelper.
+			     signatureKeyForDigest
+			     (s_cryptography,
+			      Arrays.copyOfRange(aes256, 73, 73 + 64));
+
+			 if(signatureKey == null)
+			     return true;
+
+			 if(!Cryptography.
+			    verifySignature(signatureKey,
+					    Arrays.copyOfRange(aes256,
+							       137,
+							       aes256.length),
+					    Arrays.
+					    copyOfRange(aes256,
+							0,
+							137)))
+			     return true;
+
+			 s_databaseHelper.writeCongestionDigest(value);
+
+			 String sipHashIdDigest = s_databaseHelper.
+			     sipHashIdDigestFromDigest
+			     (s_cryptography,
+			      Arrays.copyOfRange(aes256, 73, 73 + 64));
+
+			 /*
+			 ** Tag all of sipHashIdDigest's messages for release.
+			 */
+
+			 s_databaseHelper.tagMessagesForRelease
+			     (s_cryptography, sipHashIdDigest);
+			 prepareReleaseMessagesScheduler
+			     (sipHashIdDigest, identity);
+			 return true;
 		     }
-		     else if(current - timestamp >
-			     CHAT_MESSAGE_RETRIEVAL_WINDOW)
+		     else if(aes256[0] == Messages.PKP_MESSAGE_REQUEST[0])
+		     {
+			 /*
+			 ** Request a public key pair.
+			 */
+
+			 long current = System.currentTimeMillis();
+			 long timestamp = Miscellaneous.byteArrayToLong
+			     (Arrays.copyOfRange(aes256, 1, 1 + 8));
+
+			 if(current - timestamp < 0)
+			 {
+			     if(timestamp - current >
+				PKP_MESSAGE_RETRIEVAL_WINDOW)
+				 return true;
+			 }
+			 else if(current - timestamp >
+				 PKP_MESSAGE_RETRIEVAL_WINDOW)
+			     return true;
+
+			 String sipHashId = new String
+			     (Arrays.copyOfRange(aes256, 32, aes256.length),
+			      "UTF-8");
+			 String array[] = s_databaseHelper.readPublicKeyPair
+			     (s_cryptography, sipHashId);
+
+			 if(array == null)
+			     return true;
+
+			 sipHashId = new String
+			     (Arrays.copyOfRange(aes256, 9, 9 + 23));
+
+			 String message = Messages.bytesToMessageString
+			     (Messages.epksMessage(sipHashId, array));
+
+			 enqueueMessage(message);
 			 return true;
-
-		     byte identity[] = Arrays.copyOfRange(aes256, 9, 9 + 64);
-
-		     if(identity == null || identity.length != 64)
+		     }
+		     else
 			 return true;
-
-		     PublicKey signatureKey = s_databaseHelper.
-			 signatureKeyForDigest
-			 (s_cryptography,
-			  Arrays.copyOfRange(aes256, 73, 73 + 64));
-
-		     if(signatureKey == null)
-			 return true;
-
-		     if(!Cryptography.
-			verifySignature(signatureKey,
-					Arrays.copyOfRange(aes256,
-							   137,
-							   aes256.length),
-					Arrays.
-					copyOfRange(aes256,
-						    0,
-						    137)))
-			 return true;
-
-		     s_databaseHelper.writeCongestionDigest(value);
-
-		     String sipHashIdDigest = s_databaseHelper.
-			 sipHashIdDigestFromDigest
-			 (s_cryptography,
-			  Arrays.copyOfRange(aes256, 73, 73 + 64));
-
-		     /*
-		     ** Tag all of sipHashIdDigest's messages for release.
-		     */
-
-		     s_databaseHelper.tagMessagesForRelease
-			 (s_cryptography, sipHashIdDigest);
-		     prepareReleaseMessagesScheduler(sipHashIdDigest, identity);
-		     return true;
 		 }
 
 		for(SipHashIdElement sipHashIdElement : arrayList1)
