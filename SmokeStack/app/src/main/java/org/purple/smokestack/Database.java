@@ -179,6 +179,60 @@ public class Database extends SQLiteOpenHelper
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
+    public boolean writePublicKeyPairs
+	(Cryptography cryptography, String sipHashId, String strings[])
+    {
+	if(cryptography == null ||
+	   m_db == null ||
+	   sipHashId.isEmpty() ||
+	   strings == null ||
+	   strings.length != Messages.EPKS_GROUP_ONE_ELEMENT_COUNT)
+	    return false;
+
+	/*
+	** Do not prepare a database transaction.
+	*/
+
+	try
+	{
+	    ContentValues values = new ContentValues();
+	    SparseArray<String> sparseArray = new SparseArray<> ();
+	    byte bytes[] = null;
+
+	    sparseArray.append(0, "key_type");
+	    sparseArray.append(1, "public_key_string");
+	    sparseArray.append(2, "public_key_signature_string");
+	    sparseArray.append(3, "signature_public_key_string");
+	    sparseArray.append(4, "signature_public_key_signature_string");
+
+	    for(int i = 0; i < sparseArray.size(); i++)
+	    {
+		bytes = cryptography.etm(strings[i + 1].getBytes());
+		values.put(sparseArray.get(i),
+			   Base64.encodeToString(bytes, Base64.DEFAULT));
+	    }
+
+	    bytes = cryptography.etm
+		(sipHashId.toLowerCase().trim().getBytes("UTF-8"));
+	    values.put
+		("siphash_id", Base64.encodeToString(bytes, Base64.DEFAULT));
+	    values.put
+		("siphash_id_digest",
+		 Base64.encodeToString(cryptography.hmac(sipHashId.
+							 toLowerCase().
+							 trim().
+							 getBytes("UTF-8")),
+				       Base64.DEFAULT));
+	    m_db.replace("public_key_pairs", null, values);
+	}
+	catch(Exception exception)
+	{
+	    return false;
+	}
+
+	return true;
+    }
+
     private void prepareDb()
     {
 	if(m_db == null)
@@ -952,7 +1006,7 @@ public class Database extends SQLiteOpenHelper
 	    cursor = m_db.rawQuery
 		("SELECT message, message_digest " +
 		 "FROM stack WHERE siphash_id_digest = ? AND " +
-		 "timestamp IS NULL AND verified_digest = ?",
+		 "timestamp IS NULL AND verified_digest = ? ORDER BY OID",
 		 new String[] {sipHashIdDigest,
 			       Base64.
 			       encodeToString(cryptography.
@@ -2012,6 +2066,7 @@ public class Database extends SQLiteOpenHelper
 
 	    PublicKey publicKey = null;
 	    PublicKey signatureKey = null;
+	    boolean signaturesVerified = false;
 	    byte keyType[] = null;
 	    byte publicKeySignature[] = null;
 	    byte signatureKeySignature[] = null;
@@ -2090,6 +2145,8 @@ public class Database extends SQLiteOpenHelper
 							 signatureKey.
 							 getEncoded()))
 			    return false;
+			else
+			    signaturesVerified = true;
 		    }
 
 		    break;
@@ -2112,6 +2169,10 @@ public class Database extends SQLiteOpenHelper
 
 	    if(name.isEmpty())
 		return false;
+
+	    if(signaturesVerified)
+		if(!writePublicKeyPairs(cryptography, sipHashId, strings))
+		    return false;
 
 	    ContentValues values = new ContentValues();
 	    SparseArray<String> sparseArray = new SparseArray<> ();
@@ -2453,14 +2514,19 @@ public class Database extends SQLiteOpenHelper
 	if(m_db == null)
 	    return;
 
-	Cursor cursor = null;
+	Cursor cursor1 = null;
+	Cursor cursor2 = null;
 
 	m_db.beginTransactionNonExclusive();
 
 	try
 	{
-	    cursor = m_db.rawQuery
+	    cursor1 = m_db.rawQuery
 		("DELETE FROM participants WHERE siphash_id_digest " +
+		 "NOT IN (SELECT siphash_id_digest FROM siphash_ids)",
+		 null);
+	    cursor1 = m_db.rawQuery
+		("DELETE FROM public_key_pairs WHERE siphash_id_digest " +
 		 "NOT IN (SELECT siphash_id_digest FROM siphash_ids)",
 		 null);
 	    m_db.setTransactionSuccessful();
@@ -2470,8 +2536,11 @@ public class Database extends SQLiteOpenHelper
 	}
 	finally
 	{
-	    if(cursor != null)
-		cursor.close();
+	    if(cursor1 != null)
+		cursor1.close();
+
+	    if(cursor2 != null)
+		cursor2.close();
 
 	    m_db.endTransaction();
 	}
@@ -2829,9 +2898,32 @@ public class Database extends SQLiteOpenHelper
 	    "siphash_id TEXT NOT NULL, " +
 	    "siphash_id_digest TEXT NOT NULL, " +
 	    "FOREIGN KEY (siphash_id_digest) REFERENCES " +
-	    "siphash_ids(siphash_id_digest) ON DELETE CASCADE, " +
+	    "siphash_ids (siphash_id_digest) ON DELETE CASCADE, " +
 	    "PRIMARY KEY (encryption_public_key_digest, " +
 	    "signature_public_key_digest))";
+
+	try
+	{
+	    db.execSQL(str);
+	}
+	catch(Exception exception)
+	{
+	}
+
+	/*
+	** Create the public_key_pairs table.
+	*/
+
+	str = "CREATE TABLE IF NOT EXISTS public_key_pairs (" +
+	    "key_type TEXT NOT NULL, " +
+	    "public_key_signature_string TEXT NOT NULL, " +
+	    "public_key_string TEXT NOT NULL, " +
+	    "signature_public_key_signature_string TEXT NOT NULL, " +
+	    "signature_public_key_string TEXT NOT NULL, " +
+	    "siphash_id TEXT NOT NULL, " +
+	    "siphash_id_digest TEXT NOT NULL PRIMARY KEY, " +
+	    "FOREIGN KEY (siphash_id_digest) REFERENCES " +
+	    "siphash_ids (siphash_id_digest) ON DELETE CASCADE)";
 
 	try
 	{
@@ -2888,7 +2980,7 @@ public class Database extends SQLiteOpenHelper
 	    "timestamp TEXT DEFAULT NULL, " +
 	    "verified_digest TEXT NOT NULL, " +
 	    "FOREIGN KEY (siphash_id_digest) REFERENCES " +
-	    "siphash_ids(siphash_id_digest) ON DELETE CASCADE)";
+	    "siphash_ids (siphash_id_digest) ON DELETE CASCADE)";
 
 	try
 	{
@@ -3076,6 +3168,7 @@ public class Database extends SQLiteOpenHelper
 	    m_db.delete("outbound_queue", null, null);
 	    m_db.delete("ozones", null, null);
 	    m_db.delete("participants", null, null);
+	    m_db.delete("public_key_pairs", null, null);
 	    m_db.delete("routing_identities", null, null);
 	    m_db.delete("settings", null, null);
 	    m_db.delete("siphash_ids", null, null);
@@ -3106,6 +3199,7 @@ public class Database extends SQLiteOpenHelper
 	     "DROP TABLE IF EXISTS outbound_queue",
 	     "DROP TABLE IF EXISTS ozones",
 	     "DROP TABLE IF EXISTS participants",
+	     "DROP TABLE IF EXISTS public_key_pairs",
 	     "DROP TABLE IF EXISTS routing_identities",
 	     "DROP TABLE IF EXISTS settings",
 	     "DROP TABLE IF EXISTS siphash_ids",
