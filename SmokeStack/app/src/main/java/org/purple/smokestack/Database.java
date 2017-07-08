@@ -2144,7 +2144,16 @@ public class Database extends SQLiteOpenHelper
 	   m_db == null)
 	    return false;
 
-	m_db.beginTransactionNonExclusive();
+	ContentValues values = null;
+
+	try
+	{
+	    values = new ContentValues();
+	}
+	catch(Exception exception)
+	{
+	    return false;
+	}
 
 	try
 	{
@@ -2263,7 +2272,6 @@ public class Database extends SQLiteOpenHelper
 		if(!writePublicKeyPairs(cryptography, sipHashId, strings))
 		    return false;
 
-	    ContentValues values = new ContentValues();
 	    SparseArray<String> sparseArray = new SparseArray<> ();
 
 	    sparseArray.append(0, "encryption_public_key");
@@ -2306,7 +2314,16 @@ public class Database extends SQLiteOpenHelper
 		values.put(sparseArray.get(i),
 			   Base64.encodeToString(bytes, Base64.DEFAULT));
 	    }
+	}
+	catch(Exception exception)
+	{
+	    return false;
+	}
 
+	m_db.beginTransactionNonExclusive();
+
+	try
+	{
 	    m_db.insert("participants", null, values);
 	    m_db.setTransactionSuccessful();
 	}
@@ -3223,7 +3240,6 @@ public class Database extends SQLiteOpenHelper
 
 	    try
 	    {
-		writeLog(stringBuilder.toString());
 		m_db.delete
 		    ("stack", "OID IN (" + stringBuilder.toString() + ")",
 		     null);
