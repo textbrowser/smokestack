@@ -2145,6 +2145,7 @@ public class Database extends SQLiteOpenHelper
 	    return false;
 
 	ContentValues values = null;
+	Cursor cursor = null;
 
 	try
 	{
@@ -2200,6 +2201,26 @@ public class Database extends SQLiteOpenHelper
 		    ii += 1;
 		    break;
 		case 2:
+		    cursor = m_db.rawQuery
+			("SELECT COUNT(*) " +
+			 "FROM participants WHERE " +
+			 "encryption_public_key_digest = ?",
+			 new String[] {Base64.
+				       encodeToString(Cryptography.
+						      sha512(Base64.
+							     decode(string.
+								    getBytes(),
+								    Base64.
+								    NO_WRAP)),
+						      Base64.DEFAULT)});
+
+		    if(cursor != null && cursor.moveToFirst())
+			if(cursor.getLong(0) > 0)
+			    return false;
+
+		    if(cursor != null)
+			cursor.close();
+
 		    publicKey = Cryptography.publicKeyFromBytes
 			(Base64.decode(string.getBytes(), Base64.NO_WRAP));
 
@@ -2224,6 +2245,26 @@ public class Database extends SQLiteOpenHelper
 		    ii += 1;
 		    break;
 		case 4:
+		    cursor = m_db.rawQuery
+			("SELECT COUNT(*) " +
+			 "FROM participants WHERE " +
+			 "signature_public_key_digest = ?",
+			 new String[] {Base64.
+				       encodeToString(Cryptography.
+						      sha512(Base64.
+							     decode(string.
+								    getBytes(),
+								    Base64.
+								    NO_WRAP)),
+						      Base64.DEFAULT)});
+
+		    if(cursor != null && cursor.moveToFirst())
+			if(cursor.getLong(0) > 0)
+			    return false;
+
+		    if(cursor != null)
+			cursor.close();
+
 		    signatureKey = Cryptography.publicKeyFromBytes
 			(Base64.decode(string.getBytes(), Base64.NO_WRAP));
 
@@ -2318,6 +2359,11 @@ public class Database extends SQLiteOpenHelper
 	catch(Exception exception)
 	{
 	    return false;
+	}
+	finally
+	{
+	    if(cursor != null)
+		cursor.close();
 	}
 
 	m_db.beginTransactionNonExclusive();
