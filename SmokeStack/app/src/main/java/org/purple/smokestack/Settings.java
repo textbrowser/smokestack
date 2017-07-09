@@ -874,10 +874,17 @@ public class Settings extends AppCompatActivity
 				     String.valueOf(parent.getId()),
 				     "neighbors");
 			    else if(position == 4) // Reset SSL/TLS Credentials
+			    {
 				m_databaseHelper.neighborRecordCertificate
 				    (s_cryptography,
 				     String.valueOf(parent.getId()),
 				     null);
+				m_databaseHelper.listenerNeighborControlStatus
+				    (s_cryptography,
+				     "disconnect",
+				     String.valueOf(parent.getId()),
+				     "neighbors");
+			    }
 
 			    parent.setSelection(0);
 			}
