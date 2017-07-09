@@ -33,8 +33,8 @@
     <string name="ozones">Ozones</string>
     <string name="local">Local</string>
     <string name="retrieved_content_will_be_stored_for_approximately_one_week">Retrieved content will be stored for approximately one week.</string>
-    <string name="in_out_total">In / Out / Total</string>
     <string name="scope_id">Scope ID</string>
     <string name="accept_without_signatures">Accept Without Signatures</string>
     <string name="siphash_id">SipHash ID</string>
+    <string name="out_in_total">Out / In / Total</string>
 </resources>

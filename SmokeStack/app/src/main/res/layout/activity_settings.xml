@@ -19,7 +19,6 @@
     </android.support.design.widget.AppBarLayout>
 
     <RelativeLayout
-        android:id="@+id/view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#3B5378"
@@ -480,7 +479,6 @@
                     android:textStyle="normal|bold" />
 
                 <TextView
-                    android:id="@+id/textView2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="5dp"
@@ -508,11 +506,10 @@
                         android:textColor="#fdb632" />
 
                     <TextView
-                        android:id="@+id/textView3"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="0.13"
-                        android:text="@string/in_out_total"
+                        android:text="@string/out_in_total"
                         android:textColor="#fdb632" />
 
                 </LinearLayout>

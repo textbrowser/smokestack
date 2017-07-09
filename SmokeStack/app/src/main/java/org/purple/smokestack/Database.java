@@ -2149,15 +2149,6 @@ public class Database extends SQLiteOpenHelper
 
 	try
 	{
-	    values = new ContentValues();
-	}
-	catch(Exception exception)
-	{
-	    return false;
-	}
-
-	try
-	{
 	    String strings[] = new String(data).split("\\n");
 
 	    if(strings.length != Messages.EPKS_GROUP_ONE_ELEMENT_COUNT)
@@ -2313,6 +2304,8 @@ public class Database extends SQLiteOpenHelper
 		if(!writePublicKeyPairs(cryptography, sipHashId, strings))
 		    return false;
 
+	    values = new ContentValues();
+
 	    SparseArray<String> sparseArray = new SparseArray<> ();
 
 	    sparseArray.append(0, "encryption_public_key");
@@ -2365,6 +2358,9 @@ public class Database extends SQLiteOpenHelper
 	    if(cursor != null)
 		cursor.close();
 	}
+
+	if(values == null)
+	    return false;
 
 	m_db.beginTransactionNonExclusive();
 

@@ -1169,10 +1169,10 @@ public class Settings extends AppCompatActivity
 		else
 		{
 		    textView.append
-			(String.valueOf(sipHashIdElement.m_inMessages));
+			(String.valueOf(sipHashIdElement.m_outMessages));
 		    textView.append(" / ");
 		    textView.append
-			(String.valueOf(sipHashIdElement.m_outMessages));
+			(String.valueOf(sipHashIdElement.m_inMessages));
 		    textView.append(" / ");
 		    textView.append
 			(String.valueOf(sipHashIdElement.m_totalMessages));
@@ -2329,8 +2329,8 @@ public class Settings extends AppCompatActivity
 					continue;
 
 				    textView.setText
-					(messageTotals.m_inMessages + " / " +
-					 messageTotals.m_outMessages + " / " +
+					(messageTotals.m_outMessages + " / " +
+					 messageTotals.m_inMessages + " / " +
 					 messageTotals.m_totalMessages);
 				    break;
 				}
