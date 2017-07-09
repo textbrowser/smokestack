@@ -87,6 +87,7 @@ public class TcpListener
 	new ReentrantReadWriteLock();
     private final StringBuilder m_error = new StringBuilder();
     private final static int ACCEPT_INTERVAL = 100; // Milliseconds
+    private final static int RSA_KEY_SIZE = 2048;
     private final static int TIMER_INTERVAL = 2500; // 2.5 Seconds
 
     private class ClientTask implements Runnable
@@ -295,7 +296,7 @@ public class TcpListener
 	       publicKey == null ||
 	       publicKey.length <= 0)
 		keyPair = Cryptography.generatePrivatePublicKeyPair
-		    ("RSA", 2048);
+		    ("RSA", RSA_KEY_SIZE);
 	    else
 	    {
 		keyPair = Cryptography.generatePrivatePublicKeyPair
