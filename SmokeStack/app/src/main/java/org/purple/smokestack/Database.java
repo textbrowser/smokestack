@@ -2326,12 +2326,7 @@ public class Database extends SQLiteOpenHelper
 			equals("encryption_public_key_digest"))
 		    bytes = Cryptography.sha512(publicKey.getEncoded());
 		else if(sparseArray.get(i).equals("function_digest"))
-		{
-		    if(keyType != null &&
-		       keyType.length == 1 &&
-		       keyType[0] == Messages.CHAT_KEY_TYPE[0])
-			bytes = cryptography.hmac("chat".getBytes());
-		}
+		    bytes = cryptography.hmac("chat".getBytes());
 		else if(sparseArray.get(i).equals("signature_public_key"))
 		    bytes = cryptography.etm(signatureKey.getEncoded());
 		else if(sparseArray.get(i).
