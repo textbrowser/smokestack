@@ -183,6 +183,9 @@ public abstract class Neighbor
 		    {
 		    }
 
+		    if(!connected())
+			return;
+
 		    ArrayList<byte[]> arrayList = m_databaseHelper.
 			readIdentities();
 
@@ -237,6 +240,9 @@ public abstract class Neighbor
 		catch(Exception exception)
 		{
 		}
+
+		if(!connected())
+		    return;
 
 		synchronized(m_stringBuilder)
 		{
@@ -346,6 +352,9 @@ public abstract class Neighbor
 		catch(Exception exception)
 		{
 		}
+
+		if(!connected())
+		    return;
 
 		if(System.nanoTime() - m_accumulatedTime >= 1e+10)
 		{
@@ -484,7 +493,6 @@ public abstract class Neighbor
     protected abstract boolean send(String message);
     protected abstract int getLocalPort();
     protected abstract void connect();
-    protected abstract void disconnect();
 
     protected synchronized void abort()
     {
@@ -532,6 +540,24 @@ public abstract class Neighbor
 	}
     }
 
+    protected void disconnect()
+    {
+	synchronized(m_echoQueueMutex)
+	{
+	    m_echoQueue.clear();
+	}
+
+	synchronized(m_queueMutex)
+	{
+	    m_queue.clear();
+	}
+
+	synchronized(m_stringBuilder)
+	{
+	    m_stringBuilder.setLength(0);
+	}
+    }
+
     protected void echo(String message)
     {
 	Kernel.getInstance().echo(message, m_oid.get());
@@ -561,6 +587,9 @@ public abstract class Neighbor
 
     public void scheduleEchoSend(String message)
     {
+	if(!connected())
+	    return;
+
 	synchronized(m_echoQueueMutex)
 	{
 	    if(m_echoQueue.size() < MAXIMUM_QUEUED_ECHO_PACKETS)
@@ -570,6 +599,9 @@ public abstract class Neighbor
 
     public void scheduleSend(String message)
     {
+	if(!connected())
+	    return;
+
 	synchronized(m_queueMutex)
 	{
 	    m_queue.add(message);

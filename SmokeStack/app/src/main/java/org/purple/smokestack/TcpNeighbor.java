@@ -153,6 +153,7 @@ public class TcpNeighbor extends Neighbor
 
     protected void disconnect()
     {
+	super.disconnect();
 	m_databaseHelper.deleteRoutingEntry(m_uuid.toString());
 
 	try

@@ -117,6 +117,7 @@ public class UdpNeighbor extends Neighbor
 
     protected void disconnect()
     {
+	super.disconnect();
 	m_databaseHelper.deleteRoutingEntry(m_uuid.toString());
 
 	try

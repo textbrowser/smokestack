@@ -634,7 +634,7 @@ public class Database extends SQLiteOpenHelper
 			{
 			case 0:
 			    neighborElement.m_outboundQueued = cursor.
-				getLong(1);
+				getLong(i);
 			    break;
 			case 1:
 			    neighborElement.m_bytesRead = new String(bytes);
