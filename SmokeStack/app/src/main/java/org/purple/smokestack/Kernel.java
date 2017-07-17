@@ -80,7 +80,7 @@ public class Kernel
     private final static int LISTENERS_INTERVAL = 5000; // 5 Seconds
     private final static int NEIGHBORS_INTERVAL = 5000; // 5 Seconds
     private final static int PKP_MESSAGE_RETRIEVAL_WINDOW = 30000; // 30 Seconds
-    private final static int RELEASE_MESSAGES_INTERVAL = 100;
+    private final static int RELEASE_MESSAGES_INTERVAL = 250;
     private final static int ROUTING_ENTRY_LIFETIME = CONGESTION_LIFETIME;
     private final static int ROUTING_INTERVAL = 15000; // 15 Seconds
     private static Kernel s_instance = null;
