@@ -31,6 +31,7 @@ import android.os.Build;
 import java.io.ByteArrayInputStream;
 import java.math.BigInteger;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.security.KeyPair;
 import java.security.KeyStore;
 import java.security.SecureRandom;
@@ -515,10 +516,12 @@ public class TcpListener
 			    null,
 			    SecureRandom.getInstance("SHA1PRNG"));
 	    m_socket = (SSLServerSocket)
-		sslContext.getServerSocketFactory().createServerSocket
-		(Integer.parseInt(m_ipPort),
-		 0,
-		 InetAddress.getByName(m_ipAddress));
+		sslContext.getServerSocketFactory().createServerSocket();
+	    m_socket.setReuseAddress(true);
+	    m_socket.bind
+		(new InetSocketAddress(InetAddress.getByName(m_ipAddress),
+				       Integer.parseInt(m_ipPort)),
+		 0);
 
 	    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
 		m_socket.setEnabledProtocols
@@ -528,7 +531,6 @@ public class TcpListener
 		    (new String[] {"SSLv3", "TLSv1", "TLSv1.1", "TLSv1.2"});
 
 	    m_socket.setNeedClientAuth(false);
-	    m_socket.setReuseAddress(true);
 	    m_startTime.set(System.nanoTime());
 	}
 	catch(Exception exception)
