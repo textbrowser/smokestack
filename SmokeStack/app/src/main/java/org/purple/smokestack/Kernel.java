@@ -50,15 +50,18 @@ public class Kernel
 {
     private ArrayList<OzoneElement> m_ozones = null;
     private ArrayList<SipHashIdElement> m_sipHashIds = null;
+    private Hashtable<String, ScheduledFuture>
+	m_releaseMessagesSchedulers = null;
     private ScheduledExecutorService m_congestionScheduler = null;
     private ScheduledExecutorService m_listenersScheduler = null;
     private ScheduledExecutorService m_neighborsScheduler = null;
     private ScheduledExecutorService m_purgeExpiredRoutingEntries = null;
     private ScheduledExecutorService m_purgeReleasedMessagesScheduler = null;
-    private ScheduledExecutorService m_releaseMessagesScheduler = null;
     private WakeLock m_wakeLock = null;
     private final ArrayList<TcpNeighbor> m_serverNeighbors = new ArrayList<> ();
     private final ReentrantReadWriteLock m_ozonesMutex = new
+	ReentrantReadWriteLock();
+    private final ReentrantReadWriteLock m_releaseMessagesSchedulersMutex = new
 	ReentrantReadWriteLock();
     private final ReentrantReadWriteLock m_serverNeighborsMutex = new
 	ReentrantReadWriteLock();
@@ -80,13 +83,16 @@ public class Kernel
     private final static int LISTENERS_INTERVAL = 5000; // 5 Seconds
     private final static int NEIGHBORS_INTERVAL = 5000; // 5 Seconds
     private final static int PKP_MESSAGE_RETRIEVAL_WINDOW = 30000; // 30 Seconds
-    private final static int RELEASE_MESSAGES_INTERVAL = 250;
+    private final static int PURGE_RELEASED_MESSAGES_INTERVAL =
+	5000; // 5 Seconds
     private final static int ROUTING_ENTRY_LIFETIME = CONGESTION_LIFETIME;
     private final static int ROUTING_INTERVAL = 15000; // 15 Seconds
     private static Kernel s_instance = null;
 
     private Kernel()
     {
+	m_releaseMessagesSchedulers = new Hashtable<> ();
+
 	/*
 	** Never, ever sleep.
 	*/
@@ -112,6 +118,68 @@ public class Kernel
 	populateOzones();
 	populateSipHashIds();
 	prepareSchedulers();
+    }
+
+    private void prepareReleaseMessagesScheduler(final String sipHashIdDigest,
+						 final byte identity[])
+    {
+	if(identity == null ||
+	   identity.length <= 0 ||
+	   sipHashIdDigest == null ||
+	   sipHashIdDigest.isEmpty())
+	    return;
+
+	m_releaseMessagesSchedulersMutex.writeLock().lock();
+
+	try
+	{
+	    if(m_releaseMessagesSchedulers.containsKey(sipHashIdDigest))
+		return;
+
+	    m_releaseMessagesSchedulers.put
+		(sipHashIdDigest,
+		 Executors.newSingleThreadScheduledExecutor().
+		 schedule(new Runnable()
+		{
+		    @Override
+		    public void run()
+		    {
+			while(true)
+			    try
+			    {
+				ArrayList<byte[]> arrayList = s_databaseHelper.
+				    readTaggedMessage
+				    (sipHashIdDigest, s_cryptography);
+
+				if(arrayList == null || arrayList.size() != 2)
+				    break;
+
+				byte destination[] = Cryptography.hmac
+				    (arrayList.get(0), identity);
+
+				if(destination == null)
+				    break;
+
+				String message = Messages.bytesToMessageString
+				    (Miscellaneous.
+				     joinByteArrays(arrayList.get(0),
+						    destination));
+
+				enqueueMessage(message);
+				s_databaseHelper.timestampReleasedMessage
+				    (s_cryptography, arrayList.get(1));
+				Thread.sleep(200);
+			    }
+			    catch(Exception exception)
+			    {
+			    }
+		    }
+		}, 1500, TimeUnit.MILLISECONDS));
+	}
+	finally
+	{
+	    m_releaseMessagesSchedulersMutex.writeLock().unlock();
+	}
     }
 
     private void prepareSchedulers()
@@ -156,6 +224,51 @@ public class Kernel
 	    }, 1500, NEIGHBORS_INTERVAL, TimeUnit.MILLISECONDS);
 	}
 
+	if(m_purgeReleasedMessagesScheduler == null)
+	{
+	    m_purgeReleasedMessagesScheduler = Executors.
+		newSingleThreadScheduledExecutor();
+	    m_purgeReleasedMessagesScheduler.scheduleAtFixedRate(new Runnable()
+	    {
+		@Override
+		public void run()
+		{
+		    m_releaseMessagesSchedulersMutex.writeLock().lock();
+
+		    try
+		    {
+			if(!m_releaseMessagesSchedulers.isEmpty())
+			{
+			    /*
+			    ** Remove completed schedules.
+			    */
+
+			    Iterator<Hashtable.Entry<String, ScheduledFuture> >
+				it = m_releaseMessagesSchedulers.entrySet().
+				iterator();
+
+			    while(it.hasNext())
+			    {
+				Hashtable.Entry<String, ScheduledFuture>
+				    entry = it.next();
+
+				if(entry.getValue() == null)
+				    it.remove();
+				else if(entry.getValue().isDone())
+				    it.remove();
+			    }
+			}
+		    }
+		    finally
+		    {
+			m_releaseMessagesSchedulersMutex.writeLock().unlock();
+		    }
+
+		    s_databaseHelper.purgeReleasedMessages(s_cryptography);
+		}
+	    }, 1500, PURGE_RELEASED_MESSAGES_INTERVAL, TimeUnit.MILLISECONDS);
+	}
+
 	if(m_purgeExpiredRoutingEntries == null)
 	{
 	    m_purgeExpiredRoutingEntries = Executors.
@@ -169,45 +282,6 @@ public class Kernel
 			(ROUTING_ENTRY_LIFETIME);
 		}
 	    }, 1500, ROUTING_INTERVAL, TimeUnit.MILLISECONDS);
-	}
-
-	if(m_releaseMessagesScheduler == null)
-	{
-	    m_releaseMessagesScheduler = Executors.
-		newSingleThreadScheduledExecutor();
-	    m_releaseMessagesScheduler.scheduleAtFixedRate(new Runnable()
-	    {
-		@Override
-		public void run()
-		{
-		    try
-		    {
-			ArrayList<byte[]> arrayList = s_databaseHelper.
-			    readTaggedMessage(s_cryptography);
-
-			if(arrayList == null || arrayList.size() != 3)
-			    return;
-
-			byte destination[] = Cryptography.hmac
-			    (arrayList.get(0),
-			     Cryptography.sha512(arrayList.get(2)));
-
-			if(destination == null)
-			    return;
-
-			String message = Messages.bytesToMessageString
-			    (Miscellaneous.joinByteArrays(arrayList.get(0),
-							  destination));
-
-			enqueueMessage(message);
-			s_databaseHelper.timestampReleasedMessage
-			    (s_cryptography, arrayList.get(1));
-		    }
-		    catch(Exception exception)
-		    {
-		    }
-		}
-	    }, 1500, RELEASE_MESSAGES_INTERVAL, TimeUnit.MILLISECONDS);
 	}
     }
 
@@ -492,6 +566,8 @@ public class Kernel
 
 			 s_databaseHelper.tagMessagesForRelease
 			     (s_cryptography, sipHashIdDigest);
+			 prepareReleaseMessagesScheduler
+			     (sipHashIdDigest, identity);
 			 return true;
 		     }
 		     else if(aes256[0] == Messages.PKP_MESSAGE_REQUEST[0])
