@@ -135,21 +135,6 @@ public class TcpListener
 	    @Override
 	    public void run()
 	    {
-		try
-		{
-		    if(Thread.currentThread().isInterrupted())
-			return;
-		    else
-			Thread.sleep(5);
-		}
-		catch(InterruptedException exception)
-		{
-		    Thread.currentThread().interrupt();
-		}
-		catch(Exception exception)
-		{
-		}
-
 		if(!m_listen.get())
 		    return;
 
@@ -196,21 +181,6 @@ public class TcpListener
 	    @Override
 	    public void run()
 	    {
-		try
-		{
-		    if(Thread.currentThread().isInterrupted())
-			return;
-		    else
-			Thread.sleep(5);
-		}
-		catch(InterruptedException exception)
-		{
-		    Thread.currentThread().interrupt();
-		}
-		catch(Exception exception)
-		{
-		}
-
 		String statusControl = m_databaseHelper.
 		    readListenerNeighborStatusControl
 		    (m_cryptography, "listeners", m_oid.get());
