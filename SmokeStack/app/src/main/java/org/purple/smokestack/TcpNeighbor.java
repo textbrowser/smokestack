@@ -376,6 +376,8 @@ public class TcpNeighbor extends Neighbor
 		    if(m_socket == null ||
 		       m_socket.getInputStream() == null)
 			return;
+		    else if(m_socket.getSoTimeout() != 0)
+			m_socket.setSoTimeout(0);
 
 		    int i = 0;
 
