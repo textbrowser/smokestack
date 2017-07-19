@@ -77,7 +77,7 @@ public abstract class Neighbor
     protected final StringBuilder m_error = new StringBuilder();
     protected final static Object m_errorMutex = new Object();
     protected final static int MAXIMUM_BYTES = 8 * 1024 * 1024; // 8 MiB
-    protected final static int READ_SOCKET_INTERVAL = 100; // 100 Milliseconds
+    protected final static int READ_SOCKET_INTERVAL = 10; // 10 Milliseconds
     protected final static int SO_TIMEOUT = 0; // Never
     public final static int MAXIMUM_QUEUED_ECHO_PACKETS = 1024;
 
