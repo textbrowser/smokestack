@@ -52,7 +52,7 @@ public abstract class Neighbor
     private final static int IDENTITIES_TIMER_INTERVAL = 10000; // 10 Seconds
     private final static int LANE_WIDTH = 100000;
     private final static int PARSING_INTERVAL = 100; // Milliseconds
-    private final static int SEND_OUTBOUND_TIMER_INTERVAL = 100; // Milliseconds
+    private final static int SEND_OUTBOUND_TIMER_INTERVAL = 200; // Milliseconds
     private final static int SILENCE = 90000; // 90 Seconds
     private final static int TIMER_INTERVAL = 2500; // 2.5 Seconds
     protected AtomicBoolean m_allowUnsolicited = null;
@@ -76,8 +76,8 @@ public abstract class Neighbor
     protected final StringBuffer m_stringBuffer = new StringBuffer();
     protected final StringBuilder m_error = new StringBuilder();
     protected final static Object m_errorMutex = new Object();
-    protected final static int MAXIMUM_BYTES = 32 * 1024 * 1024; // 32 MiB
-    protected final static int READ_SOCKET_INTERVAL = 150; // 150 Milliseconds
+    protected final static int MAXIMUM_BYTES = 8 * 1024 * 1024; // 8 MiB
+    protected final static int READ_SOCKET_INTERVAL = 100; // 100 Milliseconds
     protected final static int SO_TIMEOUT = 0; // Never
     public final static int MAXIMUM_QUEUED_ECHO_PACKETS = 1024;
 
@@ -132,7 +132,7 @@ public abstract class Neighbor
 		       int oid)
     {
 	m_allowUnsolicited = new AtomicBoolean(false);
-	m_bytes = new byte[256 * 1024];
+	m_bytes = new byte[1024 * 1024];
 	m_bytesRead = new AtomicLong(0);
 	m_bytesWritten = new AtomicLong(0);
 	m_clientSupportsCD = new AtomicBoolean(false);

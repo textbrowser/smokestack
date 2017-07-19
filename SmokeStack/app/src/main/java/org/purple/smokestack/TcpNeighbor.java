@@ -120,6 +120,9 @@ public class TcpNeighbor extends Neighbor
 	    if(m_socket == null || m_socket.getOutputStream() == null)
 		return false;
 
+	    if(Kernel.containsCongestion(message))
+		return true;
+
 	    OutputStream outputStream = m_socket.getOutputStream();
 
 	    outputStream.write(message.getBytes());
@@ -159,11 +162,25 @@ public class TcpNeighbor extends Neighbor
 	try
 	{
 	    if(m_socket != null)
-	    {
 		m_socket.getInputStream().close();
+	}
+	catch(Exception exception)
+	{
+	}
+
+	try
+	{
+	    if(m_socket != null)
 		m_socket.getOutputStream().close();
+	}
+	catch(Exception exception)
+	{
+	}
+
+	try
+	{
+	    if(m_socket != null)
 		m_socket.close();
-	    }
 	}
 	catch(Exception exception)
 	{
@@ -199,8 +216,8 @@ public class TcpNeighbor extends Neighbor
 	if(m_socket != null)
 	    try
 	    {
-		m_socket.setSoLinger(true, 0);
-		m_socket.setSoTimeout(SO_TIMEOUT);
+		m_socket.setSoLinger(false, 0);
+		m_socket.setSoTimeout(HANDSHAKE_TIMEOUT);
 		m_socket.setTcpNoDelay(true);
 	    }
 	    catch(Exception exception)
@@ -224,6 +241,12 @@ public class TcpNeighbor extends Neighbor
 		    if(m_socket == null ||
 		       m_socket.getInputStream() == null)
 			return;
+		    else if(m_socket.getSoTimeout() == HANDSHAKE_TIMEOUT)
+			/*
+			** Reset SO_TIMEOUT from HANDSHAKE_TIMEOUT.
+			*/
+
+			m_socket.setSoTimeout(SO_TIMEOUT);
 
 		    int i = 0;
 
@@ -536,6 +559,7 @@ public class TcpNeighbor extends Neighbor
 	    }
 
 	    m_socket.setEnabledProtocols(m_protocols);
+	    m_socket.setSoLinger(false, 0);
 	    m_socket.setSoTimeout(HANDSHAKE_TIMEOUT); // SSL/TLS process.
 	    m_socket.setTcpNoDelay(true);
 	    m_startTime.set(System.nanoTime());

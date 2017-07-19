@@ -487,6 +487,7 @@ public class TcpListener
 			    SecureRandom.getInstance("SHA1PRNG"));
 	    m_socket = (SSLServerSocket)
 		sslContext.getServerSocketFactory().createServerSocket();
+	    m_socket.setPerformancePreferences(0, 1, 2);
 	    m_socket.setReuseAddress(true);
 	    m_socket.bind
 		(new InetSocketAddress(InetAddress.getByName(m_ipAddress),
