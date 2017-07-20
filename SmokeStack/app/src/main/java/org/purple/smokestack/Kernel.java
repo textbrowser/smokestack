@@ -29,8 +29,10 @@ package org.purple.smokestack;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.PowerManager;
+import android.net.wifi.WifiManager.WifiLock;
+import android.net.wifi.WifiManager;
 import android.os.PowerManager.WakeLock;
+import android.os.PowerManager;
 import android.util.Base64;
 import android.util.SparseArray;
 import java.net.InetAddress;
@@ -58,6 +60,7 @@ public class Kernel
     private ScheduledExecutorService m_purgeExpiredRoutingEntries = null;
     private ScheduledExecutorService m_purgeReleasedMessagesScheduler = null;
     private WakeLock m_wakeLock = null;
+    private WifiLock m_wifiLock = null;
     private final ArrayList<TcpNeighbor> m_serverNeighbors = new ArrayList<> ();
     private final ReentrantReadWriteLock m_ozonesMutex = new
 	ReentrantReadWriteLock();
@@ -103,9 +106,30 @@ public class Kernel
 		SmokeStack.getApplication().
 		getSystemService(Context.POWER_SERVICE);
 
-	    m_wakeLock = powerManager.newWakeLock
-		(PowerManager.PARTIAL_WAKE_LOCK, "SmokeStackLockTag");
-	    m_wakeLock.acquire();
+	    if(powerManager != null)
+		m_wakeLock = powerManager.newWakeLock
+		    (PowerManager.PARTIAL_WAKE_LOCK, "SmokeStackWakeLockTag");
+
+	    if(m_wakeLock != null)
+		m_wakeLock.acquire();
+	}
+	catch(Exception exception)
+	{
+	}
+
+	try
+	{
+	    WifiManager wifiManager = (WifiManager)
+		SmokeStack.getApplication().
+		getSystemService(Context.WIFI_SERVICE);
+
+	    if(wifiManager != null)
+		m_wifiLock = wifiManager.createWifiLock
+		    (WifiManager.WIFI_MODE_FULL_HIGH_PERF,
+		     "SmokeStackWifiLockTag");
+
+	    if(m_wifiLock != null)
+		m_wifiLock.acquire();
 	}
 	catch(Exception exception)
 	{
