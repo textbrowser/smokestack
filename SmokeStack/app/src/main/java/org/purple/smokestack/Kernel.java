@@ -111,7 +111,10 @@ public class Kernel
 		    (PowerManager.PARTIAL_WAKE_LOCK, "SmokeStackWakeLockTag");
 
 	    if(m_wakeLock != null)
+	    {
+		m_wakeLock.setReferenceCounted(false);
 		m_wakeLock.acquire();
+	    }
 	}
 	catch(Exception exception)
 	{
@@ -129,7 +132,10 @@ public class Kernel
 		     "SmokeStackWifiLockTag");
 
 	    if(m_wifiLock != null)
+	    {
+		m_wifiLock.setReferenceCounted(false);
 		m_wifiLock.acquire();
+	    }
 	}
 	catch(Exception exception)
 	{
