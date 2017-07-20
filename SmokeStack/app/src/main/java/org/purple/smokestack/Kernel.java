@@ -103,7 +103,7 @@ public class Kernel
 	try
 	{
 	    PowerManager powerManager = (PowerManager)
-		SmokeStack.getApplication().
+		SmokeStack.getApplication().getApplicationContext().
 		getSystemService(Context.POWER_SERVICE);
 
 	    if(powerManager != null)
@@ -123,7 +123,7 @@ public class Kernel
 	try
 	{
 	    WifiManager wifiManager = (WifiManager)
-		SmokeStack.getApplication().
+		SmokeStack.getApplication().getApplicationContext().
 		getSystemService(Context.WIFI_SERVICE);
 
 	    if(wifiManager != null)
