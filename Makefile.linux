@@ -3,6 +3,7 @@
 ADB = ~/Android/Sdk/platform-tools/adb
 EMULATOR = ~/Android/Sdk/tools/emulator
 GRADLEW = ./SmokeStack/gradlew
+JARSIGNER = "${HOME}/Desktop/android-studio/jre/bin/jarsigner"
 JDK = "${HOME}/Desktop/android-studio/jre"
 
 all:
@@ -62,6 +63,9 @@ load-apk: all
 	-a android.intent.action.MAIN -c android.intent.category.LAUNCHER
 
 load-apk-release: release
+	$(JARSIGNER) -verbose -keystore \
+	~/Android-Keys/smokestack-release.keystore \
+	./SmokeStack/app/build/apk/smokestack.apk smokestack-release
 	./adb.bash install -r ./SmokeStack/app/build/apk/smokestack.apk
 	./adb.bash shell am start -S -W \
 	-n org.purple.smokestack/org.purple.smokestack.Settings \
