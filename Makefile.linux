@@ -66,6 +66,7 @@ load-apk-release: release
 	$(JARSIGNER) -verbose -keystore \
 	~/Android-Keys/smokestack-release.keystore \
 	./SmokeStack/app/build/apk/smokestack.apk smokestack-release
+	$(JARSIGNER) -verify ./SmokeStack/app/build/apk/smokestack.apk
 	./adb.bash install -r ./SmokeStack/app/build/apk/smokestack.apk
 	./adb.bash shell am start -S -W \
 	-n org.purple.smokestack/org.purple.smokestack.Settings \
