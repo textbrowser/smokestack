@@ -2668,18 +2668,35 @@ public class Database extends SQLiteOpenHelper
 	if(m_db == null)
 	    return;
 
-	Cursor cursor1 = null;
-	Cursor cursor2 = null;
+	Cursor cursor = null;
 
 	m_db.beginTransactionNonExclusive();
 
 	try
 	{
-	    cursor1 = m_db.rawQuery
+	    cursor = m_db.rawQuery
 		("DELETE FROM participants WHERE siphash_id_digest " +
 		 "NOT IN (SELECT siphash_id_digest FROM siphash_ids)",
 		 null);
-	    cursor1 = m_db.rawQuery
+	    m_db.setTransactionSuccessful();
+	}
+	catch(Exception exception)
+        {
+	}
+	finally
+	{
+	    if(cursor != null)
+		cursor.close();
+
+	    m_db.endTransaction();
+	}
+
+	cursor = null;
+	m_db.beginTransactionNonExclusive();
+
+	try
+	{
+	    cursor = m_db.rawQuery
 		("DELETE FROM public_key_pairs WHERE siphash_id_digest " +
 		 "NOT IN (SELECT siphash_id_digest FROM siphash_ids)",
 		 null);
@@ -2690,11 +2707,8 @@ public class Database extends SQLiteOpenHelper
 	}
 	finally
 	{
-	    if(cursor1 != null)
-		cursor1.close();
-
-	    if(cursor2 != null)
-		cursor2.close();
+	    if(cursor != null)
+		cursor.close();
 
 	    m_db.endTransaction();
 	}
@@ -2719,6 +2733,8 @@ public class Database extends SQLiteOpenHelper
 				    "disconnected",  // Status
 				    "0",             // Uptime
 				    String.valueOf(neighborElement.m_oid));
+
+	arrayList.clear();
     }
 
     public void clearTable(String table)

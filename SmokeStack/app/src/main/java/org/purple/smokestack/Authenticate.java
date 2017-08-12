@@ -224,6 +224,8 @@ public class Authenticate extends AppCompatActivity
 					 "data.");
 				else
 				{
+				    m_databaseHelper.cleanNeighborStatistics
+					(s_cryptography);
 				    Kernel.getInstance();
 				    State.getInstance().setAuthenticated(true);
 
@@ -303,6 +305,8 @@ public class Authenticate extends AppCompatActivity
     {
 	super.onCreate(savedInstanceState);
 	m_databaseHelper = Database.getInstance(getApplicationContext());
+	m_databaseHelper.clearTable("log");
+	m_databaseHelper.clearTable("routing_identities");
         setContentView(R.layout.activity_authenticate);
 	prepareListeners();
 
