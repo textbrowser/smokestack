@@ -254,7 +254,7 @@ public class Settings extends AppCompatActivity
     }
 
     private void addParticipant()
-    {	
+    {
 	if(Settings.this.isFinishing())
 	    return;
 

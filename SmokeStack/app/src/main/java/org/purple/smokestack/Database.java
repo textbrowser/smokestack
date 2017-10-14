@@ -1692,7 +1692,7 @@ public class Database extends SQLiteOpenHelper
 	    return false;
 
 	boolean ok = false;
-	
+
 	m_db.beginTransactionNonExclusive();
 
 	try
