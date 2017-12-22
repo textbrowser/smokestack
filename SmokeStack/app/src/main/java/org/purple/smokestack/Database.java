@@ -558,6 +558,9 @@ public class Database extends SQLiteOpenHelper
     {
 	prepareDb();
 
+	if(!State.getInstance().isAuthenticated())
+	    return null;
+
 	if(cryptography == null || m_db == null)
 	    return null;
 
