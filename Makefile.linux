@@ -54,10 +54,12 @@ list-devices:
 	$(ADB) devices -l
 
 list-files:
-	./adb.bash shell run-as org.purple.smokestack ls -l /data/data/org.purple.smokestack/databases
+	./adb.bash shell run-as org.purple.smokestack \
+	ls -l /data/data/org.purple.smokestack/databases
 
 load-apk: all
-	./adb.bash install -r ./SmokeStack/app/build/apk/smokestack.apk
+	./adb.bash install -r \
+	./SmokeStack/app/build/outputs/apk/debug/apk/smokestack.apk
 	./adb.bash shell am start -S -W \
 	-n org.purple.smokestack/org.purple.smokestack.Settings \
 	-a android.intent.action.MAIN -c android.intent.category.LAUNCHER
@@ -65,15 +67,19 @@ load-apk: all
 load-apk-release: release
 	$(JARSIGNER) -verbose -keystore \
 	~/Android-Keys/smokestack-release.keystore \
-	./SmokeStack/app/build/apk/smokestack.apk smokestack-release
-	$(JARSIGNER) -verify ./SmokeStack/app/build/apk/smokestack.apk
-	./adb.bash install -r ./SmokeStack/app/build/apk/smokestack.apk
+	./SmokeStack/app/build/outputs/apk/release/apk/smokestack.apk \
+	smokestack-release
+	$(JARSIGNER) -verify \
+	./SmokeStack/app/build/outputs/apk/release/apk/smokestack.apk
+	./adb.bash install -r \
+	./SmokeStack/app/build/outputs/apk/release/apk/smokestack.apk
 	./adb.bash shell am start -S -W \
 	-n org.purple.smokestack/org.purple.smokestack.Settings \
 	-a android.intent.action.MAIN -c android.intent.category.LAUNCHER
 
 pull-database:
-	./adb.bash exec-out run-as org.purple.smokestack cat /data/data/org.purple.smokestack/databases/smokestack.db > smokestack.db
+	./adb.bash exec-out run-as org.purple.smokestack cat \
+	/data/data/org.purple.smokestack/databases/smokestack.db > smokestack.db
 
 purge:
 	find . -name '*~*' -exec rm -f {} \;
@@ -97,8 +103,10 @@ release: clean
 	rm -f SmokeStack/app/src/main/assets/smokestack.src.d.zip
 
 remove-database:
-	./adb.bash shell run-as org.purple.smokestack rm -f /data/data/org.purple.smokestack/databases/smokestack.db
-	./adb.bash shell run-as org.purple.smokestack rm -f /data/data/org.purple.smokestack/databases/smokestack.db-journal
+	./adb.bash shell run-as org.purple.smokestack \
+	rm -f /data/data/org.purple.smokestack/databases/smokestack.db
+	./adb.bash shell run-as org.purple.smokestack \
+	rm -f /data/data/org.purple.smokestack/databases/smokestack.db-journal
 
 stop-smoke-stack:
 	./adb.bash shell am force-stop org.purple.smokestack

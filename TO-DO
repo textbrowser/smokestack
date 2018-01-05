@@ -12,6 +12,7 @@ Completed Items
 9.     Discovery via cryptography.
 10.    Per-participant message retrieval schedulers.
 11.    Decrease the lock area of m_stringBuilder in Neighbor.java.
+12.    Signed release.
 
 Future Items
 
@@ -19,6 +20,5 @@ Ignored / Impossible Items
 
 Remaining Items
 
-1.     Signed release.
-2.     The Settings activity has many views (ANDROID_LINT_MAX_VIEW_COUNT).
-3.     Entries in routing_identities expire.
+1.     The Settings activity has many views (ANDROID_LINT_MAX_VIEW_COUNT).
+2.     Entries in routing_identities expire.
