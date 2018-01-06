@@ -26,16 +26,16 @@ android {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile 'com.android.support:appcompat-v7:25.4.0'
-    compile 'com.android.support:design:25.4.0'
-    testCompile 'junit:junit:4.12'
-    compile 'com.android.support:support-v4:25.4.0'
-    compile files('libs/core-1.58.0.0.jar')
-    compile files('libs/pg-1.54.0.0.jar')
+    implementation 'com.android.support:appcompat-v7:25.4.0'
+    implementation 'com.android.support:design:25.4.0'
+    testImplementation 'junit:junit:4.12'
+    implementation 'com.android.support:support-v4:25.4.0'
+    implementation files('libs/core-1.58.0.0.jar')
+    implementation files('libs/pg-1.54.0.0.jar')
 }
 
 tasks.withType(JavaCompile) {
