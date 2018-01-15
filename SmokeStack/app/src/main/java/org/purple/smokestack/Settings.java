@@ -1237,6 +1237,15 @@ public class Settings extends AppCompatActivity
 	    }
         });
 
+	button1 = (Button) findViewById(R.id.clear_log);
+	button1.setOnClickListener(new View.OnClickListener()
+	{
+	    public void onClick(View view)
+	    {
+		m_databaseHelper.clearTable("log");
+	    }
+	});
+
 	button1 = (Button) findViewById(R.id.refresh_listeners);
 	button1.setOnClickListener(new View.OnClickListener()
 	{
