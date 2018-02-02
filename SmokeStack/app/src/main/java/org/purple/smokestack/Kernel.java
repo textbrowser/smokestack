@@ -85,7 +85,7 @@ public class Kernel
     private final static int CONGESTION_LIFETIME = 60;
     private final static int LISTENERS_INTERVAL = 5000; // 5 Seconds
     private final static int NEIGHBORS_INTERVAL = 5000; // 5 Seconds
-    private final static int PK_MESSAGE_RETRIEVAL_WINDOW = 30000; // 30 Seconds
+    private final static int PKP_MESSAGE_RETRIEVAL_WINDOW = 30000; // 30 Seconds
     private final static int PURGE_RELEASED_MESSAGES_INTERVAL =
 	5000; // 5 Seconds
     private final static int ROUTING_ENTRY_LIFETIME = CONGESTION_LIFETIME;
@@ -600,7 +600,7 @@ public class Kernel
 			     (sipHashIdDigest, identity);
 			 return true;
 		     }
-		     else if(aes256[0] == Messages.PK_MESSAGE_REQUEST[0])
+		     else if(aes256[0] == Messages.PKP_MESSAGE_REQUEST[0])
 		     {
 			 /*
 			 ** Request a public key pair.
@@ -613,11 +613,11 @@ public class Kernel
 			 if(current - timestamp < 0)
 			 {
 			     if(timestamp - current >
-				PK_MESSAGE_RETRIEVAL_WINDOW)
+				PKP_MESSAGE_RETRIEVAL_WINDOW)
 				 return true;
 			 }
 			 else if(current - timestamp >
-				 PK_MESSAGE_RETRIEVAL_WINDOW)
+				 PKP_MESSAGE_RETRIEVAL_WINDOW)
 			     return true;
 
 			 String sipHashId = new String

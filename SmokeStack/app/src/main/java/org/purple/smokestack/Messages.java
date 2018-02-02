@@ -35,7 +35,7 @@ public class Messages
     public final static String EOM = "\r\n\r\n\r\n";
     public final static byte CHAT_KEY_TYPE[] = new byte[] {0x00};
     public final static byte CHAT_MESSAGE_RETRIEVAL[] = new byte[] {0x00};
-    public final static byte PK_MESSAGE_REQUEST[] = new byte[] {0x01};
+    public final static byte PKP_MESSAGE_REQUEST[] = new byte[] {0x01};
     public final static int EPKS_GROUP_ONE_ELEMENT_COUNT = 6;
 
     public static String bytesToMessageString(byte bytes[])
