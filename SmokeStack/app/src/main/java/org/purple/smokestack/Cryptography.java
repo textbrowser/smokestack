@@ -35,6 +35,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.SecureRandom;
+import java.security.Security;
 import java.security.Signature;
 import java.security.spec.EncodedKeySpec;
 import java.security.spec.InvalidKeySpecException;
@@ -50,9 +51,16 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
+import org.bouncycastle.pqc.asn1.PQCObjectIdentifiers;
+import org.bouncycastle.pqc.jcajce.provider.BouncyCastlePQCProvider;
 
 public class Cryptography
 {
+    static
+    {
+	Security.addProvider(new BouncyCastlePQCProvider());
+    }
+
     private SecretKey m_encryptionKey = null;
     private SecretKey m_macKey = null;
     private final ReentrantReadWriteLock m_encryptionKeyMutex =
@@ -371,13 +379,16 @@ public class Cryptography
 	{
 	    EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(publicBytes);
 
-	    for(int i = 0; i < 2; i++)
+	    for(int i = 0; i < 3; i++)
 		try
 		{
 		    KeyFactory generator = null;
 
 		    if(i == 0)
 			generator = KeyFactory.getInstance("EC");
+		    else if(i == 1)
+			generator = KeyFactory.getInstance
+			    (PQCObjectIdentifiers.mcElieceCca2.getId());
 		    else
 			generator = KeyFactory.getInstance("RSA");
 

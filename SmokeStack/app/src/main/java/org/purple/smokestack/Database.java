@@ -2159,6 +2159,7 @@ public class Database extends SQLiteOpenHelper
 
 	    PublicKey publicKey = null;
 	    PublicKey signatureKey = null;
+	    boolean exists = false;
 	    boolean signaturesVerified = false;
 	    byte keyType[] = null;
 	    byte publicKeySignature[] = null;
@@ -2210,7 +2211,7 @@ public class Database extends SQLiteOpenHelper
 
 		    if(cursor != null && cursor.moveToFirst())
 			if(cursor.getInt(0) == 1)
-			    return false;
+			    exists = true;
 
 		    if(cursor != null)
 			cursor.close();
@@ -2225,16 +2226,17 @@ public class Database extends SQLiteOpenHelper
 		    break;
 		case 3:
 		    if(!ignoreSignatures)
-		    {
-			publicKeySignature = Base64.decode
-			    (string.getBytes(), Base64.NO_WRAP);
+			if(!publicKey.getAlgorithm().equals("McEliece-CCA2"))
+			{
+			    publicKeySignature = Base64.decode
+				(string.getBytes(), Base64.NO_WRAP);
 
-			if(!Cryptography.verifySignature(publicKey,
-							 publicKeySignature,
-							 publicKey.
-							 getEncoded()))
-			    return false;
-		    }
+			    if(!Cryptography.verifySignature(publicKey,
+							     publicKeySignature,
+							     publicKey.
+							     getEncoded()))
+				return false;
+			}
 
 		    ii += 1;
 		    break;
@@ -2254,7 +2256,8 @@ public class Database extends SQLiteOpenHelper
 
 		    if(cursor != null && cursor.moveToFirst())
 			if(cursor.getInt(0) == 1)
-			    return false;
+			    if(exists)
+				return false;
 
 		    if(cursor != null)
 			cursor.close();

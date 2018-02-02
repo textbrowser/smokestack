@@ -6,6 +6,7 @@ android {
     defaultConfig {
         applicationId "org.purple.smokestack"
         minSdkVersion 19
+	multiDexEnabled true
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
@@ -34,6 +35,7 @@ dependencies {
     implementation 'com.android.support:design:25.4.0'
     testImplementation 'junit:junit:4.12'
     implementation 'com.android.support:support-v4:25.4.0'
+    implementation files('libs/bcprov-ext-jdk15on-159.jar')
     implementation files('libs/core-1.58.0.0.jar')
     implementation files('libs/pg-1.54.0.0.jar')
 }
