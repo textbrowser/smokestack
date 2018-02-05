@@ -361,7 +361,7 @@ public class Database extends SQLiteOpenHelper
 		while(!cursor.isAfterLast())
 		{
 		    ListenerElement listenerElement = new ListenerElement();
-		    boolean error = false;
+		    int oid = cursor.getInt(cursor.getColumnCount() - 1);
 
 		    for(int i = 0; i < cursor.getColumnCount(); i++)
 		    {
@@ -377,8 +377,6 @@ public class Database extends SQLiteOpenHelper
 
 			if(bytes == null)
 			{
-			    error = true;
-
 			    StringBuilder stringBuilder = new StringBuilder();
 
 			    stringBuilder.append("Database::readListeners(): ");
@@ -386,31 +384,57 @@ public class Database extends SQLiteOpenHelper
 			    stringBuilder.append(cursor.getColumnName(i));
 			    stringBuilder.append(".");
 			    writeLog(stringBuilder.toString());
-			    break;
 			}
 
 			switch(i)
 			{
 			case 0:
-			    listenerElement.m_certificate = Miscellaneous.
-				deepCopy(bytes);
+			    if(bytes != null)
+				listenerElement.m_certificate = Miscellaneous.
+				    deepCopy(bytes);
+
 			    break;
 			case 1:
-			    listenerElement.m_ipVersion = new String(bytes);
+			    if(bytes != null)
+				listenerElement.m_ipVersion = new String(bytes);
+			    else
+				listenerElement.m_ipVersion =
+				    "error (" + oid + ")";
+
 			    break;
 			case 2:
-			    listenerElement.m_error = new String(bytes);
+			    if(bytes != null)
+				listenerElement.m_error = new String(bytes);
+			    else
+				listenerElement.m_error =
+				    "error (" + oid + ")";
+
 			    break;
 			case 3:
-			    listenerElement.m_localIpAddress = new String
-				(bytes);
+			    if(bytes != null)
+				listenerElement.m_localIpAddress = new String
+				    (bytes);
+			    else
+				listenerElement.m_localIpAddress =
+				    "error (" + oid + ")";
+
 			    break;
 			case 4:
-			    listenerElement.m_localPort = new String(bytes);
+			    if(bytes != null)
+				listenerElement.m_localPort = new String(bytes);
+			    else
+				listenerElement.m_localPort =
+				    "error (" + oid + ")";
+
 			    break;
 			case 5:
-			    listenerElement.m_localScopeId = new String
-				(bytes);
+			    if(bytes != null)
+				listenerElement.m_localScopeId = new String
+				    (bytes);
+			    else
+				listenerElement.m_localScopeId =
+				    "error (" + oid + ")";
+
 			    break;
 			case 6:
 			    try
@@ -425,29 +449,46 @@ public class Database extends SQLiteOpenHelper
 
 			    break;
 			case 7:
-			    listenerElement.m_privateKey = Miscellaneous.
-				deepCopy(bytes);
+			    if(bytes != null)
+				listenerElement.m_privateKey = Miscellaneous.
+				    deepCopy(bytes);
+
 			    break;
 			case 8:
-			    listenerElement.m_publicKey = Miscellaneous.
-				deepCopy(bytes);
+			    if(bytes != null)
+				listenerElement.m_publicKey = Miscellaneous.
+				    deepCopy(bytes);
+
 			    break;
 			case 9:
-			    listenerElement.m_status = new String(bytes);
+			    if(bytes != null)
+				listenerElement.m_status = new String(bytes);
+			    else
+				listenerElement.m_status =
+				    "error (" + oid + ")";
+
 			    break;
 			case 10:
-			    listenerElement.m_statusControl = new String
-				(bytes);
+			    if(bytes != null)
+				listenerElement.m_statusControl = new String
+				    (bytes);
+			    else
+				listenerElement.m_statusControl =
+				    "error (" + oid + ")";
+
 			    break;
 			case 11:
-			    listenerElement.m_uptime = new String(bytes);
+			    if(bytes != null)
+				listenerElement.m_uptime = new String(bytes);
+			    else
+				listenerElement.m_uptime =
+				    "error (" + oid + ")";
+
 			    break;
 			}
 		    }
 
-		    if(!error)
-			arrayList.add(listenerElement);
-
+		    arrayList.add(listenerElement);
 		    cursor.moveToNext();
 		}
 
@@ -602,7 +643,7 @@ public class Database extends SQLiteOpenHelper
 		while(!cursor.isAfterLast())
 		{
 		    NeighborElement neighborElement = new NeighborElement();
-		    boolean error = false;
+		    int oid = cursor.getInt(cursor.getColumnCount() - 1);
 
 		    for(int i = 0; i < cursor.getColumnCount(); i++)
 		    {
@@ -621,8 +662,6 @@ public class Database extends SQLiteOpenHelper
 
 			if(bytes == null && i != 0)
 			{
-			    error = true;
-
 			    StringBuilder stringBuilder = new StringBuilder();
 
 			    stringBuilder.append("Database::readNeighbors(): ");
@@ -630,7 +669,6 @@ public class Database extends SQLiteOpenHelper
 			    stringBuilder.append(cursor.getColumnName(i));
 			    stringBuilder.append(".");
 			    writeLog(stringBuilder.toString());
-			    break;
 			}
 
 			switch(i)
@@ -640,72 +678,168 @@ public class Database extends SQLiteOpenHelper
 				getLong(i);
 			    break;
 			case 1:
-			    neighborElement.m_bytesRead = new String(bytes);
+			    if(bytes != null)
+				neighborElement.m_bytesRead = new String(bytes);
+			    else
+				neighborElement.m_bytesRead =
+				    "error (" + oid + ")";
+
 			    break;
 			case 2:
-			    neighborElement.m_bytesWritten = new String(bytes);
+			    if(bytes != null)
+				neighborElement.m_bytesWritten =
+				    new String(bytes);
+			    else
+				neighborElement.m_bytesWritten =
+				    "error (" + oid + ")";
+
 			    break;
 			case 3:
-			    neighborElement.m_echoQueueSize = new String(bytes);
+			    if(bytes != null)
+				neighborElement.m_echoQueueSize =
+				    new String(bytes);
+			    else
+				neighborElement.m_echoQueueSize =
+				    "error (" + oid + ")";
+
 			    break;
 			case 4:
-			    neighborElement.m_ipVersion = new String(bytes);
+			    if(bytes != null)
+				neighborElement.m_ipVersion = new String(bytes);
+			    else
+				neighborElement.m_ipVersion =
+				    "error (" + oid + ")";
+
 			    break;
 			case 5:
-			    neighborElement.m_error = new String(bytes);
+			    if(bytes != null)
+				neighborElement.m_error = new String(bytes);
+			    else
+				neighborElement.m_error =
+				    "error (" + oid + ")";
+
 			    break;
 			case 6:
-			    neighborElement.m_localIpAddress =
-				new String(bytes);
+			    if(bytes != null)
+				neighborElement.m_localIpAddress =
+				    new String(bytes);
+			    else
+				neighborElement.m_localIpAddress =
+				    "error (" + oid + ")";
+
 			    break;
 			case 7:
-			    neighborElement.m_localPort = new String(bytes);
+			    if(bytes != null)
+				neighborElement.m_localPort = new String(bytes);
+			    else
+				neighborElement.m_localPort =
+				    "error (" + oid + ")";
+
 			    break;
 			case 8:
-			    neighborElement.m_proxyIpAddress =
-				new String(bytes);
+			    if(bytes != null)
+				neighborElement.m_proxyIpAddress =
+				    new String(bytes);
+			    else
+				neighborElement.m_proxyIpAddress =
+				    "error (" + oid + ")";
+
 			    break;
 			case 9:
-			    neighborElement.m_proxyPort = new String(bytes);
+			    if(bytes != null)
+				neighborElement.m_proxyPort = new String(bytes);
+			    else
+				neighborElement.m_proxyPort =
+				    "error (" + oid + ")";
+
 			    break;
 			case 10:
-			    neighborElement.m_proxyType = new String(bytes);
+			    if(bytes != null)
+				neighborElement.m_proxyType = new String(bytes);
+			    else
+				neighborElement.m_proxyType =
+				    "error (" + oid + ")";
+
 			    break;
 			case 11:
-			    neighborElement.m_remoteCertificate =
-				Miscellaneous.deepCopy(bytes);
+			    if(bytes != null)
+				neighborElement.m_remoteCertificate =
+				    Miscellaneous.deepCopy(bytes);
+
 			    break;
 			case 12:
-			    neighborElement.m_remoteIpAddress =
-				new String(bytes);
+			    if(bytes != null)
+				neighborElement.m_remoteIpAddress =
+				    new String(bytes);
+			    else
+				neighborElement.m_remoteIpAddress =
+				    "error (" + oid + ")";
+
 			    break;
 			case 13:
-			    neighborElement.m_remotePort = new String(bytes);
+			    if(bytes != null)
+				neighborElement.m_remotePort =
+				    new String(bytes);
+			    else
+				neighborElement.m_remotePort =
+				    "error (" + oid + ")";
+
 			    break;
 			case 14:
-			    neighborElement.m_remoteScopeId = new String(bytes);
+			    if(bytes != null)
+				neighborElement.m_remoteScopeId =
+				    new String(bytes);
+			    else
+				neighborElement.m_remoteScopeId =
+				    "error (" + oid + ")";
+
 			    break;
 			case 15:
-			    neighborElement.m_sessionCipher = new String(bytes);
+			    if(bytes != null)
+				neighborElement.m_sessionCipher =
+				    new String(bytes);
+			    else
+				neighborElement.m_sessionCipher =
+				    "error (" + oid + ")";
+
 			    break;
 			case 16:
-			    neighborElement.m_status = new String(bytes);
+			    if(bytes != null)
+				neighborElement.m_status = new String(bytes);
+			    else
+				neighborElement.m_status =
+				    "error (" + oid + ")";
+
 			    break;
 			case 17:
-			    neighborElement.m_statusControl = new String(bytes);
+			    if(bytes != null)
+				neighborElement.m_statusControl =
+				    new String(bytes);
+			    else
+				neighborElement.m_statusControl =
+				    "error (" + oid + ")";
+
 			    break;
 			case 18:
-			    neighborElement.m_transport = new String(bytes);
+			    if(bytes != null)
+				neighborElement.m_transport = new String(bytes);
+			    else
+				neighborElement.m_transport =
+				    "error (" + oid + ")";
+
 			    break;
 			case 19:
-			    neighborElement.m_uptime = new String(bytes);
+			    if(bytes != null)
+				neighborElement.m_uptime = new String(bytes);
+			    else
+				neighborElement.m_uptime =
+				    "error (" + oid + ")";
+
 			    break;
 			}
 		    }
 
-		    if(!error)
-			arrayList.add(neighborElement);
-
+		    arrayList.add(neighborElement);
 		    cursor.moveToNext();
 		}
 
@@ -755,7 +889,7 @@ public class Database extends SQLiteOpenHelper
 		while(!cursor.isAfterLast())
 		{
 		    OzoneElement ozoneElement = new OzoneElement();
-		    boolean error = false;
+		    int oid = cursor.getInt(cursor.getColumnCount() - 1);
 
 		    for(int i = 0; i < cursor.getColumnCount(); i++)
 		    {
@@ -771,8 +905,6 @@ public class Database extends SQLiteOpenHelper
 
 			if(bytes == null)
 			{
-			    error = true;
-
 			    StringBuilder stringBuilder = new StringBuilder();
 
 			    stringBuilder.append
@@ -781,24 +913,28 @@ public class Database extends SQLiteOpenHelper
 			    stringBuilder.append(cursor.getColumnName(i));
 			    stringBuilder.append(".");
 			    writeLog(stringBuilder.toString());
-			    break;
 			}
 
 			switch(i)
 			{
 			case 0:
-			    ozoneElement.m_address = new String(bytes);
+			    if(bytes != null)
+				ozoneElement.m_address = new String(bytes);
+			    else
+				ozoneElement.m_address =
+				    "error (" + oid + ")";
+
 			    break;
 			case 1:
-			    ozoneElement.m_addressStream = Miscellaneous.
-				deepCopy(bytes);
+			    if(bytes != null)
+				ozoneElement.m_addressStream = Miscellaneous.
+				    deepCopy(bytes);
+
 			    break;
 			}
 		    }
 
-		    if(!error)
-			arrayList.add(ozoneElement);
-
+		    arrayList.add(ozoneElement);
 		    cursor.moveToNext();
 		}
 
@@ -863,7 +999,7 @@ public class Database extends SQLiteOpenHelper
 		while(!cursor.isAfterLast())
 		{
 		    SipHashIdElement sipHashIdElement = new SipHashIdElement();
-		    boolean error = false;
+		    int oid = cursor.getInt(cursor.getColumnCount() - 1);
 
 		    for(int i = 0; i < cursor.getColumnCount(); i++)
 		    {
@@ -934,8 +1070,6 @@ public class Database extends SQLiteOpenHelper
 
 			if(bytes == null)
 			{
-			    error = true;
-
 			    StringBuilder stringBuilder = new StringBuilder();
 
 			    stringBuilder.append
@@ -944,7 +1078,6 @@ public class Database extends SQLiteOpenHelper
 			    stringBuilder.append(cursor.getColumnName(i));
 			    stringBuilder.append(".");
 			    writeLog(stringBuilder.toString());
-			    break;
 			}
 
 			switch(i)
@@ -960,26 +1093,38 @@ public class Database extends SQLiteOpenHelper
 			case 4:
 			    break;
 			case 5:
-			    sipHashIdElement.m_acceptWithoutSignatures =
-				new String(bytes).equals("true");
+			    if(bytes != null)
+				sipHashIdElement.m_acceptWithoutSignatures =
+				    new String(bytes).equals("true");
+
 			    break;
 			case 6:
-			    sipHashIdElement.m_name = new String(bytes);
+			    if(bytes != null)
+				sipHashIdElement.m_name = new String(bytes);
+			    else
+				sipHashIdElement.m_name =
+				    "error (" + oid + ")";
+
 			    break;
 			case 7:
-			    sipHashIdElement.m_sipHashId = new String
-				(bytes, "UTF-8");
+			    if(bytes != null)
+				sipHashIdElement.m_sipHashId = new String
+				    (bytes, "UTF-8");
+			    else
+				sipHashIdElement.m_sipHashId =
+				    "error (" + oid + ")";
+
 			    break;
 			case 8:
-			    sipHashIdElement.m_stream = Miscellaneous.
-				deepCopy(bytes);
+			    if(bytes != null)
+				sipHashIdElement.m_stream = Miscellaneous.
+				    deepCopy(bytes);
+
 			    break;
 			}
 		    }
 
-		    if(!error)
-			arrayList.add(sipHashIdElement);
-
+		    arrayList.add(sipHashIdElement);
 		    cursor.moveToNext();
 		}
 
