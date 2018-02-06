@@ -2367,9 +2367,9 @@ public class Settings extends AppCompatActivity
 		(Settings.this,
 		 listener,
 		 "Are you sure that you " +
-		 "wish to delete the Ozone \"" +
+		 "wish to delete the Ozone " +
 		 item.getTitle().toString().replace("Delete Ozone (", "").
-		 replace(")", "") + "\"?");
+		 replace(")", "") + "?");
 	    break;
 	case 1:
 	    Miscellaneous.showPromptDialog
