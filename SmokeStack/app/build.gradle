@@ -12,6 +12,9 @@ android {
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
+    dexOptions {
+	javaMaxHeapSize "4g"
+    }
     buildTypes {
         android.applicationVariants.all { variant ->
             variant.outputs.all {
