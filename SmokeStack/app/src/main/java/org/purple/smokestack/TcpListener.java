@@ -27,6 +27,9 @@
 
 package org.purple.smokestack;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Build;
 import java.io.ByteArrayInputStream;
 import java.math.BigInteger;
@@ -191,7 +194,11 @@ public class TcpListener
 		    disconnect();
 		    break;
 		case "listen":
-		    listen();
+		    if(isWifiConnected())
+			listen();
+		    else
+			disconnect();
+
 		    break;
 		default:
 		    /*
@@ -228,6 +235,25 @@ public class TcpListener
 		saveStatistics();
 	    }
 	}, 0, TIMER_INTERVAL, TimeUnit.MILLISECONDS);
+    }
+
+    protected synchronized boolean isWifiConnected()
+    {
+	try
+	{
+	    ConnectivityManager connectivityManager = (ConnectivityManager)
+		SmokeStack.getApplication().getApplicationContext().
+		getSystemService(Context.CONNECTIVITY_SERVICE);
+	    NetworkInfo networkInfo = connectivityManager.getNetworkInfo
+		(ConnectivityManager.TYPE_WIFI);
+
+	    return networkInfo.isConnected();
+	}
+	catch(Exception exception)
+	{
+	}
+
+	return false;
     }
 
     private boolean listening()

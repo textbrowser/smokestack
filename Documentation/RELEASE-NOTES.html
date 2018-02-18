@@ -1,30 +1,27 @@
+2018.02.20
+<br>
+<ol>
+  <li>Disconnect listeners on loss of WiFi.</li>
+</ol>
 2018.02.10
 <br>
-<b>New</b>
 <ol>
   <li>Denote corrupted database values.</li>
   <li>McEliece support.</li>
 </ol>
 2018.01.01
 <br>
-<b>New</b>
 <ol>
   <li>SpongyCastle archives prov and core have been upgraded to version 1.58.0.0.</li>
 </ol>
 2017.08.19
 <br>
-<b>New</b>
 <ol>
   <li>Purge neighbor statistics shortly after launch.</li>
   <li>Set a non-zero SO_TIMEOUT as some devices do not unblock socket reads after sockets are closed.</li>
 </ol>
 2017.07.20
 <br>
-<b>Corrections</b>
-<ol>
-  <li>Some server socket operations must be performed before the sockets are bound.</li>
-</ol>
-<b>Improvements</b>
 <ol>
   <li>Do not attempt to send duplicate data.</li>
   <li>Do not linger on server socket close.</li>
@@ -32,26 +29,19 @@
   <li>Per-participant message retrieval is fine.</li>
   <li>Removed non-necessary Thread.sleep() instances.</li>
   <li>Replaced StringBuilder Neighbor member with StringBuffer. StringBuffer is thread-safe.</li>
-  <li>WiFi lock.</li>
-</ol>
-<b>New</b>
-<ol>
   <li>Signed release.</li>
+  <li>Some server socket operations must be performed before the sockets are bound.</li>
+  <li>WiFi lock.</li>
 </ol>
 2017.07.16
 <br>
-<b>Corrections</b>
 <ol>
   <li>Corrected outbound-queued statistic.</li>
-</ol>
-<b>Improvements</b>
-<ol>
   <li>Less computations on disconnected neighbors.</li>
   <li>Per-participant message retrieval is too expensive. Replaced with single thread.</li>
 </ol>
 2017.07.09
 <br>
-<b>Improvements</b>
 <ol>
   <li>Allow renaming of existing participants.</li>
   <li>Discard duplicate public keys on arrival.</li>
@@ -59,7 +49,6 @@
 </ol>
 2017.07.07
 <br>
-<b>New</b>
 <ol>
   <li>SmokeStack as a private public key repository.</li>
 </ol>
