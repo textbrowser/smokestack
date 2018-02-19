@@ -196,7 +196,7 @@ public class TcpNeighbor extends Neighbor
 	if(m_socket != null)
 	    try
 	    {
-		m_socket.setSoLinger(false, 0);
+		m_socket.setSoLinger(true, 0);
 		m_socket.setSoTimeout(HANDSHAKE_TIMEOUT);
 		m_socket.setTcpNoDelay(true);
 	    }
