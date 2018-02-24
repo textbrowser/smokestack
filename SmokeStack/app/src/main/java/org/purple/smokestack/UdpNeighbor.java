@@ -37,7 +37,6 @@ import java.util.concurrent.TimeUnit;
 public class UdpNeighbor extends Neighbor
 {
     private DatagramSocket m_socket = null;
-    private InetAddress m_inetAddress = null;
 
     protected String getLocalIp()
     {
@@ -87,7 +86,7 @@ public class UdpNeighbor extends Neighbor
 	    DatagramPacket datagramPacket = new DatagramPacket
 		(message.getBytes(),
 		 message.getBytes().length,
-		 m_inetAddress,
+		 InetAddress.getByName(m_ipAddress),
 		 Integer.parseInt(m_ipPort));
 
 	    m_socket.send(datagramPacket);
@@ -150,16 +149,6 @@ public class UdpNeighbor extends Neighbor
 		       int oid)
     {
 	super(ipAddress, ipPort, scopeId, "UDP", version, true, oid);
-
-	try
-	{
-	    m_inetAddress = InetAddress.getByName(m_ipAddress);
-	}
-	catch(Exception exception)
-	{
-	    m_ipAddress = null;
-	}
-
 	m_readSocketScheduler = Executors.newSingleThreadScheduledExecutor();
 	m_readSocketScheduler.scheduleAtFixedRate(new Runnable()
 	{
@@ -233,14 +222,13 @@ public class UdpNeighbor extends Neighbor
 
 	try
 	{
-	    if(m_inetAddress == null)
-		return;
-
 	    m_bytesRead.set(0);
 	    m_bytesWritten.set(0);
 	    m_lastTimeRead.set(System.nanoTime());
 	    m_socket = new DatagramSocket();
-	    m_socket.connect(m_inetAddress, Integer.parseInt(m_ipPort));
+	    m_socket.connect
+		(InetAddress.getByName(m_ipAddress),
+		 Integer.parseInt(m_ipPort));
 	    m_socket.setSoTimeout(SO_TIMEOUT);
 	    m_startTime.set(System.nanoTime());
 	}

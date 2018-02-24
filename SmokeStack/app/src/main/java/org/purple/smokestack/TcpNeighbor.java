@@ -45,14 +45,13 @@ import javax.net.ssl.X509TrustManager;
 public class TcpNeighbor extends Neighbor
 {
     private AtomicBoolean m_isValidCertificate = null;
-    private InetSocketAddress m_inetSocketAddress = null;
     private InetSocketAddress m_proxyInetSocketAddress = null;
     private SSLSocket m_socket = null;
     private String m_protocols[] = null;
     private String m_proxyIpAddress = "";
     private String m_proxyType = "";
     private TrustManager m_trustManagers[] = null;
-    private final static int CONNECTION_TIMEOUT = 5000; // 5 Seconds
+    private final static int CONNECTION_TIMEOUT = 10000; // 10 Seconds
     private final static int HANDSHAKE_TIMEOUT = 10000; // 10 Seconds
     private int m_proxyPort = -1;
 
@@ -283,6 +282,14 @@ public class TcpNeighbor extends Neighbor
 		       int oid)
     {
 	super(ipAddress, ipPort, scopeId, "TCP", version, true, oid);
+	m_isValidCertificate = new AtomicBoolean(false);
+
+	if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+	    m_protocols = new String[] {"TLSv1", "TLSv1.1", "TLSv1.2"};
+	else
+	    m_protocols = new String[] {"SSLv3", "TLSv1", "TLSv1.1", "TLSv1.2"};
+
+	m_proxyIpAddress = proxyIpAddress;
 
 	try
 	{
@@ -293,34 +300,6 @@ public class TcpNeighbor extends Neighbor
 	    m_proxyPort = -1;
 	}
 
-	int port = 4710;
-
-	try
-	{
-	    port = Integer.parseInt(m_ipPort);
-	}
-	catch(Exception exception)
-	{
-	    port = 4710;
-	}
-
-	try
-	{
-	    m_inetSocketAddress = new InetSocketAddress(m_ipAddress, port);
-	}
-	catch(Exception exception)
-	{
-	    m_inetSocketAddress = null;
-	}
-
-	m_isValidCertificate = new AtomicBoolean(false);
-
-	if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-	    m_protocols = new String[] {"TLSv1", "TLSv1.1", "TLSv1.2"};
-	else
-	    m_protocols = new String[] {"SSLv3", "TLSv1", "TLSv1.1", "TLSv1.2"};
-
-	m_proxyIpAddress = proxyIpAddress;
 	m_proxyType = proxyType;
 
 	if(!m_proxyIpAddress.isEmpty() && m_proxyPort != -1 &&
@@ -503,6 +482,8 @@ public class TcpNeighbor extends Neighbor
 	    m_bytesWritten.set(0);
 	    m_lastTimeRead.set(System.nanoTime());
 
+	    InetSocketAddress inetSocketAddress =
+		new InetSocketAddress(m_ipAddress, Integer.parseInt(m_ipPort));
 	    SSLContext sslContext = null;
 
 	    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
@@ -517,7 +498,7 @@ public class TcpNeighbor extends Neighbor
 	    {
 		m_socket = (SSLSocket) sslContext.getSocketFactory().
 		    createSocket();
-		m_socket.connect(m_inetSocketAddress, CONNECTION_TIMEOUT);
+		m_socket.connect(inetSocketAddress, CONNECTION_TIMEOUT);
 	    }
 	    else
 	    {
@@ -530,7 +511,7 @@ public class TcpNeighbor extends Neighbor
 		    socket = new Socket
 			(new Proxy(Proxy.Type.SOCKS, m_proxyInetSocketAddress));
 
-		socket.connect(m_inetSocketAddress, CONNECTION_TIMEOUT);
+		socket.connect(inetSocketAddress, CONNECTION_TIMEOUT);
 		m_socket = (SSLSocket) sslContext.getSocketFactory().
 		    createSocket(socket, m_proxyIpAddress, m_proxyPort, true);
 	    }
