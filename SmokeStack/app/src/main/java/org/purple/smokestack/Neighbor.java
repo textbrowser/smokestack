@@ -268,6 +268,7 @@ public abstract class Neighbor
 			break;
 		    case "disconnect":
 			disconnect();
+			setError("");
 			break;
 		    default:
 			/*
