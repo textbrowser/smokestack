@@ -218,8 +218,6 @@ public class UdpNeighbor extends Neighbor
 	if(connected())
 	    return;
 
-	setError("");
-
 	try
 	{
 	    m_bytesRead.set(0);
@@ -231,6 +229,7 @@ public class UdpNeighbor extends Neighbor
 		 Integer.parseInt(m_ipPort));
 	    m_socket.setSoTimeout(SO_TIMEOUT);
 	    m_startTime.set(System.nanoTime());
+	    setError("");
 	}
 	catch(Exception exception)
 	{

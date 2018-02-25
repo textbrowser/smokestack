@@ -474,8 +474,6 @@ public class TcpNeighbor extends Neighbor
 	else if(m_oid.get() < 0)
 	    return;
 
-	setError("");
-
 	try
 	{
 	    m_bytesRead.set(0);
@@ -520,6 +518,7 @@ public class TcpNeighbor extends Neighbor
 	    m_socket.setSoTimeout(HANDSHAKE_TIMEOUT); // SSL/TLS process.
 	    m_socket.setTcpNoDelay(true);
 	    m_startTime.set(System.nanoTime());
+	    setError("");
 	}
 	catch(Exception exception)
 	{

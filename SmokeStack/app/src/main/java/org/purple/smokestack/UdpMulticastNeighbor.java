@@ -210,8 +210,6 @@ public class UdpMulticastNeighbor extends Neighbor
 	if(connected())
 	    return;
 
-	setError("");
-
 	try
 	{
 	    m_bytesRead.set(0);
@@ -223,6 +221,7 @@ public class UdpMulticastNeighbor extends Neighbor
 	    m_socket.setSoTimeout(SO_TIMEOUT);
 	    m_socket.setTimeToLive(TTL);
 	    m_startTime.set(System.nanoTime());
+	    setError("");
 	}
 	catch(Exception exception)
 	{
