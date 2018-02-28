@@ -854,6 +854,14 @@ public class Settings extends AppCompatActivity
 			    {
 				m_databaseHelper.cleanDanglingOutboundQueued();
 
+				/*
+				** Prepare the kernel's neighbors container
+				** if a neighbor was deleted as the OID
+				** field may represent a recycled value.
+				*/
+
+				Kernel.getInstance().purgeDeletedNeighbors();
+
 				TableRow row = (TableRow) findViewById
 				    (parent.getId());
 

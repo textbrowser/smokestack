@@ -152,43 +152,7 @@ public class Kernel
 
     private void prepareNeighbors()
     {
-	ArrayList<NeighborElement> neighbors =
-	    s_databaseHelper.readNeighbors(s_cryptography);
-
-	if(neighbors == null || neighbors.size() == 0)
-	{
-	    purgeNeighbors();
-	    return;
-	}
-
-	synchronized(m_neighbors)
-	{
-	    for(int i = m_neighbors.size() - 1; i >= 0; i--)
-	    {
-		/*
-		** Remove neighbor objects which do not exist in the
-		** database.
-		*/
-
-		boolean found = false;
-		int oid = m_neighbors.keyAt(i);
-
-		for(NeighborElement neighborElement : neighbors)
-		    if(neighborElement != null && neighborElement.m_oid == oid)
-		    {
-			found = true;
-			break;
-		    }
-
-		if(!found)
-		{
-		    if(m_neighbors.get(oid) != null)
-			m_neighbors.get(oid).abort();
-
-		    m_neighbors.remove(oid);
-		}
-	    }
-	}
+	purgeDeletedNeighbors();
 
 	for(NeighborElement neighborElement : neighbors)
 	{
@@ -1033,6 +997,47 @@ public class Kernel
 	}
 
 	listeners.clear();
+    }
+
+    public void purgeDeletedNeighbors()
+    {
+	ArrayList<NeighborElement> neighbors =
+	    s_databaseHelper.readNeighbors(s_cryptography);
+
+	if(neighbors == null || neighbors.size() == 0)
+	{
+	    purgeNeighbors();
+	    return;
+	}
+
+	synchronized(m_neighbors)
+	{
+	    for(int i = m_neighbors.size() - 1; i >= 0; i--)
+	    {
+		/*
+		** Remove neighbor objects which do not exist in the
+		** database.
+		*/
+
+		boolean found = false;
+		int oid = m_neighbors.keyAt(i);
+
+		for(NeighborElement neighborElement : neighbors)
+		    if(neighborElement != null && neighborElement.m_oid == oid)
+		    {
+			found = true;
+			break;
+		    }
+
+		if(!found)
+		{
+		    if(m_neighbors.get(oid) != null)
+			m_neighbors.get(oid).abort();
+
+		    m_neighbors.remove(oid);
+		}
+	    }
+	}
     }
 
     public void recordNeighbor(TcpNeighbor neighbor)
