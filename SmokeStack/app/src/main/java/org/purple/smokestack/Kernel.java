@@ -691,15 +691,6 @@ public class Kernel
 	return false;
     }
 
-    public static boolean containsCongestion(String message)
-    {
-	if(s_databaseHelper.containsCongestionDigest(s_congestionSipHash.
-						     hmac(message.getBytes())))
-	    return true;
-
-	return false;
-    }
-
     public static synchronized Kernel getInstance()
     {
 	if(s_instance == null)
@@ -737,11 +728,6 @@ public class Kernel
     public void echo(String message, int oid)
     {
 	if(message.trim().isEmpty())
-	    return;
-
-	if(s_databaseHelper.
-	   containsCongestionDigest(s_congestionSipHash.hmac(message.
-							     getBytes())))
 	    return;
 
 	synchronized(m_neighbors)

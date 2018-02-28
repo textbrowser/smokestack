@@ -117,9 +117,6 @@ public class TcpNeighbor extends Neighbor
 	    if(m_socket == null || m_socket.getOutputStream() == null)
 		return false;
 
-	    if(Kernel.containsCongestion(message) && m_userDefined.get())
-		return true;
-
 	    OutputStream outputStream = m_socket.getOutputStream();
 
 	    outputStream.write(message.getBytes());

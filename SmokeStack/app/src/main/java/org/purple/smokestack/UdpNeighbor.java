@@ -80,9 +80,6 @@ public class UdpNeighbor extends Neighbor
 	    if(m_socket == null)
 		return false;
 
-	    if(Kernel.containsCongestion(message) && m_userDefined.get())
-		return true;
-
 	    StringBuffer stringBuffer = new StringBuffer(message);
 
 	    while(stringBuffer.length() > 0)
