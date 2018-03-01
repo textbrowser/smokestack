@@ -97,6 +97,7 @@ public class UdpNeighbor extends Neighbor
 
 	    Kernel.writeCongestionDigest(message);
 	    m_bytesWritten.getAndAdd(message.length());
+	    setError("");
 	}
 	catch(Exception exception)
 	{

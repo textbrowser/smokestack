@@ -86,6 +86,7 @@ public class UdpMulticastNeighbor extends Neighbor
 
 	    Kernel.writeCongestionDigest(message);
 	    m_bytesWritten.getAndAdd(message.length());
+	    setError("");
 	}
 	catch(Exception exception)
 	{
@@ -226,6 +227,7 @@ public class UdpMulticastNeighbor extends Neighbor
 	    m_socket.setSoTimeout(SO_TIMEOUT);
 	    m_socket.setTimeToLive(TTL);
 	    m_startTime.set(System.nanoTime());
+	    setError("");
 	}
 	catch(Exception exception)
 	{
