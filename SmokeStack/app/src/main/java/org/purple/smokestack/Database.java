@@ -3902,6 +3902,10 @@ public class Database extends SQLiteOpenHelper
 	    SimpleDateFormat simpleDateFormat = new SimpleDateFormat
 		("yyyy-MM-dd HH:mm:ss");
 
+	    /*
+	    ** The clientIdentity variable may contain preferred algorithms.
+	    */
+
 	    simpleDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
 	    values.put("client_identity", clientIdentity.toString());
 	    values.put("identity", identity);
