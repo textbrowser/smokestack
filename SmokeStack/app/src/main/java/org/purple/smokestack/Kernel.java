@@ -129,7 +129,7 @@ public class Kernel
 	    if(wifiManager != null)
 		m_wifiLock = wifiManager.createWifiLock
 		    (WifiManager.WIFI_MODE_FULL_HIGH_PERF,
-		     "SmokeStackWifiLockTag");
+		     "SmokeStackWiFiLockTag");
 
 	    if(m_wifiLock != null)
 	    {

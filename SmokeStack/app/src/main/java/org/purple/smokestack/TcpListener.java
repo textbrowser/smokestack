@@ -194,7 +194,7 @@ public class TcpListener
 		    disconnect();
 		    break;
 		case "listen":
-		    if(isWiFiConnected())
+		    if(isNetworkConnected())
 			listen();
 		    else
 			disconnect();
@@ -237,7 +237,7 @@ public class TcpListener
 	}, 0, TIMER_INTERVAL, TimeUnit.MILLISECONDS);
     }
 
-    protected synchronized boolean isWiFiConnected()
+    protected synchronized boolean isNetworkConnected()
     {
 	try
 	{
@@ -247,7 +247,9 @@ public class TcpListener
 	    NetworkInfo networkInfo = connectivityManager.
 		getActiveNetworkInfo();
 
-	    return networkInfo.getType() == ConnectivityManager.TYPE_WIFI;
+	    return networkInfo.getState() ==
+		android.net.NetworkInfo.State.CONNECTED;
+
 	}
 	catch(Exception exception)
 	{
