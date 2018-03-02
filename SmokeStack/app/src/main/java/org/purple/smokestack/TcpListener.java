@@ -194,7 +194,7 @@ public class TcpListener
 		    disconnect();
 		    break;
 		case "listen":
-		    if(isWifiConnected())
+		    if(isWiFiConnected())
 			listen();
 		    else
 			disconnect();
@@ -237,17 +237,17 @@ public class TcpListener
 	}, 0, TIMER_INTERVAL, TimeUnit.MILLISECONDS);
     }
 
-    protected synchronized boolean isWifiConnected()
+    protected synchronized boolean isWiFiConnected()
     {
 	try
 	{
 	    ConnectivityManager connectivityManager = (ConnectivityManager)
 		SmokeStack.getApplication().getApplicationContext().
 		getSystemService(Context.CONNECTIVITY_SERVICE);
-	    NetworkInfo networkInfo = connectivityManager.getNetworkInfo
-		(ConnectivityManager.TYPE_WIFI);
+	    NetworkInfo networkInfo = connectivityManager.
+		getActiveNetworkInfo();
 
-	    return networkInfo.isConnected();
+	    return networkInfo.getType() == ConnectivityManager.TYPE_WIFI;
 	}
 	catch(Exception exception)
 	{

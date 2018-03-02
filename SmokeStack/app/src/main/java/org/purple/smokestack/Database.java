@@ -3293,6 +3293,7 @@ public class Database extends SQLiteOpenHelper
 	*/
 
 	str = "CREATE TABLE IF NOT EXISTS routing_identities (" +
+	    "algorithm TEXT NOT NULL, " +
 	    "client_identity TEXT NOT NULL, " +
 	    "identity TEXT NOT NULL, " +
 	    "timestamp DATETIME DEFAULT CURRENT_TIMESTAMP, " +
@@ -3901,14 +3902,20 @@ public class Database extends SQLiteOpenHelper
 	    ContentValues values = new ContentValues();
 	    SimpleDateFormat simpleDateFormat = new SimpleDateFormat
 		("yyyy-MM-dd HH:mm:ss");
+	    int index = identity.indexOf(";");
 
 	    /*
-	    ** The clientIdentity variable may contain preferred algorithms.
+	    ** The identity variable may contain preferred algorithms.
 	    */
 
 	    simpleDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
 	    values.put("client_identity", clientIdentity.toString());
-	    values.put("identity", identity);
+
+	    if(index > 0)
+		values.put("identity", identity.substring(0, index));
+	    else
+		values.put("identity", identity);
+
 	    values.put("timestamp", simpleDateFormat.format(new Date()));
 	    m_db.replace("routing_identities", null, values);
 	    m_db.setTransactionSuccessful();
