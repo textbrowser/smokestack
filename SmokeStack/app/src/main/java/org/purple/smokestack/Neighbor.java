@@ -168,19 +168,18 @@ public abstract class Neighbor
 
 		public void run()
 		{
-		    if(!connected())
-			return;
-
-		    ArrayList<byte[]> arrayList = m_databaseHelper.
-			readIdentities();
-
-		    if(arrayList == null || arrayList.size() == 0)
-			return;
-
-		    byte bytes[] = null;
-
 		    try
 		    {
+			if(!connected())
+			    return;
+
+			ArrayList<byte[]> arrayList = m_databaseHelper.
+			    readIdentities();
+
+			if(arrayList == null || arrayList.size() == 0)
+			    return;
+
+			byte bytes[] = null;
 			int length = arrayList.get(0).length;
 
 			bytes = new byte[arrayList.size() * length];
@@ -192,15 +191,15 @@ public abstract class Neighbor
 				 bytes,
 				 i * length,
 				 length);
-		    }
-		    catch(Exception exception)
-		    {
-		    }
 
 		    arrayList.clear();
 
 		    if(bytes != null)
 			send(Messages.identitiesMessage(bytes));
+		    }
+		    catch(Exception exception)
+		    {
+		    }
 		}
 	    }, 0, IDENTITIES_TIMER_INTERVAL, TimeUnit.MILLISECONDS);
 	}
@@ -211,43 +210,50 @@ public abstract class Neighbor
 
 	    public void run()
 	    {
-		if(!connected())
-		    return;
-
-		/*
-		** Detect our end-of-message delimiter.
-		*/
-
-		int indexOf = m_stringBuffer.indexOf(Messages.EOM);
-
-		while(indexOf >= 0)
+		try
 		{
-		    String buffer = m_stringBuffer.
-			substring(0, indexOf + Messages.EOM.length());
+		    if(!connected())
+			return;
 
-		    m_stringBuffer.delete(0, buffer.length());
-		    indexOf = m_stringBuffer.indexOf(Messages.EOM);
+		    /*
+		    ** Detect our end-of-message delimiter.
+		    */
 
-		    if(!Kernel.getInstance().ourMessage(buffer,
-							m_uuid,
-							m_userDefined.get()))
-			echo(buffer);
-		    else if(!m_userDefined.get())
+		    int indexOf = m_stringBuffer.indexOf(Messages.EOM);
+
+		    while(indexOf >= 0)
 		    {
-			if(buffer.contains("type=0095a&content"))
-			    m_clientSupportsCD.set(true);
+			String buffer = m_stringBuffer.
+			    substring(0, indexOf + Messages.EOM.length());
 
-			/*
-			** The client is allowing unsolicited data.
-			*/
+			m_stringBuffer.delete(0, buffer.length());
+			indexOf = m_stringBuffer.indexOf(Messages.EOM);
 
-			else if(buffer.contains("type=0096&content"))
-			    m_allowUnsolicited.set(true);
+			if(!Kernel.getInstance().
+			   ourMessage(buffer,
+				      m_uuid,
+				      m_userDefined.get()))
+			    echo(buffer);
+			else if(!m_userDefined.get())
+			{
+			    if(buffer.contains("type=0095a&content"))
+				m_clientSupportsCD.set(true);
+
+			    /*
+			    ** The client is allowing unsolicited data.
+			    */
+
+			    else if(buffer.contains("type=0096&content"))
+				m_allowUnsolicited.set(true);
+			}
 		    }
-		}
 
-		if(m_stringBuffer.length() > MAXIMUM_BYTES)
-		    m_stringBuffer.setLength(MAXIMUM_BYTES);
+		    if(m_stringBuffer.length() > MAXIMUM_BYTES)
+			m_stringBuffer.setLength(MAXIMUM_BYTES);
+		}
+		catch(Exception exception)
+		{
+		}
 	    }
 	}, 0, PARSING_INTERVAL, TimeUnit.MILLISECONDS);
 	m_scheduler.scheduleAtFixedRate(new Runnable()
@@ -255,34 +261,40 @@ public abstract class Neighbor
 	    @Override
 	    public void run()
 	    {
-		if(m_oid.get() >= 0)
+		try
 		{
-		    String statusControl = m_databaseHelper.
-			readListenerNeighborStatusControl
-			(m_cryptography, "neighbors", m_oid.get());
-
-		    switch(statusControl)
+		    if(m_oid.get() >= 0)
 		    {
-		    case "connect":
-			connect();
-			break;
-		    case "disconnect":
-			disconnect();
-			setError("");
-			break;
-		    default:
-			/*
-			** Abort!
-			*/
+			String statusControl = m_databaseHelper.
+			    readListenerNeighborStatusControl
+			    (m_cryptography, "neighbors", m_oid.get());
 
-			disconnect();
-			return;
+			switch(statusControl)
+			{
+			case "connect":
+			    connect();
+			    break;
+			case "disconnect":
+			    disconnect();
+			    setError("");
+			    break;
+			default:
+			    /*
+			    ** Abort!
+			    */
+
+			    disconnect();
+			    return;
+			}
+
+			saveStatistics();
 		    }
 
-		    saveStatistics();
+		    terminateOnSilence();
 		}
-
-		terminateOnSilence();
+		catch(Exception exception)
+		{
+		}
 	    }
 	}, 0, TIMER_INTERVAL, TimeUnit.MILLISECONDS);
 	m_sendOutboundScheduler.scheduleAtFixedRate(new Runnable()
@@ -292,91 +304,98 @@ public abstract class Neighbor
 	    @Override
 	    public void run()
 	    {
-		if(!connected())
-		    return;
-
-		if(System.nanoTime() - m_accumulatedTime >= 1e+10)
+		try
 		{
-		    m_accumulatedTime = System.nanoTime();
-		    send(getCapabilities());
+		    if(!connected())
+			return;
 
-		    if(m_userDefined.get())
-			if(!m_requestUnsolicitedSent.get())
-			    m_requestUnsolicitedSent.set
-				(send(Messages.requestUnsolicited()));
-		}
-
-		if(m_oid.get() >= 0)
-		{
-		    /*
-		    ** Retrieve the first database message.
-		    */
-
-		    String array[] = m_databaseHelper.readOutboundMessage
-			(m_oid.get());
-
-		    /*
-		    ** If the message is sent successfully, remove it.
-		    */
-
-		    if(array != null && array.length == 2)
-			if(send(array[0]))
-			    m_databaseHelper.deleteEntry
-				(array[1], "outbound_queue");
-		}
-
-		/*
-		** Echo packets.
-		*/
-
-		String message = "";
-
-		synchronized(m_echoQueueMutex)
-		{
-		    if(!m_echoQueue.isEmpty())
-			message = m_echoQueue.remove(0);
-		}
-
-		if(!message.isEmpty())
-		{
-		    if(!m_userDefined.get()) // A server.
+		    if(System.nanoTime() - m_accumulatedTime >= 1e+10)
 		    {
-			if(m_allowUnsolicited.get() ||
-			   !m_clientSupportsCD.get())
-			    send(message);
-			else
-			    try
-			    {
-				byte bytes[] = Base64.decode
-				    (Messages.
-				     stripMessage(message), Base64.DEFAULT);
+			m_accumulatedTime = System.nanoTime();
+			send(getCapabilities());
 
-				/*
-				** Determine if the message's destination
-				** is correct.
-				*/
-
-				if(m_databaseHelper.
-				   containsRoutingIdentity(m_uuid.toString(),
-							   bytes))
-				    send(message); // Ignore the results.
-			    }
-			    catch(Exception exception)
-			    {
-			    }
+			if(m_userDefined.get())
+			    if(!m_requestUnsolicitedSent.get())
+				m_requestUnsolicitedSent.set
+				    (send(Messages.requestUnsolicited()));
 		    }
-		    else
-			send(message); // Ignore the results.
+
+		    if(m_oid.get() >= 0)
+		    {
+			/*
+			** Retrieve the first database message.
+			*/
+
+			String array[] = m_databaseHelper.readOutboundMessage
+			    (m_oid.get());
+
+			/*
+			** If the message is sent successfully, remove it.
+			*/
+
+			if(array != null && array.length == 2)
+			    if(send(array[0]))
+				m_databaseHelper.deleteEntry
+				    (array[1], "outbound_queue");
+		    }
+
+		    /*
+		    ** Echo packets.
+		    */
+
+		    String message = "";
+
+		    synchronized(m_echoQueueMutex)
+		    {
+			if(!m_echoQueue.isEmpty())
+			    message = m_echoQueue.remove(0);
+		    }
+
+		    if(!message.isEmpty())
+		    {
+			if(!m_userDefined.get()) // A server.
+			{
+			    if(m_allowUnsolicited.get() ||
+			       !m_clientSupportsCD.get())
+				send(message);
+			    else
+				try
+				{
+				    byte bytes[] = Base64.decode
+					(Messages.
+					 stripMessage(message), Base64.DEFAULT);
+
+				    /*
+				    ** Determine if the message's destination
+				    ** is correct.
+				    */
+
+				    if(m_databaseHelper.
+				       containsRoutingIdentity(m_uuid.
+							       toString(),
+							       bytes))
+					send(message); // Ignore the results.
+				}
+				catch(Exception exception)
+				{
+				}
+			}
+			else
+			    send(message); // Ignore the results.
+		    }
+
+		    /*
+		    ** Transfer real-time packets.
+		    */
+
+		    synchronized(m_queueMutex)
+		    {
+			if(!m_queue.isEmpty())
+			    send(m_queue.remove(0)); // Ignore the results.
+		    }
 		}
-
-		/*
-		** Transfer real-time packets.
-		*/
-
-		synchronized(m_queueMutex)
+		catch(Exception exception)
 		{
-		    if(!m_queue.isEmpty())
-			send(m_queue.remove(0)); // Ignore the results.
 		}
 	    }
 	}, 0, SEND_OUTBOUND_TIMER_INTERVAL, TimeUnit.MILLISECONDS);

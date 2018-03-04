@@ -81,7 +81,13 @@ public class Settings extends AppCompatActivity
 	@Override
 	public void run()
 	{
-	    populateListeners(m_arrayList);
+	    try
+	    {
+		populateListeners(m_arrayList);
+	    }
+	    catch(Exception exception)
+	    {
+	    }
 	}
     }
 
@@ -97,7 +103,13 @@ public class Settings extends AppCompatActivity
 	@Override
 	public void run()
 	{
-	    populateNeighbors(m_arrayList);
+	    try
+	    {
+		populateNeighbors(m_arrayList);
+	    }
+	    catch(Exception exception)
+	    {
+	    }
 	}
     }
 
@@ -321,32 +333,38 @@ public class Settings extends AppCompatActivity
 	    @Override
 	    public void run()
 	    {
-		if(!m_databaseHelper.
-		   writeSipHashParticipant(s_cryptography,
-					   m_name,
-					   m_siphashId,
-					   m_acceptWithoutSignatures))
-		    m_error = true;
-
-		Settings.this.runOnUiThread(new Runnable()
+		try
 		{
-		    @Override
-		    public void run()
-		    {
-			dialog.dismiss();
+		    if(!m_databaseHelper.
+		       writeSipHashParticipant(s_cryptography,
+					       m_name,
+					       m_siphashId,
+					       m_acceptWithoutSignatures))
+			m_error = true;
 
-			if(m_error)
-			    Miscellaneous.showErrorDialog
-				(Settings.this,
-				 "An error occurred while attempting " +
-				 "to save the specified SipHash ID.");
-			else
+		    Settings.this.runOnUiThread(new Runnable()
+		    {
+			@Override
+			public void run()
 			{
-			    Kernel.getInstance().populateSipHashIds();
-			    populateParticipants();
+			    dialog.dismiss();
+
+			    if(m_error)
+				Miscellaneous.showErrorDialog
+				    (Settings.this,
+				     "An error occurred while attempting " +
+				     "to save the specified SipHash ID.");
+			    else
+			    {
+				Kernel.getInstance().populateSipHashIds();
+				populateParticipants();
+			    }
 			}
-		    }
-		});
+		    });
+		}
+		catch(Exception exception)
+		{
+		}
 	    }
 	}
 
@@ -1736,11 +1754,9 @@ public class Settings extends AppCompatActivity
 		byte encryptionSalt[] = null;
 		byte macSalt[] = null;
 
-		encryptionSalt = Cryptography.randomBytes(32);
-		macSalt = Cryptography.randomBytes(64);
-
 		try
 		{
+		    encryptionSalt = Cryptography.randomBytes(32);
 		    encryptionKey = Cryptography.
 			generateEncryptionKey
 			(encryptionSalt,
@@ -1754,6 +1770,7 @@ public class Settings extends AppCompatActivity
 			return;
 		    }
 
+		    macSalt = Cryptography.randomBytes(64);
 		    macKey = Cryptography.generateMacKey
 			(macSalt,
 			 m_password.toCharArray(),
@@ -1821,39 +1838,47 @@ public class Settings extends AppCompatActivity
 		    @Override
 		    public void run()
 		    {
-			dialog.dismiss();
-
-			if(!m_error.isEmpty())
-			    Miscellaneous.showErrorDialog
-				(Settings.this,
-				 "An error (" + m_error +
-				 ") occurred while " +
-				 "generating the confidential " +
-				 "data.");
-			else
+			try
 			{
-			    Settings.this.enableWidgets(true);
-			    State.getInstance().setAuthenticated(true);
-			    textView1.requestFocus();
-			    textView1.setText("");
-			    textView2.setText("");
-			    populateOzoneAddresses();
-			    populateParticipants();
-			    startKernel();
+			    dialog.dismiss();
 
-			    if(m_databaseHelper.
-			       readSetting(null, "automatic_listeners_refresh").
-			       equals("true"))
-				startListenersTimers();
+			    if(!m_error.isEmpty())
+				Miscellaneous.showErrorDialog
+				    (Settings.this,
+				     "An error (" + m_error +
+				     ") occurred while " +
+				     "generating the confidential " +
+				     "data.");
 			    else
-				populateListeners(null);
+			    {
+				Settings.this.enableWidgets(true);
+				State.getInstance().setAuthenticated(true);
+				textView1.requestFocus();
+				textView1.setText("");
+				textView2.setText("");
+				populateOzoneAddresses();
+				populateParticipants();
+				startKernel();
 
-			    if(m_databaseHelper.
-			       readSetting(null, "automatic_neighbors_refresh").
-			       equals("true"))
-				startNeighborsTimers();
-			    else
-				populateNeighbors(null);
+				if(m_databaseHelper.
+				   readSetting(null,
+					       "automatic_listeners_refresh").
+				   equals("true"))
+				    startListenersTimers();
+				else
+				    populateListeners(null);
+
+				if(m_databaseHelper.
+				   readSetting(null,
+					       "automatic_neighbors_refresh").
+				   equals("true"))
+				    startNeighborsTimers();
+				else
+				    populateNeighbors(null);
+			    }
+			}
+			catch(Exception exception)
+			{
 			}
 		    }
 		});
@@ -1892,9 +1917,16 @@ public class Settings extends AppCompatActivity
 		@Override
 		public void run()
 		{
-		    Settings.this.runOnUiThread
-			(new PopulateListeners(m_databaseHelper.
+		    try
+		    {
+			Settings.this.runOnUiThread
+			    (new
+			     PopulateListeners(m_databaseHelper.
 					       readListeners(s_cryptography)));
+		    }
+		    catch(Exception exception)
+		    {
+		    }
 		}
 	    }, 0, TIMER_INTERVAL, TimeUnit.MILLISECONDS);
         }
@@ -1910,9 +1942,16 @@ public class Settings extends AppCompatActivity
 		@Override
 		public void run()
 		{
-		    Settings.this.runOnUiThread
-			(new PopulateNeighbors(m_databaseHelper.
+		    try
+		    {
+			Settings.this.runOnUiThread
+			    (new
+			     PopulateNeighbors(m_databaseHelper.
 					       readNeighbors(s_cryptography)));
+		    }
+		    catch(Exception exception)
+		    {
+		    }
 		}
 	    }, 0, TIMER_INTERVAL, TimeUnit.MILLISECONDS);
         }

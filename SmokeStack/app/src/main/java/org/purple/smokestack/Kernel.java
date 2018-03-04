@@ -317,7 +317,13 @@ public class Kernel
 		@Override
 		public void run()
 		{
-		    s_databaseHelper.purgeCongestion(CONGESTION_LIFETIME);
+		    try
+		    {
+			s_databaseHelper.purgeCongestion(CONGESTION_LIFETIME);
+		    }
+		    catch(Exception exception)
+		    {
+		    }
 		}
 	    }, 1500, CONGESTION_INTERVAL, TimeUnit.MILLISECONDS);
 	}
@@ -330,7 +336,13 @@ public class Kernel
 		@Override
 		public void run()
 		{
-		    prepareListeners();
+		    try
+		    {
+			prepareListeners();
+		    }
+		    catch(Exception exception)
+		    {
+		    }
 		}
 	    }, 1500, LISTENERS_INTERVAL, TimeUnit.MILLISECONDS);
 	}
@@ -343,7 +355,13 @@ public class Kernel
 		@Override
 		public void run()
 		{
-		    prepareNeighbors();
+		    try
+		    {
+			prepareNeighbors();
+		    }
+		    catch(Exception exception)
+		    {
+		    }
 		}
 	    }, 1500, NEIGHBORS_INTERVAL, TimeUnit.MILLISECONDS);
 	}
@@ -388,7 +406,13 @@ public class Kernel
 			m_releaseMessagesSchedulersMutex.writeLock().unlock();
 		    }
 
-		    s_databaseHelper.purgeReleasedMessages(s_cryptography);
+		    try
+		    {
+			s_databaseHelper.purgeReleasedMessages(s_cryptography);
+		    }
+		    catch(Exception exception)
+		    {
+		    }
 		}
 	    }, 1500, PURGE_RELEASED_MESSAGES_INTERVAL, TimeUnit.MILLISECONDS);
 	}
@@ -402,8 +426,14 @@ public class Kernel
 		@Override
 		public void run()
 		{
-		    s_databaseHelper.purgeExpiredRoutingEntries
-			(ROUTING_ENTRY_LIFETIME);
+		    try
+		    {
+			s_databaseHelper.purgeExpiredRoutingEntries
+			    (ROUTING_ENTRY_LIFETIME);
+		    }
+		    catch(Exception exception)
+		    {
+		    }
 		}
 	    }, 1500, ROUTING_INTERVAL, TimeUnit.MILLISECONDS);
 	}

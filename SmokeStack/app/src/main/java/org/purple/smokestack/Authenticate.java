@@ -213,30 +213,37 @@ public class Authenticate extends AppCompatActivity
 			    @Override
 			    public void run()
 			    {
-				dialog.dismiss();
-
-				if(!m_error.isEmpty())
-				    Miscellaneous.showErrorDialog
-					(Authenticate.this,
-					 "An error (" + m_error +
-					 ") occurred while " +
-					 "generating the confidential " +
-					 "data.");
-				else
+				try
 				{
-				    m_databaseHelper.cleanNeighborStatistics
-					(s_cryptography);
-				    Kernel.getInstance();
-				    State.getInstance().setAuthenticated(true);
+				    dialog.dismiss();
 
-				    /*
-				    ** Disable some widgets.
-				    */
+				    if(!m_error.isEmpty())
+					Miscellaneous.showErrorDialog
+					    (Authenticate.this,
+					     "An error (" + m_error +
+					     ") occurred while " +
+					     "generating the confidential " +
+					     "data.");
+				    else
+				    {
+					m_databaseHelper.cleanNeighborStatistics
+					    (s_cryptography);
+					Kernel.getInstance();
+					State.getInstance().setAuthenticated
+					    (true);
 
-				    button1.setEnabled(false);
-				    textView1.setEnabled(false);
-				    textView1.setText("");
-				    showSettingsActivity();
+					/*
+					** Disable some widgets.
+					*/
+
+					button1.setEnabled(false);
+					textView1.setEnabled(false);
+					textView1.setText("");
+					showSettingsActivity();
+				    }
+				}
+				catch(Exception exception)
+				{
 				}
 			    }
 			});

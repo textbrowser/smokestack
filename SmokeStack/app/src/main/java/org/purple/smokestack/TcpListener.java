@@ -106,8 +106,14 @@ public class TcpListener
         @Override
         public void run()
 	{
-	    if(m_neightbor != null)
-		m_neightbor.startHandshake();
+	    try
+	    {
+		if(m_neightbor != null)
+		    m_neightbor.startHandshake();
+	    }
+	    catch(Exception exception)
+	    {
+	    }
         }
     }
 
@@ -138,44 +144,46 @@ public class TcpListener
 	    @Override
 	    public void run()
 	    {
-		if(!m_listen.get())
-		    return;
-
-		SSLSocket sslSocket = null;
-
 		try
 		{
+		    if(!m_listen.get())
+			return;
+
+		    SSLSocket sslSocket = null;
+
 		    if(m_socket == null)
 			return;
 		    else
 			sslSocket = (SSLSocket) m_socket.accept();
+
+		    if(sslSocket == null)
+			return;
+
+		    try
+		    {
+			m_socketsMutex.writeLock().lock();
+
+			ScheduledExecutorService scheduler = Executors.
+			    newSingleThreadScheduledExecutor();
+			TcpNeighbor neighbor = new TcpNeighbor(sslSocket);
+
+			Kernel.getInstance().recordNeighbor(neighbor);
+			scheduler.schedule
+			    (new ClientTask(neighbor),
+			     0,
+			     TimeUnit.MILLISECONDS);
+			m_sockets.add(neighbor);
+		    }
+		    catch(Exception exception)
+		    {
+		    }
+		    finally
+		    {
+			m_socketsMutex.writeLock().unlock();
+		    }
 		}
 		catch(Exception exception)
 		{
-		}
-
-		if(sslSocket == null)
-		    return;
-
-		m_socketsMutex.writeLock().lock();
-
-		try
-		{
-		    ScheduledExecutorService scheduler = Executors.
-			newSingleThreadScheduledExecutor();
-		    TcpNeighbor neighbor = new TcpNeighbor(sslSocket);
-
-		    Kernel.getInstance().recordNeighbor(neighbor);
-		    scheduler.schedule
-			(new ClientTask(neighbor), 0, TimeUnit.MILLISECONDS);
-		    m_sockets.add(neighbor);
-		}
-		catch(Exception exception)
-		{
-		}
-		finally
-		{
-		    m_socketsMutex.writeLock().unlock();
 		}
 	    }
 	}, 0, ACCEPT_INTERVAL, TimeUnit.MILLISECONDS);
@@ -184,55 +192,62 @@ public class TcpListener
 	    @Override
 	    public void run()
 	    {
-		String statusControl = m_databaseHelper.
-		    readListenerNeighborStatusControl
-		    (m_cryptography, "listeners", m_oid.get());
-
-		switch(statusControl)
-		{
-		case "disconnect":
-		    disconnect();
-		    break;
-		case "listen":
-		    if(isNetworkConnected())
-			listen();
-		    else
-			disconnect();
-
-		    break;
-		default:
-		    /*
-		    ** Abort!
-		    */
-
-		    disconnect();
-		    return;
-		}
-
-		m_socketsMutex.writeLock().lock();
-
 		try
 		{
-		    for(int i = m_sockets.size() - 1; i >= 0; i--)
-		    {
-			TcpNeighbor neighbor = m_sockets.get(i);
+		    String statusControl = m_databaseHelper.
+			readListenerNeighborStatusControl
+			(m_cryptography, "listeners", m_oid.get());
 
-			if(neighbor == null)
-			    m_sockets.remove(i);
-			else if(!neighbor.connected())
+		    switch(statusControl)
+		    {
+		    case "disconnect":
+			disconnect();
+			break;
+		    case "listen":
+			if(isNetworkConnected())
+			    listen();
+			else
+			    disconnect();
+
+			break;
+		    default:
+			/*
+			** Abort!
+			*/
+
+			disconnect();
+			return;
+		    }
+
+		    m_socketsMutex.writeLock().lock();
+
+		    try
+		    {
+			for(int i = m_sockets.size() - 1; i >= 0; i--)
 			{
-			    Kernel.getInstance().removeNeighbor(neighbor);
-			    neighbor.abort();
-			    m_sockets.remove(i);
+			    TcpNeighbor neighbor = m_sockets.get(i);
+
+			    if(neighbor == null)
+				m_sockets.remove(i);
+			    else if(!neighbor.connected())
+				{
+				    Kernel.getInstance().removeNeighbor
+					(neighbor);
+				    neighbor.abort();
+				    m_sockets.remove(i);
+				}
 			}
 		    }
-		}
-		finally
-		{
-		    m_socketsMutex.writeLock().unlock();
-		}
+		    finally
+		    {
+			m_socketsMutex.writeLock().unlock();
+		    }
 
-		saveStatistics();
+		    saveStatistics();
+		}
+		catch(Exception exception)
+		{
+		}
 	    }
 	}, 0, TIMER_INTERVAL, TimeUnit.MILLISECONDS);
     }
