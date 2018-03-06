@@ -575,6 +575,10 @@ public class Kernel
 		}
 		else if(buffer.contains("type=0095b&content"))
 		{
+		    /*
+		    ** We've received identities.
+		    */
+
 		    s_databaseHelper.writeCongestionDigest(value);
 		    s_databaseHelper.deleteRoutingEntry
 			(clientIdentity.toString());
