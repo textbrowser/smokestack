@@ -252,7 +252,7 @@ public class TcpListener
 	}, 0, TIMER_INTERVAL, TimeUnit.MILLISECONDS);
     }
 
-    protected synchronized boolean isNetworkConnected()
+    protected boolean isNetworkConnected()
     {
 	try
 	{
