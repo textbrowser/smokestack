@@ -110,9 +110,7 @@ public abstract class Neighbor
 	     localIp,
 	     localPort,
 	     sessionCiper,
-	     connected ? (m_bytesRead.get() > 0 &&
-			  m_bytesWritten.get() > 0 ?
-			  "connected" : "connecting") : "disconnected",
+	     connected ? "connected" : "disconnected",
 	     String.valueOf(uptime),
 	     String.valueOf(m_oid.get()));
     }
