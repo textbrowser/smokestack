@@ -2000,7 +2000,7 @@ public class Database extends SQLiteOpenHelper
 	{
 	    if(ok)
 	    {
-		m_db.insert("listeners", null, values);
+		m_db.insertOrThrow("listeners", null, values);
 		m_db.setTransactionSuccessful();
 	    }
 	}
@@ -2178,7 +2178,7 @@ public class Database extends SQLiteOpenHelper
 	{
 	    if(ok)
 	    {
-		m_db.insert("neighbors", null, values);
+		m_db.insertOrThrow("neighbors", null, values);
 		m_db.setTransactionSuccessful();
 	    }
 	}
@@ -2525,7 +2525,7 @@ public class Database extends SQLiteOpenHelper
 
 	try
 	{
-	    m_db.insert("participants", null, values);
+	    m_db.insertOrThrow("participants", null, values);
 	    m_db.setTransactionSuccessful();
 	}
 	catch(SQLiteConstraintException exception)
