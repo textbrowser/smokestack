@@ -191,10 +191,10 @@ public abstract class Neighbor
 				 i * length,
 				 length);
 
-		    arrayList.clear();
+			arrayList.clear();
 
-		    if(bytes != null)
-			send(Messages.identitiesMessage(bytes));
+			if(bytes != null)
+			    send(Messages.identitiesMessage(bytes));
 		    }
 		    catch(Exception exception)
 		    {
