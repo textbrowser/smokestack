@@ -91,6 +91,7 @@ public class Kernel
     private final static int ROUTING_ENTRY_LIFETIME = CONGESTION_LIFETIME;
     private final static int ROUTING_INTERVAL = 15000; // 15 Seconds
     private static Kernel s_instance = null;
+    public final static int MAXIMUM_IDENTITIES = 512;
 
     private Kernel()
     {

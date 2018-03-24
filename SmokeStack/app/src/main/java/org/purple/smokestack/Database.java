@@ -294,7 +294,9 @@ public class Database extends SQLiteOpenHelper
 	try
 	{
 	    cursor = m_db.rawQuery
-		("SELECT DISTINCT(identity) FROM routing_identities", null);
+		("SELECT DISTINCT(identity) FROM routing_identities " +
+		 "ORDER BY timestamp DESC LIMIT ?",
+		 new String[] {String.valueOf(Kernel.MAXIMUM_IDENTITIES)});
 
 	    if(cursor != null && cursor.moveToFirst())
 	    {
