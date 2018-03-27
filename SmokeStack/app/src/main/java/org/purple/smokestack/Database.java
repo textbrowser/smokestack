@@ -281,7 +281,7 @@ public class Database extends SQLiteOpenHelper
 	}
     }
 
-    public ArrayList<byte[]> readIdentities()
+    public ArrayList<byte[]> readIdentities(int limit)
     {
 	prepareDb();
 
@@ -293,10 +293,15 @@ public class Database extends SQLiteOpenHelper
 
 	try
 	{
-	    cursor = m_db.rawQuery
-		("SELECT DISTINCT(identity) FROM routing_identities " +
-		 "ORDER BY timestamp DESC LIMIT ?",
-		 new String[] {String.valueOf(Kernel.MAXIMUM_IDENTITIES)});
+	    if(limit > 0)
+		cursor = m_db.rawQuery
+		    ("SELECT DISTINCT(identity) FROM routing_identities " +
+		     "ORDER BY timestamp DESC LIMIT ?",
+		     new String[] {String.valueOf(limit)});
+	    else
+		cursor = m_db.rawQuery
+		    ("SELECT DISTINCT(identity) FROM routing_identities " +
+		     "ORDER BY timestamp DESC", null);
 
 	    if(cursor != null && cursor.moveToFirst())
 	    {

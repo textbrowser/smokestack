@@ -41,14 +41,14 @@ import android.text.InputFilter;
 import android.text.InputType;
 import android.text.Spanned;
 import android.util.Base64;
-import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
+import android.view.ContextMenu;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -61,7 +61,12 @@ import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import java.net.Inet4Address;
+import java.net.Inet6Address;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -1223,6 +1228,62 @@ public class Settings extends AppCompatActivity
 	arrayList.clear();
     }
 
+    private void prepareListenerIpAddress()
+    {
+	RadioGroup radioGroup1 = (RadioGroup) findViewById
+	    (R.id.listeners_ipv_radio_group);
+	TextView textView1 = (TextView) findViewById(R.id.listeners_ip_address);
+
+	try
+	{
+	    boolean found = false;
+
+	    for(Enumeration<NetworkInterface> enumeration1 = NetworkInterface.
+		    getNetworkInterfaces(); enumeration1.hasMoreElements();)
+	    {
+		if(found)
+		    break;
+
+		NetworkInterface networkInterface = enumeration1.nextElement();
+
+		for(Enumeration<InetAddress> enumeration2 = networkInterface.
+			getInetAddresses(); enumeration2.hasMoreElements();)
+		{
+		    InetAddress inetAddress = enumeration2.nextElement();
+
+		    if(!inetAddress.isLoopbackAddress())
+		    {
+			if(radioGroup1.getCheckedRadioButtonId() ==
+			   R.id.listeners_ipv4)
+			{
+			    if(inetAddress instanceof Inet4Address)
+			    {
+				found = true;
+				textView1.setText
+				    (inetAddress.getHostAddress().toString());
+				break;
+			    }
+			}
+			else
+			{
+			    if(inetAddress instanceof Inet6Address)
+			    {
+				found = true;
+				textView1.setText
+				    (inetAddress.getHostAddress().toString());
+				break;
+			    }
+			}
+		    }
+		}
+	    }
+	}
+	catch(Exception exception)
+	{
+	    textView1.setText("");
+	}
+    }
+
     private void prepareListeners()
     {
 	Button button1 = null;
@@ -1344,6 +1405,7 @@ public class Settings extends AppCompatActivity
 		textView2.setText("4710");
 		textView3.setText("");
 		textView1.requestFocus();
+		prepareListenerIpAddress();
 	    }
 	});
 
@@ -2131,6 +2193,8 @@ public class Settings extends AppCompatActivity
 		    textView1 = (TextView) findViewById(R.id.listeners_port);
 		    textView1.setNextFocusDownId(R.id.listeners_scope_id);
 		}
+
+		prepareListenerIpAddress();
 	    }
 	});
 
@@ -2232,6 +2296,7 @@ public class Settings extends AppCompatActivity
 	m_databaseHelper.cleanDanglingMessages();
 	m_databaseHelper.cleanDanglingOutboundQueued();
 	m_databaseHelper.cleanDanglingParticipants();
+	prepareListenerIpAddress();
 
 	if(isAuthenticated)
 	{

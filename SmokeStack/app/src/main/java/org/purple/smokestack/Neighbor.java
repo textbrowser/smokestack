@@ -173,7 +173,7 @@ public abstract class Neighbor
 			    return;
 
 			ArrayList<byte[]> arrayList = m_databaseHelper.
-			    readIdentities();
+			    readIdentities(Kernel.MAXIMUM_IDENTITIES);
 
 			if(arrayList == null || arrayList.size() == 0)
 			    return;
