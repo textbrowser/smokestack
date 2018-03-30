@@ -36,6 +36,7 @@ import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputFilter;
 import android.text.InputType;
@@ -2606,7 +2607,8 @@ public class Settings extends AppCompatActivity
 
 	if(m_receiverRegistered)
 	{
-	    unregisterReceiver(m_receiver);
+	    LocalBroadcastManager.getInstance(this).unregisterReceiver
+		(m_receiver);
 	    m_receiverRegistered = false;
 	}
     }
@@ -2630,7 +2632,8 @@ public class Settings extends AppCompatActivity
 
 	    intentFilter.addAction
 		("org.purple.smokestack.populate_participants");
-	    registerReceiver(m_receiver, intentFilter);
+	    LocalBroadcastManager.getInstance(this).registerReceiver
+		(m_receiver, intentFilter);
 	    m_receiverRegistered = true;
 	}
     }
@@ -2642,7 +2645,8 @@ public class Settings extends AppCompatActivity
 
 	if(m_receiverRegistered)
 	{
-	    unregisterReceiver(m_receiver);
+	    LocalBroadcastManager.getInstance(this).unregisterReceiver
+		(m_receiver);
 	    m_receiverRegistered = false;
 	}
     }

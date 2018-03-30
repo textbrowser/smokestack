@@ -33,6 +33,7 @@ import android.net.wifi.WifiManager.WifiLock;
 import android.net.wifi.WifiManager;
 import android.os.PowerManager.WakeLock;
 import android.os.PowerManager;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Base64;
 import android.util.SparseArray;
 import java.net.InetAddress;
@@ -657,8 +658,11 @@ public class Kernel
 		{
 		    Intent intent = new Intent
 			("org.purple.smokestack.populate_participants");
+		    LocalBroadcastManager localBroadcastManager =
+			LocalBroadcastManager.getInstance
+			(SmokeStack.getApplication());
 
-		    SmokeStack.getApplication().sendBroadcast(intent);
+		    localBroadcastManager.sendBroadcast(intent);
 		}
 
 		return true;
