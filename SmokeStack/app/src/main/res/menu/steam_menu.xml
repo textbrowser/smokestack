@@ -3,8 +3,8 @@
 
     <item
         android:id="@+id/action_authenticate"
-        android:title="Authenticate" />
+        android:title="@string/authenticate" />
     <item
         android:id="@+id/action_settings"
-        android:title="Settings" />
+        android:title="@string/settings" />
 </menu>

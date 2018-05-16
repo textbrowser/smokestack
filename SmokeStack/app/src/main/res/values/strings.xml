@@ -39,4 +39,8 @@
     <string name="out_in_total">Out / In / Total</string>
     <string name="clear_log">Clear Log</string>
     <string name="title_activity_steam">Steam</string>
+    <string name="steam">Steam</string>
+    <string name="steam">Steam</string>
+    <string name="authenticate">Authenticate</string>
+    <string name="settings">Settings</string>
 </resources>

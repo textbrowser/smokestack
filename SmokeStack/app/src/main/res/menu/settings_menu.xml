@@ -1,4 +1,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:title="@string/authenticate"
         android:id="@+id/action_authenticate" />
+    <item
+        android:id="@+id/action_steam"
+        android:title="@string/steam" />
 </menu>

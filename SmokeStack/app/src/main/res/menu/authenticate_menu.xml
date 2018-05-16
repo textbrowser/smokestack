@@ -1,6 +1,11 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:orderInCategory="100"
         android:title="@string/action_settings"
         android:id="@+id/action_settings" />
+    <item
+        android:id="@+id/action_steam"
+        android:orderInCategory="101"
+        android:title="@string/steam" />
 </menu>
