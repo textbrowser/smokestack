@@ -15,6 +15,7 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".Authenticate"
+            android:label="SmokeStack"
             android:noHistory="true" />
         <activity
             android:name=".Settings"
@@ -22,14 +23,13 @@
             android:noHistory="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name=".Steam"
-            android:label="@string/title_activity_steam"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:label="SmokeStack"
+            android:noHistory="true" />
     </application>
 
 </manifest>

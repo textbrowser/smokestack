@@ -60,7 +60,7 @@ public class Steam extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
-        getMenuInflater().inflate(R.menu.authenticate_menu, menu);
+        getMenuInflater().inflate(R.menu.steam_menu, menu);
         return true;
     }
 
