@@ -1965,6 +1965,14 @@ public class Settings extends AppCompatActivity
 	finish();
     }
 
+    private void showSteamActivity()
+    {
+	Intent intent = new Intent(Settings.this, Steam.class);
+
+	startActivity(intent);
+	finish();
+    }
+
     private void startKernel()
     {
 	Kernel.getInstance();
@@ -2539,6 +2547,14 @@ public class Settings extends AppCompatActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
+	int id = item.getItemId();
+
+	if(id == R.id.action_steam)
+	{
+	    showSteamActivity();
+	    return true;
+	}
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -2555,6 +2571,7 @@ public class Settings extends AppCompatActivity
 	    isAuthenticated = true;
 
 	menu.findItem(R.id.action_authenticate).setEnabled(!isAuthenticated);
+	menu.findItem(R.id.action_steam).setEnabled(isAuthenticated);
 	return true;
     }
 

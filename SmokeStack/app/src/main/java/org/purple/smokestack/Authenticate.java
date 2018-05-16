@@ -307,6 +307,14 @@ public class Authenticate extends AppCompatActivity
 	finish();
     }
 
+    private void showSteamActivity()
+    {
+	Intent intent = new Intent(Authenticate.this, Steam.class);
+
+	startActivity(intent);
+	finish();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -344,6 +352,11 @@ public class Authenticate extends AppCompatActivity
 	    showSettingsActivity();
             return true;
         }
+	else if(id == R.id.action_steam)
+	{
+	    showSteamActivity();
+	    return true;
+	}
 
         return super.onOptionsItemSelected(item);
     }
@@ -361,6 +374,7 @@ public class Authenticate extends AppCompatActivity
 	    isAuthenticated = true;
 
 	menu.findItem(R.id.action_settings).setEnabled(isAuthenticated);
+	menu.findItem(R.id.action_steam).setEnabled(isAuthenticated);
 	return true;
     }
 }
