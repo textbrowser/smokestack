@@ -374,7 +374,7 @@ public class Authenticate extends AppCompatActivity
 	    isAuthenticated = true;
 
 	menu.findItem(R.id.action_settings).setEnabled(isAuthenticated);
-	menu.findItem(R.id.action_steam).setEnabled(isAuthenticated);
+	menu.findItem(R.id.action_steam).setVisible(false);
 	return true;
     }
 }
