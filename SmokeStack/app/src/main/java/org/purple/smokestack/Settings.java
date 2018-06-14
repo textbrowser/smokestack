@@ -1175,38 +1175,40 @@ public class Settings extends AppCompatActivity
 					       LayoutParams.WRAP_CONTENT,
 					       1));
 
-		if(j == 0)
-		    textView.setText(sipHashIdElement.m_name);
-		else if(j == 1)
+		switch(j)
 		{
-		    if(sipHashIdElement.m_epksCompleted &&
+                case 0:
+                    textView.setText(sipHashIdElement.m_name);
+                    break;
+                case 1:
+                    if(sipHashIdElement.m_epksCompleted &&
 		       sipHashIdElement.m_keysSigned)
-			textView.setCompoundDrawablesWithIntrinsicBounds
+                        textView.setCompoundDrawablesWithIntrinsicBounds
 			    (R.drawable.keys_signed, 0, 0, 0);
-		    else if(sipHashIdElement.m_epksCompleted)
-			textView.setCompoundDrawablesWithIntrinsicBounds
+                    else if(sipHashIdElement.m_epksCompleted)
+                        textView.setCompoundDrawablesWithIntrinsicBounds
 			    (R.drawable.lock, 0, 0, 0);
-		    else
-			textView.setCompoundDrawablesWithIntrinsicBounds
+                    else
+                        textView.setCompoundDrawablesWithIntrinsicBounds
 			    (R.drawable.lockless, 0, 0, 0);
 
-		    textView.setCompoundDrawablePadding(5);
-		    textView.setText
+                    textView.setCompoundDrawablePadding(5);
+                    textView.setText
 			(Miscellaneous.
 			 delimitString(sipHashIdElement.m_sipHashId.
 				       replace(":", ""), '-', 4).
 			 toUpperCase());
-		}
-		else
-		{
-		    textView.append
+                    break;
+                default:
+                    textView.append
 			(String.valueOf(sipHashIdElement.m_outMessages));
-		    textView.append(" / ");
-		    textView.append
+                    textView.append(" / ");
+                    textView.append
 			(String.valueOf(sipHashIdElement.m_inMessages));
-		    textView.append(" / ");
-		    textView.append
+                    textView.append(" / ");
+                    textView.append
 			(String.valueOf(sipHashIdElement.m_totalMessages));
+                    break;
 		}
 
 		if(j == 0 || j == 1)

@@ -1958,26 +1958,39 @@ public class Database extends SQLiteOpenHelper
 
 	    for(int i = 0; i < sparseArray.size(); i++)
 	    {
-		if(sparseArray.get(i).equals("ip_version"))
+		switch(sparseArray.get(i))
+		{
+		case "ip_version":
 		    bytes = cryptography.etm(version.trim().getBytes());
-		else if(sparseArray.get(i).equals("local_ip_address"))
+		    break;
+		case "local_ip_address":
 		    bytes = cryptography.etm(ipAddress.trim().getBytes());
-		else if(sparseArray.get(i).equals("local_ip_address_digest"))
+		    break;
+		case "local_ip_address_digest":
 		    bytes = cryptography.hmac(ipAddress.trim().getBytes());
-		else if(sparseArray.get(i).equals("local_port"))
+		    break;
+		case "local_port":
 		    bytes = cryptography.etm(ipPort.trim().getBytes());
-		else if(sparseArray.get(i).equals("local_port_digest"))
+		    break;
+		case "local_port_digest":
 		    bytes = cryptography.hmac(ipPort.trim().getBytes());
-		else if(sparseArray.get(i).equals("local_scope_id"))
+		    break;
+		case "local_scope_id":
 		    bytes = cryptography.etm(ipScopeId.trim().getBytes());
-		else if(sparseArray.get(i).equals("peers_count"))
+		    break;
+		case "peers_count":
 		    bytes = cryptography.etm("0".getBytes());
-		else if(sparseArray.get(i).equals("status"))
+		    break;
+		case "status":
 		    bytes = cryptography.etm("disconnected".getBytes());
-		else if(sparseArray.get(i).equals("status_control"))
+		    break;
+		case "status_control":
 		    bytes = cryptography.etm("listen".getBytes());
-		else
+		    break;
+		default:
 		    bytes = cryptography.etm("".getBytes());
+		    break;
+		}
 
 		if(bytes == null)
 		{
@@ -2117,45 +2130,69 @@ public class Database extends SQLiteOpenHelper
 
 	    for(int i = 0; i < sparseArray.size(); i++)
 	    {
-		if(sparseArray.get(i).equals("echo_queue_size"))
+		switch(sparseArray.get(i))
+		{
+		case "echo_queue_size":
 		    bytes = cryptography.etm("0".getBytes());
-		else if(sparseArray.get(i).equals("ip_version"))
+		    break;
+		case "ip_version":
 		    bytes = cryptography.etm(version.trim().getBytes());
-		else if(sparseArray.get(i).equals("last_error"))
+		    break;
+		case "last_error":
 		    bytes = cryptography.etm("".getBytes());
-		else if(sparseArray.get(i).equals("local_ip_address_digest"))
+		    break;
+		case "local_ip_address_digest":
 		    bytes = cryptography.hmac("".getBytes());
-		else if(sparseArray.get(i).equals("local_port_digest"))
+		    break;
+		case "local_port_digest":
 		    bytes = cryptography.hmac("".getBytes());
-		else if(sparseArray.get(i).equals("proxy_ip_address"))
+		    break;
+		case "proxy_ip_address":
 		    bytes = cryptography.etm(proxyIpAddress.getBytes());
-		else if(sparseArray.get(i).equals("proxy_port"))
+		    break;
+		case "proxy_port":
 		    bytes = cryptography.etm(proxyPort.getBytes());
-		else if(sparseArray.get(i).equals("proxy_type"))
+		    break;
+		case "proxy_type":
 		    bytes = cryptography.etm(proxyType.getBytes());
-		else if(sparseArray.get(i).equals("remote_ip_address"))
-		    bytes = cryptography.etm(remoteIpAddress.trim().getBytes());
-		else if(sparseArray.get(i).equals("remote_ip_address_digest"))
-		    bytes = cryptography.hmac(remoteIpAddress.trim().
-					      getBytes());
-		else if(sparseArray.get(i).equals("remote_port"))
+		    break;
+		case "remote_ip_address":
+		    bytes = cryptography.etm
+			(remoteIpAddress.trim().getBytes());
+		    break;
+		case "remote_ip_address_digest":
+		    bytes = cryptography.hmac
+			(remoteIpAddress.trim().getBytes());
+		    break;
+		case "remote_port":
 		    bytes = cryptography.etm(remoteIpPort.trim().getBytes());
-		else if(sparseArray.get(i).equals("remote_port_digest"))
+		    break;
+		case "remote_port_digest":
 		    bytes = cryptography.hmac(remoteIpPort.trim().getBytes());
-		else if(sparseArray.get(i).equals("remote_scope_id"))
-		    bytes = cryptography.etm(remoteIpScopeId.trim().getBytes());
-		else if(sparseArray.get(i).equals("status"))
+		    break;
+		case "remote_scope_id":
+		    bytes = cryptography.etm
+			(remoteIpScopeId.trim().getBytes());
+		    break;
+		case "status":
 		    bytes = cryptography.etm("disconnected".getBytes());
-		else if(sparseArray.get(i).equals("status_control"))
+		    break;
+		case "status_control":
 		    bytes = cryptography.etm("connect".getBytes());
-		else if(sparseArray.get(i).equals("transport"))
+		    break;
+		case "transport":
 		    bytes = cryptography.etm(transport.trim().getBytes());
-		else if(sparseArray.get(i).equals("transport_digest"))
+		    break;
+		case "transport_digest":
 		    bytes = cryptography.hmac(transport.trim().getBytes());
-		else if(sparseArray.get(i).equals("user_defined_digest"))
+		    break;
+		case "user_defined_digest":
 		    bytes = cryptography.hmac("true".getBytes());
-		else
+		    break;
+		default:
 		    bytes = cryptography.etm("".getBytes());
+		    break;
+		}
 
 		if(bytes == null)
 		{
@@ -2247,12 +2284,18 @@ public class Database extends SQLiteOpenHelper
 
 	    for(int i = 0; i < sparseArray.size(); i++)
 	    {
-		if(sparseArray.get(i).equals("ozone_address"))
+		switch(sparseArray.get(i))
+		{
+		case "ozone_address":
 		    bytes = cryptography.etm(address.getBytes("UTF-8"));
-		else if(sparseArray.get(i).equals("ozone_address_digest"))
+		    break;
+		case "ozone_address_digest":
 		    bytes = cryptography.hmac(address.getBytes("UTF-8"));
-		else
+		    break;
+		default:
 		    bytes = cryptography.etm(addressStream);
+		    break;
+		}
 
 		if(bytes == null)
 		{
@@ -2491,22 +2534,30 @@ public class Database extends SQLiteOpenHelper
 	    {
 		byte bytes[] = null;
 
-		if(sparseArray.get(i).equals("encryption_public_key"))
+		switch(sparseArray.get(i))
+		{
+		case "encryption_public_key":
 		    bytes = cryptography.etm(publicKey.getEncoded());
-		else if(sparseArray.get(i).
-			equals("encryption_public_key_digest"))
+		    break;
+		case "encryption_public_key_digest":
 		    bytes = Cryptography.sha512(publicKey.getEncoded());
-		else if(sparseArray.get(i).equals("function_digest"))
+		    break;
+		case "function_digest":
 		    bytes = cryptography.hmac("chat".getBytes());
-		else if(sparseArray.get(i).equals("signature_public_key"))
+		    break;
+		case "signature_public_key":
 		    bytes = cryptography.etm(signatureKey.getEncoded());
-		else if(sparseArray.get(i).
-			equals("signature_public_key_digest"))
+		    break;
+		case "signature_public_key_digest":
 		    bytes = Cryptography.sha512(signatureKey.getEncoded());
-		else if(sparseArray.get(i).equals("siphash_id"))
+		    break;
+		case "siphash_id":
 		    bytes = cryptography.etm(sipHashId.getBytes("UTF-8"));
-		else if(sparseArray.get(i).equals("siphash_id_digest"))
+		    break;
+		case "siphash_id_digest":
 		    bytes = cryptography.hmac(sipHashId.getBytes("UTF-8"));
+		    break;
+		}
 
 		if(bytes == null)
 		    return false;
@@ -2599,20 +2650,25 @@ public class Database extends SQLiteOpenHelper
 
 	    for(int i = 0; i < sparseArray.size(); i++)
 	    {
-		if(sparseArray.get(i).equals("accept_without_signatures"))
+		switch(sparseArray.get(i))
+		{
+		case "accept_without_signatures":
 		    bytes = cryptography.etm
 			(acceptWithoutSignatures ?
 			 "true".getBytes() : "false".getBytes());
-		else if(sparseArray.get(i).equals("name"))
+		    break;
+		case "name":
 		    bytes = cryptography.etm(name.getBytes());
-		else if(sparseArray.get(i).equals("siphash_id"))
+		    break;
+		case "siphash_id":
 		    bytes = cryptography.etm
 			(sipHashId.trim().getBytes("UTF-8"));
-		else if(sparseArray.get(i).equals("siphash_id_digest"))
+		    break;
+		case "siphash_id_digest":
 		    bytes = cryptography.hmac
 			(sipHashId.trim().getBytes("UTF-8"));
-		else
-		{
+		    break;
+		default:
 		    byte salt[] = Cryptography.sha512
 			(sipHashId.trim().getBytes("UTF-8"));
 		    byte temporary[] = Cryptography.
@@ -2621,7 +2677,7 @@ public class Database extends SQLiteOpenHelper
 			       SIPHASH_STREAM_CREATION_ITERATION_COUNT,
 			       160); // SHA-1
 
-		    if(temporary != null)
+		    if (temporary != null)
 			bytes = cryptography.etm
 			    (Cryptography.
 			     pbkdf2(salt,
@@ -2629,6 +2685,8 @@ public class Database extends SQLiteOpenHelper
 				    toCharArray(),
 				    1,
 				    768)); // 8 * (32 + 64) Bits
+
+		    break;
 		}
 
 		if(bytes == null)

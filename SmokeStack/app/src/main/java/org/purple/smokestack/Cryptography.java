@@ -384,13 +384,19 @@ public class Cryptography
 		{
 		    KeyFactory generator = null;
 
-		    if(i == 0)
+		    switch(i)
+		    {
+		    case 0:
 			generator = KeyFactory.getInstance("EC");
-		    else if(i == 1)
+			break;
+		    case 1:
 			generator = KeyFactory.getInstance
-			    (PQCObjectIdentifiers.mcElieceCca2.getId());
-		    else
+                            (PQCObjectIdentifiers.mcElieceCca2.getId());
+			break;
+		    default:
 			generator = KeyFactory.getInstance("RSA");
+			break;
+		    }
 
 		    return generator.generatePublic(publicKeySpec);
 		}
