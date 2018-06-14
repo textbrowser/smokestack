@@ -1263,7 +1263,7 @@ public class Settings extends AppCompatActivity
 			    {
 				found = true;
 				textView1.setText
-				    (inetAddress.getHostAddress().toString());
+				    (inetAddress.getHostAddress());
 				break;
 			    }
 			}
@@ -1273,7 +1273,7 @@ public class Settings extends AppCompatActivity
 			    {
 				found = true;
 				textView1.setText
-				    (inetAddress.getHostAddress().toString());
+				    (inetAddress.getHostAddress());
 				break;
 			    }
 			}

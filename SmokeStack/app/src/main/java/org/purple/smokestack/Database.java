@@ -449,8 +449,11 @@ public class Database extends SQLiteOpenHelper
 			case 6:
 			    try
 			    {
-				listenerElement.m_peersCount =
-				    Long.parseLong(new String(bytes));
+				if(bytes != null)
+				    listenerElement.m_peersCount =
+					Long.parseLong(new String(bytes));
+				else
+				    listenerElement.m_peersCount = 0;
 			    }
 			    catch(Exception exception)
 			    {
