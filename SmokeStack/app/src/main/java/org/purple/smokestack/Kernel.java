@@ -300,7 +300,6 @@ public class Kernel
 			}
 			catch(Exception exception)
 			{
-			    throw new RuntimeException(exception);
 			}
 		    }
 		}, 1500, TimeUnit.MILLISECONDS));
@@ -328,7 +327,6 @@ public class Kernel
 		    }
 		    catch(Exception exception)
 		    {
-			throw new RuntimeException(exception);
 		    }
 		}
 	    }, 1500, CONGESTION_INTERVAL, TimeUnit.MILLISECONDS);
@@ -348,7 +346,6 @@ public class Kernel
 		    }
 		    catch(Exception exception)
 		    {
-			throw new RuntimeException(exception);
 		    }
 		}
 	    }, 1500, LISTENERS_INTERVAL, TimeUnit.MILLISECONDS);
@@ -368,7 +365,6 @@ public class Kernel
 		    }
 		    catch(Exception exception)
 		    {
-			throw new RuntimeException(exception);
 		    }
 		}
 	    }, 1500, NEIGHBORS_INTERVAL, TimeUnit.MILLISECONDS);
@@ -429,7 +425,6 @@ public class Kernel
 		    }
 		    catch(Exception exception)
 		    {
-			throw new RuntimeException(exception);
 		    }
 		}
 	    }, 1500, PURGE_RELEASED_MESSAGES_INTERVAL, TimeUnit.MILLISECONDS);
@@ -451,7 +446,6 @@ public class Kernel
 		    }
 		    catch(Exception exception)
 		    {
-			throw new RuntimeException(exception);
 		    }
 		}
 	    }, 1500, ROUTING_INTERVAL, TimeUnit.MILLISECONDS);

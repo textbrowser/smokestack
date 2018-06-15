@@ -1999,7 +1999,6 @@ public class Settings extends AppCompatActivity
 		    }
 		    catch(Exception exception)
 		    {
-			throw new RuntimeException(exception);
 		    }
 		}
 	    }, 0, TIMER_INTERVAL, TimeUnit.MILLISECONDS);
@@ -2025,7 +2024,6 @@ public class Settings extends AppCompatActivity
 		    }
 		    catch(Exception exception)
 		    {
-			throw new RuntimeException(exception);
 		    }
 		}
 	    }, 0, TIMER_INTERVAL, TimeUnit.MILLISECONDS);
