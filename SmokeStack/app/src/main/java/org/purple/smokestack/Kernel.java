@@ -270,8 +270,9 @@ public class Kernel
 		    @Override
 		    public void run()
 		    {
-			while(true)
-			    try
+			try
+			{
+			    while(true)
 			    {
 				ArrayList<byte[]> arrayList = s_databaseHelper.
 				    readTaggedMessage
@@ -296,9 +297,11 @@ public class Kernel
 				    (s_cryptography, arrayList.get(1));
 				Thread.sleep(200);
 			    }
-			    catch(Exception exception)
-			    {
-			    }
+			}
+			catch(Exception exception)
+			{
+			    throw new RuntimeException(exception);
+			}
 		    }
 		}, 1500, TimeUnit.MILLISECONDS));
 	}
@@ -325,6 +328,7 @@ public class Kernel
 		    }
 		    catch(Exception exception)
 		    {
+			throw new RuntimeException(exception);
 		    }
 		}
 	    }, 1500, CONGESTION_INTERVAL, TimeUnit.MILLISECONDS);
@@ -344,6 +348,7 @@ public class Kernel
 		    }
 		    catch(Exception exception)
 		    {
+			throw new RuntimeException(exception);
 		    }
 		}
 	    }, 1500, LISTENERS_INTERVAL, TimeUnit.MILLISECONDS);
@@ -363,6 +368,7 @@ public class Kernel
 		    }
 		    catch(Exception exception)
 		    {
+			throw new RuntimeException(exception);
 		    }
 		}
 	    }, 1500, NEIGHBORS_INTERVAL, TimeUnit.MILLISECONDS);
@@ -377,43 +383,53 @@ public class Kernel
 		@Override
 		public void run()
 		{
-		    m_releaseMessagesSchedulersMutex.writeLock().lock();
-
 		    try
 		    {
-			if(!m_releaseMessagesSchedulers.isEmpty())
+			m_releaseMessagesSchedulersMutex.writeLock().lock();
+
+			try
 			{
-			    /*
-			    ** Remove completed schedules.
-			    */
-
-			    Iterator<Hashtable.Entry<String, ScheduledFuture> >
-				it = m_releaseMessagesSchedulers.entrySet().
-				iterator();
-
-			    while(it.hasNext())
+			    if(!m_releaseMessagesSchedulers.isEmpty())
 			    {
-				Hashtable.Entry<String, ScheduledFuture>
-				    entry = it.next();
+				/*
+				** Remove completed schedules.
+				*/
 
-				if(entry.getValue() == null)
-				    it.remove();
-				else if(entry.getValue().isDone())
-				    it.remove();
+				Iterator<Hashtable.
+				         Entry<String, ScheduledFuture> >
+				    it = m_releaseMessagesSchedulers.entrySet().
+				    iterator();
+
+				while(it.hasNext())
+				{
+				    Hashtable.Entry<String, ScheduledFuture>
+					entry = it.next();
+
+				    if(entry.getValue() == null)
+					it.remove();
+				    else if(entry.getValue().isDone())
+					it.remove();
+				}
 			    }
 			}
-		    }
-		    finally
-		    {
-			m_releaseMessagesSchedulersMutex.writeLock().unlock();
-		    }
+			finally
+			{
+			    m_releaseMessagesSchedulersMutex.writeLock().
+				unlock();
+			}
 
-		    try
-		    {
-			s_databaseHelper.purgeReleasedMessages(s_cryptography);
+			try
+			{
+			    s_databaseHelper.purgeReleasedMessages
+				(s_cryptography);
+			}
+			catch(Exception exception)
+			{
+			}
 		    }
 		    catch(Exception exception)
 		    {
+			throw new RuntimeException(exception);
 		    }
 		}
 	    }, 1500, PURGE_RELEASED_MESSAGES_INTERVAL, TimeUnit.MILLISECONDS);
@@ -435,6 +451,7 @@ public class Kernel
 		    }
 		    catch(Exception exception)
 		    {
+			throw new RuntimeException(exception);
 		    }
 		}
 	    }, 1500, ROUTING_INTERVAL, TimeUnit.MILLISECONDS);

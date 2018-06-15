@@ -184,6 +184,7 @@ public class TcpListener
 		}
 		catch(Exception exception)
 		{
+		    throw new RuntimeException(exception);
 		}
 	    }
 	}, 0, ACCEPT_INTERVAL, TimeUnit.MILLISECONDS);
@@ -247,6 +248,7 @@ public class TcpListener
 		}
 		catch(Exception exception)
 		{
+		    throw new RuntimeException(exception);
 		}
 	    }
 	}, 0, TIMER_INTERVAL, TimeUnit.MILLISECONDS);
