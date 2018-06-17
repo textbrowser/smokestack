@@ -198,6 +198,51 @@ public class Settings extends AppCompatActivity
     private final static int TEXTVIEW_WIDTH = 500;
     private final static int TIMER_INTERVAL = 2500; // 2.5 Seconds
 
+    private boolean generateOzone(String string)
+    {
+	if(string == null || string.trim().isEmpty())
+	    return false;
+
+	boolean ok = true;
+	byte bytes[] = null;
+	byte salt[] = null;
+
+	try
+	{
+	    salt = Cryptography.sha512(string.trim().getBytes("UTF-8"));
+
+	    if(salt != null)
+		bytes = Cryptography.pbkdf2
+		    (salt,
+		     string.trim().toCharArray(),
+		     OZONE_STREAM_CREATION_ITERATION_COUNT,
+		     160); // SHA-1
+	    else
+		ok = false;
+
+	    if(bytes != null)
+		bytes = Cryptography.
+		    pbkdf2(salt,
+			   new String(bytes).toCharArray(),
+			   1,
+			   768); // 8 * (32 + 64) Bits
+	    else
+		ok = false;
+
+	    if(bytes != null)
+		ok = m_databaseHelper.writeOzone
+		    (s_cryptography,
+		     string.trim(),
+		     bytes);
+	}
+	catch(Exception exception)
+	{
+	    ok = false;
+	}
+
+	return ok;
+    }
+
     private void addListener()
     {
 	CheckBox checkBox1 = (CheckBox) findViewById
@@ -307,7 +352,7 @@ public class Settings extends AppCompatActivity
 	{
 	    Miscellaneous.showErrorDialog
 		(Settings.this,
-		 "A SipHash ID must be of the form 0102-0304-0506-0708.");
+		 "A Smoke ID must be of the form 0102-0304-0506-0708.");
 	    return;
 	}
 
@@ -347,6 +392,11 @@ public class Settings extends AppCompatActivity
 					       m_siphashId,
 					       m_acceptWithoutSignatures))
 			m_error = true;
+		    else
+			generateOzone
+			    (Miscellaneous.
+			     delimitString(m_siphashId.replace(":", "").
+					   toUpperCase(), '-', 4));
 
 		    Settings.this.runOnUiThread(new Runnable()
 		    {
@@ -359,10 +409,11 @@ public class Settings extends AppCompatActivity
 				Miscellaneous.showErrorDialog
 				    (Settings.this,
 				     "An error occurred while attempting " +
-				     "to save the specified SipHash ID.");
+				     "to save the specified Smoke ID.");
 			    else
 			    {
 				Kernel.getInstance().populateSipHashIds();
+				populateOzoneAddresses();
 				populateParticipants();
 			    }
 			}
@@ -1297,6 +1348,9 @@ public class Settings extends AppCompatActivity
 	{
 	    public void onClick(View view)
 	    {
+		if(Settings.this.isFinishing())
+		    return;
+
 		addListener();
 	    }
         });
@@ -1306,6 +1360,9 @@ public class Settings extends AppCompatActivity
 	{
 	    public void onClick(View view)
 	    {
+		if(Settings.this.isFinishing())
+		    return;
+
 		addNeighbor();
 	    }
         });
@@ -1315,6 +1372,9 @@ public class Settings extends AppCompatActivity
 	{
 	    public void onClick(View view)
 	    {
+		if(Settings.this.isFinishing())
+		    return;
+
 		addParticipant();
 	    }
         });
@@ -1324,6 +1384,9 @@ public class Settings extends AppCompatActivity
 	{
 	    public void onClick(View view)
 	    {
+		if(Settings.this.isFinishing())
+		    return;
+
 		m_databaseHelper.clearTable("log");
 	    }
 	});
@@ -1333,6 +1396,9 @@ public class Settings extends AppCompatActivity
 	{
 	    public void onClick(View view)
 	    {
+		if(Settings.this.isFinishing())
+		    return;
+
 		populateListeners(null);
 	    }
         });
@@ -1342,6 +1408,9 @@ public class Settings extends AppCompatActivity
 	{
 	    public void onClick(View view)
 	    {
+		if(Settings.this.isFinishing())
+		    return;
+
 		populateNeighbors(null);
 	    }
         });
@@ -1351,6 +1420,9 @@ public class Settings extends AppCompatActivity
 	{
 	    public void onClick(View view)
 	    {
+		if(Settings.this.isFinishing())
+		    return;
+
 		populateParticipants();
 	    }
         });
@@ -1394,6 +1466,9 @@ public class Settings extends AppCompatActivity
 	{
 	    public void onClick(View view)
 	    {
+		if(Settings.this.isFinishing())
+		    return;
+
 		RadioButton radioButton1 = (RadioButton) findViewById
 		    (R.id.listeners_ipv4);
 		TextView textView1 = (TextView) findViewById
@@ -1417,6 +1492,9 @@ public class Settings extends AppCompatActivity
 	{
 	    public void onClick(View view)
 	    {
+		if(Settings.this.isFinishing())
+		    return;
+
 		RadioButton radioButton1 = (RadioButton) findViewById
 		    (R.id.neighbors_ipv4);
 		Spinner spinner1 = (Spinner) findViewById
@@ -1451,6 +1529,9 @@ public class Settings extends AppCompatActivity
 	{
 	    public void onClick(View view)
 	    {
+		if(Settings.this.isFinishing())
+		    return;
+
 		CheckBox checkBox1 = (CheckBox) findViewById
 		    (R.id.accept_without_signatures);
 		TextView textView1 = (TextView) findViewById
@@ -1473,52 +1554,14 @@ public class Settings extends AppCompatActivity
 		if(Settings.this.isFinishing())
 		    return;
 
-		String string = "";
 		TextView textView = (TextView) findViewById(R.id.ozone);
-		boolean ok = true;
-		byte bytes[] = null;
-		byte salt[] = null;
 
-		try
-		{
-		    string = textView.getText().toString().trim();
-		    salt = Cryptography.sha512(string.getBytes("UTF-8"));
-
-		    if(salt != null)
-			bytes = Cryptography.pbkdf2
-			    (salt,
-			     string.toCharArray(),
-			     OZONE_STREAM_CREATION_ITERATION_COUNT,
-			     160); // SHA-1
-		    else
-			ok = false;
-
-		    if(bytes != null)
-			bytes = Cryptography.
-			    pbkdf2(salt,
-				   new String(bytes).toCharArray(),
-				   1,
-				   768); // 8 * (32 + 64) Bits
-		    else
-			ok = false;
-
-		    if(bytes != null)
-			ok = m_databaseHelper.writeOzone
-			    (s_cryptography,
-			     string,
-			     bytes);
-		}
-		catch(Exception exception)
-		{
-		    ok = false;
-		}
-
-		if(!ok)
+		if(!generateOzone(textView.getText().toString()))
 		{
 		    Miscellaneous.showErrorDialog
 			(Settings.this,
-			 "An error occurred while processing the Ozone data. " +
-			 "Perhaps a value should be provided.");
+			 "An error occurred while processing the " +
+			 "Ozone data. Perhaps a value should be provided.");
 		    textView.requestFocus();
 		}
 		else
@@ -1552,6 +1595,9 @@ public class Settings extends AppCompatActivity
 	{
 	    public void onClick(View view)
 	    {
+		if(Settings.this.isFinishing())
+		    return;
+
 		TextView textView1 = (TextView) findViewById(R.id.password1);
 		TextView textView2 = (TextView) findViewById(R.id.password2);
 
@@ -1616,12 +1662,12 @@ public class Settings extends AppCompatActivity
 
 		textView.setBackgroundColor(Color.rgb(135, 206, 250));
 		textView.setText
-		    ("A SipHash ID is a sequence of digits and " +
+		    ("A Smoke ID is a sequence of digits and " +
 		     "letters assigned to a specific subscriber " +
 		     "(public key pair). " +
 		     "The tokens allow participants to exchange public " +
 		     "key pairs via the EPKS protocol. " +
-		     "An example SipHash ID is ABAB-0101-CDCD-0202.");
+		     "An example Smoke ID is ABAB-0101-CDCD-0202.");
 		textView.setTextSize(16);
 		popupWindow.setContentView(textView);
 		popupWindow.setOutsideTouchable(true);

@@ -2251,7 +2251,8 @@ public class Database extends SQLiteOpenHelper
     {
 	prepareDb();
 
-	if(addressStream == null ||
+	if(address.trim().isEmpty() ||
+	   addressStream == null ||
 	   addressStream.length < 0 ||
 	   cryptography == null ||
 	   m_db == null)
@@ -2290,10 +2291,10 @@ public class Database extends SQLiteOpenHelper
 		switch(sparseArray.get(i))
 		{
 		case "ozone_address":
-		    bytes = cryptography.etm(address.getBytes("UTF-8"));
+		    bytes = cryptography.etm(address.trim().getBytes("UTF-8"));
 		    break;
 		case "ozone_address_digest":
-		    bytes = cryptography.hmac(address.getBytes("UTF-8"));
+		    bytes = cryptography.hmac(address.trim().getBytes("UTF-8"));
 		    break;
 		default:
 		    bytes = cryptography.etm(addressStream);
