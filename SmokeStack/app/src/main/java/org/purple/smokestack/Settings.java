@@ -1187,7 +1187,7 @@ public class Settings extends AppCompatActivity
 			    (R.drawable.keys_signed, 0, 0, 0);
                     else if(sipHashIdElement.m_epksCompleted)
                         textView.setCompoundDrawablesWithIntrinsicBounds
-			    (R.drawable.lock, 0, 0, 0);
+			    (R.drawable.keys_not_signed, 0, 0, 0);
                     else
                         textView.setCompoundDrawablesWithIntrinsicBounds
 			    (R.drawable.warning, 0, 0, 0);
