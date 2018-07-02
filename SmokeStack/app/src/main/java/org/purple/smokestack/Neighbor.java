@@ -49,15 +49,16 @@ public abstract class Neighbor
     private final String m_echoMode = "full";
     private final static Object m_echoQueueMutex = new Object();
     private final static Object m_queueMutex = new Object();
+    private final static int BYTES_PER_READ = 1 * 1024 * 1024; // 1 MiB
     private final static int IDENTITIES_TIMER_INTERVAL = 10000; // 10 Seconds
-    private final static int LANE_WIDTH = 8 * 1024 * 1024; // 8 MiB
+    private final static int LANE_WIDTH = 32 * 1024 * 1024; // 32 MiB
     private final static int PARSING_INTERVAL = 100; // Milliseconds
     private final static int SEND_OUTBOUND_TIMER_INTERVAL = 100; // Milliseconds
     private final static int SILENCE = 90000; // 90 Seconds
     private final static int TIMER_INTERVAL = 2500; // 2.5 Seconds
     protected AtomicBoolean m_allowUnsolicited = null;
-    protected AtomicBoolean m_clientSupportsCD =
-	null; // Cryptographic Discovery
+    protected AtomicBoolean
+	m_clientSupportsCD = null; // Cryptographic Discovery
     protected AtomicBoolean m_requestUnsolicitedSent = null;
     protected AtomicBoolean m_userDefined = null;
     protected AtomicInteger m_oid = null;
@@ -77,7 +78,7 @@ public abstract class Neighbor
     protected final StringBuilder m_error = new StringBuilder();
     protected final static Object m_errorMutex = new Object();
     protected final static int MAXIMUM_BYTES = LANE_WIDTH;
-    protected final static int READ_SOCKET_INTERVAL = 10; // 10 Milliseconds
+    protected final static int READ_SOCKET_INTERVAL = 100; // 100 Milliseconds
     protected final static int SO_TIMEOUT = 2500; // 2.5 Seconds
     public final static int MAXIMUM_QUEUED_ECHO_PACKETS = 1024;
 
@@ -131,7 +132,7 @@ public abstract class Neighbor
 		       int oid)
     {
 	m_allowUnsolicited = new AtomicBoolean(false);
-	m_bytes = new byte[MAXIMUM_BYTES];
+	m_bytes = new byte[BYTES_PER_READ];
 	m_bytesRead = new AtomicLong(0);
 	m_bytesWritten = new AtomicLong(0);
 	m_clientSupportsCD = new AtomicBoolean(false);
