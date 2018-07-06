@@ -206,12 +206,14 @@ public class TcpNeighbor extends Neighbor
 
 	m_readSocketScheduler.scheduleAtFixedRate(new Runnable()
 	{
+	    private boolean m_error = false;
+
 	    @Override
 	    public void run()
 	    {
 		try
 		{
-		    if(!connected())
+		    if(!connected() || m_error)
 			return;
 		    else if(m_socket == null ||
 			    m_socket.getInputStream() == null)
@@ -229,12 +231,10 @@ public class TcpNeighbor extends Neighbor
 		    {
 			i = m_socket.getInputStream().read(m_bytes);
 		    }
-		    catch(java.net.SocketTimeoutException exception)
-		    {
-		    }
 		    catch(Exception exception)
 		    {
 			i = -1;
+			m_error = true;
 		    }
 
 		    long bytesRead = 0;
@@ -246,6 +246,7 @@ public class TcpNeighbor extends Neighbor
 
 		    if(bytesRead < 0)
 		    {
+			m_error = true;
 			setError("A socket read() error occurred.");
 			disconnect();
 			return;
@@ -260,6 +261,7 @@ public class TcpNeighbor extends Neighbor
 		}
 		catch(java.net.SocketException exception)
 		{
+		    m_error = true;
 		    setError("A socket error occurred while reading data.");
 		    disconnect();
 		}
@@ -315,12 +317,14 @@ public class TcpNeighbor extends Neighbor
 	m_readSocketScheduler = Executors.newSingleThreadScheduledExecutor();
 	m_readSocketScheduler.scheduleAtFixedRate(new Runnable()
 	{
+	    private boolean m_error = false;
+
 	    @Override
 	    public void run()
 	    {
 		try
 		{
-		    if(!connected())
+		    if(!connected() || m_error)
 			return;
 		    else if(m_socket == null ||
 			    m_socket.getInputStream() == null)
@@ -338,12 +342,10 @@ public class TcpNeighbor extends Neighbor
 		    {
 			i = m_socket.getInputStream().read(m_bytes);
 		    }
-		    catch(java.net.SocketTimeoutException exception)
-		    {
-		    }
 		    catch(Exception exception)
 		    {
 			i = -1;
+			m_error = true;
 		    }
 
 		    long bytesRead = 0;
@@ -355,6 +357,7 @@ public class TcpNeighbor extends Neighbor
 
 		    if(bytesRead < 0)
 		    {
+			m_error = true;
 			setError("A socket read() error occurred.");
 			disconnect();
 			return;
@@ -369,6 +372,7 @@ public class TcpNeighbor extends Neighbor
 		}
 		catch(java.net.SocketException exception)
 		{
+		    m_error = true;
 		    setError("A socket error occurred while reading data.");
 		    disconnect();
 		}
