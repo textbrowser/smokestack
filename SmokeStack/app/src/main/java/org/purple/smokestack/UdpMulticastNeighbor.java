@@ -157,8 +157,15 @@ public class UdpMulticastNeighbor extends Neighbor
 	    {
 		try
 		{
-		    if(!connected() || m_error)
+		    if(!connected())
 			return;
+		    else if(m_error)
+		    {
+			if(connected())
+			    m_error = false;
+			else
+			    return;
+		    }
 		    else if(m_socket == null)
 			return;
 
