@@ -2464,7 +2464,10 @@ public class Settings extends AppCompatActivity
 			{
 			    m_databaseHelper.cleanDanglingMessages();
 			    m_databaseHelper.cleanDanglingParticipants();
+			    m_databaseHelper.deleteEntry
+				(String.valueOf(itemId), "ozones");
 			    Kernel.getInstance().populateSipHashIds();
+			    populateOzoneAddresses();
 			    populateParticipants();
 			}
 
@@ -2548,7 +2551,8 @@ public class Settings extends AppCompatActivity
 		 "Are you sure that you " +
 		 "wish to delete the participant " +
 		 item.getTitle().toString().replace("Delete Participant (", "").
-		 replace(")", "") + "?");
+		 replace(")", "") + "? If confirmed, the associated Ozone " +
+		 "will also be deleted.");
 	    break;
 	case 3:
 	    Miscellaneous.showPromptDialog
