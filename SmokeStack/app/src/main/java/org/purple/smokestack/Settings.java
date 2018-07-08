@@ -2427,6 +2427,13 @@ public class Settings extends AppCompatActivity
 		case 1:
 		    if(State.getInstance().getString("dialog_accepted").
 		       equals("true"))
+			if(m_databaseHelper.removeMessages())
+			    populateParticipants();
+
+		    break;
+		case 2:
+		    if(State.getInstance().getString("dialog_accepted").
+		       equals("true"))
 			if(m_databaseHelper.
 			   removeMessages(String.valueOf(itemId)))
 			{
@@ -2456,7 +2463,7 @@ public class Settings extends AppCompatActivity
 			}
 
 		    break;
-		case 2:
+		case 3:
 		    if(State.getInstance().getString("dialog_accepted").
 		       equals("true"))
 			if(m_databaseHelper.deleteEntry(String.valueOf(itemId),
@@ -2472,7 +2479,7 @@ public class Settings extends AppCompatActivity
 			}
 
 		    break;
-		case 3:
+		case 4:
 		    if(State.getInstance().getString("dialog_accepted").
 		       equals("true"))
 			if(m_databaseHelper.
@@ -2539,12 +2546,18 @@ public class Settings extends AppCompatActivity
 	    Miscellaneous.showPromptDialog
 		(Settings.this,
 		 listener,
+		 "Are you sure that you wish to delete all messages?");
+	    break;
+	case 2:
+	    Miscellaneous.showPromptDialog
+		(Settings.this,
+		 listener,
 		 "Are you sure that you " +
 		 "wish to delete the messages of participant " +
 		 item.getTitle().toString().replace("Delete Messages (", "").
 		 replace(")", "") + "?");
 	    break;
-	case 2:
+	case 3:
 	    Miscellaneous.showPromptDialog
 		(Settings.this,
 		 listener,
@@ -2554,7 +2567,7 @@ public class Settings extends AppCompatActivity
 		 replace(")", "") + "? If confirmed, the associated Ozone " +
 		 "will also be deleted.");
 	    break;
-	case 3:
+	case 4:
 	    Miscellaneous.showPromptDialog
 		(Settings.this,
 		 listener,
@@ -2564,9 +2577,9 @@ public class Settings extends AppCompatActivity
 		 replace("Reset Retrieval State (", "").
 		 replace(")", "") + "?");
 	    break;
-	case 4:
-	    if(m_databaseHelper.
-	       deleteEntry(String.valueOf(itemId), "listeners"))
+	case 5:
+	    if(m_databaseHelper.deleteEntry(String.valueOf(itemId),
+					    "listeners"))
 	    {
 		/*
 		** Prepare the kernel's listeners container
@@ -2644,7 +2657,7 @@ public class Settings extends AppCompatActivity
 	    try
 	    {
 		if(v.getParent().getParent() == findViewById(R.id.listeners))
-		    menu.add(4, v.getId(), 0, "Delete Listener (" + tag + ")");
+		    menu.add(5, v.getId(), 0, "Delete Listener (" + tag + ")");
 		else if(v.getParent().getParent() == findViewById(R.id.ozones))
 		    menu.add(0, v.getId(), 0, "Delete Ozone (" + tag + ")");
 		else
@@ -2652,12 +2665,16 @@ public class Settings extends AppCompatActivity
 		    menu.add(1,
 			     v.getId(),
 			     0,
-			     "Delete Messages (" + tag + ")");
+			     "Delete All Messages");
 		    menu.add(2,
 			     v.getId(),
 			     0,
-			     "Delete Participant (" + tag + ")");
+			     "Delete Messages (" + tag + ")");
 		    menu.add(3,
+			     v.getId(),
+			     0,
+			     "Delete Participant (" + tag + ")");
+		    menu.add(4,
 			     v.getId(),
 			     0,
 			     "Reset Retrieval State (" + tag + ")");
