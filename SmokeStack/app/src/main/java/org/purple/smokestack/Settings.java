@@ -649,9 +649,9 @@ public class Settings extends AppCompatActivity
 	    registerForContextMenu(checkBox);
 
 	    if(listenerElement.m_status.equals("listening"))
-		checkBox.setTextColor(Color.rgb(144, 238, 144)); // Light Green
+		checkBox.setTextColor(Color.rgb(27, 94, 32)); // Dark Green
 	    else
-		checkBox.setTextColor(Color.rgb(240, 128, 128)); // Light Coral
+		checkBox.setTextColor(Color.rgb(183, 28, 28)); // Dark Red
 
 	    stringBuilder.setLength(0);
 	    stringBuilder.append("Control: ");
@@ -975,14 +975,14 @@ public class Settings extends AppCompatActivity
 
 	    switch(neighborElement.m_status)
 	    {
-            case "connected":
-                textView.setTextColor(Color.rgb(144, 238, 144)); // Light Green
+	    case "connected":
+                textView.setTextColor(Color.rgb(27, 94, 32)); // Dark Green
                 break;
             case "connecting":
-                textView.setTextColor(Color.rgb(255, 140, 0)); // Dark Orange
+                textView.setTextColor(Color.rgb(255, 111, 0)); // Dark Orange
                 break;
             default:
-                textView.setTextColor(Color.rgb(240, 128, 128)); // Light Coral
+                textView.setTextColor(Color.rgb(183, 28, 28)); // Dark Red
                 break;
 	    }
 
@@ -1181,7 +1181,7 @@ public class Settings extends AppCompatActivity
 	    row.addView(textView);
 
 	    if(i % 2 == 0)
-		row.setBackgroundColor(Color.argb(100, 179, 230, 255));
+		row.setBackgroundColor(Color.rgb(179, 229, 252));
 
 	    tableLayout.addView(row, i);
 	    i += 1;
@@ -1273,7 +1273,7 @@ public class Settings extends AppCompatActivity
 	    }
 
 	    if(i % 2 == 0)
-		row.setBackgroundColor(Color.argb(100, 179, 230, 255));
+		row.setBackgroundColor(Color.rgb(179, 229, 252));
 
 	    tableLayout.addView(row, i);
 	    i += 1;
@@ -1659,8 +1659,15 @@ public class Settings extends AppCompatActivity
 
 		PopupWindow popupWindow = new PopupWindow(Settings.this);
 		TextView textView = new TextView(Settings.this);
+		float density = getApplicationContext().getResources().
+		    getDisplayMetrics().density;
 
-		textView.setBackgroundColor(Color.rgb(135, 206, 250));
+		textView.setBackgroundColor(Color.rgb(232, 234, 246));
+		textView.setPaddingRelative
+		    ((int) (10 * density),
+		     (int) (10 * density),
+		     (int) (10 * density),
+		     (int) (10 * density));
 		textView.setText
 		    ("A Smoke ID is a sequence of digits and " +
 		     "letters assigned to a specific subscriber " +
