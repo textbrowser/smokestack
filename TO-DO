@@ -25,3 +25,5 @@ Remaining Items
 2.     Fire as unsolicited data.
 3.     Distribute routing identity algorithms.
 4.     Steam.
+5.     Replace SipHash ID with Smoke ID.
+6.     Display the number of internal Neighbors.
