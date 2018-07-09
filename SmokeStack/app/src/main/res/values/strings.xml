@@ -38,7 +38,7 @@
     <string name="scope_id">Scope ID</string>
     <string name="set_password">Set Password</string>
     <string name="settings">Settings</string>
-    <string name="siphash_id">SipHash ID</string>
+    <string name="smoke_id">Smoke ID</string>
     <string name="steam">Steam</string>
     <string name="title_activity_steam">Steam</string>
 </resources>

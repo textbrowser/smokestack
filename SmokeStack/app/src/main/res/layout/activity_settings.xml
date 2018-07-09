@@ -508,7 +508,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="5dp"
                         android:layout_weight="0.13"
-                        android:text="@string/siphash_id"
+                        android:text="@string/smoke_id"
                         android:textColor="#fdb632" />
 
                     <TextView
@@ -573,7 +573,7 @@
                         android:layout_marginEnd="5dp"
                         android:layout_weight="1"
                         android:ems="10"
-                        android:hint="@string/siphash_id"
+                        android:hint="@string/smoke_id"
                         android:inputType="textPersonName"
                         android:textColor="#fdb632"
                         android:textColorHint="#fdb632" />

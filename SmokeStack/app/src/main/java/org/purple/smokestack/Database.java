@@ -157,7 +157,7 @@ public class Database extends SQLiteOpenHelper
 	    public int compare(SipHashIdElement e1, SipHashIdElement e2)
 	    {
 		/*
-		** Sort by name and SipHash identity.
+		** Sort by name and Smoke identity.
 		*/
 
 	    	int i = e1.m_name.compareTo(e2.m_name);
@@ -2530,7 +2530,7 @@ public class Database extends SQLiteOpenHelper
 
 	    /*
 	    ** We shall use the two public keys to generate the
-	    ** provider's SipHash ID. If a SipHash ID is not defined,
+	    ** provider's Smoke ID. If a SipHash ID is not defined,
 	    ** we'll reject the data.
 	    */
 
