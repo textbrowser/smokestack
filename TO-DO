@@ -14,6 +14,7 @@ Completed Items
 11.    Decrease the lock area of m_stringBuilder in Neighbor.java.
 12.    Signed release.
 13.    Entries in routing_identities expire.
+14.    Replace SipHash ID with Smoke ID.
 
 Future Items
 
@@ -25,5 +26,4 @@ Remaining Items
 2.     Fire as unsolicited data.
 3.     Distribute routing identity algorithms.
 4.     Steam.
-5.     Replace SipHash ID with Smoke ID.
-6.     Display the number of internal Neighbors.
+5.     Display the number of internal Neighbors.
