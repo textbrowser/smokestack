@@ -932,7 +932,6 @@ public class Kernel
 		int j = m_neighbors.keyAt(i);
 
 		if(m_neighbors.get(j) != null &&
-		   m_neighbors.get(j).connected() &&
 		   m_neighbors.get(j).getOid() != oid)
 		    m_neighbors.get(j).scheduleEchoSend(message);
 	    }
