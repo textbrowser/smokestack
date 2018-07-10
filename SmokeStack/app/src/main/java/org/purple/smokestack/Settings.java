@@ -762,6 +762,10 @@ public class Settings extends AppCompatActivity
 
     private void populateNeighbors(ArrayList<NeighborElement> arrayList)
     {
+	((TextView) findViewById(R.id.internal_neighbors)).setText
+	    ("Internal Neighbors Container Size: " +
+	     Kernel.getInstance().neighborsCount());
+
 	if(arrayList == null)
 	    arrayList = m_databaseHelper.readNeighbors(s_cryptography);
 

@@ -878,6 +878,14 @@ public class Kernel
 	return false;
     }
 
+    public int neighborsCount()
+    {
+	synchronized(m_neighbors)
+	{
+	    return m_neighbors.size();
+	}
+    }
+
     public static synchronized Kernel getInstance()
     {
 	if(s_instance == null)
@@ -924,6 +932,7 @@ public class Kernel
 		int j = m_neighbors.keyAt(i);
 
 		if(m_neighbors.get(j) != null &&
+		   m_neighbors.get(j).connected() &&
 		   m_neighbors.get(j).getOid() != oid)
 		    m_neighbors.get(j).scheduleEchoSend(message);
 	    }
@@ -934,7 +943,8 @@ public class Kernel
 	try
 	{
 	    for(int i = 0; i < m_serverNeighbors.size(); i++)
-		if(m_serverNeighbors.get(i) != null)
+		if(m_serverNeighbors.get(i) != null &&
+		   m_serverNeighbors.get(i).connected())
 		    m_serverNeighbors.get(i).scheduleEchoSend(message);
 	}
 	finally
