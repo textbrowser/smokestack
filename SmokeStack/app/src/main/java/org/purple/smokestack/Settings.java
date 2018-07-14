@@ -2299,11 +2299,11 @@ public class Settings extends AppCompatActivity
 	checkBox1 = (CheckBox) findViewById(R.id.overwrite);
 	checkBox1.setChecked(!isAuthenticated);
 	checkBox1.setEnabled(isAuthenticated);
+	button1 = (Button) findViewById(R.id.set_password);
+	button1.setEnabled(checkBox1.isChecked());
 
 	TextView textView1 = null;
 
-	textView1 = (TextView) findViewById(R.id.set_password);
-	textView1.setEnabled(checkBox1.isChecked());
 	textView1 = (TextView) findViewById(R.id.about);
 	textView1.setText(About.about());
 	textView1 = (TextView) findViewById(R.id.listeners_scope_id);
