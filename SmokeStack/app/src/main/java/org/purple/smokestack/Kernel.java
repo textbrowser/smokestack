@@ -91,6 +91,7 @@ public class Kernel
 	5000; // 5 Seconds
     private final static int ROUTING_ENTRY_LIFETIME = CONGESTION_LIFETIME;
     private final static int ROUTING_INTERVAL = 15000; // 15 Seconds
+    private final static int SHARE_SIPHASHID_WINDOW = 30000; // 30 Seconds
     private static Kernel s_instance = null;
     public final static int MAXIMUM_IDENTITIES = 512;
 
@@ -696,7 +697,7 @@ public class Kernel
 		return false;
 
 	    /*
-	    ** Message retrieval and storage.
+	    ** Ozone-based messages.
 	    */
 
 	    array1 = Arrays.copyOfRange(bytes, 0, bytes.length - 64);
@@ -716,10 +717,6 @@ public class Kernel
 						  ozoneElement.m_addressStream.
 						  length))))
 		 {
-		     /*
-		     ** A message-retrieval request!
-		     */
-
 		     byte aes256[] = Cryptography.decrypt
 			 (array1,
 			  Arrays.copyOfRange(ozoneElement.m_addressStream,
@@ -823,6 +820,48 @@ public class Kernel
 			     (Messages.epksMessage(sipHashId, array));
 
 			 enqueueMessage(message);
+			 return true;
+		     }
+		     else if(aes256[0] == Messages.SHARE_SIPHASHID[0])
+		     {
+			 long current = System.currentTimeMillis();
+			 long timestamp = Miscellaneous.byteArrayToLong
+			     (Arrays.copyOfRange(aes256, 1, 1 + 8));
+
+			 if(current - timestamp < 0)
+			 {
+			     if(timestamp - current > SHARE_SIPHASHID_WINDOW)
+				 return true;
+			 }
+			 else if(current - timestamp > SHARE_SIPHASHID_WINDOW)
+			     return true;
+
+			 String name = "";
+			 String sipHashId = new String
+			     (Arrays.copyOfRange(aes256, 9, aes256.length),
+			      "UTF-8");
+
+			 name = Miscellaneous.delimitString
+			     (sipHashId.replace(":", "").toUpperCase(), '-', 4);
+
+			 if(s_databaseHelper.
+			    writeSipHashParticipant(s_cryptography,
+						    name,
+						    sipHashId,
+						    false))
+			 {
+			     populateSipHashIds();
+
+			     Intent intent = new Intent
+				 ("org.purple.smokestack." +
+				  "populate_participants");
+			     LocalBroadcastManager localBroadcastManager =
+				 LocalBroadcastManager.getInstance
+				 (SmokeStack.getApplication());
+
+			     localBroadcastManager.sendBroadcast(intent);
+			 }
+
 			 return true;
 		     }
 		     else

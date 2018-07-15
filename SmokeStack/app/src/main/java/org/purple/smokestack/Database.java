@@ -2530,7 +2530,7 @@ public class Database extends SQLiteOpenHelper
 
 	    /*
 	    ** We shall use the two public keys to generate the
-	    ** provider's Smoke ID. If a SipHash ID is not defined,
+	    ** provider's SipHash ID. If a SipHash ID is not defined,
 	    ** we'll reject the data.
 	    */
 

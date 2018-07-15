@@ -327,7 +327,7 @@ public class Settings extends AppCompatActivity
 	    (R.id.participant_siphash_id);
 
 	string = textView1.getText().toString().
-	    replace(" ", "").replace("-", "").replace(":", "");
+	    replace(" ", "").replace("-", "").replace(":", "").trim();
 
 	try
 	{
@@ -344,9 +344,10 @@ public class Settings extends AppCompatActivity
 
 	if(stringBuilder.length() > 0 &&
 	   stringBuilder.charAt(stringBuilder.length() - 1) == ':')
-	    string = stringBuilder.substring(0, stringBuilder.length() - 1);
+	    string = stringBuilder.substring(0, stringBuilder.length() - 1).
+		trim();
 	else
-	    string = stringBuilder.toString();
+	    string = stringBuilder.toString().trim();
 
 	if(string.length() != 23)
 	{
@@ -368,7 +369,7 @@ public class Settings extends AppCompatActivity
 	class SingleShot implements Runnable
 	{
 	    private String m_name = "";
-	    private String m_siphashId = "";
+	    private String m_sipHashId = "";
 	    private boolean m_acceptWithoutSignatures = false;
 	    private boolean m_error = false;
 
@@ -378,7 +379,7 @@ public class Settings extends AppCompatActivity
 	    {
 		m_acceptWithoutSignatures = acceptWithoutSignatures;
 		m_name = name;
-		m_siphashId = sipHashId;
+		m_sipHashId = sipHashId;
 	    }
 
 	    @Override
@@ -389,14 +390,9 @@ public class Settings extends AppCompatActivity
 		    if(!m_databaseHelper.
 		       writeSipHashParticipant(s_cryptography,
 					       m_name,
-					       m_siphashId,
+					       m_sipHashId,
 					       m_acceptWithoutSignatures))
 			m_error = true;
-		    else
-			generateOzone
-			    (Miscellaneous.
-			     delimitString(m_siphashId.replace(":", "").
-					   toUpperCase(), '-', 4));
 
 		    Settings.this.runOnUiThread(new Runnable()
 		    {
@@ -413,7 +409,6 @@ public class Settings extends AppCompatActivity
 			    else
 			    {
 				Kernel.getInstance().populateSipHashIds();
-				populateOzoneAddresses();
 				populateParticipants();
 			    }
 			}
@@ -2482,8 +2477,6 @@ public class Settings extends AppCompatActivity
 			{
 			    m_databaseHelper.cleanDanglingMessages();
 			    m_databaseHelper.cleanDanglingParticipants();
-			    m_databaseHelper.deleteEntry
-				(String.valueOf(itemId), "ozones");
 			    Kernel.getInstance().populateSipHashIds();
 			    populateOzoneAddresses();
 			    populateParticipants();
