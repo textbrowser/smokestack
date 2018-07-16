@@ -331,11 +331,11 @@ public class Settings extends AppCompatActivity
 
 	try
 	{
-	    for(int i = 0; i < string.length(); i += 2)
+	    for(int i = 0; i < string.length(); i += 4)
 	    {
 		stringBuilder.append(string.charAt(i));
 		stringBuilder.append(string.charAt(i + 1));
-		stringBuilder.append(':');
+		stringBuilder.append('-');
 	    }
 	}
 	catch(Exception exception)
@@ -349,7 +349,7 @@ public class Settings extends AppCompatActivity
 	else
 	    string = stringBuilder.toString().trim();
 
-	if(string.length() != 23)
+	if(string.length() != 19)
 	{
 	    Miscellaneous.showErrorDialog
 		(Settings.this,
