@@ -134,6 +134,13 @@ public class Settings extends AppCompatActivity
 	    if(intent.getAction().
 	       equals("org.purple.smokestack.populate_participants"))
 		populateParticipants();
+	    else if(intent.getAction().
+		    equals("org.purple.smokestack.populate_" +
+			   "ozones_participants"))
+	    {
+		populateOzoneAddresses();
+		populateParticipants();
+	    }
 	}
     }
 
@@ -193,54 +200,19 @@ public class Settings extends AppCompatActivity
     };
     private final static int CHECKBOX_TEXT_SIZE = 13;
     private final static int CHECKBOX_WIDTH = 500;
-    private final static int OZONE_STREAM_CREATION_ITERATION_COUNT = 4096;
     private final static int TEXTVIEW_TEXT_SIZE = 13;
     private final static int TEXTVIEW_WIDTH = 500;
     private final static int TIMER_INTERVAL = 2500; // 2.5 Seconds
 
     private boolean generateOzone(String string)
     {
-	if(string == null || string.trim().isEmpty())
+	byte bytes[] = Cryptography.generateOzone(string);
+
+	if(bytes != null)
+	    return m_databaseHelper.writeOzone
+		(s_cryptography, string.trim(), bytes);
+	else
 	    return false;
-
-	boolean ok = true;
-	byte bytes[] = null;
-	byte salt[] = null;
-
-	try
-	{
-	    salt = Cryptography.sha512(string.trim().getBytes("UTF-8"));
-
-	    if(salt != null)
-		bytes = Cryptography.pbkdf2
-		    (salt,
-		     string.trim().toCharArray(),
-		     OZONE_STREAM_CREATION_ITERATION_COUNT,
-		     160); // SHA-1
-	    else
-		ok = false;
-
-	    if(bytes != null)
-		bytes = Cryptography.
-		    pbkdf2(salt,
-			   new String(bytes).toCharArray(),
-			   1,
-			   768); // 8 * (32 + 64) Bits
-	    else
-		ok = false;
-
-	    if(bytes != null)
-		ok = m_databaseHelper.writeOzone
-		    (s_cryptography,
-		     string.trim(),
-		     bytes);
-	}
-	catch(Exception exception)
-	{
-	    ok = false;
-	}
-
-	return ok;
     }
 
     private void addListener()
@@ -393,6 +365,11 @@ public class Settings extends AppCompatActivity
 					       m_sipHashId,
 					       m_acceptWithoutSignatures))
 			m_error = true;
+		    else
+			generateOzone
+			    (Miscellaneous.
+			     delimitString(m_sipHashId.replace(":", "").
+					   toUpperCase(), '-', 4));
 
 		    Settings.this.runOnUiThread(new Runnable()
 		    {
@@ -409,6 +386,7 @@ public class Settings extends AppCompatActivity
 			    else
 			    {
 				Kernel.getInstance().populateSipHashIds();
+				populateOzoneAddresses();
 				populateParticipants();
 			    }
 			}
@@ -2472,8 +2450,8 @@ public class Settings extends AppCompatActivity
 		case 3:
 		    if(State.getInstance().getString("dialog_accepted").
 		       equals("true"))
-			if(m_databaseHelper.deleteEntry(String.valueOf(itemId),
-							"siphash_ids"))
+			if(m_databaseHelper.
+			   deleteOzoneAndSipHashId(String.valueOf(itemId)))
 			{
 			    m_databaseHelper.cleanDanglingMessages();
 			    m_databaseHelper.cleanDanglingParticipants();
@@ -2720,6 +2698,8 @@ public class Settings extends AppCompatActivity
 	{
 	    IntentFilter intentFilter = new IntentFilter();
 
+	    intentFilter.addAction
+		("org.purple.smokestack.populate_ozones_participants");
 	    intentFilter.addAction
 		("org.purple.smokestack.populate_participants");
 	    LocalBroadcastManager.getInstance(this).registerReceiver

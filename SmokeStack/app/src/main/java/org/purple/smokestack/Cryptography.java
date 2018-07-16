@@ -80,6 +80,7 @@ public class Cryptography
     private final static String SYMMETRIC_ALGORITHM = "AES";
     private final static String SYMMETRIC_CIPHER_TRANSFORMATION =
 	"AES/CBC/PKCS7Padding";
+    private final static int OZONE_STREAM_CREATION_ITERATION_COUNT = 4096;
     private final static int SIPHASH_STREAM_CREATION_ITERATION_COUNT = 4096;
     private static Cryptography s_instance = null;
     private static SecureRandom s_secureRandom = null;
@@ -519,6 +520,38 @@ public class Cryptography
 	return ok;
     }
 
+    public static byte[] decrypt(byte data[], byte keyBytes[])
+    {
+	if(data == null ||
+	   data.length < 0 ||
+	   keyBytes == null ||
+	   keyBytes.length < 0)
+	    return null;
+
+	byte bytes[] = null;
+
+	try
+	{
+	    Cipher cipher = null;
+	    SecretKey secretKey = new SecretKeySpec
+		(keyBytes, SYMMETRIC_ALGORITHM);
+	    byte iv[] = Arrays.copyOf(data, 16);
+
+	    cipher = Cipher.getInstance(SYMMETRIC_CIPHER_TRANSFORMATION);
+	    cipher.init(Cipher.DECRYPT_MODE,
+			secretKey,
+			new IvParameterSpec(iv));
+	    bytes = cipher.doFinal
+		(Arrays.copyOfRange(data, 16, data.length));
+	}
+	catch(Exception exception)
+	{
+	    bytes = null;
+	}
+
+	return bytes;
+    }
+
     public static byte[] encrypt(byte data[], byte keyBytes[])
     {
 	if(data == null ||
@@ -554,29 +587,31 @@ public class Cryptography
 	return bytes;
     }
 
-    public static byte[] decrypt(byte data[], byte keyBytes[])
+    public static byte[] generateOzone(String string)
     {
-	if(data == null ||
-	   data.length < 0 ||
-	   keyBytes == null ||
-	   keyBytes.length < 0)
+	if(string == null || string.trim().isEmpty())
 	    return null;
 
 	byte bytes[] = null;
+	byte salt[] = null;
 
 	try
 	{
-	    Cipher cipher = null;
-	    SecretKey secretKey = new SecretKeySpec
-		(keyBytes, SYMMETRIC_ALGORITHM);
-	    byte iv[] = Arrays.copyOf(data, 16);
+	    salt = Cryptography.sha512(string.trim().getBytes("UTF-8"));
 
-	    cipher = Cipher.getInstance(SYMMETRIC_CIPHER_TRANSFORMATION);
-	    cipher.init(Cipher.DECRYPT_MODE,
-			secretKey,
-			new IvParameterSpec(iv));
-	    bytes = cipher.doFinal
-		(Arrays.copyOfRange(data, 16, data.length));
+	    if(salt != null)
+		bytes = Cryptography.pbkdf2
+		    (salt,
+		     string.trim().toCharArray(),
+		     OZONE_STREAM_CREATION_ITERATION_COUNT,
+		     160); // SHA-1
+
+	    if(bytes != null)
+		bytes = Cryptography.
+		    pbkdf2(salt,
+			   new String(bytes).toCharArray(),
+			   1,
+			   768); // 8 * (32 + 64) Bits
 	}
 	catch(Exception exception)
 	{

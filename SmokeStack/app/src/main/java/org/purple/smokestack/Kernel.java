@@ -842,7 +842,8 @@ public class Kernel
 			      "UTF-8");
 
 			 name = Miscellaneous.delimitString
-			     (sipHashId.replace(":", "").toUpperCase(), '-', 4);
+			     (sipHashId.replace(":", "").toUpperCase(), '-', 4).
+			     trim();
 
 			 if(s_databaseHelper.
 			    writeSipHashParticipant(s_cryptography,
@@ -850,11 +851,17 @@ public class Kernel
 						    sipHashId,
 						    false))
 			 {
+			     bytes = Cryptography.generateOzone(name);
+
+			     if(bytes != null)
+				 s_databaseHelper.writeOzone
+				     (s_cryptography, name, bytes);
+
 			     populateSipHashIds();
 
 			     Intent intent = new Intent
 				 ("org.purple.smokestack." +
-				  "populate_participants");
+				  "populate_ozones_participants");
 			     LocalBroadcastManager localBroadcastManager =
 				 LocalBroadcastManager.getInstance
 				 (SmokeStack.getApplication());

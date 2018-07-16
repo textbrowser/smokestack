@@ -1546,7 +1546,7 @@ public class Database extends SQLiteOpenHelper
 	   digest == null ||
 	   digest.length < 0 ||
 	   m_db == null)
-	    return null;
+	    return "";
 
 	Cursor cursor = null;
 	String sipHashIdDigest = "";
@@ -1808,6 +1808,38 @@ public class Database extends SQLiteOpenHelper
 	try
 	{
 	    ok = m_db.delete(table, "OID = ?", new String[] {oid}) > 0;
+	    m_db.setTransactionSuccessful();
+	}
+	catch(Exception exception)
+	{
+	    ok = false;
+	}
+	finally
+	{
+	    m_db.endTransaction();
+	}
+
+	return ok;
+    }
+
+    public boolean deleteOzoneAndSipHashId(String oid)
+    {
+	prepareDb();
+
+	if(m_db == null)
+	    return false;
+
+	boolean ok = false;
+
+	m_db.beginTransactionNonExclusive();
+
+	try
+	{
+	    m_db.execSQL
+		("DELETE FROM ozones WHERE ozone_address_digest IN " +
+		 "(SELECT siphash_id_digest FROM siphash_ids WHERE oid = ?)",
+		 new String[] {oid});
+	    ok = m_db.delete("siphash_ids", "OID = ?", new String[] {oid}) > 0;
 	    m_db.setTransactionSuccessful();
 	}
 	catch(Exception exception)
