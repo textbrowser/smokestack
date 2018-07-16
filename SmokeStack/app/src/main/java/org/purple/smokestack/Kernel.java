@@ -814,7 +814,7 @@ public class Kernel
 			     return true;
 
 			 sipHashId = new String
-			     (Arrays.copyOfRange(aes256, 9, 9 + 23));
+			     (Arrays.copyOfRange(aes256, 9, 9 + 19));
 
 			 String message = Messages.bytesToMessageString
 			     (Messages.epksMessage(sipHashId, array));
