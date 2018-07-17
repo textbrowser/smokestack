@@ -219,9 +219,9 @@ public abstract class Neighbor
 		    ** Detect our end-of-message delimiter.
 		    */
 
-		    int indexOf = m_stringBuffer.indexOf(Messages.EOM);
+		    int indexOf = -1;
 
-		    while(indexOf >= 0)
+		    while((indexOf = m_stringBuffer.indexOf(Messages.EOM)) >= 0)
 		    {
 			String buffer = m_stringBuffer.
 			    substring(0, indexOf + Messages.EOM.length());
