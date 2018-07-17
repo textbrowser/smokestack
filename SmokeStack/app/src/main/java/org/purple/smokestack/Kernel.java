@@ -1007,8 +1007,7 @@ public class Kernel
 	try
 	{
 	    for(int i = 0; i < m_serverNeighbors.size(); i++)
-		if(m_serverNeighbors.get(i) != null &&
-		   m_serverNeighbors.get(i).connected())
+		if(m_serverNeighbors.get(i) != null)
 		    m_serverNeighbors.get(i).scheduleEchoSend(message);
 	}
 	finally
