@@ -737,7 +737,7 @@ public class Kernel
 					     0,
 					     32));
 
-		     if(aes256 == null || aes256.length < 25)
+		     if(aes256 == null)
 			 return true;
 
 		     if(aes256[0] == Messages.CHAT_MESSAGE_RETRIEVAL[0])
