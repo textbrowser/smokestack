@@ -227,7 +227,6 @@ public abstract class Neighbor
 			    substring(0, indexOf + Messages.EOM.length());
 
 			m_stringBuffer.delete(0, buffer.length());
-			indexOf = m_stringBuffer.indexOf(Messages.EOM);
 
 			if(!Kernel.getInstance().
 			   ourMessage(buffer,
