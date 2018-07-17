@@ -303,7 +303,7 @@ public class Settings extends AppCompatActivity
 	     replace(" ", "").replace("-", "").replace(":", "").trim(),
 	     '-', 4);
 
-	if(string.length() != 19)
+	if(string.length() != Cryptography.SIPHASH_ID_LENGTH)
 	{
 	    Miscellaneous.showErrorDialog
 		(Settings.this,

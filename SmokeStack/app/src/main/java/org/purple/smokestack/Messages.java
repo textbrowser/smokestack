@@ -36,7 +36,7 @@ public class Messages
     public final static byte CHAT_KEY_TYPE[] = new byte[] {0x00};
     public final static byte CHAT_MESSAGE_RETRIEVAL[] = new byte[] {0x00};
     public final static byte PKP_MESSAGE_REQUEST[] = new byte[] {0x01};
-    public final static byte SHARE_SIPHASHID[] = new byte[] {0x02};
+    public final static byte SHARE_SIPHASH_ID[] = new byte[] {0x02};
     public final static int EPKS_GROUP_ONE_ELEMENT_COUNT = 6;
 
     public static String bytesToMessageString(byte bytes[])

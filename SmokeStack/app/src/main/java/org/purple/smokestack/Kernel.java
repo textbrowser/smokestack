@@ -91,7 +91,7 @@ public class Kernel
 	5000; // 5 Seconds
     private final static int ROUTING_ENTRY_LIFETIME = CONGESTION_LIFETIME;
     private final static int ROUTING_INTERVAL = 15000; // 15 Seconds
-    private final static int SHARE_SIPHASHID_WINDOW = 30000; // 30 Seconds
+    private final static int SHARE_SIPHASH_ID_WINDOW = 30000; // 30 Seconds
     private static Kernel s_instance = null;
     public final static int MAXIMUM_IDENTITIES = 512;
 
@@ -637,6 +637,10 @@ public class Kernel
 		(bytes, bytes.length - 128, bytes.length - 64);
 
 	    if(arrayList1 != null && arrayList1.size() > 0)
+	    {
+		byte array3[] = Arrays.copyOfRange
+		    (bytes, bytes.length - 64, bytes.length);
+
 		for(SipHashIdElement sipHashIdElement : arrayList1)
 		{
 		    if(sipHashIdElement == null)
@@ -644,14 +648,25 @@ public class Kernel
 		    else if(sipHashIdElement.m_epksCompleted)
 			continue;
 
-		    if(!Cryptography.
-		       memcmp(array2,
-			      Cryptography.hmac(array1, Arrays.
-						copyOfRange(sipHashIdElement.
-							    m_stream,
-							    32,
-							    sipHashIdElement.
-							    m_stream.length))))
+		    if(!(Cryptography.
+			 memcmp(array2,
+				Cryptography.hmac(array1, Arrays.
+						  copyOfRange(sipHashIdElement.
+							      m_stream,
+							      32,
+							      sipHashIdElement.
+							      m_stream.
+							      length))) &&
+			 Cryptography.
+			 memcmp(array3,
+				Cryptography.
+				hmac(Arrays.
+				     copyOfRange(bytes,
+						 0,
+						 bytes.length - 64),
+				     Cryptography.
+				     sha512(sipHashIdElement.
+					    m_sipHashId.getBytes("UTF-8"))))))
 			continue;
 
 		    s_databaseHelper.writeCongestionDigest(value);
@@ -677,6 +692,11 @@ public class Kernel
 
 		    return true;
 		}
+	    }
+
+	    /*
+	    ** Ozone-based messages.
+	    */
 
 	    ArrayList<OzoneElement> arrayList2 = null;
 
@@ -693,10 +713,6 @@ public class Kernel
 
 	    if(arrayList2 == null || arrayList2.size() == 0)
 		return false;
-
-	    /*
-	    ** Ozone-based messages.
-	    */
 
 	    array1 = Arrays.copyOfRange(bytes, 0, bytes.length - 64);
 	    array2 = Arrays.copyOfRange(bytes, bytes.length - 64, bytes.length);
@@ -812,7 +828,10 @@ public class Kernel
 			     return true;
 
 			 sipHashId = new String
-			     (Arrays.copyOfRange(aes256, 9, 9 + 19));
+			     (Arrays.
+			      copyOfRange(aes256,
+					  9,
+					  9 + Cryptography.SIPHASH_ID_LENGTH));
 
 			 String message = Messages.bytesToMessageString
 			     (Messages.epksMessage(sipHashId, array));
@@ -820,7 +839,7 @@ public class Kernel
 			 enqueueMessage(message);
 			 return true;
 		     }
-		     else if(aes256[0] == Messages.SHARE_SIPHASHID[0])
+		     else if(aes256[0] == Messages.SHARE_SIPHASH_ID[0])
 		     {
 			 long current = System.currentTimeMillis();
 			 long timestamp = Miscellaneous.byteArrayToLong
@@ -828,15 +847,19 @@ public class Kernel
 
 			 if(current - timestamp < 0)
 			 {
-			     if(timestamp - current > SHARE_SIPHASHID_WINDOW)
+			     if(timestamp - current > SHARE_SIPHASH_ID_WINDOW)
 				 return true;
 			 }
-			 else if(current - timestamp > SHARE_SIPHASHID_WINDOW)
+			 else if(current - timestamp > SHARE_SIPHASH_ID_WINDOW)
 			     return true;
 
 			 String name = "";
 			 String sipHashId = new String
-			     (Arrays.copyOfRange(aes256, 9, 9 + 19), "UTF-8");
+			     (Arrays.
+			      copyOfRange(aes256,
+					  9,
+					  9 + Cryptography.SIPHASH_ID_LENGTH),
+			      "UTF-8");
 
 			 name = sipHashId.toUpperCase().trim();
 
