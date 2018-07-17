@@ -298,28 +298,10 @@ public class Settings extends AppCompatActivity
 	TextView textView1 = (TextView) findViewById
 	    (R.id.participant_siphash_id);
 
-	string = textView1.getText().toString().
-	    replace(" ", "").replace("-", "").replace(":", "").trim();
-
-	try
-	{
-	    for(int i = 0; i < string.length(); i += 4)
-	    {
-		stringBuilder.append(string.charAt(i));
-		stringBuilder.append(string.charAt(i + 1));
-		stringBuilder.append('-');
-	    }
-	}
-	catch(Exception exception)
-	{
-	}
-
-	if(stringBuilder.length() > 0 &&
-	   stringBuilder.charAt(stringBuilder.length() - 1) == ':')
-	    string = stringBuilder.substring(0, stringBuilder.length() - 1).
-		trim();
-	else
-	    string = stringBuilder.toString().trim();
+	string = Miscellaneous.delimitString
+	    (textView1.getText().toString().
+	     replace(" ", "").replace("-", "").replace(":", "").trim(),
+	     '-', 4);
 
 	if(string.length() != 19)
 	{
@@ -351,7 +333,7 @@ public class Settings extends AppCompatActivity
 	    {
 		m_acceptWithoutSignatures = acceptWithoutSignatures;
 		m_name = name;
-		m_sipHashId = sipHashId;
+		m_sipHashId = sipHashId.toUpperCase();
 	    }
 
 	    @Override
@@ -366,10 +348,7 @@ public class Settings extends AppCompatActivity
 					       m_acceptWithoutSignatures))
 			m_error = true;
 		    else
-			generateOzone
-			    (Miscellaneous.
-			     delimitString(m_sipHashId.replace(":", "").
-					   toUpperCase(), '-', 4));
+			generateOzone(m_sipHashId);
 
 		    Settings.this.runOnUiThread(new Runnable()
 		    {
@@ -1221,11 +1200,7 @@ public class Settings extends AppCompatActivity
 			    (R.drawable.warning, 0, 0, 0);
 
                     textView.setCompoundDrawablePadding(5);
-                    textView.setText
-			(Miscellaneous.
-			 delimitString(sipHashIdElement.m_sipHashId.
-				       replace(":", ""), '-', 4).
-			 toUpperCase());
+                    textView.setText(sipHashIdElement.m_sipHashId);
                     break;
                 default:
                     textView.append

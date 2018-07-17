@@ -216,13 +216,13 @@ public class Database extends SQLiteOpenHelper
 	    }
 
 	    bytes = cryptography.etm
-		(sipHashId.toLowerCase().trim().getBytes("UTF-8"));
+		(sipHashId.toUpperCase().trim().getBytes("UTF-8"));
 	    values.put
 		("siphash_id", Base64.encodeToString(bytes, Base64.DEFAULT));
 	    values.put
 		("siphash_id_digest",
 		 Base64.encodeToString(cryptography.hmac(sipHashId.
-							 toLowerCase().
+							 toUpperCase().
 							 trim().
 							 getBytes("UTF-8")),
 				       Base64.DEFAULT));
@@ -1412,7 +1412,7 @@ public class Database extends SQLiteOpenHelper
 		("SELECT name FROM siphash_ids WHERE siphash_id_digest = ?",
 		 new String[] {Base64.
 			       encodeToString(cryptography.
-					      hmac(sipHashId.toLowerCase().
+					      hmac(sipHashId.toUpperCase().
 						   trim().getBytes("UTF-8")),
 					      Base64.DEFAULT)});
 
@@ -1640,7 +1640,7 @@ public class Database extends SQLiteOpenHelper
 		 "FROM public_key_pairs WHERE siphash_id_digest = ?",
 		 new String[] {Base64.
 			       encodeToString(cryptography.
-					      hmac(sipHashId.toLowerCase().
+					      hmac(sipHashId.toUpperCase().
 						   trim().getBytes("UTF-8")),
 					      Base64.DEFAULT)});
 
@@ -2571,7 +2571,7 @@ public class Database extends SQLiteOpenHelper
 		sipHashIdFromData(Miscellaneous.
 				  joinByteArrays(publicKey.getEncoded(),
 						 signatureKey.getEncoded())).
-		toLowerCase();
+		toUpperCase();
 
 	    name = nameFromSipHashId(cryptography, sipHashId);
 
@@ -2705,7 +2705,7 @@ public class Database extends SQLiteOpenHelper
 	    if(name.isEmpty())
 		name = "unknown";
 
-	    sipHashId = sipHashId.toLowerCase().trim();
+	    sipHashId = sipHashId.toUpperCase().trim();
 	    sparseArray.append(0, "accept_without_signatures");
 	    sparseArray.append(1, "name");
 	    sparseArray.append(2, "siphash_id");
@@ -2726,11 +2726,11 @@ public class Database extends SQLiteOpenHelper
 		    break;
 		case "siphash_id":
 		    bytes = cryptography.etm
-			(sipHashId.trim().getBytes("UTF-8"));
+			(sipHashId.getBytes("UTF-8"));
 		    break;
 		case "siphash_id_digest":
 		    bytes = cryptography.hmac
-			(sipHashId.trim().getBytes("UTF-8"));
+			(sipHashId.getBytes("UTF-8"));
 		    break;
 		default:
 		    byte salt[] = Cryptography.sha512
@@ -2788,7 +2788,7 @@ public class Database extends SQLiteOpenHelper
 			  new String[] {Base64.
 					encodeToString(cryptography.
 						       hmac(sipHashId.
-							    toLowerCase().
+							    toUpperCase().
 							    trim().
 							    getBytes("UTF-8")),
 						       Base64.DEFAULT)}) <= 0)

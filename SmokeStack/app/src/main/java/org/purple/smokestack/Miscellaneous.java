@@ -168,7 +168,7 @@ public class Miscellaneous
 	return byteArrayAsHexStringDelimited
 	    (longToByteArray(sipHash.
 			     hmac(bytes, Cryptography.keyForSipHash(bytes))),
-	     ':', 2);
+	     '-', 4);
     }
 
     public static byte[] deepCopy(byte bytes[])

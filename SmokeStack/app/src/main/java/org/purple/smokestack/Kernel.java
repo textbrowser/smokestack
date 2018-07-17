@@ -620,7 +620,6 @@ public class Kernel
 	    */
 
 	    ArrayList<SipHashIdElement> arrayList1 = null;
-
 	    m_sipHashIdsMutex.readLock().lock();
 
 	    try
@@ -632,53 +631,52 @@ public class Kernel
 		m_sipHashIdsMutex.readLock().unlock();
 	    }
 
-	    if(arrayList1 == null || arrayList1.size() == 0)
-		return false;
-
 	    byte array1[] = Arrays.copyOfRange // Blocks #1, #2, etc.
 		(bytes, 0, bytes.length - 128);
 	    byte array2[] = Arrays.copyOfRange // Second to the last block.
 		(bytes, bytes.length - 128, bytes.length - 64);
 
-	    for(SipHashIdElement sipHashIdElement : arrayList1)
-	    {
-		if(sipHashIdElement == null)
-		    continue;
-		else if(sipHashIdElement.m_epksCompleted)
-		    continue;
-
-		if(!Cryptography.
-		   memcmp(array2,
-			  Cryptography.hmac(array1, Arrays.
-					    copyOfRange(sipHashIdElement.
-							m_stream,
-							32,
-							sipHashIdElement.
-							m_stream.length))))
-		    continue;
-
-		s_databaseHelper.writeCongestionDigest(value);
-
-		byte aes256[] = Cryptography.decrypt
-		    (array1,
-		     Arrays.copyOfRange(sipHashIdElement.m_stream, 0, 32));
-
-		if(s_databaseHelper.
-		   writeParticipant(s_cryptography,
-				    sipHashIdElement.m_acceptWithoutSignatures,
-				    aes256))
+	    if(arrayList1 != null && arrayList1.size() > 0)
+		for(SipHashIdElement sipHashIdElement : arrayList1)
 		{
-		    Intent intent = new Intent
-			("org.purple.smokestack.populate_participants");
-		    LocalBroadcastManager localBroadcastManager =
-			LocalBroadcastManager.getInstance
-			(SmokeStack.getApplication());
+		    if(sipHashIdElement == null)
+			continue;
+		    else if(sipHashIdElement.m_epksCompleted)
+			continue;
 
-		    localBroadcastManager.sendBroadcast(intent);
+		    if(!Cryptography.
+		       memcmp(array2,
+			      Cryptography.hmac(array1, Arrays.
+						copyOfRange(sipHashIdElement.
+							    m_stream,
+							    32,
+							    sipHashIdElement.
+							    m_stream.length))))
+			continue;
+
+		    s_databaseHelper.writeCongestionDigest(value);
+
+		    byte aes256[] = Cryptography.decrypt
+			(array1,
+			 Arrays.copyOfRange(sipHashIdElement.m_stream, 0, 32));
+
+		    if(s_databaseHelper.
+		       writeParticipant(s_cryptography,
+					sipHashIdElement.
+					m_acceptWithoutSignatures,
+					aes256))
+		    {
+			Intent intent = new Intent
+			    ("org.purple.smokestack.populate_participants");
+			LocalBroadcastManager localBroadcastManager =
+			    LocalBroadcastManager.getInstance
+			    (SmokeStack.getApplication());
+
+			localBroadcastManager.sendBroadcast(intent);
+		    }
+
+		    return true;
 		}
-
-		return true;
-	    }
 
 	    ArrayList<OzoneElement> arrayList2 = null;
 
@@ -805,7 +803,7 @@ public class Kernel
 			     return true;
 
 			 String sipHashId = new String
-			     (Arrays.copyOfRange(aes256, 32, aes256.length),
+			     (Arrays.copyOfRange(aes256, 28, aes256.length),
 			      "UTF-8");
 			 String array[] = s_databaseHelper.readPublicKeyPair
 			     (s_cryptography, sipHashId);
@@ -838,12 +836,9 @@ public class Kernel
 
 			 String name = "";
 			 String sipHashId = new String
-			     (Arrays.copyOfRange(aes256, 9, aes256.length),
-			      "UTF-8");
+			     (Arrays.copyOfRange(aes256, 9, 9 + 19), "UTF-8");
 
-			 name = Miscellaneous.delimitString
-			     (sipHashId.replace(":", "").toUpperCase(), '-', 4).
-			     trim();
+			 name = sipHashId.toUpperCase().trim();
 
 			 if(s_databaseHelper.
 			    writeSipHashParticipant(s_cryptography,
@@ -875,45 +870,46 @@ public class Kernel
 			 return true;
 		 }
 
-		for(SipHashIdElement sipHashIdElement : arrayList1)
-		{
-		    if(sipHashIdElement == null)
-			continue;
+		if(arrayList1 != null && arrayList1.size() > 0)
+		    for(SipHashIdElement sipHashIdElement : arrayList1)
+		    {
+			if(sipHashIdElement == null)
+			    continue;
 
-		    long minutes = TimeUnit.MILLISECONDS.toMinutes
-			(System.currentTimeMillis());
+			long minutes = TimeUnit.MILLISECONDS.toMinutes
+			    (System.currentTimeMillis());
 
-		    for(int i = 0; i < 2; i++)
-			if(Cryptography.
-			   memcmp(array2,
-				  Cryptography.
-				  hmac(Miscellaneous.
-				       joinByteArrays(array1,
-						      sipHashIdElement.
-						      m_sipHashId.
-						      getBytes("UTF-8"),
-						      Miscellaneous.
-						      longToByteArray(i +
-								      minutes)),
-				       Arrays.copyOfRange(ozoneElement.
-							  m_addressStream,
-							  32,
-							  ozoneElement.
-							  m_addressStream.
-							  length))))
-			{
-			    /*
-			    ** Discovered.
-			    */
+			for(int i = 0; i < 2; i++)
+			    if(Cryptography.
+			       memcmp(array2,
+				      Cryptography.
+				      hmac(Miscellaneous.
+					   joinByteArrays(array1,
+							  sipHashIdElement.
+							  m_sipHashId.
+							  getBytes("UTF-8"),
+							  Miscellaneous.
+							  longToByteArray
+							  (i + minutes)),
+					   Arrays.copyOfRange(ozoneElement.
+							      m_addressStream,
+							      32,
+							      ozoneElement.
+							      m_addressStream.
+							      length))))
+			    {
+				/*
+				** Discovered.
+				*/
 
-			    s_databaseHelper.writeCongestionDigest(value);
-			    s_databaseHelper.writeMessage
-				(s_cryptography,
-				 sipHashIdElement.m_sipHashId,
-				 array1);
-			    return true;
-			}
-		}
+				s_databaseHelper.writeCongestionDigest(value);
+				s_databaseHelper.writeMessage
+				    (s_cryptography,
+				     sipHashIdElement.m_sipHashId,
+				     array1);
+				return true;
+			    }
+		    }
 	    }
 	}
 	catch(Exception exception)
