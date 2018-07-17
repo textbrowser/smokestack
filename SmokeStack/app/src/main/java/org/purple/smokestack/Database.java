@@ -3997,6 +3997,7 @@ public class Database extends SQLiteOpenHelper
 	    for(int i = 0; i < bytes.length; i += 64)
 	    {
 		values.clear();
+		values.put("algorithm", "sha-512");
 		values.put("client_identity", clientIdentity.toString());
 		values.put
 		    ("identity",
@@ -4038,6 +4039,7 @@ public class Database extends SQLiteOpenHelper
 	    */
 
 	    simpleDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+	    values.put("algorithm", "sha-512");
 	    values.put("client_identity", clientIdentity.toString());
 
 	    if(index > 0)
