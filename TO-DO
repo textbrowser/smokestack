@@ -16,6 +16,7 @@ Completed Items
 13.    Entries in routing_identities expire.
 14.    Replace SipHash ID with Smoke ID.
 15.    Display the number of internal Neighbors.
+16.    Refresh Ozones.
 
 Future Items
 
@@ -27,5 +28,4 @@ Remaining Items
 2.     Fire as unsolicited data.
 3.     Distribute routing identity algorithms.
 4.     Steam.
-5.     Refresh Ozones.
-6.     Rename participant.
+5.     Rename participant.

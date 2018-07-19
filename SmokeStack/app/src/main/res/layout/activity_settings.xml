@@ -229,8 +229,9 @@
 
                 <android.support.v4.widget.NestedScrollView
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="100dp"
                     android:layout_marginEnd="5dp"
+                    android:background="#00ffffff"
                     android:fadeScrollbars="false">
 
                     <TableLayout
@@ -413,7 +414,8 @@
                 <android.support.v4.widget.NestedScrollView
                     android:layout_width="match_parent"
                     android:layout_height="100dp"
-                    android:layout_marginEnd="5dp">
+                    android:layout_marginEnd="5dp"
+                    android:scrollbars="vertical">
 
                     <TableLayout
                         android:id="@+id/ozones"
@@ -422,6 +424,18 @@
 
                     </TableLayout>
                 </android.support.v4.widget.NestedScrollView>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/refresh_ozones"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/refresh" />
+                </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"

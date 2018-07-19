@@ -1367,6 +1367,18 @@ public class Settings extends AppCompatActivity
 	    }
         });
 
+	button1 = (Button) findViewById(R.id.refresh_ozones);
+	button1.setOnClickListener(new View.OnClickListener()
+	{
+	    public void onClick(View view)
+	    {
+		if(Settings.this.isFinishing())
+		    return;
+
+		populateOzoneAddresses();
+	    }
+        });
+
 	button1 = (Button) findViewById(R.id.refresh_participants);
 	button1.setOnClickListener(new View.OnClickListener()
 	{
