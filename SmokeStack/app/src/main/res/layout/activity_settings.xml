@@ -32,6 +32,7 @@
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="#00ffffff"
             android:fadeScrollbars="false">
 
             <LinearLayout
@@ -84,13 +85,17 @@
 
                 <android.support.v4.widget.NestedScrollView
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginEnd="5dp">
+                    android:layout_height="200dp"
+                    android:layout_marginEnd="5dp"
+                    android:fadeScrollbars="false"
+                    android:scrollbars="vertical">
 
                     <TableLayout
                         android:id="@+id/listeners"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                        android:layout_height="match_parent"
+                        android:layout_marginEnd="5dp"
+                        android:scrollbars="horizontal|vertical">
 
                     </TableLayout>
                 </android.support.v4.widget.NestedScrollView>
@@ -229,15 +234,17 @@
 
                 <android.support.v4.widget.NestedScrollView
                     android:layout_width="match_parent"
-                    android:layout_height="100dp"
+                    android:layout_height="200dp"
                     android:layout_marginEnd="5dp"
                     android:background="#00ffffff"
-                    android:fadeScrollbars="false">
+                    android:fadeScrollbars="false"
+                    android:scrollbars="vertical">
 
                     <TableLayout
                         android:id="@+id/neighbors"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:layout_marginEnd="5dp"
                         android:scrollbars="horizontal|vertical">
 
                     </TableLayout>
@@ -413,14 +420,17 @@
 
                 <android.support.v4.widget.NestedScrollView
                     android:layout_width="match_parent"
-                    android:layout_height="100dp"
+                    android:layout_height="200dp"
                     android:layout_marginEnd="5dp"
+                    android:fadeScrollbars="false"
                     android:scrollbars="vertical">
 
                     <TableLayout
                         android:id="@+id/ozones"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="5dp"
+                        android:scrollbars="horizontal|vertical">
 
                     </TableLayout>
                 </android.support.v4.widget.NestedScrollView>
@@ -506,7 +516,7 @@
 
                 <android.support.v4.widget.NestedScrollView
                     android:layout_width="match_parent"
-                    android:layout_height="100dp"
+                    android:layout_height="200dp"
                     android:layout_marginEnd="5dp"
                     android:fadeScrollbars="false"
                     android:scrollbars="vertical">
