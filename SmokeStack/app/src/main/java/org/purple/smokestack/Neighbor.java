@@ -255,6 +255,7 @@ public abstract class Neighbor
 		}
 	    }
 	}, 0, PARSING_INTERVAL, TimeUnit.MILLISECONDS);
+
 	m_scheduler.scheduleAtFixedRate(new Runnable()
 	{
 	    @Override
@@ -296,6 +297,7 @@ public abstract class Neighbor
 		}
 	    }
 	}, 0, TIMER_INTERVAL, TimeUnit.MILLISECONDS);
+
 	m_sendOutboundScheduler.scheduleAtFixedRate(new Runnable()
 	{
 	    private long m_accumulatedTime = System.nanoTime();

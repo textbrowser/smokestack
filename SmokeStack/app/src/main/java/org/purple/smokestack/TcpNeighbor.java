@@ -395,6 +395,7 @@ public class TcpNeighbor extends Neighbor
 		}
 	    }
 	}, 0, READ_SOCKET_INTERVAL, TimeUnit.MILLISECONDS);
+
 	m_trustManagers = new TrustManager[]
 	{
 	    new X509TrustManager()

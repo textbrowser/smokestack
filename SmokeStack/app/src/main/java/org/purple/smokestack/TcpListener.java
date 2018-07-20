@@ -187,6 +187,7 @@ public class TcpListener
 		}
 	    }
 	}, 0, ACCEPT_INTERVAL, TimeUnit.MILLISECONDS);
+
 	m_scheduler.scheduleAtFixedRate(new Runnable()
 	{
 	    @Override
