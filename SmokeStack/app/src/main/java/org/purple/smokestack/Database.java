@@ -2486,7 +2486,10 @@ public class Database extends SQLiteOpenHelper
 			    exists = true;
 
 		    if(cursor != null)
+		    {
 			cursor.close();
+			cursor = null;
+		    }
 
 		    publicKey = Cryptography.publicKeyFromBytes
 			(Base64.decode(string.getBytes(), Base64.NO_WRAP));
@@ -2532,7 +2535,10 @@ public class Database extends SQLiteOpenHelper
 				return false;
 
 		    if(cursor != null)
+		    {
 			cursor.close();
+			cursor = null;
+		    }
 
 		    signatureKey = Cryptography.publicKeyFromBytes
 			(Base64.decode(string.getBytes(), Base64.NO_WRAP));
@@ -3609,8 +3615,6 @@ public class Database extends SQLiteOpenHelper
 	{
 	    if(cursor != null)
 		cursor.close();
-
-	    cursor = null;
 	}
 
 	if(stringBuilder.length() > 0)
