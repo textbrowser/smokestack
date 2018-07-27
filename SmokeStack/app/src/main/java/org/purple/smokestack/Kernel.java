@@ -871,7 +871,7 @@ public class Kernel
 			    writeSipHashParticipant(s_cryptography,
 						    name,
 						    sipHashId,
-						    false))
+						    true))
 			 {
 			     bytes = Cryptography.generateOzone(name);
 
