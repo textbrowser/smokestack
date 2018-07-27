@@ -525,20 +525,24 @@ public class Kernel
 
 	synchronized(m_neighbors)
 	{
+	    /*
+	    ** Remove neighbor objects which do not exist in the
+	    ** database. Also removed will be neighbors having
+	    ** disconnected status controls.
+	    */
+
 	    for(int i = m_neighbors.size() - 1; i >= 0; i--)
 	    {
-		/*
-		** Remove neighbor objects which do not exist in the
-		** database.
-		*/
-
 		boolean found = false;
 		int oid = m_neighbors.keyAt(i);
 
 		for(NeighborElement neighborElement : neighbors)
 		    if(neighborElement != null && neighborElement.m_oid == oid)
 		    {
-			found = true;
+			if(!neighborElement.m_statusControl.toLowerCase().
+			   equals("disconnect"))
+			    found = true;
+
 			break;
 		    }
 
