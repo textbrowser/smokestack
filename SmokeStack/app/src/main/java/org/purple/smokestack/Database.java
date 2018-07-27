@@ -2500,18 +2500,26 @@ public class Database extends SQLiteOpenHelper
 		    ii += 1;
 		    break;
 		case 3:
-		    if(!ignoreSignatures)
-			if(!publicKey.getAlgorithm().equals("McEliece-CCA2"))
-			{
-			    publicKeySignature = Base64.decode
-				(string.getBytes(), Base64.NO_WRAP);
+		    if(!publicKey.getAlgorithm().equals("McEliece-CCA2"))
+		    {
+			publicKeySignature = Base64.decode
+			    (string.getBytes(), Base64.NO_WRAP);
 
-			    if(!Cryptography.verifySignature(publicKey,
-							     publicKeySignature,
-							     publicKey.
-							     getEncoded()))
+			if(!Cryptography.verifySignature(publicKey,
+							 publicKeySignature,
+							 publicKey.
+							 getEncoded()))
+			{
+			    if(!ignoreSignatures)
 				return false;
+
+			    signaturesVerified = false;
 			}
+			else
+			    signaturesVerified = true;
+		    }
+		    else
+			signaturesVerified = true;
 
 		    ii += 1;
 		    break;
@@ -2549,19 +2557,21 @@ public class Database extends SQLiteOpenHelper
 		    ii += 1;
 		    break;
 		case 5:
-		    if(!ignoreSignatures)
-		    {
-			signatureKeySignature = Base64.decode
-			    (string.getBytes(), Base64.NO_WRAP);
+		    signatureKeySignature = Base64.decode
+			(string.getBytes(), Base64.NO_WRAP);
 
-			if(!Cryptography.verifySignature(signatureKey,
-							 signatureKeySignature,
-							 signatureKey.
-							 getEncoded()))
+		    if(!Cryptography.verifySignature(signatureKey,
+						     signatureKeySignature,
+						     signatureKey.
+						     getEncoded()))
+		    {
+			if(!ignoreSignatures)
 			    return false;
-			else
-			    signaturesVerified = true;
+
+			signaturesVerified = false;
 		    }
+		    else
+			signaturesVerified &= true;
 
 		    break;
 		}
