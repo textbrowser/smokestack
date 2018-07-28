@@ -2519,7 +2519,7 @@ public class Database extends SQLiteOpenHelper
 			    signaturesVerified = true;
 		    }
 		    else
-			signaturesVerified = true;
+			signaturesVerified = false;
 
 		    ii += 1;
 		    break;
