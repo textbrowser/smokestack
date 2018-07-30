@@ -41,7 +41,6 @@ public abstract class Neighbor
 {
     private ArrayList<String> m_echoQueue = null;
     private ArrayList<String> m_queue = null;
-    private ScheduledExecutorService m_identitiesScheduler = null;
     private ScheduledExecutorService m_parsingScheduler = null;
     private ScheduledExecutorService m_scheduler = null;
     private ScheduledExecutorService m_sendOutboundScheduler = null;
@@ -157,52 +156,6 @@ public abstract class Neighbor
 	/*
 	** Start the schedules.
 	*/
-
-	if(m_userDefined.get())
-	{
-	    m_identitiesScheduler = Executors.
-		newSingleThreadScheduledExecutor();
-	    m_identitiesScheduler.scheduleAtFixedRate(new Runnable()
-	    {
-		@Override
-
-		public void run()
-		{
-		    try
-		    {
-			if(!connected())
-			    return;
-
-			ArrayList<byte[]> arrayList = m_databaseHelper.
-			    readIdentities(Kernel.MAXIMUM_IDENTITIES);
-
-			if(arrayList == null || arrayList.size() == 0)
-			    return;
-
-			byte bytes[] = null;
-			int length = arrayList.get(0).length;
-
-			bytes = new byte[arrayList.size() * length];
-
-			for(int i = 0; i < arrayList.size(); i++)
-			    System.arraycopy
-				(arrayList.get(i),
-				 0,
-				 bytes,
-				 i * length,
-				 length);
-
-			arrayList.clear();
-
-			if(bytes != null)
-			    send(Messages.identitiesMessage(bytes));
-		    }
-		    catch(Exception exception)
-		    {
-		    }
-		}
-	    }, 0, IDENTITIES_TIMER_INTERVAL, TimeUnit.MILLISECONDS);
-	}
 
 	m_parsingScheduler.scheduleAtFixedRate(new Runnable()
 	{
@@ -455,19 +408,6 @@ public abstract class Neighbor
 
     protected synchronized void abort()
     {
-	if(m_identitiesScheduler != null)
-	{
-	    m_identitiesScheduler.shutdown();
-
-	    try
-	    {
-		m_identitiesScheduler.awaitTermination(60, TimeUnit.SECONDS);
-	    }
-	    catch(Exception exception)
-	    {
-	    }
-	}
-
 	m_parsingScheduler.shutdown();
 
 	try
