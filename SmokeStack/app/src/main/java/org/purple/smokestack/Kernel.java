@@ -584,9 +584,7 @@ public class Kernel
 			(clientIdentity, Messages.stripMessage(buffer));
 
 		    /*
-		    ** Do not echo the identity stream to other neighbors
-		    ** as a separate thread will distribute harvested
-		    ** identities.
+		    ** Do not echo the identity stream to other neighbors.
 		    */
 
 		    return true;
