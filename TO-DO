@@ -22,10 +22,11 @@ Future Items
 
 Ignored / Impossible Items
 
+1.     Distribute routing identity algorithms.
+
 Remaining Items
 
 1.     The Settings activity has many views (ANDROID_LINT_MAX_VIEW_COUNT).
 2.     Fire as unsolicited data.
-3.     Distribute routing identity algorithms.
-4.     Steam.
-5.     Rename participant.
+3.     Steam.
+4.     Rename participant.
