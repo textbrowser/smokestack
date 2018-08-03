@@ -572,7 +572,7 @@ public class Kernel
 		** A server socket!
 		*/
 
-		if(buffer.contains("type=0095a&content"))
+		if(buffer.contains("type=0095a&content="))
 		{
 		    s_databaseHelper.writeCongestionDigest(value);
 
@@ -589,7 +589,7 @@ public class Kernel
 
 		    return true;
 		}
-		else if(buffer.contains("type=0095b&content"))
+		else if(buffer.contains("type=0095b&content="))
 		{
 		    /*
 		    ** We've received identities.
@@ -605,7 +605,7 @@ public class Kernel
 		    s_databaseHelper.writeIdentities(clientIdentity, bytes);
 		    return true;
 		}
-		else if(buffer.contains("type=0096&content"))
+		else if(buffer.contains("type=0096&content="))
 		    return true;
 
 	    if(s_databaseHelper.containsCongestionDigest(value))

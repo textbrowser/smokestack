@@ -1743,13 +1743,12 @@ public class Database extends SQLiteOpenHelper
     }
 
     public boolean containsRoutingIdentity(String clientIdentity,
-					   byte data[])
+					   String message)
     {
 	prepareDb();
 
 	if(clientIdentity.length() == 0 ||
-	   data == null ||
-	   data.length < 0 ||
+	   message.trim().isEmpty() ||
 	   m_db == null)
 	    return false;
 
@@ -1757,9 +1756,26 @@ public class Database extends SQLiteOpenHelper
 
 	try
 	{
-	    byte array1[] = Arrays.copyOfRange(data, 0, data.length - 64);
-	    byte array2[] = Arrays.copyOfRange
-		(data, data.length - 64, data.length);
+	    String strings[] = Messages.stripMessage(message).split("\\n");
+	    byte array1[] = null;
+	    byte array2[] = null;
+
+	    if(strings != null && strings.length == 3) // Buzz, Fire
+	    {
+		array1 = Miscellaneous.joinByteArrays
+		    (Base64.decode(strings[0], Base64.NO_WRAP),
+		     Base64.decode(strings[1], Base64.NO_WRAP));
+		array2 = Base64.decode(strings[2], Base64.NO_WRAP);
+	    }
+	    else
+	    {
+		byte data[] = Base64.decode
+		    (Messages.stripMessage(message), Base64.DEFAULT);
+
+		array1 = Arrays.copyOfRange(data, 0, data.length - 64);
+		array2 = Arrays.copyOfRange
+		    (data, data.length - 64, data.length);
+	    }
 
 	    cursor = m_db.rawQuery
 		("SELECT identity FROM routing_identities WHERE " +
@@ -1771,8 +1787,8 @@ public class Database extends SQLiteOpenHelper
 		    byte bytes[] = Base64.decode(cursor.getString(0),
 						 Base64.DEFAULT);
 
-		    if(Cryptography.memcmp(Cryptography.hmac(array1, bytes),
-					   array2))
+		    if(Cryptography.
+		       memcmp(Cryptography.hmac(array1, bytes), array2))
 		    {
 			updateRoutingIdentityTimestamp
 			    (clientIdentity, cursor.getString(0));

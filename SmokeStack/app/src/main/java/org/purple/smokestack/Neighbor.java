@@ -187,14 +187,14 @@ public abstract class Neighbor
 			    echo(buffer);
 			else if(!m_userDefined.get())
 			{
-			    if(buffer.contains("type=0095a&content"))
+			    if(buffer.contains("type=0095a&content="))
 				m_clientSupportsCD.set(true);
 
 			    /*
 			    ** The client is allowing unsolicited data.
 			    */
 
-			    else if(buffer.contains("type=0096&content"))
+			    else if(buffer.contains("type=0096&content="))
 				m_allowUnsolicited.set(true);
 			}
 		    }
@@ -314,10 +314,6 @@ public abstract class Neighbor
 			    else
 				try
 				{
-				    byte bytes[] = Base64.decode
-					(Messages.
-					 stripMessage(message), Base64.DEFAULT);
-
 				    /*
 				    ** Determine if the message's destination
 				    ** is correct.
@@ -326,7 +322,7 @@ public abstract class Neighbor
 				    if(m_databaseHelper.
 				       containsRoutingIdentity(m_uuid.
 							       toString(),
-							       bytes))
+							       message))
 					send(message); // Ignore the results.
 				}
 				catch(Exception exception)

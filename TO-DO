@@ -17,6 +17,7 @@ Completed Items
 14.    Replace SipHash ID with Smoke ID.
 15.    Display the number of internal Neighbors.
 16.    Refresh Ozones.
+17.    Fire compatibility.
 
 Future Items
 
@@ -27,6 +28,5 @@ Ignored / Impossible Items
 Remaining Items
 
 1.     The Settings activity has many views (ANDROID_LINT_MAX_VIEW_COUNT).
-2.     Fire as unsolicited data.
-3.     Steam.
-4.     Rename participant.
+2.     Steam.
+3.     Rename participant in Participants section.
