@@ -236,7 +236,7 @@ public class Database extends SQLiteOpenHelper
 	return true;
     }
 
-    private void prepareDb()
+    private synchronized void prepareDb()
     {
 	if(m_db == null)
 	    try
