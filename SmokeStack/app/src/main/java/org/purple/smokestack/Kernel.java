@@ -691,7 +691,11 @@ public class Kernel
 			localBroadcastManager.sendBroadcast(intent);
 		    }
 
-		    return true;
+		    /*
+		    ** Echo the key bundle.
+		    */
+
+		    return false;
 		}
 	    }
 
