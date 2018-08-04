@@ -93,7 +93,6 @@ public class Kernel
     private final static int ROUTING_INTERVAL = 15000; // 15 Seconds
     private final static int SHARE_SIPHASH_ID_WINDOW = 30000; // 30 Seconds
     private static Kernel s_instance = null;
-    public final static int MAXIMUM_IDENTITIES = 512;
 
     private Kernel()
     {
