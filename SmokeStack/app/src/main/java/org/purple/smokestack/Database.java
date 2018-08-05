@@ -2448,7 +2448,6 @@ public class Database extends SQLiteOpenHelper
 	    PublicKey publicKey = null;
 	    PublicKey signatureKey = null;
 	    boolean exists = false;
-	    boolean signaturesVerified = false;
 	    byte keyType[] = null;
 	    byte publicKeySignature[] = null;
 	    byte signatureKeySignature[] = null;
@@ -2528,14 +2527,8 @@ public class Database extends SQLiteOpenHelper
 			{
 			    if(!ignoreSignatures)
 				return false;
-
-			    signaturesVerified = false;
 			}
-			else
-			    signaturesVerified = true;
 		    }
-		    else
-			signaturesVerified = false;
 
 		    ii += 1;
 		    break;
@@ -2583,11 +2576,7 @@ public class Database extends SQLiteOpenHelper
 		    {
 			if(!ignoreSignatures)
 			    return false;
-
-			signaturesVerified = false;
 		    }
-		    else
-			signaturesVerified &= true;
 
 		    break;
 		}
@@ -2610,9 +2599,8 @@ public class Database extends SQLiteOpenHelper
 	    if(name.isEmpty())
 		return false;
 
-	    if(signaturesVerified)
-		if(!writePublicKeyPairs(cryptography, sipHashId, strings))
-		    return false;
+	    if(!writePublicKeyPairs(cryptography, sipHashId, strings))
+		return false;
 
 	    values = new ContentValues();
 
