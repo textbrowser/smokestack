@@ -1135,10 +1135,6 @@ public class Settings extends AppCompatActivity
 	    textView.setTextSize(TEXTVIEW_TEXT_SIZE);
 	    registerForContextMenu(textView);
 	    row.addView(textView);
-
-	    if(i % 2 == 0)
-		row.setBackgroundColor(Color.rgb(179, 229, 252));
-
 	    tableLayout.addView(row, i);
 	    i += 1;
 	}
@@ -1223,9 +1219,6 @@ public class Settings extends AppCompatActivity
 		registerForContextMenu(textView);
 		row.addView(textView);
 	    }
-
-	    if(i % 2 == 0)
-		row.setBackgroundColor(Color.rgb(179, 229, 252));
 
 	    tableLayout.addView(row, i);
 	    i += 1;
