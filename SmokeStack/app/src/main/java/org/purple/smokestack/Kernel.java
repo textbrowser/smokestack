@@ -892,7 +892,11 @@ public class Kernel
 			     localBroadcastManager.sendBroadcast(intent);
 			 }
 
-			 return true;
+			 /*
+			 ** Echo the shared Smoke identity.
+			 */
+
+			 return false;
 		     }
 		     else
 			 return true;
