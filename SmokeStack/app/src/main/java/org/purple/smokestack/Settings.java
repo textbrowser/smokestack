@@ -48,6 +48,7 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -68,6 +69,7 @@ import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.Locale;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -1161,26 +1163,26 @@ public class Settings extends AppCompatActivity
 	    if(sipHashIdElement == null)
 		continue;
 
+	    TableRow row = new TableRow(Settings.this);
 	    TableRow.LayoutParams layoutParams = new
 		TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT);
-	    TableRow row = new TableRow(Settings.this);
 
 	    row.setLayoutParams(layoutParams);
 
-	    for(int j = 0; j < 3; j++)
+	    for(int j = 0; j < 4; j++)
 	    {
 		TextView textView = new TextView(Settings.this);
 
-		textView.setGravity(Gravity.CENTER_VERTICAL);
 		textView.setId(sipHashIdElement.m_oid);
-		textView.setLayoutParams
-		    (new TableRow.LayoutParams(0,
-					       LayoutParams.WRAP_CONTENT,
-					       1));
 
 		switch(j)
 		{
                 case 0:
+		    textView.setGravity(Gravity.CENTER_VERTICAL);
+		    textView.setLayoutParams
+			(new TableRow.LayoutParams(0,
+						   LayoutParams.MATCH_PARENT,
+						   1));
                     textView.setText(sipHashIdElement.m_name);
                     break;
                 case 1:
@@ -1196,9 +1198,10 @@ public class Settings extends AppCompatActivity
 			    (R.drawable.warning, 0, 0, 0);
 
                     textView.setCompoundDrawablePadding(5);
+		    textView.setGravity(Gravity.CENTER_VERTICAL);
                     textView.setText(sipHashIdElement.m_sipHashId);
                     break;
-                default:
+                case 2:
                     textView.append
 			(String.valueOf(sipHashIdElement.m_outMessages));
                     textView.append(" / ");
@@ -1207,7 +1210,20 @@ public class Settings extends AppCompatActivity
                     textView.append(" / ");
                     textView.append
 			(String.valueOf(sipHashIdElement.m_totalMessages));
+		    textView.setGravity(Gravity.CENTER);
+		    textView.setLayoutParams
+			(new TableRow.LayoutParams(0,
+						   LayoutParams.MATCH_PARENT,
+						   1));
                     break;
+		default:
+		    textView.setGravity(Gravity.CENTER_VERTICAL);
+		    textView.setLayoutParams
+			(new TableRow.LayoutParams(0,
+						   LayoutParams.MATCH_PARENT,
+						   1));
+		    textView.setText(sipHashIdElement.m_timestamp);
+		    break;
 		}
 
 		if(j == 0 || j == 1)
@@ -1732,6 +1748,31 @@ public class Settings extends AppCompatActivity
 		}
 	    });
 
+	checkBox1 = (CheckBox) findViewById(R.id.prefer_active_screen);
+	checkBox1.setOnCheckedChangeListener
+	    (new CompoundButton.OnCheckedChangeListener()
+	    {
+		@Override
+		public void onCheckedChanged
+		    (CompoundButton buttonView, boolean isChecked)
+		{
+		    if(isChecked)
+		    {
+			getWindow().addFlags
+			    (WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+			m_databaseHelper.writeSetting
+			    (null, "prefer_active_screen", "true");
+		    }
+		    else
+		    {
+			getWindow().clearFlags
+			    (WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+			m_databaseHelper.writeSetting
+			    (null, "prefer_active_screen", "false");
+		    }
+		}
+	    });
+
 	spinner1.setOnItemSelectedListener
 	    (new OnItemSelectedListener()
 	    {
@@ -2140,6 +2181,22 @@ public class Settings extends AppCompatActivity
 	    checkBox1.setChecked(true);
 	else
 	    checkBox1.setChecked(false);
+
+	checkBox1 = (CheckBox) findViewById(R.id.prefer_active_screen);
+
+	if(m_databaseHelper.
+	   readSetting(null, "prefer_active_screen").equals("true"))
+	{
+	    checkBox1.setChecked(true);
+	    getWindow().addFlags
+	    (WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+	}
+	else
+	{
+	    checkBox1.setChecked(false);
+	    getWindow().clearFlags
+		(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+	}
 
         RadioButton radioButton1 = null;
 

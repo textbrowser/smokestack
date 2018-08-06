@@ -31,6 +31,7 @@ public class SipHashIdElement
 {
     public String m_name = "";
     public String m_sipHashId = "";
+    public String m_timestamp = "";
     public boolean m_acceptWithoutSignatures = false;
     public boolean m_epksCompleted = false;
     public boolean m_keysSigned = false;

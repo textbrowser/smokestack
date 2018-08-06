@@ -1002,6 +1002,7 @@ public class Database extends SQLiteOpenHelper
 		 "si.name, " +
 		 "si.siphash_id, " +
 		 "si.stream, " +
+		 "si.timestamp, " +
 		 "si.OID " +
 		 "FROM siphash_ids si ORDER BY si.OID", null);
 
@@ -1016,8 +1017,9 @@ public class Database extends SQLiteOpenHelper
 
 		    for(int i = 0; i < cursor.getColumnCount(); i++)
 		    {
-			if(i == 0)
+			switch(i)
 			{
+			case 0:
 			    if(cursor.isNull(i) ||
 			       cursor.getString(i).isEmpty())
 			    {
@@ -1034,9 +1036,7 @@ public class Database extends SQLiteOpenHelper
 			    sipHashIdElement.m_epksCompleted =
 				!string_a.equals(string_b);
 			    continue;
-			}
-			else if(i == 1)
-			{
+			case 1:
 			    if(cursor.isNull(i) ||
 			       cursor.getString(i).isEmpty())
 			    {
@@ -1049,29 +1049,29 @@ public class Database extends SQLiteOpenHelper
 				Base64.decode(cursor.getString(i),
 					      Base64.DEFAULT);
 			    continue;
-			}
-			else if(i == 2)
-			{
+			case 2:
 			    sipHashIdElement.m_keysSigned =
 				cursor.getLong(i) > 0;
 			    continue;
-			}
-			else if(i == 3)
-			{
+			case 3:
 			    sipHashIdElement.m_inMessages =
 				cursor.getLong(i);
 			    continue;
-			}
-			else if(i == 4)
-			{
+			case 4:
 			    sipHashIdElement.m_outMessages =
 				cursor.getLong(i);
 			    sipHashIdElement.m_totalMessages =
 				sipHashIdElement.m_inMessages +
 				sipHashIdElement.m_outMessages;
 			    continue;
+			case 9:
+			    sipHashIdElement.m_timestamp = cursor.getString(i);
+			    continue;
+			default:
+			    break;
 			}
-			else if(i == cursor.getColumnCount() - 1)
+
+			if(i == cursor.getColumnCount() - 1)
 			{
 			    sipHashIdElement.m_oid = cursor.getInt(i);
 			    continue;
@@ -1096,13 +1096,9 @@ public class Database extends SQLiteOpenHelper
 			switch(i)
 			{
 			case 0:
-			    break;
 			case 1:
-			    break;
 			case 2:
-			    break;
 			case 3:
-			    break;
 			case 4:
 			    break;
 			case 5:
@@ -1133,6 +1129,8 @@ public class Database extends SQLiteOpenHelper
 				sipHashIdElement.m_stream = Miscellaneous.
 				    deepCopy(bytes);
 
+			    break;
+			default:
 			    break;
 			}
 		    }
@@ -3241,7 +3239,8 @@ public class Database extends SQLiteOpenHelper
 	    "name TEXT NOT NULL, " +
 	    "siphash_id TEXT NOT NULL, " +
 	    "siphash_id_digest TEXT NOT NULL PRIMARY KEY, " +
-	    "stream TEXT NOT NULL)";
+	    "stream TEXT NOT NULL, " +
+	    "timestamp DATETIME DEFAULT CURRENT_TIMESTAMP)";
 
 	try
 	{

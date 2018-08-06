@@ -59,6 +59,13 @@
                     android:layout_marginEnd="5dp"
                     android:textIsSelectable="true" />
 
+                <CheckBox
+                    android:id="@+id/prefer_active_screen"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="5dp"
+                    android:text="@string/prefer_active_screen" />
+
                 <Button
                     android:id="@+id/clear_log"
                     android:layout_width="wrap_content"
@@ -496,21 +503,27 @@
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="0.13"
+                        android:layout_weight="0.23"
                         android:text="@string/name" />
 
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="5dp"
-                        android:layout_weight="0.13"
+                        android:layout_weight="0.3"
                         android:text="@string/smoke_id" />
 
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="0.13"
+                        android:layout_weight="0.23"
                         android:text="@string/out_in_total" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="5dp"
+                        android:layout_weight="0.23"
+                        android:text="@string/last_activity" />
 
                 </LinearLayout>
 
