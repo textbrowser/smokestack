@@ -2729,6 +2729,7 @@ public class Database extends SQLiteOpenHelper
 	    sparseArray.append(2, "siphash_id");
 	    sparseArray.append(3, "siphash_id_digest");
 	    sparseArray.append(4, "stream");
+	    sparseArray.append(5, "timestamp");
 
 	    for(int i = 0; i < sparseArray.size(); i++)
 	    {
@@ -2750,6 +2751,15 @@ public class Database extends SQLiteOpenHelper
 		    bytes = cryptography.hmac
 			(sipHashId.getBytes("UTF-8"));
 		    break;
+		case "timestamp":
+		    SimpleDateFormat simpleDateFormat = new SimpleDateFormat
+			("yyyy-MM-dd HH:mm:ss");
+
+		    simpleDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+		    values.put
+			(sparseArray.get(i),
+			 simpleDateFormat.format(new Date()));
+		    continue;
 		default:
 		    byte salt[] = Cryptography.sha512
 			(sipHashId.trim().getBytes("UTF-8"));
