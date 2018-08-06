@@ -28,13 +28,16 @@
 package org.purple.smokestack;
 
 import android.os.Build;
+import android.os.Build;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
 
 public class About
 {
-    private final static String s_about =
-	"Version 2018.08.19 Radical Rhombus " +
-	(BuildConfig.DEBUG ? "(Debug) " : "(Release)") +
-	"\nAndroid " + Build.VERSION.RELEASE;
+    private final static SimpleDateFormat s_simpleDateFormat = new
+        SimpleDateFormat("yyyy-MM-dd h:mm:ss");
+    private static String s_about = "";
 
     private About()
     {
@@ -42,6 +45,18 @@ public class About
 
     public static String about()
     {
+	if(s_about.isEmpty())
+	{
+	    s_simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+            s_about = "Version 2018.08.19 Radical Rhombus " +
+                (BuildConfig.DEBUG ? "(Debug) " : "(Release)") +
+                "\nBuild Date " +
+                s_simpleDateFormat.format(new Date(BuildConfig.BUILD_TIME)) +
+                " UTC\nAndroid " + Build.VERSION.RELEASE +
+                (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP ?
+                 "\nAndroid version not supported." : "");
+	}
+
 	return s_about;
     }
 }

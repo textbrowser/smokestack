@@ -3962,6 +3962,38 @@ public class Database extends SQLiteOpenHelper
 	}
     }
 
+    public void updateSipHashIdTimestamp(byte digest[])
+    {
+	prepareDb();
+
+	if(digest == null || digest.length < 0 || m_db == null)
+	    return;
+
+	m_db.beginTransactionNonExclusive();
+
+	try
+	{
+	    ContentValues values = new ContentValues();
+	    SimpleDateFormat simpleDateFormat = new SimpleDateFormat
+		("yyyy-MM-dd HH:mm:ss");
+
+	    simpleDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+	    values.put
+		("timestamp", simpleDateFormat.format(new Date()));
+	    m_db.update
+		("siphash_ids", values, "siphash_id_digest = ?",
+		 new String[] {new String(digest)});
+	    m_db.setTransactionSuccessful();
+	}
+	catch(Exception exception)
+	{
+	}
+	finally
+	{
+	    m_db.endTransaction();
+	}
+    }
+
     public void writeCongestionDigest(long value)
     {
 	prepareDb();

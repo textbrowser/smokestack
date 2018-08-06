@@ -5,6 +5,7 @@ android {
     buildToolsVersion '27.0.3'
     defaultConfig {
         applicationId "org.purple.smokestack"
+	buildConfigField "long", "BUILD_TIME", System.currentTimeMillis() + "L"
         minSdkVersion 19
         multiDexEnabled true
         targetSdkVersion 25

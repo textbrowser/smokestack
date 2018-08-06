@@ -799,6 +799,8 @@ public class Kernel
 
 			 s_databaseHelper.tagMessagesForRelease
 			     (s_cryptography, sipHashIdDigest);
+			 s_databaseHelper.updateSipHashIdTimestamp
+			     (sipHashIdDigest.getBytes());
 			 prepareReleaseMessagesScheduler
 			     (sipHashIdDigest, identity);
 			 return true;
