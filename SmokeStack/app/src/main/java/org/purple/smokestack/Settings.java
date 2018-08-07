@@ -2473,8 +2473,8 @@ public class Settings extends AppCompatActivity
 		case 0:
 		    if(State.getInstance().getString("dialog_accepted").
 		       equals("true"))
-			if(m_databaseHelper.deleteEntry(String.valueOf(itemId),
-							"ozones"))
+			if(m_databaseHelper.
+			   deleteEntry(String.valueOf(itemId), "ozones"))
 			{
 			    Kernel.getInstance().populateOzones();
 			    populateOzoneAddresses();
@@ -2633,8 +2633,8 @@ public class Settings extends AppCompatActivity
 		 replace(")", "") + "?");
 	    break;
 	case 5:
-	    if(m_databaseHelper.deleteEntry(String.valueOf(itemId),
-					    "listeners"))
+	    if(m_databaseHelper.
+	       deleteEntry(String.valueOf(itemId), "listeners"))
 	    {
 		/*
 		** Prepare the kernel's listeners container

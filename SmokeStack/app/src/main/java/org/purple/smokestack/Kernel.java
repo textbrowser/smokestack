@@ -525,9 +525,8 @@ public class Kernel
 	synchronized(m_neighbors)
 	{
 	    /*
-	    ** Remove neighbor objects which do not exist in the
-	    ** database. Also removed will be neighbors having
-	    ** disconnected status controls.
+	    ** Remove neighbor objects which do not exist in the database.
+	    ** Also removed will be neighbors having disconnected statuses.
 	    */
 
 	    for(int i = m_neighbors.size() - 1; i >= 0; i--)
@@ -1105,8 +1104,8 @@ public class Kernel
 	    for(int i = m_listeners.size() - 1; i >= 0; i--)
 	    {
 		/*
-		** Remove listener objects which do not exist in the
-		** database.
+		** Remove listener objects which do not exist in the database.
+		** Also removed will be listeners having disconnected statuses.
 		*/
 
 		boolean found = false;
@@ -1115,7 +1114,10 @@ public class Kernel
 		for(ListenerElement listenerElement : listeners)
 		    if(listenerElement != null && listenerElement.m_oid == oid)
 		    {
-			found = true;
+			if(!listenerElement.m_statusControl.toLowerCase().
+			   equals("disconnect"))
+			    found = true;
+
 			break;
 		    }
 
