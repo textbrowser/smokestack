@@ -147,6 +147,7 @@ public class Settings extends AppCompatActivity
     }
 
     private Database m_databaseHelper = null;
+    private ScheduledExecutorService m_generalScheduler = null;
     private ScheduledExecutorService m_listenersScheduler = null;
     private ScheduledExecutorService m_neighborsScheduler = null;
     private SettingsBroadcastReceiver m_receiver = null;
@@ -2026,6 +2027,40 @@ public class Settings extends AppCompatActivity
 	finish();
     }
 
+    private void startGeneralTimer()
+    {
+	if(m_generalScheduler == null)
+	{
+	    m_generalScheduler = Executors.newSingleThreadScheduledExecutor();
+	    m_generalScheduler.scheduleAtFixedRate(new Runnable()
+	    {
+		@Override
+		public void run()
+		{
+		    try
+		    {
+			Settings.this.runOnUiThread(new Runnable()
+			{
+			    @Override
+			    public void run()
+			    {
+				Runtime runtime = Runtime.getRuntime();
+				long memory = (runtime.totalMemory() -
+					       runtime.freeMemory()) / 1048576L;
+
+				((TextView) findViewById(R.id.memory)).setText
+				    (memory + " MiB Consumed");
+			    }
+			});
+		    }
+		    catch(Exception exception)
+		    {
+		    }
+		}
+	    }, 0, TIMER_INTERVAL, TimeUnit.MILLISECONDS);
+        }
+    }
+
     private void startKernel()
     {
 	Kernel.getInstance();
@@ -2375,6 +2410,7 @@ public class Settings extends AppCompatActivity
 	m_databaseHelper.cleanDanglingOutboundQueued();
 	m_databaseHelper.cleanDanglingParticipants();
 	prepareListenerIpAddress();
+	startGeneralTimer();
 
 	if(isAuthenticated)
 	{
