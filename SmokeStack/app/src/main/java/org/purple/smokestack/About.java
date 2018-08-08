@@ -35,8 +35,6 @@ import java.util.TimeZone;
 
 public class About
 {
-    private final static SimpleDateFormat s_simpleDateFormat = new
-        SimpleDateFormat("yyyy-MM-dd h:mm:ss");
     private static String s_about = "";
 
     private About()
@@ -47,11 +45,14 @@ public class About
     {
 	if(s_about.isEmpty())
 	{
-	    s_simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+	    SimpleDateFormat simpleDateFormat = new
+		SimpleDateFormat("yyyy-MM-dd h:mm:ss");
+
+	    simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
             s_about = "Version 2018.08.19 Radical Rhombus " +
                 (BuildConfig.DEBUG ? "(Debug) " : "(Release)") +
                 "\nBuild Date " +
-                s_simpleDateFormat.format(new Date(BuildConfig.BUILD_TIME)) +
+                simpleDateFormat.format(new Date(BuildConfig.BUILD_TIME)) +
                 " UTC\nAndroid " + Build.VERSION.RELEASE +
                 (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP ?
                  "\nAndroid version not supported." : "");
