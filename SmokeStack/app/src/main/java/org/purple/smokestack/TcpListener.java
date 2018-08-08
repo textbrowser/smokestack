@@ -531,7 +531,7 @@ public class TcpListener
 			    SecureRandom.getInstance("SHA1PRNG"));
 	    m_socket = (SSLServerSocket)
 		sslContext.getServerSocketFactory().createServerSocket();
-	    m_socket.setReceiveBufferSize(64 * 1024);
+	    m_socket.setReceiveBufferSize(TcpNeighbor.SO_RCVBUF_SIZE);
 	    m_socket.setReuseAddress(true);
 	    m_socket.bind
 		(new InetSocketAddress(InetAddress.getByName(m_ipAddress),
