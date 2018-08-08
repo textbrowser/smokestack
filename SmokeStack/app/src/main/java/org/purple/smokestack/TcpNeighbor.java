@@ -53,9 +53,9 @@ public class TcpNeighbor extends Neighbor
     private TrustManager m_trustManagers[] = null;
     private final static int CONNECTION_TIMEOUT = 10000; // 10 Seconds
     private final static int HANDSHAKE_TIMEOUT = 10000; // 10 Seconds
-    private final static int SO_SNDBUF_SIZE = 65536;
+    private final static int SO_SNDBUF_SIZE = 131072;
     private int m_proxyPort = -1;
-    public final static int SO_RCVBUF_SIZE = 65536;
+    public final static int SO_RCVBUF_SIZE = 131072;
 
     protected String getLocalIp()
     {
