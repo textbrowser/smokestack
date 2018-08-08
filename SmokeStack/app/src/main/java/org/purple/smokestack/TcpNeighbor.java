@@ -120,7 +120,6 @@ public class TcpNeighbor extends Neighbor
 	    OutputStream outputStream = m_socket.getOutputStream();
 
 	    outputStream.write(message.getBytes());
-	    outputStream.flush();
 	    Kernel.writeCongestionDigest(message);
 	    m_bytesWritten.getAndAdd(message.length());
 	}
