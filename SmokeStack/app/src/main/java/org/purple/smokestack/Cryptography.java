@@ -418,7 +418,7 @@ public class Cryptography
 						  int iterations)
 	throws InvalidKeySpecException, NoSuchAlgorithmException
     {
-	final int length = 256; // Bits.
+	int length = 256; // Bits.
 
 	KeySpec keySpec = new PBEKeySpec(password, salt, iterations, length);
 	SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance
@@ -432,7 +432,7 @@ public class Cryptography
 					   int iterations)
 	throws InvalidKeySpecException, NoSuchAlgorithmException
     {
-	final int length = 512; // Bits.
+	int length = 512; // Bits.
 
 	KeySpec keySpec = new PBEKeySpec(password, salt, iterations, length);
 	SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance
