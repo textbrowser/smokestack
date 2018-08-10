@@ -268,7 +268,6 @@ public class TcpListener
 
 	    return networkInfo.getState() ==
 		android.net.NetworkInfo.State.CONNECTED;
-
 	}
 	catch(Exception exception)
 	{

@@ -304,6 +304,9 @@ public class Kernel
 		    }
 		}, 1500, TimeUnit.MILLISECONDS));
 	}
+	catch(Exception exception)
+	{
+	}
 	finally
 	{
 	    m_releaseMessagesSchedulersMutex.writeLock().unlock();
@@ -484,6 +487,9 @@ public class Kernel
 		    m_serverNeighbors.get(i).abort();
 
 	    m_serverNeighbors.clear();
+	}
+	catch(Exception exception)
+	{
 	}
 	finally
 	{
@@ -1020,6 +1026,9 @@ public class Kernel
 		if(m_serverNeighbors.get(i) != null)
 		    m_serverNeighbors.get(i).scheduleEchoSend(message);
 	}
+	catch(Exception exception)
+	{
+	}
 	finally
 	{
 	    m_serverNeighborsMutex.readLock().unlock();
@@ -1054,6 +1063,9 @@ public class Kernel
 		if(m_serverNeighbors.get(i) != null)
 		    m_serverNeighbors.get(i).scheduleSend(message);
 	}
+	catch(Exception exception)
+	{
+	}
 	finally
 	{
 	    m_serverNeighborsMutex.readLock().unlock();
@@ -1068,6 +1080,9 @@ public class Kernel
 	{
 	    m_ozones = s_databaseHelper.readOzones(s_cryptography);
 	}
+	catch(Exception exception)
+	{
+	}
 	finally
 	{
 	    m_ozonesMutex.writeLock().unlock();
@@ -1081,6 +1096,9 @@ public class Kernel
 	try
 	{
 	    m_sipHashIds = s_databaseHelper.readSipHashIds(s_cryptography);
+	}
+	catch(Exception exception)
+	{
 	}
 	finally
 	{
@@ -1192,6 +1210,9 @@ public class Kernel
 	{
 	    m_serverNeighbors.add(neighbor);
 	}
+	catch(Exception exception)
+	{
+	}
 	finally
 	{
 	    m_serverNeighborsMutex.writeLock().unlock();
@@ -1212,6 +1233,9 @@ public class Kernel
 	    for(int i = m_serverNeighbors.size() - 1; i >= 0; i--)
 		if(m_serverNeighbors.get(i) == null)
 		    m_serverNeighbors.remove(i);
+	}
+	catch(Exception exception)
+	{
 	}
 	finally
 	{
