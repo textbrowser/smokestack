@@ -367,6 +367,7 @@ public class Settings extends AppCompatActivity
 				     "to save the specified Smoke ID.");
 			    else
 			    {
+				Kernel.getInstance().populateOzones();
 				Kernel.getInstance().populateSipHashIds();
 				populateOzoneAddresses();
 				populateParticipants();
@@ -1555,6 +1556,8 @@ public class Settings extends AppCompatActivity
 		   equals("true"))
 		{
 		    m_databaseHelper.reset();
+		    Kernel.getInstance().populateOzones();
+		    Kernel.getInstance().populateSipHashIds();
 		    populateListeners(null);
 		    populateNeighbors(null);
 		    populateOzoneAddresses();
@@ -2063,7 +2066,8 @@ public class Settings extends AppCompatActivity
 
     private void startKernel()
     {
-	Kernel.getInstance();
+	Kernel.getInstance().populateOzones();
+	Kernel.getInstance().populateSipHashIds();
     }
 
     private void startListenersTimers()
@@ -2528,6 +2532,7 @@ public class Settings extends AppCompatActivity
 			{
 			    m_databaseHelper.cleanDanglingMessages();
 			    m_databaseHelper.cleanDanglingParticipants();
+			    Kernel.getInstance().populateOzones();
 			    Kernel.getInstance().populateSipHashIds();
 			    populateOzoneAddresses();
 			    populateParticipants();

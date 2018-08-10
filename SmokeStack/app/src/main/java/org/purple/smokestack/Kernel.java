@@ -875,11 +875,11 @@ public class Kernel
 						    sipHashId,
 						    true))
 			 {
-			     bytes = Cryptography.generateOzone(name);
-
-			     if(bytes != null)
-				 s_databaseHelper.writeOzone
-				     (s_cryptography, name, bytes);
+			     if((bytes = Cryptography.
+				 generateOzone(name)) != null)
+				 if(s_databaseHelper.
+				    writeOzone(s_cryptography, name, bytes))
+				     populateOzones();
 
 			     populateSipHashIds();
 
