@@ -156,7 +156,9 @@ public class TcpListener
 		    else
 			sslSocket = (SSLSocket) m_socket.accept();
 
-		    if(sslSocket == null)
+		    if(!m_listen.get() ||
+		       m_socket == null ||
+		       sslSocket == null)
 			return;
 
 		    try
@@ -187,7 +189,6 @@ public class TcpListener
 		}
 	    }
 	}, 0, ACCEPT_INTERVAL, TimeUnit.MILLISECONDS);
-
 	m_scheduler.scheduleAtFixedRate(new Runnable()
 	{
 	    @Override
@@ -231,13 +232,15 @@ public class TcpListener
 			    if(neighbor == null)
 				m_sockets.remove(i);
 			    else if(!neighbor.connected())
-				{
-				    Kernel.getInstance().removeNeighbor
-					(neighbor);
-				    neighbor.abort();
-				    m_sockets.remove(i);
-				}
+			    {
+				Kernel.getInstance().removeNeighbor(neighbor);
+				neighbor.abort();
+				m_sockets.remove(i);
+			    }
 			}
+		    }
+		    catch(Exception exception)
+		    {
 		    }
 		    finally
 		    {
@@ -499,6 +502,9 @@ public class TcpListener
 
 		Kernel.getInstance().removeNeighbor(neighbor);
 	    }
+	}
+	catch(Exception exception)
+	{
 	}
 	finally
 	{
