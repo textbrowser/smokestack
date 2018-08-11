@@ -2443,11 +2443,11 @@ public class Database extends SQLiteOpenHelper
 	    if(strings.length != Messages.EPKS_GROUP_ONE_ELEMENT_COUNT)
 		return false;
 
-	    PublicKey publicKey = null;
+	    PublicKey encryptionKey = null;
 	    PublicKey signatureKey = null;
 	    boolean exists = false;
 	    byte keyType[] = null;
-	    byte publicKeySignature[] = null;
+	    byte encryptionKeySignature[] = null;
 	    byte signatureKeySignature[] = null;
 	    int ii = 0;
 
@@ -2504,30 +2504,15 @@ public class Database extends SQLiteOpenHelper
 			cursor = null;
 		    }
 
-		    publicKey = Cryptography.publicKeyFromBytes
+		    encryptionKey = Cryptography.publicKeyFromBytes
 			(Base64.decode(string.getBytes(), Base64.NO_WRAP));
 
-		    if(publicKey == null)
+		    if(encryptionKey == null)
 			return false;
 
 		    ii += 1;
 		    break;
 		case 3:
-		    if(!publicKey.getAlgorithm().equals("McEliece-CCA2"))
-		    {
-			publicKeySignature = Base64.decode
-			    (string.getBytes(), Base64.NO_WRAP);
-
-			if(!Cryptography.verifySignature(publicKey,
-							 publicKeySignature,
-							 publicKey.
-							 getEncoded()))
-			{
-			    if(!ignoreSignatures)
-				return false;
-			}
-		    }
-
 		    ii += 1;
 		    break;
 		case 4:
@@ -2567,10 +2552,33 @@ public class Database extends SQLiteOpenHelper
 		    signatureKeySignature = Base64.decode
 			(string.getBytes(), Base64.NO_WRAP);
 
-		    if(!Cryptography.verifySignature(signatureKey,
-						     signatureKeySignature,
-						     signatureKey.
-						     getEncoded()))
+		    if(!encryptionKey.getAlgorithm().equals("McEliece-CCA2"))
+		    {
+			encryptionKeySignature = Base64.decode
+			    (string.getBytes(), Base64.NO_WRAP);
+
+			if(!Cryptography.
+			   verifySignature(encryptionKey,
+					   encryptionKeySignature,
+					   Miscellaneous.
+					   joinByteArrays(encryptionKey.
+							  getEncoded(),
+							  signatureKey.
+							  getEncoded())))
+			{
+			    if(!ignoreSignatures)
+				return false;
+			}
+		    }
+
+		    if(!Cryptography.
+		       verifySignature(signatureKey,
+				       signatureKeySignature,
+				       Miscellaneous.
+				       joinByteArrays(encryptionKey.
+						      getEncoded(),
+						      signatureKey.
+						      getEncoded())))
 		    {
 			if(!ignoreSignatures)
 			    return false;
@@ -2588,7 +2596,7 @@ public class Database extends SQLiteOpenHelper
 	    String name = "";
 	    String sipHashId = Miscellaneous.
 		sipHashIdFromData(Miscellaneous.
-				  joinByteArrays(publicKey.getEncoded(),
+				  joinByteArrays(encryptionKey.getEncoded(),
 						 signatureKey.getEncoded())).
 		toUpperCase();
 
@@ -2619,10 +2627,10 @@ public class Database extends SQLiteOpenHelper
 		switch(sparseArray.get(i))
 		{
 		case "encryption_public_key":
-		    bytes = cryptography.etm(publicKey.getEncoded());
+		    bytes = cryptography.etm(encryptionKey.getEncoded());
 		    break;
 		case "encryption_public_key_digest":
-		    bytes = Cryptography.sha512(publicKey.getEncoded());
+		    bytes = Cryptography.sha512(encryptionKey.getEncoded());
 		    break;
 		case "function_digest":
 		    bytes = cryptography.hmac("chat".getBytes());
