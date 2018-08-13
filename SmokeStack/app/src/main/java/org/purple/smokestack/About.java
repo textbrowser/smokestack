@@ -28,7 +28,6 @@
 package org.purple.smokestack;
 
 import android.os.Build;
-import android.os.Build;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
