@@ -185,6 +185,8 @@ public class Database extends SQLiteOpenHelper
     public boolean writePublicKeyPairs
 	(Cryptography cryptography, String sipHashId, String strings[])
     {
+	prepareDb();
+
 	if(cryptography == null ||
 	   m_db == null ||
 	   sipHashId.isEmpty() ||
@@ -3705,6 +3707,7 @@ public class Database extends SQLiteOpenHelper
 
     public void resetAndDrop()
     {
+	prepareDb();
 	reset();
 
 	if(m_db == null)
