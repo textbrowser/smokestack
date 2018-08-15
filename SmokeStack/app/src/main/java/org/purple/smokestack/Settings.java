@@ -2454,13 +2454,13 @@ public class Settings extends AppCompatActivity
     }
 
     @Override
-    public boolean onContextItemSelected(MenuItem item)
+    public boolean onContextItemSelected(MenuItem menuItem)
     {
-	if(item == null)
+	if(menuItem == null)
 	    return false;
 
-	final int groupId = item.getGroupId();
-	final int itemId = item.getItemId();
+	final int groupId = menuItem.getGroupId();
+	final int itemId = menuItem.getItemId();
 
 	/*
 	** Prepare a listener.
@@ -2539,6 +2539,19 @@ public class Settings extends AppCompatActivity
 
 		    break;
 		case 4:
+		    String string = State.getInstance().
+			getString("settings_participant_name_input");
+
+		    if(m_databaseHelper.
+		       writeParticipantName(s_cryptography,
+					    string,
+					    itemId))
+			populateParticipants();
+
+		    State.getInstance().removeKey
+			("settings_participant_name_input");
+		    break;
+		case 5:
 		    if(State.getInstance().getString("dialog_accepted").
 		       equals("true"))
 			if(m_databaseHelper.
@@ -2598,7 +2611,7 @@ public class Settings extends AppCompatActivity
 		 listener,
 		 "Are you sure that you " +
 		 "wish to delete the Ozone " +
-		 item.getTitle().toString().replace("Delete Ozone (", "").
+		 menuItem.getTitle().toString().replace("Delete Ozone (", "").
 		 replace(")", "") + "?");
 	    break;
 	case 1:
@@ -2613,7 +2626,8 @@ public class Settings extends AppCompatActivity
 		 listener,
 		 "Are you sure that you " +
 		 "wish to delete the messages of participant " +
-		 item.getTitle().toString().replace("Delete Messages (", "").
+		 menuItem.getTitle().toString().
+		 replace("Delete Messages (", "").
 		 replace(")", "") + "?");
 	    break;
 	case 3:
@@ -2622,21 +2636,32 @@ public class Settings extends AppCompatActivity
 		 listener,
 		 "Are you sure that you " +
 		 "wish to delete the participant " +
-		 item.getTitle().toString().replace("Delete Participant (", "").
+		 menuItem.getTitle().toString().
+		 replace("Delete Participant (", "").
 		 replace(")", "") + "? If confirmed, the associated Ozone " +
 		 "will also be deleted.");
 	    break;
 	case 4:
+	    Miscellaneous.showTextInputDialog
+		(Settings.this,
+		 listener,
+		 "Please provide a new name for " +
+		 menuItem.getTitle().toString().
+		 replace("New Name (", "").
+		 replace(")", "") + ".",
+		 "Name");
+	    break;
+	case 5:
 	    Miscellaneous.showPromptDialog
 		(Settings.this,
 		 listener,
 		 "Are you sure that you " +
-		 "wish to reset the retrieval state for " +
-		 item.getTitle().toString().
+		 "wish to reset the messages retrieval state for " +
+		 menuItem.getTitle().toString().
 		 replace("Reset Retrieval State (", "").
 		 replace(")", "") + "?");
 	    break;
-	case 5:
+	case 6:
 	    if(m_databaseHelper.
 	       deleteEntry(String.valueOf(itemId), "listeners"))
 	    {
@@ -2669,9 +2694,9 @@ public class Settings extends AppCompatActivity
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item)
+    public boolean onOptionsItemSelected(MenuItem menuItem)
     {
-	int id = item.getItemId();
+	int id = menuItem.getItemId();
 
 	if(id == R.id.action_steam)
 	{
@@ -2679,7 +2704,7 @@ public class Settings extends AppCompatActivity
 	    return true;
 	}
 
-        return super.onOptionsItemSelected(item);
+        return super.onOptionsItemSelected(menuItem);
     }
 
     @Override
@@ -2716,7 +2741,7 @@ public class Settings extends AppCompatActivity
 	    try
 	    {
 		if(v.getParent().getParent() == findViewById(R.id.listeners))
-		    menu.add(5, v.getId(), 0, "Delete Listener (" + tag + ")");
+		    menu.add(6, v.getId(), 0, "Delete Listener (" + tag + ")");
 		else if(v.getParent().getParent() == findViewById(R.id.ozones))
 		    menu.add(0, v.getId(), 0, "Delete Ozone (" + tag + ")");
 		else
@@ -2734,6 +2759,10 @@ public class Settings extends AppCompatActivity
 			     0,
 			     "Delete Participant (" + tag + ")");
 		    menu.add(4,
+			     v.getId(),
+			     0,
+			     "New Name (" + tag + ")");
+		    menu.add(5,
 			     v.getId(),
 			     0,
 			     "Reset Retrieval State (" + tag + ")");

@@ -2627,6 +2627,42 @@ public class Database extends SQLiteOpenHelper
 	return true;
     }
 
+    public boolean writeParticipantName(Cryptography cryptography,
+					String name,
+					int oid)
+    {
+	if(cryptography == null ||
+	   m_db == null ||
+	   name == null ||
+	   name.trim().isEmpty())
+	    return false;
+
+	m_db.beginTransactionNonExclusive();
+
+	try
+	{
+	    ContentValues values = new ContentValues();
+
+	    values.put
+		("name",
+		 Base64.encodeToString(cryptography.etm(name.trim().getBytes()),
+				       Base64.DEFAULT));
+	    m_db.update("siphash_ids", values, "oid = ?",
+			new String[] {String.valueOf(oid)});
+	    m_db.setTransactionSuccessful();
+	}
+	catch(Exception exception)
+	{
+	    return false;
+	}
+	finally
+	{
+	    m_db.endTransaction();
+	}
+
+	return true;
+    }
+
     public boolean writeSipHashParticipant(Cryptography cryptography,
 					   String name,
 					   String sipHashId,

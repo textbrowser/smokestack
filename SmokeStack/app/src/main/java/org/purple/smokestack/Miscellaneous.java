@@ -31,9 +31,11 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.text.InputType;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import java.nio.ByteBuffer;
 import java.text.DecimalFormat;
 
@@ -351,5 +353,56 @@ public class Miscellaneous
 		}
 	    });
 	checkBox.setText("Confirm");
+    }
+
+    public static void showTextInputDialog
+	(Context context,
+	 DialogInterface.OnCancelListener cancelListener,
+	 String prompt,
+	 String title)
+    {
+	if(((Activity) context).isFinishing())
+	    return;
+
+	AlertDialog alertDialog = new AlertDialog.Builder(context).create();
+	final EditText editText = new EditText(context);
+	final boolean contextIsSettings = context instanceof Settings;
+
+	alertDialog.setButton
+	    (AlertDialog.BUTTON_NEGATIVE, "Cancel",
+	     new DialogInterface.OnClickListener()
+	     {
+		 public void onClick(DialogInterface dialog, int which)
+		 {
+		     if(contextIsSettings)
+			 State.getInstance().removeKey
+			     ("settings_participant_name_input");
+
+		     dialog.dismiss();
+		 }
+	     });
+	alertDialog.setButton
+	    (AlertDialog.BUTTON_POSITIVE, "Accept",
+	     new DialogInterface.OnClickListener()
+	     {
+		 public void onClick(DialogInterface dialog, int which)
+		 {
+		     if(contextIsSettings)
+			 State.getInstance().setString
+			     ("settings_participant_name_input",
+			      editText.getText().toString());
+
+		     dialog.cancel();
+		 }
+	     });
+	alertDialog.setMessage(prompt);
+	alertDialog.setOnCancelListener(cancelListener); /*
+							 ** We cannot wait
+							 ** for a response.
+							 */
+	alertDialog.setTitle(title);
+	editText.setInputType(InputType.TYPE_CLASS_TEXT);
+	alertDialog.setView(editText);
+	alertDialog.show();
     }
 }
