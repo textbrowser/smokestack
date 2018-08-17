@@ -37,6 +37,7 @@ public class ListenerElement
     public String m_status = "";
     public String m_statusControl = "";
     public String m_uptime = "";
+    public boolean m_isPrivate = false;
     public byte m_certificate[] = null;
     public byte m_privateKey[] = null;
     public byte m_publicKey[] = null;

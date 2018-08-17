@@ -221,6 +221,7 @@ public class Settings extends AppCompatActivity
     {
 	CheckBox checkBox1 = (CheckBox) findViewById
 	    (R.id.automatic_refresh_listeners);
+	CheckBox checkBox2 = (CheckBox) findViewById(R.id.private_server);
 	RadioGroup radioGroup1 = (RadioGroup) findViewById
 	    (R.id.listeners_ipv_radio_group);
 	String ipVersion = "";
@@ -241,7 +242,8 @@ public class Settings extends AppCompatActivity
 			      textView1.getText().toString(),
 			      textView2.getText().toString(),
 			      textView3.getText().toString(),
-			      ipVersion))
+			      ipVersion,
+			      checkBox2.isChecked()))
 	    Miscellaneous.showErrorDialog
 		(Settings.this,
 		 "An error occurred while saving the listener information.");
@@ -418,11 +420,17 @@ public class Settings extends AppCompatActivity
 
 	CheckBox checkBox1 = null;
 
+	checkBox1 = (CheckBox) findViewById(R.id.accept_without_signatures);
+	checkBox1.setChecked(!state);
+	checkBox1.setEnabled(state);
 	checkBox1 = (CheckBox) findViewById(R.id.overwrite);
 	checkBox1.setChecked(!state);
 	checkBox1.setEnabled(state);
 	button1 = (Button) findViewById(R.id.set_password);
 	button1.setEnabled(checkBox1.isChecked());
+	checkBox1 = (CheckBox) findViewById(R.id.private_server);
+	checkBox1.setChecked(!state);
+	checkBox1.setEnabled(state);
 
 	RadioButton radioButton1 = null;
 
@@ -668,6 +676,8 @@ public class Settings extends AppCompatActivity
 
 	    stringBuilder.append("\nPeers Count: ");
 	    stringBuilder.append(listenerElement.m_peersCount);
+	    stringBuilder.append("\nPrivate: ");
+	    stringBuilder.append(listenerElement.m_isPrivate ? "Yes" : "No");
 	    stringBuilder.append("\nUptime: ");
 
 	    try
@@ -1443,6 +1453,8 @@ public class Settings extends AppCompatActivity
 		if(Settings.this.isFinishing())
 		    return;
 
+		CheckBox checkBox1 = (CheckBox) findViewById
+		    (R.id.private_server);
 		RadioButton radioButton1 = (RadioButton) findViewById
 		    (R.id.listeners_ipv4);
 		TextView textView1 = (TextView) findViewById
@@ -1452,6 +1464,7 @@ public class Settings extends AppCompatActivity
 		TextView textView3 = (TextView) findViewById
 		    (R.id.listeners_scope_id);
 
+		checkBox1.setChecked(false);
 		radioButton1.setChecked(true);
 		textView1.setText("");
 		textView2.setText("4710");
@@ -1586,9 +1599,9 @@ public class Settings extends AppCompatActivity
 		{
 		    String error = "";
 
-		    if(textView1.getText().length() < 8)
+		    if(textView1.getText().length() < 3)
 			error = "Each password must contain " +
-			    "at least eight characters.";
+			    "at least three characters.";
 		    else
 			error = "The provided passwords are not identical.";
 
@@ -2344,11 +2357,15 @@ public class Settings extends AppCompatActivity
 	** Enable widgets.
 	*/
 
+	checkBox1 = (CheckBox) findViewById(R.id.accept_without_signatures);
+	checkBox1.setEnabled(isAuthenticated);
 	checkBox1 = (CheckBox) findViewById(R.id.overwrite);
 	checkBox1.setChecked(!isAuthenticated);
 	checkBox1.setEnabled(isAuthenticated);
 	button1 = (Button) findViewById(R.id.set_password);
 	button1.setEnabled(checkBox1.isChecked());
+	checkBox1 = (CheckBox) findViewById(R.id.private_server);
+	checkBox1.setEnabled(isAuthenticated);
 
 	TextView textView1 = null;
 
@@ -2435,6 +2452,9 @@ public class Settings extends AppCompatActivity
 	    populateParticipants();
 	    startKernel();
 	}
+	else
+	    ((TextView) findViewById(R.id.internal_neighbors)).setText
+		("Internal Neighbors Container Size: 0");
 
 	/*
 	** Show the Authenticate activity if an account is present.

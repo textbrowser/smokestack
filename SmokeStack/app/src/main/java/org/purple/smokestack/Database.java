@@ -342,6 +342,7 @@ public class Database extends SQLiteOpenHelper
 		("SELECT " +
 		 "certificate, " +
 		 "ip_version, " +
+		 "is_private, " +
 		 "last_error, " +
 		 "local_ip_address, " +
 		 "local_port, " +
@@ -405,13 +406,25 @@ public class Database extends SQLiteOpenHelper
 			    break;
 			case 2:
 			    if(bytes != null)
+			    {
+				if(new String(bytes).equals("true"))
+				    listenerElement.m_isPrivate = true;
+				else
+				    listenerElement.m_isPrivate = false;
+			    }
+			    else
+				listenerElement.m_isPrivate = false;
+
+			    break;
+			case 3:
+			    if(bytes != null)
 				listenerElement.m_error = new String(bytes);
 			    else
 				listenerElement.m_error =
 				    "error (" + oid + ")";
 
 			    break;
-			case 3:
+			case 4:
 			    if(bytes != null)
 				listenerElement.m_localIpAddress = new String
 				    (bytes);
@@ -420,7 +433,7 @@ public class Database extends SQLiteOpenHelper
 				    "error (" + oid + ")";
 
 			    break;
-			case 4:
+			case 5:
 			    if(bytes != null)
 				listenerElement.m_localPort = new String(bytes);
 			    else
@@ -428,7 +441,7 @@ public class Database extends SQLiteOpenHelper
 				    "error (" + oid + ")";
 
 			    break;
-			case 5:
+			case 6:
 			    if(bytes != null)
 				listenerElement.m_localScopeId = new String
 				    (bytes);
@@ -437,7 +450,7 @@ public class Database extends SQLiteOpenHelper
 				    "error (" + oid + ")";
 
 			    break;
-			case 6:
+			case 7:
 			    try
 			    {
 				if(bytes != null)
@@ -452,19 +465,19 @@ public class Database extends SQLiteOpenHelper
 			    }
 
 			    break;
-			case 7:
+			case 8:
 			    if(bytes != null)
 				listenerElement.m_privateKey = Miscellaneous.
 				    deepCopy(bytes);
 
 			    break;
-			case 8:
+			case 9:
 			    if(bytes != null)
 				listenerElement.m_publicKey = Miscellaneous.
 				    deepCopy(bytes);
 
 			    break;
-			case 9:
+			case 10:
 			    if(bytes != null)
 				listenerElement.m_status = new String(bytes);
 			    else
@@ -472,7 +485,7 @@ public class Database extends SQLiteOpenHelper
 				    "error (" + oid + ")";
 
 			    break;
-			case 10:
+			case 11:
 			    if(bytes != null)
 				listenerElement.m_statusControl = new String
 				    (bytes);
@@ -481,7 +494,7 @@ public class Database extends SQLiteOpenHelper
 				    "error (" + oid + ")";
 
 			    break;
-			case 11:
+			case 12:
 			    if(bytes != null)
 				listenerElement.m_uptime = new String(bytes);
 			    else
@@ -1917,7 +1930,8 @@ public class Database extends SQLiteOpenHelper
 				 String ipAddress,
 				 String ipPort,
 				 String ipScopeId,
-				 String version)
+				 String version,
+				 boolean isPrivate)
     {
 	if(cryptography == null || m_db == null)
 	    return false;
@@ -1948,18 +1962,19 @@ public class Database extends SQLiteOpenHelper
 
 	    sparseArray.append(0, "certificate");
 	    sparseArray.append(1, "ip_version");
-	    sparseArray.append(2, "last_error");
-	    sparseArray.append(3, "local_ip_address");
-	    sparseArray.append(4, "local_ip_address_digest");
-	    sparseArray.append(5, "local_port");
-	    sparseArray.append(6, "local_port_digest");
-	    sparseArray.append(7, "local_scope_id");
-	    sparseArray.append(8, "peers_count");
-	    sparseArray.append(9, "private_key");
-	    sparseArray.append(10, "public_key");
-            sparseArray.append(11, "status");
-            sparseArray.append(12, "status_control");
-	    sparseArray.append(13, "uptime");
+	    sparseArray.append(2, "is_private");
+	    sparseArray.append(3, "last_error");
+	    sparseArray.append(4, "local_ip_address");
+	    sparseArray.append(5, "local_ip_address_digest");
+	    sparseArray.append(6, "local_port");
+	    sparseArray.append(7, "local_port_digest");
+	    sparseArray.append(8, "local_scope_id");
+	    sparseArray.append(9, "peers_count");
+	    sparseArray.append(10, "private_key");
+	    sparseArray.append(11, "public_key");
+            sparseArray.append(12, "status");
+            sparseArray.append(13, "status_control");
+	    sparseArray.append(14, "uptime");
 
 	    if(!ipAddress.toLowerCase().trim().matches(".*[a-z].*"))
 	    {
@@ -1980,6 +1995,10 @@ public class Database extends SQLiteOpenHelper
 		{
 		case "ip_version":
 		    bytes = cryptography.etm(version.trim().getBytes());
+		    break;
+		case "is_private":
+		    bytes = cryptography.etm
+			(isPrivate ? "true".getBytes() : "false".getBytes());
 		    break;
 		case "local_ip_address":
 		    bytes = cryptography.etm(ipAddress.trim().getBytes());
@@ -3240,6 +3259,7 @@ public class Database extends SQLiteOpenHelper
 	str = "CREATE TABLE IF NOT EXISTS listeners (" +
 	    "certificate TEXT NOT NULL, " +
 	    "ip_version TEXT NOT NULL, " +
+	    "is_private TEXT NOT NULL, " +
 	    "last_error TEXT NOT NULL, " +
 	    "local_ip_address TEXT NOT NULL, " +
 	    "local_ip_address_digest TEXT NOT NULL, " +

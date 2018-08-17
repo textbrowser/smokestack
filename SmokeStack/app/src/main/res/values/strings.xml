@@ -44,4 +44,5 @@
     <string name="refresh">Refresh</string>
     <string name="prefer_active_screen">Prefer Active Screen</string>
     <string name="last_activity">Last Activity</string>
+    <string name="private_server">Private Server</string>
 </resources>
