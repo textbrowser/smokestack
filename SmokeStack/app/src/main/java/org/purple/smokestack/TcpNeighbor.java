@@ -37,6 +37,8 @@ import java.security.cert.X509Certificate;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import javax.net.ssl.HandshakeCompletedEvent;
+import javax.net.ssl.HandshakeCompletedListener;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.TrustManager;
@@ -116,6 +118,11 @@ public class TcpNeighbor extends Neighbor
 
 	try
 	{
+	    if(m_isPrivateServer.get())
+		if(!m_remoteUserAuthenticated.get())
+		    if(!message.contains("type=0097a&content="))
+			return false;
+
 	    if(m_socket == null || m_socket.getOutputStream() == null)
 		return false;
 
@@ -167,7 +174,7 @@ public class TcpNeighbor extends Neighbor
 	    m_allowUnsolicited.set(false);
 	    m_bytesRead.set(0);
 	    m_bytesWritten.set(0);
-	    m_clientSupportsCD.set(false);
+	    m_clientSupportsCryptographicDiscovery.set(false);
 
 	    if(m_oid.get() >= 0)
 		m_isValidCertificate.set(false);
@@ -178,13 +185,13 @@ public class TcpNeighbor extends Neighbor
 	}
     }
 
-    public TcpNeighbor(SSLSocket socket)
+    public TcpNeighbor(SSLSocket socket, boolean isPrivateServer)
     {
 	/*
 	** We're a server socket.
 	*/
 
-	super("", "", "", "TCP", "", false, -1);
+	super("", "", "", "TCP", "", isPrivateServer, false, -1);
 	m_isValidCertificate = new AtomicBoolean(true);
 	m_readSocketScheduler = Executors.newSingleThreadScheduledExecutor();
 	m_socket = socket;
@@ -193,6 +200,20 @@ public class TcpNeighbor extends Neighbor
 	if(m_socket != null)
 	    try
 	    {
+		if(m_isPrivateServer.get())
+		    m_socket.addHandshakeCompletedListener
+			(new HandshakeCompletedListener()
+		        {
+			    @Override
+			    public void handshakeCompleted
+				(HandshakeCompletedEvent event)
+			    {
+				scheduleSend
+				    (Messages.
+				     requestAuthentication(m_randomBuffer));
+			    }
+			});
+
 		m_socket.setSendBufferSize(SO_SNDBUF_SIZE);
 		m_socket.setSoLinger(true, 0);
 		m_socket.setSoTimeout(HANDSHAKE_TIMEOUT);
@@ -290,7 +311,7 @@ public class TcpNeighbor extends Neighbor
 		       String version,
 		       int oid)
     {
-	super(ipAddress, ipPort, scopeId, "TCP", version, true, oid);
+	super(ipAddress, ipPort, scopeId, "TCP", version, false, true, oid);
 	m_isValidCertificate = new AtomicBoolean(false);
 
 	if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)

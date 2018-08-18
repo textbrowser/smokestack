@@ -55,8 +55,9 @@ public abstract class Neighbor
     private final static int SILENCE = 90000; // 90 Seconds
     private final static int TIMER_INTERVAL = 2500; // 2.5 Seconds
     protected AtomicBoolean m_allowUnsolicited = null;
-    protected AtomicBoolean
-	m_clientSupportsCD = null; // Cryptographic Discovery
+    protected AtomicBoolean m_clientSupportsCryptographicDiscovery = null;
+    protected AtomicBoolean m_isPrivateServer = null;
+    protected AtomicBoolean m_remoteUserAuthenticated = null;
     protected AtomicBoolean m_requestUnsolicitedSent = null;
     protected AtomicBoolean m_userDefined = null;
     protected AtomicInteger m_oid = null;
@@ -73,6 +74,7 @@ public abstract class Neighbor
     protected UUID m_uuid = null;
     protected byte m_bytes[] = null;
     protected final Object m_errorMutex = new Object();
+    protected final StringBuffer m_randomBuffer = new StringBuffer();
     protected final StringBuffer m_stringBuffer = new StringBuffer();
     protected final StringBuilder m_error = new StringBuilder();
     protected final static int MAXIMUM_BYTES = LANE_WIDTH;
@@ -126,6 +128,7 @@ public abstract class Neighbor
 		       String scopeId,
 		       String transport,
 		       String version,
+		       boolean isPrivateServer,
 		       boolean userDefined,
 		       int oid)
     {
@@ -133,16 +136,21 @@ public abstract class Neighbor
 	m_bytes = new byte[BYTES_PER_READ];
 	m_bytesRead = new AtomicLong(0);
 	m_bytesWritten = new AtomicLong(0);
-	m_clientSupportsCD = new AtomicBoolean(false);
+	m_clientSupportsCryptographicDiscovery = new AtomicBoolean(false);
 	m_cryptography = Cryptography.getInstance();
 	m_databaseHelper = Database.getInstance();
 	m_echoQueue = new ArrayList<> ();
 	m_ipAddress = ipAddress;
 	m_ipPort = ipPort;
+	m_isPrivateServer = new AtomicBoolean(isPrivateServer);
 	m_lastTimeRead = new AtomicLong(System.nanoTime());
 	m_oid = new AtomicInteger(oid);
 	m_parsingScheduler = Executors.newSingleThreadScheduledExecutor();
 	m_queue = new ArrayList<> ();
+	m_randomBuffer.append
+	    (Base64.
+	     encodeToString(Cryptography.randomBytes(64), Base64.NO_WRAP));
+	m_remoteUserAuthenticated = new AtomicBoolean(userDefined);
 	m_requestUnsolicitedSent = new AtomicBoolean(false);
 	m_scheduler = Executors.newSingleThreadScheduledExecutor();
 	m_scopeId = scopeId;
@@ -180,6 +188,25 @@ public abstract class Neighbor
 
 			m_stringBuffer.delete(0, buffer.length());
 
+			if(m_isPrivateServer.get())
+			    if(!m_remoteUserAuthenticated.get())
+			    {
+				if(buffer.contains("type=0097b&content="))
+				    /*
+				    ** A response to an authentication request.
+				    */
+
+				    m_remoteUserAuthenticated.set
+					(m_databaseHelper.
+					 authenticate(m_cryptography,
+						      Messages.
+						      stripMessage(buffer),
+						      m_randomBuffer));
+
+				if(!m_remoteUserAuthenticated.get())
+				    continue;
+			    }
+
 			if(!Kernel.getInstance().
 			   ourMessage(buffer,
 				      m_uuid,
@@ -188,7 +215,8 @@ public abstract class Neighbor
 			else if(!m_userDefined.get())
 			{
 			    if(buffer.contains("type=0095a&content="))
-				m_clientSupportsCD.set(true);
+				m_clientSupportsCryptographicDiscovery.
+				    set(true);
 
 			    /*
 			    ** The client is allowing unsolicited data.
@@ -200,14 +228,13 @@ public abstract class Neighbor
 		    }
 
 		    if(m_stringBuffer.length() > MAXIMUM_BYTES)
-			m_stringBuffer.setLength(MAXIMUM_BYTES);
+			m_stringBuffer.setLength(0);
 		}
 		catch(Exception exception)
 		{
 		}
 	    }
 	}, 0, PARSING_INTERVAL, TimeUnit.MILLISECONDS);
-
 	m_scheduler.scheduleAtFixedRate(new Runnable()
 	{
 	    @Override
@@ -249,7 +276,6 @@ public abstract class Neighbor
 		}
 	    }
 	}, 0, TIMER_INTERVAL, TimeUnit.MILLISECONDS);
-
 	m_sendOutboundScheduler.scheduleAtFixedRate(new Runnable()
 	{
 	    private long m_accumulatedTime = System.nanoTime();
@@ -309,7 +335,7 @@ public abstract class Neighbor
 			if(!m_userDefined.get()) // A server.
 			{
 			    if(m_allowUnsolicited.get() ||
-			       !m_clientSupportsCD.get())
+			       !m_clientSupportsCryptographicDiscovery.get())
 				send(message);
 			    else
 				try

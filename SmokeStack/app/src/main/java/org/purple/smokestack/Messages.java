@@ -108,6 +108,41 @@ public class Messages
 	return "";
     }
 
+    public static String requestAuthentication(StringBuffer stringBuffer)
+    {
+	if(stringBuffer == null || stringBuffer.length() <= 0)
+	    return "";
+
+	try
+	{
+	    StringBuilder results = new StringBuilder();
+
+	    results.append("POST HTTP/1.1\r\n");
+	    results.append
+		("Content-Type: application/x-www-form-urlencoded\r\n");
+	    results.append("Content-Length: %1\r\n");
+	    results.append("\r\n");
+	    results.append("type=0097a&content=%2\r\n");
+	    results.append("\r\n\r\n");
+
+	    int indexOf = results.indexOf("%1");
+	    int length = stringBuffer.length() +
+		"type=0097a&content=\r\n\r\n\r\n".length();
+
+	    results = results.replace
+		(indexOf, indexOf + 2, String.valueOf(length));
+	    indexOf = results.indexOf("%2");
+	    results = results.replace
+		(indexOf, indexOf + 2, stringBuffer.toString());
+	    return results.toString();
+	}
+	catch(Exception exception)
+	{
+	}
+
+	return "";
+    }
+
     public static String requestUnsolicited()
     {
 	try

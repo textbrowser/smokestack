@@ -133,7 +133,7 @@ public class UdpMulticastNeighbor extends Neighbor
 	    m_allowUnsolicited.set(false);
 	    m_bytesRead.set(0);
 	    m_bytesWritten.set(0);
-	    m_clientSupportsCD.set(false);
+	    m_clientSupportsCryptographicDiscovery.set(false);
 	    m_requestUnsolicitedSent.set(false);
 	    m_socket = null;
 	    m_startTime.set(System.nanoTime());
@@ -146,7 +146,7 @@ public class UdpMulticastNeighbor extends Neighbor
 				String version,
 				int oid)
     {
-	super(ipAddress, ipPort, scopeId, "UDP", version, true, oid);
+	super(ipAddress, ipPort, scopeId, "UDP", version, false, true, oid);
 	m_readSocketScheduler = Executors.newSingleThreadScheduledExecutor();
 	m_readSocketScheduler.scheduleAtFixedRate(new Runnable()
 	{

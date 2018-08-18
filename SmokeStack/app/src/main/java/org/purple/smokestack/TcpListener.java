@@ -73,6 +73,7 @@ public class TcpListener
 	Security.addProvider(new BouncyCastleProvider());
     }
 
+    private AtomicBoolean m_isPrivateServer = null;
     private AtomicInteger m_oid;
     private KeyStore m_keyStore = null;
     private SSLServerSocket m_socket = null;
@@ -121,6 +122,7 @@ public class TcpListener
 		       String ipPort,
 		       String scopeId,
 		       String version,
+		       boolean isPrivateServer,
 		       byte certificate[],
 		       byte privateKey[],
 		       byte publicKey[],
@@ -131,6 +133,7 @@ public class TcpListener
 	m_acceptScheduler = Executors.newSingleThreadScheduledExecutor();
 	m_ipAddress = ipAddress;
 	m_ipPort = ipPort;
+	m_isPrivateServer = new AtomicBoolean(isPrivateServer);
 	m_scheduler = Executors.newSingleThreadScheduledExecutor();
 	m_scopeId = scopeId;
 	m_version = version;
@@ -167,7 +170,8 @@ public class TcpListener
 
 			ScheduledExecutorService scheduler = Executors.
 			    newSingleThreadScheduledExecutor();
-			TcpNeighbor neighbor = new TcpNeighbor(sslSocket);
+			TcpNeighbor neighbor = new TcpNeighbor
+			    (sslSocket, m_isPrivateServer.get());
 
 			Kernel.getInstance().recordNeighbor(neighbor);
 			scheduler.schedule

@@ -596,20 +596,27 @@ public class Kernel
 		else if(buffer.contains("type=0095b&content="))
 		{
 		    /*
-		    ** We've received identities.
+		    ** We've received identities. Incomplete.
 		    */
 
-		    s_databaseHelper.writeCongestionDigest(value);
-		    s_databaseHelper.deleteRoutingEntry
-			(clientIdentity.toString());
+		    /*
+		      s_databaseHelper.writeCongestionDigest(value);
+		      s_databaseHelper.deleteRoutingEntry
+		      (clientIdentity.toString());
 
-		    byte bytes[] = Base64.decode
-			(Messages.stripMessage(buffer), Base64.DEFAULT);
+		      byte bytes[] = Base64.decode
+		      (Messages.stripMessage(buffer), Base64.DEFAULT);
 
-		    s_databaseHelper.writeIdentities(clientIdentity, bytes);
+		      s_databaseHelper.writeIdentities(clientIdentity, bytes);
+		    */
+
 		    return true;
 		}
 		else if(buffer.contains("type=0096&content="))
+		    return true;
+		else if(buffer.contains("type=0097a&content="))
+		    return true;
+		else if(buffer.contains("type=0097b&content="))
 		    return true;
 
 	    if(s_databaseHelper.containsCongestionDigest(value))
@@ -1185,6 +1192,7 @@ public class Kernel
 		 listenerElement.m_localPort,
 		 listenerElement.m_localScopeId,
 		 listenerElement.m_ipVersion,
+		 listenerElement.m_isPrivate,
 		 listenerElement.m_certificate,
 		 listenerElement.m_privateKey,
 		 listenerElement.m_publicKey,
