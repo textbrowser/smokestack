@@ -167,7 +167,6 @@ public abstract class Neighbor
 	m_parsingScheduler.scheduleAtFixedRate(new Runnable()
 	{
 	    @Override
-
 	    public void run()
 	    {
 		try
