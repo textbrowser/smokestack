@@ -147,9 +147,6 @@ public abstract class Neighbor
 	m_oid = new AtomicInteger(oid);
 	m_parsingScheduler = Executors.newSingleThreadScheduledExecutor();
 	m_queue = new ArrayList<> ();
-	m_randomBuffer.append
-	    (Base64.
-	     encodeToString(Cryptography.randomBytes(64), Base64.NO_WRAP));
 	m_remoteUserAuthenticated = new AtomicBoolean(userDefined);
 	m_requestUnsolicitedSent = new AtomicBoolean(false);
 	m_scheduler = Executors.newSingleThreadScheduledExecutor();
@@ -477,6 +474,17 @@ public abstract class Neighbor
     protected void echo(String message)
     {
 	Kernel.getInstance().echo(message, m_oid.get());
+    }
+
+    protected void reset()
+    {
+	m_allowUnsolicited.set(false);
+	m_bytesRead.set(0);
+	m_bytesWritten.set(0);
+	m_clientSupportsCryptographicDiscovery.set(false);
+	m_remoteUserAuthenticated.set(false);
+	m_requestUnsolicitedSent.set(false);
+	m_startTime.set(System.nanoTime());
     }
 
     protected void setError(String error)

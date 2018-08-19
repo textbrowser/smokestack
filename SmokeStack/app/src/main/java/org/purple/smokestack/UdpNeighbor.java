@@ -138,13 +138,8 @@ public class UdpNeighbor extends Neighbor
 	}
 	finally
 	{
-	    m_allowUnsolicited.set(false);
-	    m_bytesRead.set(0);
-	    m_bytesWritten.set(0);
-	    m_clientSupportsCryptographicDiscovery.set(false);
-	    m_requestUnsolicitedSent.set(false);
 	    m_socket = null;
-	    m_startTime.set(System.nanoTime());
+	    reset();
 	}
     }
 

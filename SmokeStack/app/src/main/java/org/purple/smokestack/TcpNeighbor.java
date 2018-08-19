@@ -28,6 +28,7 @@
 package org.purple.smokestack;
 
 import android.os.Build;
+import android.util.Base64;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
@@ -171,17 +172,12 @@ public class TcpNeighbor extends Neighbor
 	}
 	finally
 	{
-	    m_allowUnsolicited.set(false);
-	    m_bytesRead.set(0);
-	    m_bytesWritten.set(0);
-	    m_clientSupportsCryptographicDiscovery.set(false);
-
 	    if(m_oid.get() >= 0)
 		m_isValidCertificate.set(false);
 
-	    m_requestUnsolicitedSent.set(false);
+	    m_randomBuffer.setLength(0);
 	    m_socket = null;
-	    m_startTime.set(System.nanoTime());
+	    reset();
 	}
     }
 
@@ -208,6 +204,12 @@ public class TcpNeighbor extends Neighbor
 			    public void handshakeCompleted
 				(HandshakeCompletedEvent event)
 			    {
+				m_randomBuffer.setLength(0);
+				m_randomBuffer.append
+				    (Base64.
+				     encodeToString(Cryptography.
+						    randomBytes(64),
+						    Base64.NO_WRAP));
 				scheduleSend
 				    (Messages.
 				     requestAuthentication(m_randomBuffer));
