@@ -1593,7 +1593,7 @@ public class Settings extends AppCompatActivity
 		textView1.setSelectAllOnFocus(true);
 		textView2.setSelectAllOnFocus(true);
 
-		if(textView1.getText().length() < 8 ||
+		if(textView1.getText().length() < 3 ||
 		   !textView1.getText().toString().
 		   equals(textView2.getText().toString()))
 		{
@@ -2192,6 +2192,8 @@ public class Settings extends AppCompatActivity
 	button1 = (Button) findViewById(R.id.refresh_listeners);
 	button1.setEnabled(isAuthenticated);
         button1 = (Button) findViewById(R.id.refresh_neighbors);
+        button1.setEnabled(isAuthenticated);
+	button1 = (Button) findViewById(R.id.refresh_ozones);
         button1.setEnabled(isAuthenticated);
 	button1 = (Button) findViewById(R.id.refresh_participants);
 	button1.setEnabled(isAuthenticated);

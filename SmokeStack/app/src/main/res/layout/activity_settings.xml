@@ -154,7 +154,7 @@
                     <CheckBox
                         android:id="@+id/private_server"
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:text="@string/private_server" />
 
