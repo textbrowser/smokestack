@@ -200,8 +200,10 @@ public class Settings extends AppCompatActivity
 	    return null;
 	}
     };
+    private final static String MINIMUM_PASSWORD_LENGTH_TEXT = "three";
     private final static int CHECKBOX_TEXT_SIZE = 13;
     private final static int CHECKBOX_WIDTH = 500;
+    private final static int MINIMUM_PASSWORD_LENGTH = 3;
     private final static int TEXTVIEW_TEXT_SIZE = 13;
     private final static int TEXTVIEW_WIDTH = 500;
     private final static int TIMER_INTERVAL = 2500; // 2.5 Seconds
@@ -1593,15 +1595,17 @@ public class Settings extends AppCompatActivity
 		textView1.setSelectAllOnFocus(true);
 		textView2.setSelectAllOnFocus(true);
 
-		if(textView1.getText().length() < 3 ||
+		if(textView1.getText().length() < MINIMUM_PASSWORD_LENGTH ||
 		   !textView1.getText().toString().
 		   equals(textView2.getText().toString()))
 		{
 		    String error = "";
 
-		    if(textView1.getText().length() < 3)
+		    if(textView1.getText().length() < MINIMUM_PASSWORD_LENGTH)
 			error = "Each password must contain " +
-			    "at least three characters.";
+			    "at least " +
+			    MINIMUM_PASSWORD_LENGTH_TEXT +
+			    " characters.";
 		    else
 			error = "The provided passwords are not identical.";
 
