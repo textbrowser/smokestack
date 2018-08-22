@@ -48,7 +48,7 @@ public class About
 		SimpleDateFormat("yyyy-MM-dd h:mm:ss");
 
 	    simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-            s_about = "Version 2018.08.21 Jumping Java " +
+            s_about = "Version 2018.08.22 Turquoise Turtle " +
                 (BuildConfig.DEBUG ? "(Debug) " : "(Release)") +
                 "\nBuild Date " +
                 simpleDateFormat.format(new Date(BuildConfig.BUILD_TIME)) +
