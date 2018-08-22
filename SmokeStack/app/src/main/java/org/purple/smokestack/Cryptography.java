@@ -88,6 +88,7 @@ public class Cryptography
 
     private Cryptography()
     {
+	prepareSecureRandom();
     }
 
     private static synchronized void prepareSecureRandom()
@@ -141,8 +142,6 @@ public class Cryptography
 	{
 	    m_macKeyMutex.readLock().unlock();
 	}
-
-	prepareSecureRandom();
 
 	byte bytes[] = null;
 
@@ -343,11 +342,19 @@ public class Cryptography
     {
 	prepareSecureRandom();
 
-	KeyPairGenerator keyPairGenerator = KeyPairGenerator.
-	    getInstance(algorithm);
+	try
+	{
+	    KeyPairGenerator keyPairGenerator = KeyPairGenerator.
+		getInstance(algorithm);
 
-	keyPairGenerator.initialize(keySize, s_secureRandom);
-	return keyPairGenerator.generateKeyPair();
+	    keyPairGenerator.initialize(keySize, s_secureRandom);
+	    return keyPairGenerator.generateKeyPair();
+	}
+	catch(Exception exception)
+	{
+	}
+
+	return null;
     }
 
     public static KeyPair generatePrivatePublicKeyPair(String algorithm,

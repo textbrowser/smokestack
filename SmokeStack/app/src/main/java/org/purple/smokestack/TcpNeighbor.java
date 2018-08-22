@@ -60,6 +60,26 @@ public class TcpNeighbor extends Neighbor
     private int m_proxyPort = -1;
     public final static int SO_RCVBUF_SIZE = 131072;
 
+    private void prepareMRandom()
+    {
+	m_randomBuffer.setLength(0);
+
+	try
+	{
+	    byte bytes[] = Miscellaneous.joinByteArrays
+		(Cryptography.randomBytes(64),
+		 Miscellaneous.longToByteArray(System.currentTimeMillis()));
+
+	    m_randomBuffer.append
+		(Base64.encodeToString(Cryptography.sha512(bytes),
+				       Base64.NO_WRAP));
+	}
+	catch(Exception exception)
+	{
+	    m_randomBuffer.setLength(0);
+	}
+    }
+
     protected String getLocalIp()
     {
 	try
@@ -204,12 +224,7 @@ public class TcpNeighbor extends Neighbor
 			    public void handshakeCompleted
 				(HandshakeCompletedEvent event)
 			    {
-				m_randomBuffer.setLength(0);
-				m_randomBuffer.append
-				    (Base64.
-				     encodeToString(Cryptography.
-						    randomBytes(64),
-						    Base64.NO_WRAP));
+				prepareMRandom();
 				scheduleSend
 				    (Messages.
 				     requestAuthentication(m_randomBuffer));

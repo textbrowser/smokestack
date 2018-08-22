@@ -20,6 +20,7 @@ Completed Items
 17.    Fire compatibility.
 18.    Echo shared Smoke identities.
 19.    Rename participant in Participants section.
+20.    Private servers. SHA-512 (Random || Time).
 
 Future Items
 
@@ -31,4 +32,4 @@ Remaining Items
 
 1.     The Settings activity has many views (ANDROID_LINT_MAX_VIEW_COUNT).
 2.     Steam.
-3.     Private servers. SHA-512 (Random || Time).
+
