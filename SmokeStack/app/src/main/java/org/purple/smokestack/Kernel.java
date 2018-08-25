@@ -183,10 +183,11 @@ public class Kernel
 			     "0",             // Bytes Buffered
 			     "0",             // Bytes Read
 			     "0",             // Bytes Written
-			     "0",             // Queue Size
+			     "0",             // Echo Queue Size
 			     "",              // Error
 			     "",              // IP Address
 			     "0",             // Port
+			     "0",             // Queue Size
 			     "",              // Session Cipher
 			     "disconnected",  // Status
 			     "0",             // Uptime

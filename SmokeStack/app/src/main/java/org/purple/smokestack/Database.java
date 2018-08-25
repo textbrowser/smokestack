@@ -707,6 +707,7 @@ public class Database extends SQLiteOpenHelper
 		 "n.proxy_ip_address, " +
 		 "n.proxy_port, " +
 		 "n.proxy_type, " +
+		 "n.queue_size, " +
 		 "n.remote_certificate, " +
 		 "n.remote_ip_address, " +
 		 "n.remote_port, " +
@@ -855,30 +856,38 @@ public class Database extends SQLiteOpenHelper
 			    break;
 			case 12:
 			    if(bytes != null)
-				neighborElement.m_remoteCertificate =
-				    Miscellaneous.deepCopy(bytes);
+				neighborElement.m_queueSize = new String(bytes);
+			    else
+				neighborElement.m_queueSize =
+				    "error (" + oid + ")";
 
 			    break;
 			case 13:
 			    if(bytes != null)
-				neighborElement.m_remoteIpAddress =
-				    new String(bytes);
-			    else
-				neighborElement.m_remoteIpAddress =
-				    "error (" + oid + ")";
+				neighborElement.m_remoteCertificate =
+				    Miscellaneous.deepCopy(bytes);
 
 			    break;
 			case 14:
 			    if(bytes != null)
-				neighborElement.m_remotePort =
+				neighborElement.m_remoteIpAddress =
 				    new String(bytes);
 			    else
-				neighborElement.m_remotePort =
+				neighborElement.m_remoteIpAddress =
 				    "error (" + oid + ")";
 
 			    break;
 			case 15:
 			    if(bytes != null)
+				neighborElement.m_remotePort =
+				    new String(bytes);
+			    else
+				neighborElement.m_remotePort =
+				    "error (" + oid + ")";
+
+			    break;
+			case 16:
+			    if(bytes != null)
 				neighborElement.m_remoteScopeId =
 				    new String(bytes);
 			    else
@@ -886,7 +895,7 @@ public class Database extends SQLiteOpenHelper
 				    "error (" + oid + ")";
 
 			    break;
-			case 16:
+			case 17:
 			    if(bytes != null)
 				neighborElement.m_sessionCipher =
 				    new String(bytes);
@@ -895,7 +904,7 @@ public class Database extends SQLiteOpenHelper
 				    "error (" + oid + ")";
 
 			    break;
-			case 17:
+			case 18:
 			    if(bytes != null)
 				neighborElement.m_status = new String(bytes);
 			    else
@@ -903,7 +912,7 @@ public class Database extends SQLiteOpenHelper
 				    "error (" + oid + ")";
 
 			    break;
-			case 18:
+			case 19:
 			    if(bytes != null)
 				neighborElement.m_statusControl =
 				    new String(bytes);
@@ -912,7 +921,7 @@ public class Database extends SQLiteOpenHelper
 				    "error (" + oid + ")";
 
 			    break;
-			case 19:
+			case 20:
 			    if(bytes != null)
 				neighborElement.m_transport = new String(bytes);
 			    else
@@ -920,7 +929,7 @@ public class Database extends SQLiteOpenHelper
 				    "error (" + oid + ")";
 
 			    break;
-			case 20:
+			case 21:
 			    if(bytes != null)
 				neighborElement.m_uptime = new String(bytes);
 			    else
@@ -2206,19 +2215,20 @@ public class Database extends SQLiteOpenHelper
 	    sparseArray.append(10, "proxy_ip_address");
 	    sparseArray.append(11, "proxy_port");
 	    sparseArray.append(12, "proxy_type");
-	    sparseArray.append(13, "remote_certificate");
-	    sparseArray.append(14, "remote_ip_address");
-	    sparseArray.append(15, "remote_ip_address_digest");
-	    sparseArray.append(16, "remote_port");
-            sparseArray.append(17, "remote_port_digest");
-            sparseArray.append(18, "remote_scope_id");
-            sparseArray.append(19, "session_cipher");
-            sparseArray.append(20, "status");
-            sparseArray.append(21, "status_control");
-            sparseArray.append(22, "transport");
-            sparseArray.append(23, "transport_digest");
-            sparseArray.append(24, "uptime");
-            sparseArray.append(25, "user_defined_digest");
+	    sparseArray.append(13, "queue_size");
+	    sparseArray.append(14, "remote_certificate");
+	    sparseArray.append(15, "remote_ip_address");
+	    sparseArray.append(16, "remote_ip_address_digest");
+	    sparseArray.append(17, "remote_port");
+            sparseArray.append(18, "remote_port_digest");
+            sparseArray.append(19, "remote_scope_id");
+            sparseArray.append(20, "session_cipher");
+            sparseArray.append(21, "status");
+            sparseArray.append(22, "status_control");
+            sparseArray.append(23, "transport");
+            sparseArray.append(24, "transport_digest");
+            sparseArray.append(25, "uptime");
+            sparseArray.append(26, "user_defined_digest");
 
 	    /*
 	    ** Proxy information.
@@ -3113,10 +3123,11 @@ public class Database extends SQLiteOpenHelper
 				    "0",             // Bytes Buffered
 				    "0",             // Bytes Read
 				    "0",             // Bytes Written
-				    "0",             // Queue Size
+				    "0",             // Echo Queue Size
 				    "",              // Error
 				    "",              // IP Address
 				    "0",             // Port
+				    "0",             // Queue Size
 				    "",              // Session Cipher
 				    "disconnected",  // Status
 				    "0",             // Uptime
@@ -3398,6 +3409,7 @@ public class Database extends SQLiteOpenHelper
 	    "proxy_ip_address TEXT NOT NULL, " +
 	    "proxy_port TEXT NOT NULL, " +
 	    "proxy_type TEXT NOT NULL, " +
+	    "queue_size TEXT NOT NULL, " +
 	    "remote_certificate TEXT NOT NULL, " +
 	    "remote_ip_address TEXT NOT NULL, " +
 	    "remote_ip_address_digest TEXT NOT NULL, " +
@@ -3840,6 +3852,7 @@ public class Database extends SQLiteOpenHelper
 					String error,
 					String ipAddress,
 					String ipPort,
+					String queueSize,
 					String sessionCipher,
 					String status,
 					String uptime,
@@ -3908,6 +3921,10 @@ public class Database extends SQLiteOpenHelper
 		("local_port_digest",
 		 Base64.encodeToString(cryptography.
 				       hmac(ipPort.trim().getBytes()),
+				       Base64.DEFAULT));
+	    values.put
+		("queue_size",
+		 Base64.encodeToString(cryptography.etm(queueSize.getBytes()),
 				       Base64.DEFAULT));
 	    values.put
 		("session_cipher",

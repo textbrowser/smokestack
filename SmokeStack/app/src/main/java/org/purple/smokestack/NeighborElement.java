@@ -40,6 +40,7 @@ public class NeighborElement
     public String m_proxyIpAddress = "";
     public String m_proxyPort = "";
     public String m_proxyType = "";
+    public String m_queueSize = "";
     public String m_remoteIpAddress = "";
     public String m_remotePort = "";
     public String m_remoteScopeId = "";

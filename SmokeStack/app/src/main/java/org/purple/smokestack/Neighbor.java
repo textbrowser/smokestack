@@ -88,6 +88,7 @@ public abstract class Neighbor
 	String error = "";
 	String localIp = getLocalIp();
 	String localPort = String.valueOf(getLocalPort());
+	String queueSize = "";
 	String sessionCiper = getSessionCipher();
 	boolean connected = connected();
 	long uptime = System.nanoTime() - m_startTime.get();
@@ -102,6 +103,11 @@ public abstract class Neighbor
 	    echoQueueSize = String.valueOf(m_echoQueue.size());
 	}
 
+	synchronized(m_queueMutex)
+	{
+	    queueSize = String.valueOf(m_queue.size());
+	}
+
 	m_databaseHelper.saveNeighborInformation
 	    (m_cryptography,
 	     String.valueOf(m_stringBuffer.length()),
@@ -111,6 +117,7 @@ public abstract class Neighbor
 	     error,
 	     localIp,
 	     localPort,
+	     String.valueOf(queueSize),
 	     sessionCiper,
 	     connected ? (m_bytesWritten.get() > 0 ?
 			  "connected" : "connecting") : "disconnected",
