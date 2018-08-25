@@ -104,6 +104,7 @@ public abstract class Neighbor
 
 	m_databaseHelper.saveNeighborInformation
 	    (m_cryptography,
+	     String.valueOf(m_stringBuffer.length()),
 	     String.valueOf(m_bytesRead.get()),
 	     String.valueOf(m_bytesWritten.get()),
 	     echoQueueSize,

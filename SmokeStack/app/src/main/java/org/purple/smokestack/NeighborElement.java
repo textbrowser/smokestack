@@ -29,6 +29,7 @@ package org.purple.smokestack;
 
 public class NeighborElement
 {
+    public String m_bytesBuffered = "";
     public String m_bytesRead = "";
     public String m_bytesWritten = "";
     public String m_echoQueueSize = "";

@@ -180,6 +180,7 @@ public class Kernel
 		       equals("disconnect"))
 			s_databaseHelper.saveNeighborInformation
 			    (s_cryptography,
+			     "0",             // Bytes Buffered
 			     "0",             // Bytes Read
 			     "0",             // Bytes Written
 			     "0",             // Queue Size

@@ -1058,6 +1058,11 @@ public class Settings extends AppCompatActivity
 	    stringBuilder.append(" / ");
 	    stringBuilder.append(Neighbor.MAXIMUM_QUEUED_ECHO_PACKETS);
 	    stringBuilder.append("\n");
+	    stringBuilder.append("Buffered: ");
+	    stringBuilder.append
+		(Miscellaneous.
+		 formattedDigitalInformation(neighborElement.m_bytesBuffered));
+	    stringBuilder.append("\n");
 	    stringBuilder.append("In: ");
 	    stringBuilder.append
 		(Miscellaneous.
