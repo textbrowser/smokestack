@@ -409,6 +409,8 @@ public class Settings extends AppCompatActivity
 	button1.setEnabled(state);
         button1 = (Button) findViewById(R.id.refresh_neighbors);
         button1.setEnabled(state);
+	button1 = (Button) findViewById(R.id.refresh_ozones);
+        button1.setEnabled(state);
 	button1 = (Button) findViewById(R.id.refresh_participants);
 	button1.setEnabled(state);
 	button1 = (Button) findViewById(R.id.reset_listener_fields);
