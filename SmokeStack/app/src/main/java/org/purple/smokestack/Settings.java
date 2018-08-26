@@ -2078,7 +2078,7 @@ public class Settings extends AppCompatActivity
 					       runtime.freeMemory()) / 1048576L;
 
 				((TextView) findViewById(R.id.memory)).setText
-				    (memory + " MiB Consumed");
+				    (memory + " MiB Consumed (JVM)");
 			    }
 			});
 		    }
