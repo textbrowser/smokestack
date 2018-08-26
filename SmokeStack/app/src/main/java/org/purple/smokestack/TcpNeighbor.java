@@ -124,17 +124,13 @@ public class TcpNeighbor extends Neighbor
 	}
 	catch(Exception exception)
 	{
+	    return false;
 	}
-
-	return false;
     }
 
     protected boolean send(String message)
     {
-	if(message == null || message.isEmpty())
-	    return false;
-
-	if(!connected())
+	if(!connected() || message == null || message.isEmpty())
 	    return false;
 
 	try
@@ -144,12 +140,7 @@ public class TcpNeighbor extends Neighbor
 		    if(!message.contains("type=0097a&content="))
 			return false;
 
-	    if(m_socket == null || m_socket.getOutputStream() == null)
-		return false;
-
-	    OutputStream outputStream = m_socket.getOutputStream();
-
-	    outputStream.write(message.getBytes());
+	    m_socket.getOutputStream().write(message.getBytes());
 	    Kernel.writeCongestionDigest(message);
 	    m_bytesWritten.getAndAdd(message.length());
 	}
@@ -262,9 +253,6 @@ public class TcpNeighbor extends Neighbor
 			else
 			    return;
 		    }
-		    else if(m_socket == null ||
-			    m_socket.getInputStream() == null)
-			return;
 		    else if(m_socket.getSoTimeout() == HANDSHAKE_TIMEOUT)
 			/*
 			** Reset SO_TIMEOUT from HANDSHAKE_TIMEOUT.

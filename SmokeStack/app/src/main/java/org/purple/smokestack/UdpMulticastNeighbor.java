@@ -58,17 +58,10 @@ public class UdpMulticastNeighbor extends Neighbor
 
     protected boolean send(String message)
     {
-	if(message == null || message.isEmpty())
-	    return false;
-
-	if(!connected())
-	    return false;
+	if(!connected() || message == null || message.isEmpty())
 
 	try
 	{
-	    if(m_socket == null)
-		return false;
-
 	    StringBuffer stringBuffer = new StringBuffer(message);
 
 	    while(stringBuffer.length() > 0)
@@ -161,8 +154,6 @@ public class UdpMulticastNeighbor extends Neighbor
 			else
 			    return;
 		    }
-		    else if(m_socket == null)
-			return;
 
 		    ByteArrayOutputStream byteArrayOutputStream =
 			new ByteArrayOutputStream();

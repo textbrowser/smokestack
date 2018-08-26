@@ -69,17 +69,11 @@ public class UdpNeighbor extends Neighbor
 
     protected boolean send(String message)
     {
-	if(message == null || message.isEmpty())
-	    return false;
-
-	if(!connected())
+	if(!connected() || message == null || message.isEmpty())
 	    return false;
 
 	try
 	{
-	    if(m_socket == null)
-		return false;
-
 	    StringBuffer stringBuffer = new StringBuffer(message);
 
 	    while(stringBuffer.length() > 0)
@@ -169,8 +163,6 @@ public class UdpNeighbor extends Neighbor
 			else
 			    return;
 		    }
-		    else if(m_socket == null)
-			return;
 
 		    ByteArrayOutputStream byteArrayOutputStream =
 			new ByteArrayOutputStream();
