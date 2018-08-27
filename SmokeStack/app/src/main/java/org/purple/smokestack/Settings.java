@@ -76,6 +76,17 @@ import javax.crypto.SecretKey;
 
 public class Settings extends AppCompatActivity
 {
+    private abstract class ContextMenuEnumerator
+    {
+	public final static int DELETE_ALL_MESSAGES = 0;
+	public final static int DELETE_LISTENER = 1;
+	public final static int DELETE_MESSAGES = 2;
+	public final static int DELETE_OZONE = 3;
+	public final static int DELETE_PARTICIPANT = 4;
+	public final static int NEW_NAME = 5;
+	public final static int RESET_RETRIEVAL_STATE = 6;
+    }
+
     private class PopulateListeners implements Runnable
     {
 	private ArrayList<ListenerElement> m_arrayList = null;
@@ -2509,7 +2520,7 @@ public class Settings extends AppCompatActivity
 	    {
 		switch(groupId)
 	        {
-		case 0:
+		case ContextMenuEnumerator.DELETE_OZONE:
 		    if(State.getInstance().getString("dialog_accepted").
 		       equals("true"))
 			if(m_databaseHelper.
@@ -2520,14 +2531,14 @@ public class Settings extends AppCompatActivity
 			}
 
 		    break;
-		case 1:
+		case ContextMenuEnumerator.DELETE_ALL_MESSAGES:
 		    if(State.getInstance().getString("dialog_accepted").
 		       equals("true"))
 			if(m_databaseHelper.removeMessages())
 			    populateParticipants();
 
 		    break;
-		case 2:
+		case ContextMenuEnumerator.DELETE_MESSAGES:
 		    if(State.getInstance().getString("dialog_accepted").
 		       equals("true"))
 			if(m_databaseHelper.
@@ -2559,7 +2570,7 @@ public class Settings extends AppCompatActivity
 			}
 
 		    break;
-		case 3:
+		case ContextMenuEnumerator.DELETE_PARTICIPANT:
 		    if(State.getInstance().getString("dialog_accepted").
 		       equals("true"))
 			if(m_databaseHelper.
@@ -2574,7 +2585,7 @@ public class Settings extends AppCompatActivity
 			}
 
 		    break;
-		case 4:
+		case ContextMenuEnumerator.NEW_NAME:
 		    String string = State.getInstance().
 			getString("settings_participant_name_input");
 
@@ -2587,7 +2598,7 @@ public class Settings extends AppCompatActivity
 		    State.getInstance().removeKey
 			("settings_participant_name_input");
 		    break;
-		case 5:
+		case ContextMenuEnumerator.RESET_RETRIEVAL_STATE:
 		    if(State.getInstance().getString("dialog_accepted").
 		       equals("true"))
 			if(m_databaseHelper.
@@ -2641,7 +2652,7 @@ public class Settings extends AppCompatActivity
 
 	switch(groupId)
 	{
-	case 0:
+	case ContextMenuEnumerator.DELETE_OZONE:
 	    Miscellaneous.showPromptDialog
 		(Settings.this,
 		 listener,
@@ -2650,13 +2661,13 @@ public class Settings extends AppCompatActivity
 		 menuItem.getTitle().toString().replace("Delete Ozone (", "").
 		 replace(")", "") + "?");
 	    break;
-	case 1:
+	case ContextMenuEnumerator.DELETE_ALL_MESSAGES:
 	    Miscellaneous.showPromptDialog
 		(Settings.this,
 		 listener,
 		 "Are you sure that you wish to delete all messages?");
 	    break;
-	case 2:
+	case ContextMenuEnumerator.DELETE_MESSAGES:
 	    Miscellaneous.showPromptDialog
 		(Settings.this,
 		 listener,
@@ -2666,7 +2677,7 @@ public class Settings extends AppCompatActivity
 		 replace("Delete Messages (", "").
 		 replace(")", "") + "?");
 	    break;
-	case 3:
+	case ContextMenuEnumerator.DELETE_PARTICIPANT:
 	    Miscellaneous.showPromptDialog
 		(Settings.this,
 		 listener,
@@ -2677,7 +2688,7 @@ public class Settings extends AppCompatActivity
 		 replace(")", "") + "? If confirmed, the associated Ozone " +
 		 "will also be deleted.");
 	    break;
-	case 4:
+	case ContextMenuEnumerator.NEW_NAME:
 	    Miscellaneous.showTextInputDialog
 		(Settings.this,
 		 listener,
@@ -2687,7 +2698,7 @@ public class Settings extends AppCompatActivity
 		 replace(")", "") + ".",
 		 "Name");
 	    break;
-	case 5:
+	case ContextMenuEnumerator.RESET_RETRIEVAL_STATE:
 	    Miscellaneous.showPromptDialog
 		(Settings.this,
 		 listener,
@@ -2697,7 +2708,7 @@ public class Settings extends AppCompatActivity
 		 replace("Reset Retrieval State (", "").
 		 replace(")", "") + "?");
 	    break;
-	case 6:
+	case ContextMenuEnumerator.DELETE_LISTENER:
 	    if(m_databaseHelper.
 	       deleteEntry(String.valueOf(itemId), "listeners"))
 	    {
@@ -2777,28 +2788,34 @@ public class Settings extends AppCompatActivity
 	    try
 	    {
 		if(v.getParent().getParent() == findViewById(R.id.listeners))
-		    menu.add(6, v.getId(), 0, "Delete Listener (" + tag + ")");
+		    menu.add(ContextMenuEnumerator.DELETE_LISTENER,
+			     v.getId(),
+			     0,
+			     "Delete Listener (" + tag + ")");
 		else if(v.getParent().getParent() == findViewById(R.id.ozones))
-		    menu.add(0, v.getId(), 0, "Delete Ozone (" + tag + ")");
+		    menu.add(ContextMenuEnumerator.DELETE_OZONE,
+			     v.getId(),
+			     0,
+			     "Delete Ozone (" + tag + ")");
 		else
 		{
-		    menu.add(1,
+		    menu.add(ContextMenuEnumerator.DELETE_ALL_MESSAGES,
 			     v.getId(),
 			     0,
 			     "Delete All Messages");
-		    menu.add(2,
+		    menu.add(ContextMenuEnumerator.DELETE_MESSAGES,
 			     v.getId(),
 			     0,
 			     "Delete Messages (" + tag + ")");
-		    menu.add(3,
+		    menu.add(ContextMenuEnumerator.DELETE_PARTICIPANT,
 			     v.getId(),
 			     0,
 			     "Delete Participant (" + tag + ")");
-		    menu.add(4,
+		    menu.add(ContextMenuEnumerator.NEW_NAME,
 			     v.getId(),
 			     0,
 			     "New Name (" + tag + ")");
-		    menu.add(5,
+		    menu.add(ContextMenuEnumerator.RESET_RETRIEVAL_STATE,
 			     v.getId(),
 			     0,
 			     "Reset Retrieval State (" + tag + ")");
