@@ -93,14 +93,14 @@ public abstract class Neighbor
 	boolean connected = connected();
 	long uptime = System.nanoTime() - m_startTime.get();
 
-	synchronized(m_errorMutex)
-	{
-	    error = m_error.toString();
-	}
-
 	synchronized(m_echoQueueMutex)
 	{
 	    echoQueueSize = String.valueOf(m_echoQueue.size());
+	}
+
+	synchronized(m_errorMutex)
+	{
+	    error = m_error.toString();
 	}
 
 	synchronized(m_queueMutex)
@@ -117,7 +117,7 @@ public abstract class Neighbor
 	     error,
 	     localIp,
 	     localPort,
-	     String.valueOf(queueSize),
+	     queueSize,
 	     sessionCiper,
 	     connected ? (m_bytesWritten.get() > 0 ?
 			  "connected" : "connecting") : "disconnected",
