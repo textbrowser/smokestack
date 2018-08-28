@@ -519,6 +519,14 @@ public abstract class Neighbor
 	}
     }
 
+    public void clearQueue()
+    {
+	synchronized(m_queueMutex)
+	{
+	    m_queue.clear();
+	}
+    }
+
     public void scheduleEchoSend(String message)
     {
 	if(!connected() || message.trim().isEmpty())

@@ -1005,7 +1005,10 @@ public class Kernel
 		int j = m_neighbors.keyAt(i);
 
 		if(m_neighbors.get(j) != null)
+		{
 		    m_neighbors.get(j).clearEchoQueue();
+		    m_neighbors.get(j).clearQueue();
+		}
 	    }
 	}
     }
