@@ -39,13 +39,11 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public abstract class Neighbor
 {
-    private ArrayList<String> m_echoQueue = null;
     private ArrayList<String> m_queue = null;
     private ScheduledExecutorService m_parsingScheduler = null;
     private ScheduledExecutorService m_scheduler = null;
     private ScheduledExecutorService m_sendOutboundScheduler = null;
     private String m_scopeId = "";
-    private final Object m_echoQueueMutex = new Object();
     private final Object m_queueMutex = new Object();
     private final String m_echoMode = "full";
     private final static int BYTES_PER_READ = 1 * 1024 * 1024; // 1 MiB
@@ -80,11 +78,9 @@ public abstract class Neighbor
     protected final static int MAXIMUM_BYTES = LANE_WIDTH;
     protected final static int READ_SOCKET_INTERVAL = 50; // 50 Milliseconds
     protected final static int SO_TIMEOUT = 0; // 0 Seconds
-    public final static int MAXIMUM_QUEUED_ECHO_PACKETS = 1024;
 
     private void saveStatistics()
     {
-	String echoQueueSize = "";
 	String error = "";
 	String localIp = getLocalIp();
 	String localPort = String.valueOf(getLocalPort());
@@ -92,11 +88,6 @@ public abstract class Neighbor
 	String sessionCiper = getSessionCipher();
 	boolean connected = connected();
 	long uptime = System.nanoTime() - m_startTime.get();
-
-	synchronized(m_echoQueueMutex)
-	{
-	    echoQueueSize = String.valueOf(m_echoQueue.size());
-	}
 
 	synchronized(m_errorMutex)
 	{
@@ -113,7 +104,6 @@ public abstract class Neighbor
 	     String.valueOf(m_stringBuffer.length()),
 	     String.valueOf(m_bytesRead.get()),
 	     String.valueOf(m_bytesWritten.get()),
-	     echoQueueSize,
 	     error,
 	     localIp,
 	     localPort,
@@ -147,7 +137,6 @@ public abstract class Neighbor
 	m_clientSupportsCryptographicDiscovery = new AtomicBoolean(false);
 	m_cryptography = Cryptography.getInstance();
 	m_databaseHelper = Database.getInstance();
-	m_echoQueue = new ArrayList<> ();
 	m_ipAddress = ipAddress;
 	m_ipPort = ipPort;
 	m_isPrivateServer = new AtomicBoolean(isPrivateServer);
@@ -312,7 +301,7 @@ public abstract class Neighbor
 			*/
 
 			String array[] = m_databaseHelper.readOutboundMessage
-			    (m_oid.get());
+			    (false, m_oid.get());
 
 			/*
 			** If the message is sent successfully, remove it.
@@ -328,21 +317,16 @@ public abstract class Neighbor
 		    ** Echo packets.
 		    */
 
-		    String message = "";
+		    String array[] = m_databaseHelper.readOutboundMessage
+			(true, m_oid.get());
 
-		    synchronized(m_echoQueueMutex)
-		    {
-			if(!m_echoQueue.isEmpty())
-			    message = m_echoQueue.remove(0);
-		    }
-
-		    if(!message.isEmpty())
+		    if(array != null && array.length == 2)
 		    {
 			if(!m_userDefined.get()) // A server.
 			{
 			    if(m_allowUnsolicited.get() ||
 			       !m_clientSupportsCryptographicDiscovery.get())
-				send(message);
+				send(array[0]);
 			    else
 				try
 				{
@@ -354,15 +338,18 @@ public abstract class Neighbor
 				    if(m_databaseHelper.
 				       containsRoutingIdentity(m_uuid.
 							       toString(),
-							       message))
-					send(message); // Ignore the results.
+							       array[0]))
+					send(array[0]); // Ignore the results.
 				}
 				catch(Exception exception)
 				{
 				}
 			}
 			else
-			    send(message); // Ignore the results.
+			    send(array[0]); // Ignore the results.
+
+			m_databaseHelper.deleteEntry
+			    (array[1], "outbound_queue");
 		    }
 
 		    /*
@@ -468,10 +455,7 @@ public abstract class Neighbor
 
     protected void disconnect()
     {
-	synchronized(m_echoQueueMutex)
-	{
-	    m_echoQueue.clear();
-	}
+	m_databaseHelper.deleteEchoQueue(m_oid.get());
 
 	synchronized(m_queueMutex)
 	{
@@ -513,10 +497,7 @@ public abstract class Neighbor
 
     public void clearEchoQueue()
     {
-	synchronized(m_echoQueueMutex)
-	{
-	    m_echoQueue.clear();
-	}
+	m_databaseHelper.deleteEchoQueue(m_oid.get());
     }
 
     public void clearQueue()
@@ -532,11 +513,8 @@ public abstract class Neighbor
 	if(!connected() || message.trim().isEmpty())
 	    return;
 
-	synchronized(m_echoQueueMutex)
-	{
-	    if(m_echoQueue.size() < MAXIMUM_QUEUED_ECHO_PACKETS)
-		m_echoQueue.add(message);
-	}
+	m_databaseHelper.enqueueOutboundMessage
+	    (message, true, m_oid.get());
     }
 
     public void scheduleSend(String message)

@@ -183,7 +183,6 @@ public class Kernel
 			     "0",             // Bytes Buffered
 			     "0",             // Bytes Read
 			     "0",             // Bytes Written
-			     "0",             // Echo Queue Size
 			     "",              // Error
 			     "",              // IP Address
 			     "0",             // Port
@@ -1062,7 +1061,7 @@ public class Kernel
 		   arrayList.get(i).m_statusControl.toLowerCase().
 		   equals("connect"))
 		    s_databaseHelper.enqueueOutboundMessage
-			(message, arrayList.get(i).m_oid);
+			(message, false, arrayList.get(i).m_oid);
 
 	    arrayList.clear();
 	}

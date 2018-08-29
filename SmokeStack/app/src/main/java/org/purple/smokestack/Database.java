@@ -695,11 +695,12 @@ public class Database extends SQLiteOpenHelper
 	    cursor = m_db.rawQuery
 		("SELECT " +
 		 "(SELECT COUNT(*) FROM outbound_queue o WHERE " +
-		 "o.neighbor_oid = n.OID), " +
+		 "o.echo_queue = 0 AND o.neighbor_oid = n.OID), " +
+		 "(SELECT COUNT(*) FROM outbound_queue o WHERE " +
+		 "o.echo_queue = 1 AND o.neighbor_oid = n.OID), " +
 		 "n.bytes_buffered, " +
 		 "n.bytes_read, " +
 		 "n.bytes_written, " +
-		 "n.echo_queue_size, " +
 		 "n.ip_version, " +
 		 "n.last_error, " +
 		 "n.local_ip_address, " +
@@ -739,12 +740,12 @@ public class Database extends SQLiteOpenHelper
 
 			byte bytes[] = null;
 
-			if(i != 0)
+			if(i != 0 && i != 1)
 			    bytes = cryptography.mtd
 				(Base64.decode(cursor.getString(i).getBytes(),
 					       Base64.DEFAULT));
 
-			if(bytes == null && i != 0)
+			if(bytes == null && i != 0 && i != 1)
 			{
 			    StringBuilder stringBuilder = new StringBuilder();
 
@@ -762,6 +763,10 @@ public class Database extends SQLiteOpenHelper
 				getLong(i);
 			    break;
 			case 1:
+			    neighborElement.m_outboundEchoQueued =
+				cursor.getLong(i);
+			    break;
+			case 2:
 			    if(bytes != null)
 				neighborElement.m_bytesBuffered =
 				    new String(bytes);
@@ -770,7 +775,7 @@ public class Database extends SQLiteOpenHelper
 				    "error (" + oid + ")";
 
 			    break;
-			case 2:
+			case 3:
 			    if(bytes != null)
 				neighborElement.m_bytesRead = new String(bytes);
 			    else
@@ -778,21 +783,12 @@ public class Database extends SQLiteOpenHelper
 				    "error (" + oid + ")";
 
 			    break;
-			case 3:
-			    if(bytes != null)
-				neighborElement.m_bytesWritten =
-				    new String(bytes);
-			    else
-				neighborElement.m_bytesWritten =
-				    "error (" + oid + ")";
-
-			    break;
 			case 4:
 			    if(bytes != null)
-				neighborElement.m_echoQueueSize =
+				neighborElement.m_bytesWritten =
 				    new String(bytes);
 			    else
-				neighborElement.m_echoQueueSize =
+				neighborElement.m_bytesWritten =
 				    "error (" + oid + ")";
 
 			    break;
@@ -1640,7 +1636,7 @@ public class Database extends SQLiteOpenHelper
 	return sipHashIdDigest;
     }
 
-    public String[] readOutboundMessage(int oid)
+    public String[] readOutboundMessage(boolean echo, int oid)
     {
 	if(m_db == null)
 	    return null;
@@ -1651,9 +1647,10 @@ public class Database extends SQLiteOpenHelper
 	try
 	{
 	    cursor = m_db.rawQuery
-		("SELECT message, OID FROM outbound_queue " +
-		 "WHERE neighbor_oid = ? ORDER BY OID LIMIT 1",
-		 new String[] {String.valueOf(oid)});
+		("SELECT message, OID FROM outbound_queue WHERE " +
+		 "echo_queue = ? AND neighbor_oid = ? ORDER BY OID LIMIT 1",
+		 new String[] {String.valueOf(echo ? 1 : 0),
+			       String.valueOf(oid)});
 
 	    if(cursor != null && cursor.moveToFirst())
 	    {
@@ -1901,7 +1898,7 @@ public class Database extends SQLiteOpenHelper
 	{
 	    m_db.execSQL
 		("DELETE FROM ozones WHERE ozone_address_digest IN " +
-		 "(SELECT siphash_id_digest FROM siphash_ids WHERE oid = ?)",
+		 "(SELECT siphash_id_digest FROM siphash_ids WHERE OID = ?)",
 		 new String[] {oid});
 	    ok = m_db.delete("siphash_ids", "OID = ?", new String[] {oid}) > 0;
 	    m_db.setTransactionSuccessful();
@@ -2205,30 +2202,29 @@ public class Database extends SQLiteOpenHelper
 	    sparseArray.append(0, "bytes_buffered");
 	    sparseArray.append(1, "bytes_read");
 	    sparseArray.append(2, "bytes_written");
-	    sparseArray.append(3, "echo_queue_size");
-	    sparseArray.append(4, "ip_version");
-	    sparseArray.append(5, "last_error");
-	    sparseArray.append(6, "local_ip_address");
-	    sparseArray.append(7, "local_ip_address_digest");
-	    sparseArray.append(8, "local_port");
-	    sparseArray.append(9, "local_port_digest");
-	    sparseArray.append(10, "proxy_ip_address");
-	    sparseArray.append(11, "proxy_port");
-	    sparseArray.append(12, "proxy_type");
-	    sparseArray.append(13, "queue_size");
-	    sparseArray.append(14, "remote_certificate");
-	    sparseArray.append(15, "remote_ip_address");
-	    sparseArray.append(16, "remote_ip_address_digest");
-	    sparseArray.append(17, "remote_port");
-            sparseArray.append(18, "remote_port_digest");
-            sparseArray.append(19, "remote_scope_id");
-            sparseArray.append(20, "session_cipher");
-            sparseArray.append(21, "status");
-            sparseArray.append(22, "status_control");
-            sparseArray.append(23, "transport");
-            sparseArray.append(24, "transport_digest");
-            sparseArray.append(25, "uptime");
-            sparseArray.append(26, "user_defined_digest");
+	    sparseArray.append(3, "ip_version");
+	    sparseArray.append(4, "last_error");
+	    sparseArray.append(5, "local_ip_address");
+	    sparseArray.append(6, "local_ip_address_digest");
+	    sparseArray.append(7, "local_port");
+	    sparseArray.append(8, "local_port_digest");
+	    sparseArray.append(9, "proxy_ip_address");
+	    sparseArray.append(10, "proxy_port");
+	    sparseArray.append(11, "proxy_type");
+	    sparseArray.append(12, "queue_size");
+	    sparseArray.append(13, "remote_certificate");
+	    sparseArray.append(14, "remote_ip_address");
+	    sparseArray.append(15, "remote_ip_address_digest");
+	    sparseArray.append(16, "remote_port");
+            sparseArray.append(17, "remote_port_digest");
+            sparseArray.append(18, "remote_scope_id");
+            sparseArray.append(19, "session_cipher");
+            sparseArray.append(20, "status");
+            sparseArray.append(21, "status_control");
+            sparseArray.append(22, "transport");
+            sparseArray.append(23, "transport_digest");
+            sparseArray.append(24, "uptime");
+            sparseArray.append(25, "user_defined_digest");
 
 	    /*
 	    ** Proxy information.
@@ -2257,9 +2253,6 @@ public class Database extends SQLiteOpenHelper
 	    {
 		switch(sparseArray.get(i))
 		{
-		case "echo_queue_size":
-		    bytes = cryptography.etm("0".getBytes());
-		    break;
 		case "ip_version":
 		    bytes = cryptography.etm(version.trim().getBytes());
 		    break;
@@ -2756,7 +2749,7 @@ public class Database extends SQLiteOpenHelper
 		("name",
 		 Base64.encodeToString(cryptography.etm(name.trim().getBytes()),
 				       Base64.DEFAULT));
-	    m_db.update("siphash_ids", values, "oid = ?",
+	    m_db.update("siphash_ids", values, "OID = ?",
 			new String[] {String.valueOf(oid)});
 	    m_db.setTransactionSuccessful();
 	}
@@ -3123,7 +3116,6 @@ public class Database extends SQLiteOpenHelper
 				    "0",             // Bytes Buffered
 				    "0",             // Bytes Read
 				    "0",             // Bytes Written
-				    "0",             // Echo Queue Size
 				    "",              // Error
 				    "",              // IP Address
 				    "0",             // Port
@@ -3157,6 +3149,29 @@ public class Database extends SQLiteOpenHelper
 	}
     }
 
+    public void deleteEchoQueue(int oid)
+    {
+	if(m_db == null)
+	    return;
+
+	m_db.beginTransactionNonExclusive();
+
+	try
+	{
+	    m_db.delete("outbound_queue",
+			"echo_queue = 1 AND OID = ?",
+			new String[] {String.valueOf(oid)});
+	    m_db.setTransactionSuccessful();
+	}
+	catch(Exception exception)
+	{
+	}
+	finally
+	{
+	    m_db.endTransaction();
+	}
+    }
+
     public void deleteRoutingEntry(String clientIdentity)
     {
 	if(m_db == null)
@@ -3179,7 +3194,7 @@ public class Database extends SQLiteOpenHelper
 	}
     }
 
-    public void enqueueOutboundMessage(String message, int oid)
+    public void enqueueOutboundMessage(String message, boolean echo, int oid)
     {
 	if(message.trim().isEmpty() || m_db == null)
 	    return;
@@ -3190,6 +3205,7 @@ public class Database extends SQLiteOpenHelper
 	{
 	    ContentValues values = new ContentValues();
 
+	    values.put("echo_queue", echo ? 1 : 0);
 	    values.put("message", message);
 	    values.put("neighbor_oid", oid);
 	    m_db.insert("outbound_queue", null, values);
@@ -3399,7 +3415,6 @@ public class Database extends SQLiteOpenHelper
 	    "bytes_buffered TEXT NOT NULL, " +
 	    "bytes_read TEXT NOT NULL, " +
 	    "bytes_written TEXT NOT NULL, " +
-	    "echo_queue_size TEXT NOT NULL, " +
 	    "ip_version TEXT NOT NULL, " +
 	    "last_error TEXT NOT NULL, " +
 	    "local_ip_address TEXT NOT NULL, " +
@@ -3440,6 +3455,7 @@ public class Database extends SQLiteOpenHelper
 	*/
 
 	str = "CREATE TABLE IF NOT EXISTS outbound_queue (" +
+	    "echo_queue INTEGER NOT NULL DEFAULT 0, " +
 	    "message TEXT NOT NULL, " +
 	    "neighbor_oid INTEGER NOT NULL, " +
 	    "PRIMARY KEY (message, neighbor_oid))";
@@ -3848,7 +3864,6 @@ public class Database extends SQLiteOpenHelper
 					String bytesBuffered,
 					String bytesRead,
 					String bytesWritten,
-					String echoQueueSize,
 					String error,
 					String ipAddress,
 					String ipPort,
@@ -3871,7 +3886,6 @@ public class Database extends SQLiteOpenHelper
 	    {
 		bytesRead = "";
 		bytesWritten = "";
-		echoQueueSize = "0";
 		error = error.trim(); // Do not clear the error.
 		ipAddress = "";
 		ipPort = "";
@@ -3891,11 +3905,6 @@ public class Database extends SQLiteOpenHelper
 	    values.put
 		("bytes_written",
 		 Base64.encodeToString(cryptography.etm(bytesWritten.
-							getBytes()),
-				       Base64.DEFAULT));
-	    values.put
-		("echo_queue_size",
-		 Base64.encodeToString(cryptography.etm(echoQueueSize.
 							getBytes()),
 				       Base64.DEFAULT));
 	    values.put

@@ -32,7 +32,6 @@ public class NeighborElement
     public String m_bytesBuffered = "";
     public String m_bytesRead = "";
     public String m_bytesWritten = "";
-    public String m_echoQueueSize = "";
     public String m_error = "";
     public String m_ipVersion = "";
     public String m_localIpAddress = "";
@@ -51,6 +50,7 @@ public class NeighborElement
     public String m_uptime = "";
     public byte m_remoteCertificate[] = null;
     public int m_oid = -1;
+    public long m_outboundEchoQueued = 0;
     public long m_outboundQueued = 0;
 
     public NeighborElement()
