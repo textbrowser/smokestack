@@ -322,6 +322,9 @@ public abstract class Neighbor
 
 		    if(array != null && array.length == 2)
 		    {
+			m_databaseHelper.deleteEntry
+			    (array[1], "outbound_queue");
+
 			if(!m_userDefined.get()) // A server.
 			{
 			    if(m_allowUnsolicited.get() ||
@@ -347,9 +350,6 @@ public abstract class Neighbor
 			}
 			else
 			    send(array[0]); // Ignore the results.
-
-			m_databaseHelper.deleteEntry
-			    (array[1], "outbound_queue");
 		    }
 
 		    /*
@@ -513,7 +513,8 @@ public abstract class Neighbor
 	if(!connected() || message.trim().isEmpty())
 	    return;
 
-	m_databaseHelper.enqueueOutboundMessage(message, true, m_oid.get());
+	m_databaseHelper.enqueueOutboundMessage
+	    (m_cryptography, message, true, m_oid.get());
     }
 
     public void scheduleSend(String message)

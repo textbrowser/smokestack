@@ -3401,9 +3401,12 @@ public class Database extends SQLiteOpenHelper
 	}
     }
 
-    public void enqueueOutboundMessage(String message, boolean echo, int oid)
+    public void enqueueOutboundMessage(Cryptography cryptography,
+				       String message,
+				       boolean echo,
+				       int oid)
     {
-	if(message.trim().isEmpty() || m_db == null)
+	if(cryptography == null || message.trim().isEmpty() || m_db == null)
 	    return;
 
 	m_db.beginTransactionNonExclusive();
@@ -3414,6 +3417,10 @@ public class Database extends SQLiteOpenHelper
 
 	    values.put("echo_queue", echo ? 1 : 0);
 	    values.put("message", message);
+	    values.put
+		("message_digest",
+		 Base64.encodeToString(cryptography.hmac(message.getBytes()),
+				       Base64.DEFAULT));
 	    values.put("neighbor_oid", oid);
 	    m_db.insert("outbound_queue", null, values);
 	    m_db.setTransactionSuccessful();
@@ -3664,8 +3671,9 @@ public class Database extends SQLiteOpenHelper
 	str = "CREATE TABLE IF NOT EXISTS outbound_queue (" +
 	    "echo_queue INTEGER NOT NULL DEFAULT 0, " +
 	    "message TEXT NOT NULL, " +
+	    "message_digest TEXT NOT NULL, " +
 	    "neighbor_oid INTEGER NOT NULL, " +
-	    "PRIMARY KEY (message, neighbor_oid))";
+	    "PRIMARY KEY (message_digest, neighbor_oid))";
 
 	try
 	{

@@ -1065,7 +1065,10 @@ public class Kernel
 		   arrayList.get(i).m_statusControl.toLowerCase().
 		   equals("connect"))
 		    s_databaseHelper.enqueueOutboundMessage
-			(message, false, arrayList.get(i).m_oid);
+			(s_cryptography,
+			 message,
+			 false,
+			 arrayList.get(i).m_oid);
 
 	    arrayList.clear();
 	}
