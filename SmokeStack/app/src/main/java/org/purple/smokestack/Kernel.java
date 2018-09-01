@@ -178,6 +178,9 @@ public class Kernel
 		{
 		    if(neighborElement.m_statusControl.toLowerCase().
 		       equals("disconnect"))
+		    {
+			s_databaseHelper.deleteEchoQueue
+			    (neighborElement.m_oid);
 			s_databaseHelper.saveNeighborInformation
 			    (s_cryptography,
 			     "0",             // Bytes Buffered
@@ -191,6 +194,7 @@ public class Kernel
 			     "disconnected",  // Status
 			     "0",             // Uptime
 			     String.valueOf(neighborElement.m_oid));
+		    }
 
 		    continue;
 		}

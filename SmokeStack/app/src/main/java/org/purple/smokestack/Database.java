@@ -49,11 +49,14 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.TimeZone;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.regex.Matcher;
 
 public class Database extends SQLiteOpenHelper
 {
+    private AtomicLong m_cursorsClosed = new AtomicLong(0);
+    private AtomicLong m_cursorsOpened = new AtomicLong(0);
     private SQLiteDatabase m_db = null;
     private final static Comparator<ListenerElement>
 	s_readListenersComparator = new Comparator<ListenerElement> ()
@@ -211,6 +214,9 @@ public class Database extends SQLiteOpenHelper
 	    cursor = m_db.rawQuery
 		("SELECT signature_public_key FROM participants", null);
 
+	    if(cursor != null)
+		m_cursorsOpened.getAndIncrement();
+
 	    if(cursor != null && cursor.moveToFirst())
 		while(!cursor.isAfterLast())
 		{
@@ -254,7 +260,10 @@ public class Database extends SQLiteOpenHelper
 	finally
 	{
 	    if(cursor != null)
+	    {
 		cursor.close();
+		m_cursorsClosed.getAndIncrement();
+	    }
 	}
 
 	return false;
@@ -331,6 +340,10 @@ public class Database extends SQLiteOpenHelper
 		 "timestamp = CURRENT_TIMESTAMP " +
 		 "WHERE client_identity = ? AND identity = ?",
 		 new String[] {clientIdentity, identity});
+
+	    if(cursor != null)
+		m_cursorsOpened.getAndIncrement();
+
 	    m_db.setTransactionSuccessful();
 	}
 	catch(Exception exception)
@@ -339,7 +352,10 @@ public class Database extends SQLiteOpenHelper
 	finally
 	{
 	    if(cursor != null)
+	    {
 		cursor.close();
+		m_cursorsClosed.getAndIncrement();
+	    }
 
 	    m_db.endTransaction();
 	}
@@ -364,6 +380,9 @@ public class Database extends SQLiteOpenHelper
 		cursor = m_db.rawQuery
 		    ("SELECT DISTINCT(identity) FROM routing_identities " +
 		     "ORDER BY timestamp DESC", null);
+
+	    if(cursor != null)
+		m_cursorsOpened.getAndIncrement();
 
 	    if(cursor != null && cursor.moveToFirst())
 	    {
@@ -391,7 +410,10 @@ public class Database extends SQLiteOpenHelper
 	finally
 	{
 	    if(cursor != null)
+	    {
 		cursor.close();
+		m_cursorsClosed.getAndIncrement();
+	    }
 	}
 
 	return arrayList;
@@ -424,6 +446,9 @@ public class Database extends SQLiteOpenHelper
 		 "uptime, " +
 		 "OID " +
 		 "FROM listeners", null);
+
+	    if(cursor != null)
+		m_cursorsOpened.getAndIncrement();
 
 	    if(cursor != null && cursor.moveToFirst())
 	    {
@@ -592,7 +617,10 @@ public class Database extends SQLiteOpenHelper
 	finally
 	{
 	    if(cursor != null)
+	    {
 		cursor.close();
+		m_cursorsClosed.getAndIncrement();
+	    }
 	}
 
 	return arrayList;
@@ -611,6 +639,9 @@ public class Database extends SQLiteOpenHelper
 	{
 	    cursor = m_db.rawQuery
 		("SELECT status_control, OID FROM neighbors", null);
+
+	    if(cursor != null)
+		m_cursorsOpened.getAndIncrement();
 
 	    if(cursor != null && cursor.moveToFirst())
 	    {
@@ -673,7 +704,11 @@ public class Database extends SQLiteOpenHelper
 	finally
 	{
 	    if(cursor != null)
+	    {
 		cursor.close();
+		m_cursorsClosed.getAndIncrement();
+	    }
+
 	}
 
 	return arrayList;
@@ -720,6 +755,9 @@ public class Database extends SQLiteOpenHelper
 		 "n.uptime, " +
 		 "n.OID " +
 		 "FROM neighbors n ORDER BY n.OID", null);
+
+	    if(cursor != null)
+		m_cursorsOpened.getAndIncrement();
 
 	    if(cursor != null && cursor.moveToFirst())
 	    {
@@ -954,7 +992,10 @@ public class Database extends SQLiteOpenHelper
 	finally
 	{
 	    if(cursor != null)
+	    {
 		cursor.close();
+		m_cursorsClosed.getAndIncrement();
+	    }
 	}
 
 	return arrayList;
@@ -976,6 +1017,9 @@ public class Database extends SQLiteOpenHelper
 		 "ozone_address_stream, " +
 		 "OID " +
 		 "FROM ozones", null);
+
+	    if(cursor != null)
+		m_cursorsOpened.getAndIncrement();
 
 	    if(cursor != null && cursor.moveToFirst())
 	    {
@@ -1047,7 +1091,10 @@ public class Database extends SQLiteOpenHelper
 	finally
 	{
 	    if(cursor != null)
+	    {
 		cursor.close();
+		m_cursorsClosed.getAndIncrement();
+	    }
 	}
 
 	return arrayList;
@@ -1085,6 +1132,9 @@ public class Database extends SQLiteOpenHelper
 		 "si.timestamp, " +
 		 "si.OID " +
 		 "FROM siphash_ids si ORDER BY si.OID", null);
+
+	    if(cursor != null)
+		m_cursorsOpened.getAndIncrement();
 
 	    if(cursor != null && cursor.moveToFirst())
 	    {
@@ -1233,7 +1283,10 @@ public class Database extends SQLiteOpenHelper
 	finally
 	{
 	    if(cursor != null)
+	    {
 		cursor.close();
+		m_cursorsClosed.getAndIncrement();
+	    }
 	}
 
 	return arrayList;
@@ -1259,6 +1312,9 @@ public class Database extends SQLiteOpenHelper
 			       encodeToString(cryptography.
 					      hmac("true".getBytes()),
 					      Base64.DEFAULT)});
+
+	    if(cursor != null)
+		m_cursorsOpened.getAndIncrement();
 
 	    if(cursor != null && cursor.moveToFirst())
 	    {
@@ -1316,7 +1372,10 @@ public class Database extends SQLiteOpenHelper
 	finally
 	{
 	    if(cursor != null)
+	    {
 		cursor.close();
+		m_cursorsClosed.getAndIncrement();
+	    }
 	}
 
 	return arrayList;
@@ -1343,6 +1402,9 @@ public class Database extends SQLiteOpenHelper
 		 "FROM siphash_ids si WHERE si.OID = ? ORDER BY si.OID",
 		 new String[] {oid});
 
+	    if(cursor != null)
+		m_cursorsOpened.getAndIncrement();
+
 	    if(cursor != null && cursor.moveToFirst())
 	    {
 		messageTotals = new MessageTotals();
@@ -1359,7 +1421,10 @@ public class Database extends SQLiteOpenHelper
 	finally
 	{
 	    if(cursor != null)
+	    {
 		cursor.close();
+		m_cursorsClosed.getAndIncrement();
+	    }
 	}
 
 	return messageTotals;
@@ -1384,6 +1449,9 @@ public class Database extends SQLiteOpenHelper
 		 "signature_public_key " +
 		 "FROM participants WHERE encryption_public_key_digest = ?",
 		 new String[] {Base64.encodeToString(digest, Base64.DEFAULT)});
+
+	    if(cursor != null)
+		m_cursorsOpened.getAndIncrement();
 
 	    if(cursor != null && cursor.moveToFirst())
 	    {
@@ -1418,7 +1486,10 @@ public class Database extends SQLiteOpenHelper
 	finally
 	{
 	    if(cursor != null)
+	    {
 		cursor.close();
+		m_cursorsClosed.getAndIncrement();
+	    }
 	}
 
 	return publicKey;
@@ -1435,6 +1506,9 @@ public class Database extends SQLiteOpenHelper
 	try
 	{
 	    cursor = m_db.rawQuery("SELECT OID FROM neighbors", null);
+
+	    if(cursor != null)
+		m_cursorsOpened.getAndIncrement();
 
 	    if(cursor != null && cursor.moveToFirst())
 	    {
@@ -1460,7 +1534,10 @@ public class Database extends SQLiteOpenHelper
 	finally
 	{
 	    if(cursor != null)
+	    {
 		cursor.close();
+		m_cursorsClosed.getAndIncrement();
+	    }
 	}
 
 	return sparseArray;
@@ -1484,6 +1561,9 @@ public class Database extends SQLiteOpenHelper
 						   trim().getBytes("UTF-8")),
 					      Base64.DEFAULT)});
 
+	    if(cursor != null)
+		m_cursorsOpened.getAndIncrement();
+
 	    if(cursor != null && cursor.moveToFirst())
 	    {
 		byte bytes[] = cryptography.mtd
@@ -1500,7 +1580,10 @@ public class Database extends SQLiteOpenHelper
 	finally
 	{
 	    if(cursor != null)
+	    {
 		cursor.close();
+		m_cursorsClosed.getAndIncrement();
+	    }
 	}
 
 	return name;
@@ -1521,6 +1604,9 @@ public class Database extends SQLiteOpenHelper
 		("SELECT status_control FROM " + table + " WHERE OID = ?",
 		 new String[] {String.valueOf(oid)});
 
+	    if(cursor != null)
+		m_cursorsOpened.getAndIncrement();
+
 	    if(cursor != null && cursor.moveToFirst())
 	    {
 		byte bytes[] = cryptography.mtd
@@ -1537,7 +1623,10 @@ public class Database extends SQLiteOpenHelper
 	finally
 	{
 	    if(cursor != null)
+	    {
 		cursor.close();
+		m_cursorsClosed.getAndIncrement();
+	    }
 	}
 
 	return status;
@@ -1568,6 +1657,9 @@ public class Database extends SQLiteOpenHelper
 							     Base64.DEFAULT)});
 	    }
 
+	    if(cursor != null)
+		m_cursorsOpened.getAndIncrement();
+
 	    if(cursor != null && cursor.moveToFirst())
 		if(cryptography == null)
 		    str = cursor.getString(0);
@@ -1588,7 +1680,10 @@ public class Database extends SQLiteOpenHelper
 	finally
 	{
 	    if(cursor != null)
+	    {
 		cursor.close();
+		m_cursorsClosed.getAndIncrement();
+	    }
 	}
 
 	/*
@@ -1620,6 +1715,9 @@ public class Database extends SQLiteOpenHelper
 		 "FROM participants WHERE encryption_public_key_digest = ?",
 		 new String[] {Base64.encodeToString(digest, Base64.DEFAULT)});
 
+	    if(cursor != null)
+		m_cursorsOpened.getAndIncrement();
+
 	    if(cursor != null && cursor.moveToFirst())
 		sipHashIdDigest = cursor.getString(0);
 	}
@@ -1630,7 +1728,10 @@ public class Database extends SQLiteOpenHelper
 	finally
 	{
 	    if(cursor != null)
+	    {
 		cursor.close();
+		m_cursorsClosed.getAndIncrement();
+	    }
 	}
 
 	return sipHashIdDigest;
@@ -1652,6 +1753,9 @@ public class Database extends SQLiteOpenHelper
 		 new String[] {String.valueOf(echo ? 1 : 0),
 			       String.valueOf(oid)});
 
+	    if(cursor != null)
+		m_cursorsOpened.getAndIncrement();
+
 	    if(cursor != null && cursor.moveToFirst())
 	    {
 		array = new String[2];
@@ -1666,7 +1770,10 @@ public class Database extends SQLiteOpenHelper
 	finally
 	{
 	    if(cursor != null)
+	    {
 		cursor.close();
+		m_cursorsClosed.getAndIncrement();
+	    }
 	}
 
 	return array;
@@ -1696,6 +1803,9 @@ public class Database extends SQLiteOpenHelper
 					      hmac(sipHashId.toUpperCase().
 						   trim().getBytes("UTF-8")),
 					      Base64.DEFAULT)});
+
+	    if(cursor != null)
+		m_cursorsOpened.getAndIncrement();
 
 	    if(cursor != null && cursor.moveToFirst())
 	    {
@@ -1737,7 +1847,10 @@ public class Database extends SQLiteOpenHelper
 	finally
 	{
 	    if(cursor != null)
+	    {
 		cursor.close();
+		m_cursorsClosed.getAndIncrement();
+	    }
 	}
 
 	return array;
@@ -1773,6 +1886,9 @@ public class Database extends SQLiteOpenHelper
 						  longToByteArray(value),
 						  Base64.DEFAULT)});
 
+		if(cursor != null)
+		    m_cursorsOpened.getAndIncrement();
+
 		if(cursor != null && cursor.moveToFirst())
 		    contains = cursor.getInt(0) == 1;
 	    }
@@ -1782,7 +1898,10 @@ public class Database extends SQLiteOpenHelper
 	    finally
 	    {
 		if(cursor != null)
+		{
 		    cursor.close();
+		    m_cursorsClosed.getAndIncrement();
+		}
 	    }
 	}
 	finally
@@ -1830,6 +1949,9 @@ public class Database extends SQLiteOpenHelper
 		("SELECT identity FROM routing_identities WHERE " +
 		 "client_identity = ?", new String[] {clientIdentity});
 
+	    if(cursor != null)
+		m_cursorsOpened.getAndIncrement();
+
 	    if(cursor != null && cursor.moveToFirst())
 		while(!cursor.isAfterLast())
 		{
@@ -1853,7 +1975,10 @@ public class Database extends SQLiteOpenHelper
 	finally
 	{
 	    if(cursor != null)
+	    {
 		cursor.close();
+		m_cursorsClosed.getAndIncrement();
+	    }
 	}
 
 	return false;
@@ -2531,6 +2656,9 @@ public class Database extends SQLiteOpenHelper
 								    NO_WRAP)),
 						      Base64.DEFAULT)});
 
+		    if(cursor != null)
+			m_cursorsOpened.getAndIncrement();
+
 		    if(cursor != null && cursor.moveToFirst())
 			if(cursor.getInt(0) == 1)
 			    exists = true;
@@ -2539,6 +2667,7 @@ public class Database extends SQLiteOpenHelper
 		    {
 			cursor.close();
 			cursor = null;
+			m_cursorsClosed.getAndIncrement();
 		    }
 
 		    encryptionKey = Cryptography.publicKeyFromBytes
@@ -2566,6 +2695,9 @@ public class Database extends SQLiteOpenHelper
 								    NO_WRAP)),
 						      Base64.DEFAULT)});
 
+		    if(cursor != null)
+			m_cursorsOpened.getAndIncrement();
+
 		    if(cursor != null && cursor.moveToFirst())
 			if(cursor.getInt(0) == 1)
 			    if(exists)
@@ -2575,6 +2707,7 @@ public class Database extends SQLiteOpenHelper
 		    {
 			cursor.close();
 			cursor = null;
+			m_cursorsClosed.getAndIncrement();
 		    }
 
 		    signatureKey = Cryptography.publicKeyFromBytes
@@ -2700,7 +2833,10 @@ public class Database extends SQLiteOpenHelper
 	finally
 	{
 	    if(cursor != null)
+	    {
 		cursor.close();
+		m_cursorsClosed.getAndIncrement();
+	    }
 	}
 
 	if(values == null)
@@ -2932,6 +3068,9 @@ public class Database extends SQLiteOpenHelper
 		("SELECT remote_certificate FROM neighbors WHERE OID = ?",
 		 new String[] {String.valueOf(oid)});
 
+	    if(cursor != null)
+		m_cursorsOpened.getAndIncrement();
+
 	    if(cursor != null && cursor.moveToFirst())
 		bytes = cryptography.mtd
 		    (Base64.decode(cursor.getString(0).getBytes(),
@@ -2944,7 +3083,10 @@ public class Database extends SQLiteOpenHelper
 	finally
 	{
 	    if(cursor != null)
+	    {
 		cursor.close();
+		m_cursorsClosed.getAndIncrement();
+	    }
 	}
 
 	return bytes;
@@ -2966,6 +3108,9 @@ public class Database extends SQLiteOpenHelper
 	    stringBuilder.append(table);
 	    cursor = m_db.rawQuery(stringBuilder.toString(), null);
 
+	    if(cursor != null)
+		m_cursorsOpened.getAndIncrement();
+
 	    if(cursor != null && cursor.moveToFirst())
 		c = cursor.getLong(0);
 	}
@@ -2976,10 +3121,23 @@ public class Database extends SQLiteOpenHelper
 	finally
 	{
 	    if(cursor != null)
+	    {
 		cursor.close();
+		m_cursorsClosed.getAndIncrement();
+	    }
 	}
 
 	return c;
+    }
+
+    public long cursorsClosed()
+    {
+	return m_cursorsClosed.get();
+    }
+
+    public long cursorsOpened()
+    {
+	return m_cursorsOpened.get();
     }
 
     public static synchronized Database getInstance()
@@ -3010,6 +3168,10 @@ public class Database extends SQLiteOpenHelper
 		("DELETE FROM stack WHERE siphash_id_digest " +
 		 "NOT IN (SELECT siphash_id_digest FROM siphash_ids)",
 		 null);
+
+	    if(cursor != null)
+		m_cursorsOpened.getAndIncrement();
+
 	    m_db.setTransactionSuccessful();
 	}
 	catch(Exception exception)
@@ -3018,7 +3180,10 @@ public class Database extends SQLiteOpenHelper
 	finally
 	{
 	    if(cursor != null)
+	    {
 		cursor.close();
+		m_cursorsClosed.getAndIncrement();
+	    }
 
 	    m_db.endTransaction();
 	}
@@ -3039,6 +3204,10 @@ public class Database extends SQLiteOpenHelper
 		("DELETE FROM outbound_queue WHERE neighbor_oid " +
 		 "NOT IN (SELECT OID FROM neighbors)",
 		 null);
+
+	    if(cursor != null)
+		m_cursorsOpened.getAndIncrement();
+
 	    m_db.setTransactionSuccessful();
 	}
 	catch(Exception exception)
@@ -3047,7 +3216,10 @@ public class Database extends SQLiteOpenHelper
 	finally
 	{
 	    if(cursor != null)
+	    {
 		cursor.close();
+		m_cursorsClosed.getAndIncrement();
+	    }
 
 	    m_db.endTransaction();
 	}
@@ -3068,6 +3240,10 @@ public class Database extends SQLiteOpenHelper
 		("DELETE FROM participants WHERE siphash_id_digest " +
 		 "NOT IN (SELECT siphash_id_digest FROM siphash_ids)",
 		 null);
+
+	    if(cursor != null)
+		m_cursorsOpened.getAndIncrement();
+
 	    m_db.setTransactionSuccessful();
 	}
 	catch(Exception exception)
@@ -3076,7 +3252,10 @@ public class Database extends SQLiteOpenHelper
 	finally
 	{
 	    if(cursor != null)
+	    {
 		cursor.close();
+		m_cursorsClosed.getAndIncrement();
+	    }
 
 	    m_db.endTransaction();
 	}
@@ -3090,6 +3269,10 @@ public class Database extends SQLiteOpenHelper
 		("DELETE FROM public_key_pairs WHERE siphash_id_digest " +
 		 "NOT IN (SELECT siphash_id_digest FROM siphash_ids)",
 		 null);
+
+	    if(cursor != null)
+		m_cursorsOpened.getAndIncrement();
+
 	    m_db.setTransactionSuccessful();
 	}
 	catch(Exception exception)
@@ -3098,7 +3281,10 @@ public class Database extends SQLiteOpenHelper
 	finally
 	{
 	    if(cursor != null)
+	    {
 		cursor.close();
+		m_cursorsClosed.getAndIncrement();
+	    }
 
 	    m_db.endTransaction();
 	}
@@ -3138,6 +3324,27 @@ public class Database extends SQLiteOpenHelper
 	try
 	{
 	    m_db.delete(table, null, null);
+	    m_db.setTransactionSuccessful();
+	}
+	catch(Exception exception)
+	{
+	}
+	finally
+	{
+	    m_db.endTransaction();
+	}
+    }
+
+    public void deleteEchoQueue()
+    {
+	if(m_db == null)
+	    return;
+
+	m_db.beginTransactionNonExclusive();
+
+	try
+	{
+	    m_db.delete("outbound_queue", "echo_queue = 1", null);
 	    m_db.setTransactionSuccessful();
 	}
 	catch(Exception exception)
@@ -3681,6 +3888,9 @@ public class Database extends SQLiteOpenHelper
 					      hmac("true".getBytes()),
 					      Base64.DEFAULT)});
 
+	    if(cursor != null)
+		m_cursorsOpened.getAndIncrement();
+
 	    if(cursor != null && cursor.moveToFirst())
 		while(!cursor.isAfterLast())
 		{
@@ -3718,7 +3928,10 @@ public class Database extends SQLiteOpenHelper
 	finally
 	{
 	    if(cursor != null)
+	    {
 		cursor.close();
+		m_cursorsClosed.getAndIncrement();
+	    }
 	}
 
 	if(stringBuilder.length() > 0)

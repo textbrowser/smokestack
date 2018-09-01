@@ -510,7 +510,7 @@ public abstract class Neighbor
 
     public void scheduleEchoSend(String message)
     {
-	if(!connected() || message.trim().isEmpty())
+	if(!connected() || m_oid.get() == -1 || message.trim().isEmpty())
 	    return;
 
 	m_databaseHelper.enqueueOutboundMessage

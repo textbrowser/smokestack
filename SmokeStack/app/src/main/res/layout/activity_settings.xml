@@ -60,6 +60,18 @@
                     android:textIsSelectable="true" />
 
                 <TextView
+                    android:id="@+id/database_cursors_closed"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="5dp" />
+
+                <TextView
+                    android:id="@+id/database_cursors_opened"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="5dp" />
+
+                <TextView
                     android:id="@+id/memory"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

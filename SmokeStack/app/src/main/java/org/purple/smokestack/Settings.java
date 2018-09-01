@@ -2082,6 +2082,15 @@ public class Settings extends AppCompatActivity
 			    @Override
 			    public void run()
 			    {
+				((TextView) findViewById
+				 (R.id.database_cursors_closed)).setText
+				    (m_databaseHelper.cursorsClosed() +
+				     " Database Cursors Closed");
+				((TextView) findViewById
+				 (R.id.database_cursors_opened)).setText
+				    (m_databaseHelper.cursorsOpened() +
+				     " Database Cursors Opened");
+
 				Runtime runtime = Runtime.getRuntime();
 				long memory = (runtime.totalMemory() -
 					       runtime.freeMemory()) / 1048576L;
@@ -2454,6 +2463,7 @@ public class Settings extends AppCompatActivity
 	m_databaseHelper.cleanDanglingMessages();
 	m_databaseHelper.cleanDanglingOutboundQueued();
 	m_databaseHelper.cleanDanglingParticipants();
+	m_databaseHelper.deleteEchoQueue();
 	prepareListenerIpAddress();
 	startGeneralTimer();
 
