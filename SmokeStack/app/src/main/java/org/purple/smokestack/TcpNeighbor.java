@@ -192,13 +192,13 @@ public class TcpNeighbor extends Neighbor
 	}
     }
 
-    public TcpNeighbor(SSLSocket socket, boolean isPrivateServer)
+    public TcpNeighbor(SSLSocket socket, boolean isPrivateServer, int oid)
     {
 	/*
 	** We're a server socket.
 	*/
 
-	super("", "", "", "TCP", "", isPrivateServer, false, -1);
+	super("", "", "", "TCP", "", isPrivateServer, false, oid);
 	m_isValidCertificate = new AtomicBoolean(true);
 	m_readSocketScheduler = Executors.newSingleThreadScheduledExecutor();
 	m_socket = socket;

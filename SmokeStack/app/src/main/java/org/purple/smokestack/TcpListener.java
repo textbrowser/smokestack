@@ -74,6 +74,7 @@ public class TcpListener
     }
 
     private AtomicBoolean m_isPrivateServer = null;
+    private AtomicInteger m_neighborCounter = new AtomicInteger(0);
     private AtomicInteger m_oid;
     private KeyStore m_keyStore = null;
     private SSLServerSocket m_socket = null;
@@ -171,7 +172,9 @@ public class TcpListener
 			ScheduledExecutorService scheduler = Executors.
 			    newSingleThreadScheduledExecutor();
 			TcpNeighbor neighbor = new TcpNeighbor
-			    (sslSocket, m_isPrivateServer.get());
+			    (sslSocket,
+			     m_isPrivateServer.get(),
+			     -m_neighborCounter.incrementAndGet());
 
 			Kernel.getInstance().recordNeighbor(neighbor);
 			scheduler.schedule

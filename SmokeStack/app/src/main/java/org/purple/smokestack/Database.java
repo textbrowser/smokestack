@@ -3366,7 +3366,7 @@ public class Database extends SQLiteOpenHelper
 	try
 	{
 	    m_db.delete("outbound_queue",
-			"echo_queue = 1 AND OID = ?",
+			"echo_queue = 1 AND neighbor_oid = ?",
 			new String[] {String.valueOf(oid)});
 	    m_db.setTransactionSuccessful();
 	}
