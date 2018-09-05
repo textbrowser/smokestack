@@ -2861,6 +2861,48 @@ public class Settings extends AppCompatActivity
     {
 	super.onResume();
 
+	CheckBox checkBox1 = null;
+
+	checkBox1 = (CheckBox) findViewById(R.id.automatic_refresh_listeners);
+
+	if(m_databaseHelper.
+	   readSetting(null, "automatic_listeners_refresh").equals("true"))
+	    checkBox1.setChecked(true);
+	else
+	    checkBox1.setChecked(false);
+
+	checkBox1 = (CheckBox) findViewById(R.id.automatic_refresh_neighbors);
+
+	if(m_databaseHelper.
+	   readSetting(null, "automatic_neighbors_refresh").equals("true"))
+	    checkBox1.setChecked(true);
+	else
+	    checkBox1.setChecked(false);
+
+	checkBox1 = (CheckBox) findViewById(R.id.neighbor_details);
+
+	if(m_databaseHelper.
+	   readSetting(null, "neighbors_details").equals("true"))
+	    checkBox1.setChecked(true);
+	else
+	    checkBox1.setChecked(false);
+
+	checkBox1 = (CheckBox) findViewById(R.id.prefer_active_screen);
+
+	if(m_databaseHelper.
+	   readSetting(null, "prefer_active_screen").equals("true"))
+	{
+	    checkBox1.setChecked(true);
+	    getWindow().addFlags
+	    (WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+	}
+	else
+	{
+	    checkBox1.setChecked(false);
+	    getWindow().clearFlags
+		(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+	}
+
 	if(!m_receiverRegistered)
 	{
 	    IntentFilter intentFilter = new IntentFilter();
