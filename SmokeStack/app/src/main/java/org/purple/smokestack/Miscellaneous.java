@@ -32,6 +32,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.text.InputType;
+import android.util.Base64;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -155,6 +156,40 @@ public abstract class Miscellaneous
 		stringBuilder.append(" GiB");
 	    }
 
+	    return stringBuilder.toString();
+	}
+	catch(Exception exception)
+	{
+	    return "";
+	}
+    }
+
+    public static String pemFormat(byte bytes[])
+    {
+	if(bytes == null || bytes.length <= 0)
+	    return "";
+
+	try
+	{
+	    String string = Base64.encodeToString(bytes, Base64.NO_WRAP);
+	    StringBuilder stringBuilder = new StringBuilder();
+
+	    stringBuilder.append("-----BEGIN CERTIFICATE-----\n");
+
+	    for(int i = 0; true; i += 64)
+		if(i < string.length() - 64)
+		{
+		    stringBuilder.append(string.substring(i, i + 64));
+		    stringBuilder.append("\n");
+		}
+		else
+		{
+		    stringBuilder.append(string.substring(i));
+		    stringBuilder.append("\n");
+		    break;
+		}
+
+	    stringBuilder.append("-----END CERTIFICATE-----\n");
 	    return stringBuilder.toString();
 	}
 	catch(Exception exception)

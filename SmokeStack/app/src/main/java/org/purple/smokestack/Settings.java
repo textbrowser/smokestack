@@ -684,9 +684,16 @@ public class Settings extends AppCompatActivity
 
 	    if(listenerElement.m_certificate != null)
 	    {
+		/*
+		** In PEM format.
+		*/
+
 		stringBuilder.append("\nCertificate Fingerprint: ");
 		stringBuilder.append
-		    (Cryptography.fingerPrint(listenerElement.m_certificate));
+		    (Cryptography.
+		     fingerPrint(Miscellaneous.
+				 pemFormat(listenerElement.m_certificate).
+				 getBytes()));
 	    }
 
 	    stringBuilder.append("\nPeers Count: ");
@@ -1054,7 +1061,10 @@ public class Settings extends AppCompatActivity
 			("Remote Certificate's Fingerprint: ");
 		    stringBuilder.append
 			(Cryptography.
-			 fingerPrint(neighborElement.m_remoteCertificate));
+			 fingerPrint(Miscellaneous.
+				     pemFormat(neighborElement.
+					       m_remoteCertificate).
+				     getBytes()));
 		}
 
 		if(!neighborElement.m_sessionCipher.isEmpty())

@@ -48,7 +48,7 @@ public class About
 		SimpleDateFormat("yyyy-MM-dd h:mm:ss");
 
 	    simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-            s_about = "Version 2018.09.01 September Sun " +
+            s_about = "Version 2018.10.10 Oblong October " +
                 (BuildConfig.DEBUG ? "(Debug) " : "(Release)") +
                 "\nBuild Date " +
                 simpleDateFormat.format(new Date(BuildConfig.BUILD_TIME)) +
