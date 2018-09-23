@@ -471,7 +471,7 @@ public class Cryptography
 		    stringBuilder.append(fingerprint.substring(i, i + 2)).
 			append(":");
 		else
-		    stringBuilder.append(fingerprint.substring(i, i + 2));
+		    stringBuilder.append(fingerprint.substring(i));
 	}
 	catch(Exception exception)
 	{

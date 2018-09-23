@@ -80,7 +80,11 @@ public abstract class Miscellaneous
 
 	    for(int i = 0; i < string.length(); i += offset)
 	    {
-		stringBuilder.append(string.substring(i, i + offset));
+		if(i < string.length() - offset)
+		    stringBuilder.append(string.substring(i, i + offset));
+		else
+		    stringBuilder.append(string.substring(i));
+
 		stringBuilder.append(delimiter);
 	    }
 
@@ -109,7 +113,11 @@ public abstract class Miscellaneous
 
 	    for(int i = 0; i < string.length(); i += offset)
 	    {
-		stringBuilder.append(string.substring(i, i + offset));
+		if(i < string.length() - offset)
+		    stringBuilder.append(string.substring(i, i + offset));
+		else
+		    stringBuilder.append(string.substring(i));
+
 		stringBuilder.append(delimiter);
 	    }
 
@@ -176,7 +184,7 @@ public abstract class Miscellaneous
 
 	    stringBuilder.append("-----BEGIN CERTIFICATE-----\n");
 
-	    for(int i = 0; true; i += 64)
+	    for(int i = 0; i < string.length(); i += 64)
 		if(i < string.length() - 64)
 		{
 		    stringBuilder.append(string.substring(i, i + 64));
