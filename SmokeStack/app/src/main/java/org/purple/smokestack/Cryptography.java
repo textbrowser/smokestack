@@ -338,7 +338,6 @@ public class Cryptography
 
     public static KeyPair generatePrivatePublicKeyPair(String algorithm,
 						       int keySize)
-	throws NoSuchAlgorithmException
     {
 	prepareSecureRandom();
 

@@ -501,12 +501,8 @@ public class Database extends SQLiteOpenHelper
 			    break;
 			case 2:
 			    if(bytes != null)
-			    {
-				if(new String(bytes).equals("true"))
-				    listenerElement.m_isPrivate = true;
-				else
-				    listenerElement.m_isPrivate = false;
-			    }
+				listenerElement.m_isPrivate =
+				    new String(bytes).equals("true");
 			    else
 				listenerElement.m_isPrivate = false;
 
