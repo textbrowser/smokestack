@@ -30,6 +30,7 @@ package org.purple.smokestack;
 import android.os.Build;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.TimeZone;
 
 public class About
@@ -45,7 +46,7 @@ public class About
 	if(s_about.isEmpty())
 	{
 	    SimpleDateFormat simpleDateFormat = new
-		SimpleDateFormat("yyyy-MM-dd h:mm:ss");
+		SimpleDateFormat("yyyy-MM-dd h:mm:ss", Locale.getDefault());
 
 	    simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
             s_about = "Version 2018.10.10 Oblong October " +

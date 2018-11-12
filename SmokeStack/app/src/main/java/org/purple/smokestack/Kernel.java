@@ -110,7 +110,8 @@ public class Kernel
 
 	    if(powerManager != null)
 		m_wakeLock = powerManager.newWakeLock
-		    (PowerManager.PARTIAL_WAKE_LOCK, "SmokeStackWakeLockTag");
+		    (PowerManager.PARTIAL_WAKE_LOCK,
+		     "SmokeStack:SmokeStackWakeLockTag");
 
 	    if(m_wakeLock != null)
 	    {

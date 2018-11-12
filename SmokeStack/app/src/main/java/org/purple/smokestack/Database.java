@@ -47,6 +47,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.Locale;
 import java.util.TimeZone;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
@@ -2968,7 +2969,7 @@ public class Database extends SQLiteOpenHelper
 		    break;
 		case "timestamp":
 		    SimpleDateFormat simpleDateFormat = new SimpleDateFormat
-			("yyyy-MM-dd HH:mm:ss");
+			("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
 
 		    simpleDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
 		    values.put
@@ -4280,7 +4281,7 @@ public class Database extends SQLiteOpenHelper
 	{
 	    ContentValues values = new ContentValues();
 	    SimpleDateFormat simpleDateFormat = new SimpleDateFormat
-		("yyyy-MM-dd HH:mm:ss");
+		("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
 
 	    simpleDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
 	    values.put
@@ -4350,7 +4351,7 @@ public class Database extends SQLiteOpenHelper
 	{
 	    ContentValues values = new ContentValues();
 	    SimpleDateFormat simpleDateFormat = new SimpleDateFormat
-		("yyyy-MM-dd HH:mm:ss");
+		("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
 
 	    simpleDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
 
@@ -4389,7 +4390,7 @@ public class Database extends SQLiteOpenHelper
 	{
 	    ContentValues values = new ContentValues();
 	    SimpleDateFormat simpleDateFormat = new SimpleDateFormat
-		("yyyy-MM-dd HH:mm:ss");
+		("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
 	    int index = identity.indexOf(";");
 
 	    /*
