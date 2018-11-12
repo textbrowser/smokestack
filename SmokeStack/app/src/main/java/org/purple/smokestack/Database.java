@@ -56,9 +56,9 @@ import java.util.regex.Matcher;
 
 public class Database extends SQLiteOpenHelper
 {
-    private AtomicLong m_cursorsClosed = new AtomicLong(0);
     private AtomicLong m_cursorsOpened = new AtomicLong(0);
     private SQLiteDatabase m_db = null;
+    private final AtomicLong m_cursorsClosed = new AtomicLong(0);
     private final static Comparator<ListenerElement>
 	s_readListenersComparator = new Comparator<ListenerElement> ()
 	{

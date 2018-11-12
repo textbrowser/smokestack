@@ -74,7 +74,6 @@ public class TcpListener
     }
 
     private AtomicBoolean m_isPrivateServer = null;
-    private AtomicInteger m_neighborCounter = new AtomicInteger(0);
     private AtomicInteger m_oid;
     private KeyStore m_keyStore = null;
     private SSLServerSocket m_socket = null;
@@ -86,6 +85,7 @@ public class TcpListener
     private String m_version = "";
     private final ArrayList<TcpNeighbor> m_sockets = new ArrayList<> ();
     private final AtomicBoolean m_listen = new AtomicBoolean(false);
+    private final AtomicInteger m_neighborCounter = new AtomicInteger(0);
     private final AtomicLong m_startTime = new AtomicLong(System.nanoTime());
     private final Cryptography m_cryptography = Cryptography.getInstance();
     private final Database m_databaseHelper = Database.getInstance();
