@@ -262,7 +262,6 @@ public class Messages
 		 Arrays.copyOfRange(keyStream, 0, 32));
 
 	    stringBuilder.setLength(0);
-	    stringBuilder = null;
 
 	    if(aes256 == null)
 		return null;
