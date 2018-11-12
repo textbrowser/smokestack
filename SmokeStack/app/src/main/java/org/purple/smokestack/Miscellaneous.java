@@ -187,7 +187,7 @@ public abstract class Miscellaneous
 	    for(int i = 0; i < string.length(); i += 64)
 		if(i < string.length() - 64)
 		{
-		    stringBuilder.append(string.substring(i, i + 64));
+		    stringBuilder.append(string, i, i + 64);
 		    stringBuilder.append("\n");
 		}
 		else
