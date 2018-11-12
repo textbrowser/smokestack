@@ -46,7 +46,7 @@ public abstract class Neighbor
     private String m_scopeId = "";
     private final Object m_queueMutex = new Object();
     private final String m_echoMode = "full";
-    private final static int BYTES_PER_READ = 1 * 1024 * 1024; // 1 MiB
+    private final static int BYTES_PER_READ = 1024 * 1024; // 1 MiB
     private final static int LANE_WIDTH = 32 * 1024 * 1024; // 32 MiB
     private final static int PARSING_INTERVAL = 100; // Milliseconds
     private final static int SEND_OUTBOUND_TIMER_INTERVAL = 25; // Milliseconds

@@ -29,7 +29,6 @@ package org.purple.smokestack;
 
 import android.os.Build;
 import android.util.Base64;
-import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.Socket;

@@ -3983,10 +3983,10 @@ public class Database extends SQLiteOpenHelper
 		 "siphash_ids",
 		 "stack"};
 
-	    for(int i = 0; i < tables.length; i++)
+	    for(String string : tables)
 		try
 		{
-		    m_db.delete(tables[i], null, null);
+		    m_db.delete(string, null, null);
 		}
 		catch(Exception exception)
 		{
