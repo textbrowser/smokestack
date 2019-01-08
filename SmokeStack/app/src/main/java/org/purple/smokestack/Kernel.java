@@ -990,8 +990,9 @@ public class Kernel
 
     public static void writeCongestionDigest(String message)
     {
-	s_databaseHelper.writeCongestionDigest
-	    (s_congestionSipHash.hmac(message.getBytes()));
+	if(message != null)
+	    s_databaseHelper.writeCongestionDigest
+		(s_congestionSipHash.hmac(message.getBytes()));
     }
 
     public static void writeCongestionDigest(byte data[])
