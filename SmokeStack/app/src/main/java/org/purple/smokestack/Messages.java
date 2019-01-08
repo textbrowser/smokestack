@@ -41,7 +41,7 @@ public class Messages
 
     public static String bytesToMessageString(byte bytes[])
     {
-	if(bytes == null || bytes.length <= 0)
+	if(bytes == null || bytes.length == 0)
 	    return "";
 
 	try
@@ -75,7 +75,7 @@ public class Messages
 
     public static String identitiesMessage(byte bytes[])
     {
-	if(bytes == null || bytes.length <= 0)
+	if(bytes == null || bytes.length == 0)
 	    return "";
 
 	try
@@ -110,7 +110,7 @@ public class Messages
 
     public static String requestAuthentication(StringBuffer stringBuffer)
     {
-	if(stringBuffer == null || stringBuffer.length() <= 0)
+	if(stringBuffer == null || stringBuffer.length() == 0)
 	    return "";
 
 	try

@@ -1432,7 +1432,7 @@ public class Database extends SQLiteOpenHelper
     {
 	if(cryptography == null ||
 	   digest == null ||
-	   digest.length <= 0 ||
+	   digest.length == 0 ||
 	   m_db == null)
 	    return null;
 
@@ -1698,7 +1698,7 @@ public class Database extends SQLiteOpenHelper
     {
 	if(cryptography == null ||
 	   digest == null ||
-	   digest.length <= 0 ||
+	   digest.length == 0 ||
 	   m_db == null)
 	    return "";
 
@@ -2488,7 +2488,7 @@ public class Database extends SQLiteOpenHelper
     {
 	if(address.trim().isEmpty() ||
 	   addressStream == null ||
-	   addressStream.length <= 0 ||
+	   addressStream.length == 0 ||
 	   cryptography == null ||
 	   m_db == null)
 	    return false;
@@ -2588,7 +2588,7 @@ public class Database extends SQLiteOpenHelper
     {
 	if(cryptography == null ||
 	   data == null ||
-	   data.length <= 0 ||
+	   data.length == 0 ||
 	   m_db == null)
 	    return false;
 
@@ -4230,7 +4230,7 @@ public class Database extends SQLiteOpenHelper
     {
 	if(cryptography == null ||
 	   digest == null ||
-	   digest.length <= 0 ||
+	   digest.length == 0 ||
 	   m_db == null)
 	    return;
 
@@ -4268,7 +4268,7 @@ public class Database extends SQLiteOpenHelper
 
     public void updateSipHashIdTimestamp(byte digest[])
     {
-	if(digest == null || digest.length <= 0 || m_db == null)
+	if(digest == null || digest.length == 0 || m_db == null)
 	    return;
 
 	m_db.beginTransactionNonExclusive();
@@ -4336,7 +4336,7 @@ public class Database extends SQLiteOpenHelper
     public void writeIdentities(UUID clientIdentity, byte bytes[])
     {
 	if(bytes == null ||
-	   bytes.length <= 0 ||
+	   bytes.length == 0 ||
 	   clientIdentity == null ||
 	   m_db == null)
 	    return;
@@ -4423,12 +4423,12 @@ public class Database extends SQLiteOpenHelper
     {
 	if(cryptography == null ||
 	   certificate == null ||
-	   certificate.length <= 0 ||
+	   certificate.length == 0 ||
 	   m_db == null ||
 	   privateKey == null ||
-	   privateKey.length <= 0 ||
+	   privateKey.length == 0 ||
 	   publicKey == null ||
-	   publicKey.length <= 0)
+	   publicKey.length == 0)
 	    return;
 
 	m_db.beginTransactionNonExclusive();
@@ -4495,7 +4495,7 @@ public class Database extends SQLiteOpenHelper
 	if(cryptography == null ||
 	   m_db == null ||
 	   message == null ||
-	   message.length <= 0)
+	   message.length == 0)
 	    return;
 
 	m_db.beginTransactionNonExclusive();

@@ -314,11 +314,11 @@ public class TcpListener
 	try
 	{
 	    if(certificateBytes == null ||
-	       certificateBytes.length <= 0 ||
+	       certificateBytes.length == 0 ||
 	       privateKey == null ||
-	       privateKey.length <= 0 ||
+	       privateKey.length == 0 ||
 	       publicKey == null ||
-	       publicKey.length <= 0)
+	       publicKey.length == 0)
 		keyPair = Cryptography.generatePrivatePublicKeyPair
 		    ("RSA", RSA_KEY_SIZE);
 	    else

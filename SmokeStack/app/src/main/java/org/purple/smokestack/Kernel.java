@@ -256,7 +256,7 @@ public class Kernel
 						 final byte identity[])
     {
 	if(identity == null ||
-	   identity.length <= 0 ||
+	   identity.length == 0 ||
 	   sipHashIdDigest == null ||
 	   sipHashIdDigest.isEmpty())
 	    return;

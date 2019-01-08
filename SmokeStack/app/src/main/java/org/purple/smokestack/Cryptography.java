@@ -116,7 +116,7 @@ public class Cryptography
 	** Encrypt-then-MAC.
 	*/
 
-	if(data == null || data.length < 0)
+	if(data == null)
 	    return null;
 
 	m_encryptionKeyMutex.readLock().lock();
@@ -198,7 +198,7 @@ public class Cryptography
 
     public byte[] hmac(byte data[])
     {
-	if(data == null || data.length < 0)
+	if(data == null)
 	    return null;
 
 	m_macKeyMutex.readLock().lock();
@@ -237,7 +237,7 @@ public class Cryptography
 	** MAC-then-decrypt.
 	*/
 
-	if(data == null || data.length < 0)
+	if(data == null)
 	    return null;
 
 	m_encryptionKeyMutex.readLock().lock();
@@ -497,11 +497,7 @@ public class Cryptography
 					  byte bytes[],
 					  byte data[])
     {
-	if(bytes == null ||
-	   bytes.length < 0 ||
-	   data == null ||
-	   data.length < 0 ||
-	   publicKey == null)
+	if(bytes == null || data == null || publicKey == null)
 	    return false;
 
 	Signature signature = null;
@@ -529,10 +525,7 @@ public class Cryptography
 
     public static byte[] decrypt(byte data[], byte keyBytes[])
     {
-	if(data == null ||
-	   data.length < 0 ||
-	   keyBytes == null ||
-	   keyBytes.length < 0)
+	if(data == null || keyBytes == null)
 	    return null;
 
 	byte bytes[] = null;
@@ -561,10 +554,7 @@ public class Cryptography
 
     public static byte[] encrypt(byte data[], byte keyBytes[])
     {
-	if(data == null ||
-	   data.length < 0 ||
-	   keyBytes == null ||
-	   keyBytes.length < 0)
+	if(data == null || keyBytes == null)
 	    return null;
 
 	prepareSecureRandom();
@@ -630,7 +620,7 @@ public class Cryptography
 
     public static byte[] keyForSipHash(byte data[])
     {
-	if(data == null || data.length < 0)
+	if(data == null)
 	    return null;
 
 	return pbkdf2(sha512(data),
@@ -641,10 +631,7 @@ public class Cryptography
 
     public static byte[] hmac(byte data[], byte keyBytes[])
     {
-	if(data == null ||
-	   data.length < 0 ||
-	   keyBytes == null ||
-	   keyBytes.length < 0)
+	if(data == null || keyBytes == null)
 	    return null;
 
 	byte bytes[] = null;
