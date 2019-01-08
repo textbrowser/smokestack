@@ -753,174 +753,174 @@ public class Kernel
 						  32,
 						  ozoneElement.m_addressStream.
 						  length))))
-		 {
-		     byte aes256[] = Cryptography.decrypt
-			 (array1,
-			  Arrays.copyOfRange(ozoneElement.m_addressStream,
-					     0,
-					     32));
+		{
+		    byte aes256[] = Cryptography.decrypt
+			(array1,
+			 Arrays.copyOfRange(ozoneElement.m_addressStream,
+					    0,
+					    32));
 
-		     if(aes256 == null)
-			 return true;
+		    if(aes256 == null)
+			return true;
 
-		     if(aes256[0] == Messages.CHAT_MESSAGE_RETRIEVAL[0])
-		     {
-			 long current = System.currentTimeMillis();
-			 long timestamp = Miscellaneous.byteArrayToLong
-			     (Arrays.copyOfRange(aes256, 1, 1 + 8));
+		    if(aes256[0] == Messages.CHAT_MESSAGE_RETRIEVAL[0])
+		    {
+			long current = System.currentTimeMillis();
+			long timestamp = Miscellaneous.byteArrayToLong
+			    (Arrays.copyOfRange(aes256, 1, 1 + 8));
 
-			 if(current - timestamp < 0)
-			 {
-			     if(timestamp - current >
+			if(current - timestamp < 0)
+			{
+			    if(timestamp - current >
+			       CHAT_MESSAGE_RETRIEVAL_WINDOW)
+				return true;
+			}
+			else if(current - timestamp >
 				CHAT_MESSAGE_RETRIEVAL_WINDOW)
-				 return true;
-			 }
-			 else if(current - timestamp >
-				 CHAT_MESSAGE_RETRIEVAL_WINDOW)
-			     return true;
+			    return true;
 
-			 byte identity[] = Arrays.copyOfRange
-			     (aes256, 9, 9 + 64);
+			byte identity[] = Arrays.copyOfRange
+			    (aes256, 9, 9 + 64);
 
-			 if(identity == null || identity.length != 64)
-			     return true;
+			if(identity == null || identity.length != 64)
+			    return true;
 
-			 PublicKey signatureKey = s_databaseHelper.
-			     signatureKeyForDigest
-			     (s_cryptography,
-			      Arrays.copyOfRange(aes256, 73, 73 + 64));
+			PublicKey signatureKey = s_databaseHelper.
+			    signatureKeyForDigest
+			    (s_cryptography,
+			     Arrays.copyOfRange(aes256, 73, 73 + 64));
 
-			 if(signatureKey == null)
-			     return true;
+			if(signatureKey == null)
+			    return true;
 
-			 if(!Cryptography.
-			    verifySignature(signatureKey,
-					    Arrays.copyOfRange(aes256,
-							       137,
-							       aes256.length),
-					    Arrays.
-					    copyOfRange(aes256,
-							0,
-							137)))
-			     return true;
+			if(!Cryptography.
+			   verifySignature(signatureKey,
+					   Arrays.copyOfRange(aes256,
+							      137,
+							      aes256.length),
+					   Arrays.
+					   copyOfRange(aes256,
+						       0,
+						       137)))
+			    return true;
 
-			 s_databaseHelper.writeCongestionDigest(value);
+			s_databaseHelper.writeCongestionDigest(value);
 
-			 String sipHashIdDigest = s_databaseHelper.
-			     sipHashIdDigestFromDigest
-			     (s_cryptography,
-			      Arrays.copyOfRange(aes256, 73, 73 + 64));
+			String sipHashIdDigest = s_databaseHelper.
+			    sipHashIdDigestFromDigest
+			    (s_cryptography,
+			     Arrays.copyOfRange(aes256, 73, 73 + 64));
 
-			 /*
-			 ** Tag all of sipHashIdDigest's messages for release.
-			 */
+			/*
+			** Tag all of sipHashIdDigest's messages for release.
+			*/
 
-			 s_databaseHelper.tagMessagesForRelease
-			     (s_cryptography, sipHashIdDigest);
-			 s_databaseHelper.updateSipHashIdTimestamp
-			     (sipHashIdDigest.getBytes());
-			 prepareReleaseMessagesScheduler
-			     (sipHashIdDigest, identity);
-			 return true;
-		     }
-		     else if(aes256[0] == Messages.PKP_MESSAGE_REQUEST[0])
-		     {
-			 /*
-			 ** Request a public key pair.
-			 */
+			s_databaseHelper.tagMessagesForRelease
+			    (s_cryptography, sipHashIdDigest);
+			s_databaseHelper.updateSipHashIdTimestamp
+			    (sipHashIdDigest.getBytes());
+			prepareReleaseMessagesScheduler
+			    (sipHashIdDigest, identity);
+			return true;
+		    }
+		    else if(aes256[0] == Messages.PKP_MESSAGE_REQUEST[0])
+		    {
+			/*
+			** Request a public key pair.
+			*/
 
-			 long current = System.currentTimeMillis();
-			 long timestamp = Miscellaneous.byteArrayToLong
-			     (Arrays.copyOfRange(aes256, 1, 1 + 8));
+			long current = System.currentTimeMillis();
+			long timestamp = Miscellaneous.byteArrayToLong
+			    (Arrays.copyOfRange(aes256, 1, 1 + 8));
 
-			 if(current - timestamp < 0)
-			 {
-			     if(timestamp - current >
+			if(current - timestamp < 0)
+			{
+			    if(timestamp - current >
+			       PKP_MESSAGE_RETRIEVAL_WINDOW)
+				return true;
+			}
+			else if(current - timestamp >
 				PKP_MESSAGE_RETRIEVAL_WINDOW)
-				 return true;
-			 }
-			 else if(current - timestamp >
-				 PKP_MESSAGE_RETRIEVAL_WINDOW)
-			     return true;
+			    return true;
 
-			 String sipHashId = new String
-			     (Arrays.copyOfRange(aes256, 28, aes256.length),
-			      "UTF-8");
-			 String array[] = s_databaseHelper.readPublicKeyPair
-			     (s_cryptography, sipHashId);
+			String sipHashId = new String
+			    (Arrays.copyOfRange(aes256, 28, aes256.length),
+			     "UTF-8");
+			String array[] = s_databaseHelper.readPublicKeyPair
+			    (s_cryptography, sipHashId);
 
-			 if(array == null)
-			     return true;
+			if(array == null)
+			    return true;
 
-			 sipHashId = new String
-			     (Arrays.
-			      copyOfRange(aes256,
-					  9,
-					  9 + Cryptography.SIPHASH_ID_LENGTH));
+			sipHashId = new String
+			    (Arrays.
+			     copyOfRange(aes256,
+					 9,
+					 9 + Cryptography.SIPHASH_ID_LENGTH));
 
-			 String message = Messages.bytesToMessageString
-			     (Messages.epksMessage(sipHashId, array));
+			String message = Messages.bytesToMessageString
+			    (Messages.epksMessage(sipHashId, array));
 
-			 enqueueMessage(message);
-			 return true;
-		     }
-		     else if(aes256[0] == Messages.SHARE_SIPHASH_ID[0])
-		     {
-			 long current = System.currentTimeMillis();
-			 long timestamp = Miscellaneous.byteArrayToLong
-			     (Arrays.copyOfRange(aes256, 1, 1 + 8));
+			enqueueMessage(message);
+			return true;
+		    }
+		    else if(aes256[0] == Messages.SHARE_SIPHASH_ID[0])
+		    {
+			long current = System.currentTimeMillis();
+			long timestamp = Miscellaneous.byteArrayToLong
+			    (Arrays.copyOfRange(aes256, 1, 1 + 8));
 
-			 if(current - timestamp < 0)
-			 {
-			     if(timestamp - current > SHARE_SIPHASH_ID_WINDOW)
-				 return true;
-			 }
-			 else if(current - timestamp > SHARE_SIPHASH_ID_WINDOW)
-			     return true;
+			if(current - timestamp < 0)
+			{
+			    if(timestamp - current > SHARE_SIPHASH_ID_WINDOW)
+				return true;
+			}
+			else if(current - timestamp > SHARE_SIPHASH_ID_WINDOW)
+			    return true;
 
-			 String name = "";
-			 String sipHashId = new String
-			     (Arrays.
-			      copyOfRange(aes256,
-					  9,
-					  9 + Cryptography.SIPHASH_ID_LENGTH),
-			      "UTF-8");
+			String name = "";
+			String sipHashId = new String
+			    (Arrays.
+			     copyOfRange(aes256,
+					 9,
+					 9 + Cryptography.SIPHASH_ID_LENGTH),
+			     "UTF-8");
 
-			 name = sipHashId.toUpperCase().trim();
+			name = sipHashId.toUpperCase().trim();
 
-			 if(s_databaseHelper.
-			    writeSipHashParticipant(s_cryptography,
-						    name,
-						    sipHashId,
-						    true))
-			 {
-			     if((bytes = Cryptography.
-				 generateOzone(name)) != null)
-				 if(s_databaseHelper.
-				    writeOzone(s_cryptography, name, bytes))
-				     populateOzones();
+			if(s_databaseHelper.
+			   writeSipHashParticipant(s_cryptography,
+						   name,
+						   sipHashId,
+						   true))
+			{
+			    if((bytes = Cryptography.
+				generateOzone(name)) != null)
+				if(s_databaseHelper.
+				   writeOzone(s_cryptography, name, bytes))
+				    populateOzones();
 
-			     populateSipHashIds();
+			    populateSipHashIds();
 
-			     Intent intent = new Intent
-				 ("org.purple.smokestack." +
-				  "populate_ozones_participants");
-			     LocalBroadcastManager localBroadcastManager =
-				 LocalBroadcastManager.getInstance
-				 (SmokeStack.getApplication());
+			    Intent intent = new Intent
+				("org.purple.smokestack." +
+				 "populate_ozones_participants");
+			    LocalBroadcastManager localBroadcastManager =
+				LocalBroadcastManager.getInstance
+				(SmokeStack.getApplication());
 
-			     localBroadcastManager.sendBroadcast(intent);
-			 }
+			    localBroadcastManager.sendBroadcast(intent);
+			}
 
-			 /*
-			 ** Echo the shared Smoke identity.
-			 */
+			/*
+			** Echo the shared Smoke identity.
+			*/
 
-			 return false;
-		     }
-		     else
-			 return true;
-		 }
+			return false;
+		    }
+		    else
+			return true;
+		}
 
 		if(arrayList1 != null && arrayList1.size() > 0)
 		    for(SipHashIdElement sipHashIdElement : arrayList1)
