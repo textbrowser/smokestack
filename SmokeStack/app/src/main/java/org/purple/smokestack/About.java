@@ -49,7 +49,7 @@ public class About
 		SimpleDateFormat("yyyy-MM-dd h:mm:ss", Locale.getDefault());
 
 	    simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-            s_about = "Version 2018.10.10 Oblong October " +
+            s_about = "Version 2019.02.02 February Fever " +
                 (BuildConfig.DEBUG ? "(Debug) " : "(Release)") +
                 "\nBuild Date " +
                 simpleDateFormat.format(new Date(BuildConfig.BUILD_TIME)) +
