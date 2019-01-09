@@ -912,6 +912,16 @@ public class Kernel
 			    localBroadcastManager.sendBroadcast(intent);
 			}
 
+			byte identity[] = Arrays.copyOfRange
+			    (aes256, 28, 28 + 8);
+
+			bytes = Messages.shareSipHashIdMessageConfirmation
+			    (s_cryptography,
+			     sipHashId,
+			     identity,
+			     ozoneElement.m_addressStream);
+			enqueueMessage(Messages.bytesToMessageString(bytes));
+
 			/*
 			** Echo the shared Smoke identity.
 			*/

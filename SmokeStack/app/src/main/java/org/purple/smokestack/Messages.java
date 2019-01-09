@@ -37,6 +37,8 @@ public class Messages
     public final static byte CHAT_MESSAGE_RETRIEVAL[] = new byte[] {0x00};
     public final static byte PKP_MESSAGE_REQUEST[] = new byte[] {0x01};
     public final static byte SHARE_SIPHASH_ID[] = new byte[] {0x02};
+    public final static byte SHARE_SIPHASH_ID_CONFIRIMATION[] =
+	new byte[] {0x03};
     public final static int EPKS_GROUP_ONE_ELEMENT_COUNT = 6;
 
     public static String bytesToMessageString(byte bytes[])
@@ -174,6 +176,72 @@ public class Messages
 	}
 
 	return "";
+    }
+
+    public static byte[] shareSipHashIdMessageConfirmation
+	(Cryptography cryptography,
+	 String sipHashId,
+	 byte identity[],
+	 byte keyStream[])
+    {
+	if(cryptography == null)
+	    return null;
+
+	try
+	{
+	    byte bytes[] = Miscellaneous.joinByteArrays
+		(
+		 /*
+		 ** [ A Byte ]
+		 */
+
+		 SHARE_SIPHASH_ID_CONFIRIMATION,
+
+		 /*
+		 ** [ A Timestamp ]
+		 */
+
+		 Miscellaneous.longToByteArray(System.currentTimeMillis()),
+
+		 /*
+		 ** [ SipHash Identity ]
+		 */
+
+		 sipHashId.getBytes("UTF-8"),
+
+		 /*
+		 ** [ Temporary Identity ]
+		 */
+
+		 identity);
+
+	    /*
+	    ** [ AES-256 ]
+	    */
+
+	    byte aes256[] = Cryptography.encrypt
+		(bytes, Arrays.copyOfRange(keyStream, 0, 32));
+
+	    if(aes256 == null)
+		return null;
+
+	    /*
+	    ** [ SHA-512 HMAC ]
+	    */
+
+	    byte sha512[] = Cryptography.hmac
+		(aes256, Arrays.copyOfRange(keyStream, 32, keyStream.length));
+
+	    if(sha512 == null)
+		return null;
+
+	    return Miscellaneous.joinByteArrays(aes256, sha512);
+	}
+	catch(Exception exception)
+	{
+	}
+
+	return null;
     }
 
     public static String stripMessage(String message)
