@@ -78,20 +78,21 @@ public class Kernel
 	Cryptography.getInstance();
     private final static SipHash s_congestionSipHash = new SipHash
 	(Cryptography.randomBytes(SipHash.KEY_LENGTH));
-    private final static int CHAT_MESSAGE_RETRIEVAL_WINDOW = 30000; /*
-								    ** 30
-								    ** Seconds
-								    */
-    private final static int CONGESTION_INTERVAL = 15000; // 15 Seconds
     private final static int CONGESTION_LIFETIME = 60;
-    private final static int LISTENERS_INTERVAL = 5000; // 5 Seconds
-    private final static int NEIGHBORS_INTERVAL = 5000; // 5 Seconds
-    private final static int PKP_MESSAGE_RETRIEVAL_WINDOW = 30000; // 30 Seconds
-    private final static int PURGE_RELEASED_MESSAGES_INTERVAL =
-	5000; // 5 Seconds
     private final static int ROUTING_ENTRY_LIFETIME = CONGESTION_LIFETIME;
-    private final static int ROUTING_INTERVAL = 15000; // 15 Seconds
-    private final static int SHARE_SIPHASH_ID_WINDOW = 30000; // 30 Seconds
+    private final static long CHAT_MESSAGE_RETRIEVAL_WINDOW = 30000; /*
+								     ** 30
+								     ** Seconds
+								     */
+    private final static long CONGESTION_INTERVAL = 15000; // 15 Seconds
+    private final static long LISTENERS_INTERVAL = 5000; // 5 Seconds
+    private final static long NEIGHBORS_INTERVAL = 5000; // 5 Seconds
+    private final static long PKP_MESSAGE_RETRIEVAL_WINDOW =
+	30000; // 30 Seconds
+    private final static long PURGE_RELEASED_MESSAGES_INTERVAL =
+	5000; // 5 Seconds
+    private final static long ROUTING_INTERVAL = 15000; // 15 Seconds
+    private final static long SHARE_SIPHASH_ID_WINDOW = 30000; // 30 Seconds
     private static Kernel s_instance = null;
 
     private Kernel()

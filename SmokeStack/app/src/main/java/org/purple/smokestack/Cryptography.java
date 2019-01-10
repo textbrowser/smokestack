@@ -594,21 +594,20 @@ public class Cryptography
 
 	try
 	{
-	    salt = Cryptography.sha512(string.trim().getBytes("UTF-8"));
+	    salt = sha512(string.trim().getBytes("UTF-8"));
 
 	    if(salt != null)
-		bytes = Cryptography.pbkdf2
+		bytes = pbkdf2
 		    (salt,
 		     string.trim().toCharArray(),
 		     OZONE_STREAM_CREATION_ITERATION_COUNT,
 		     160); // SHA-1
 
 	    if(bytes != null)
-		bytes = Cryptography.
-		    pbkdf2(salt,
-			   new String(bytes).toCharArray(),
-			   1,
-			   768); // 8 * (32 + 64) Bits
+		bytes = pbkdf2(salt,
+			       new String(bytes).toCharArray(),
+			       1,
+			       768); // 8 * (32 + 64) Bits
 	}
 	catch(Exception exception)
 	{

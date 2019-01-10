@@ -218,7 +218,7 @@ public class Settings extends AppCompatActivity
     private final static int MINIMUM_PASSWORD_LENGTH = 3;
     private final static int TEXTVIEW_TEXT_SIZE = 13;
     private final static int TEXTVIEW_WIDTH = 500;
-    private final static int TIMER_INTERVAL = 2500; // 2.5 Seconds
+    private final static long TIMER_INTERVAL = 2500; // 2.5 Seconds
 
     private boolean generateOzone(String string)
     {
