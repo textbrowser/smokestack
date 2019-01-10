@@ -178,72 +178,6 @@ public class Messages
 	return "";
     }
 
-    public static byte[] shareSipHashIdMessageConfirmation
-	(Cryptography cryptography,
-	 String sipHashId,
-	 byte identity[],
-	 byte keyStream[])
-    {
-	if(cryptography == null)
-	    return null;
-
-	try
-	{
-	    byte bytes[] = Miscellaneous.joinByteArrays
-		(
-		 /*
-		 ** [ A Byte ]
-		 */
-
-		 SHARE_SIPHASH_ID_CONFIRIMATION,
-
-		 /*
-		 ** [ A Timestamp ]
-		 */
-
-		 Miscellaneous.longToByteArray(System.currentTimeMillis()),
-
-		 /*
-		 ** [ SipHash Identity ]
-		 */
-
-		 sipHashId.getBytes("UTF-8"),
-
-		 /*
-		 ** [ Temporary Identity ]
-		 */
-
-		 identity);
-
-	    /*
-	    ** [ AES-256 ]
-	    */
-
-	    byte aes256[] = Cryptography.encrypt
-		(bytes, Arrays.copyOfRange(keyStream, 0, 32));
-
-	    if(aes256 == null)
-		return null;
-
-	    /*
-	    ** [ SHA-512 HMAC ]
-	    */
-
-	    byte sha512[] = Cryptography.hmac
-		(aes256, Arrays.copyOfRange(keyStream, 32, keyStream.length));
-
-	    if(sha512 == null)
-		return null;
-
-	    return Miscellaneous.joinByteArrays(aes256, sha512);
-	}
-	catch(Exception exception)
-	{
-	}
-
-	return null;
-    }
-
     public static String stripMessage(String message)
     {
 	/*
@@ -341,6 +275,80 @@ public class Messages
 	    byte sha512[] = Cryptography.hmac
 		(aes256,
 		 Arrays.copyOfRange(keyStream, 32, keyStream.length));
+
+	    if(sha512 == null)
+		return null;
+
+	    /*
+	    ** [ Destination ]
+	    */
+
+	    byte destination[] = Cryptography.hmac
+		(Miscellaneous.joinByteArrays(aes256, sha512),
+		 Cryptography.sha512(sipHashId.getBytes("UTF-8")));
+
+	    return Miscellaneous.joinByteArrays(aes256, sha512, destination);
+	}
+	catch(Exception exception)
+	{
+	}
+
+	return null;
+    }
+
+    public static byte[] shareSipHashIdMessageConfirmation
+	(Cryptography cryptography,
+	 String sipHashId,
+	 byte identity[],
+	 byte keyStream[])
+    {
+	if(cryptography == null)
+	    return null;
+
+	try
+	{
+	    byte bytes[] = Miscellaneous.joinByteArrays
+		(
+		 /*
+		 ** [ A Byte ]
+		 */
+
+		 SHARE_SIPHASH_ID_CONFIRIMATION,
+
+		 /*
+		 ** [ A Timestamp ]
+		 */
+
+		 Miscellaneous.longToByteArray(System.currentTimeMillis()),
+
+		 /*
+		 ** [ SipHash Identity ]
+		 */
+
+		 sipHashId.getBytes("UTF-8"),
+
+		 /*
+		 ** [ Temporary Identity ]
+		 */
+
+		 identity);
+
+	    /*
+	    ** [ AES-256 ]
+	    */
+
+	    byte aes256[] = Cryptography.encrypt
+		(bytes, Arrays.copyOfRange(keyStream, 0, 32));
+
+	    if(aes256 == null)
+		return null;
+
+	    /*
+	    ** [ SHA-512 HMAC ]
+	    */
+
+	    byte sha512[] = Cryptography.hmac
+		(aes256, Arrays.copyOfRange(keyStream, 32, keyStream.length));
 
 	    if(sha512 == null)
 		return null;
