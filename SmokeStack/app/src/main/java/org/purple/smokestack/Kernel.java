@@ -53,7 +53,7 @@ public class Kernel
 {
     private ArrayList<OzoneElement> m_ozones = null;
     private ArrayList<SipHashIdElement> m_sipHashIds = null;
-    private Hashtable<String, ScheduledFuture>
+    private Hashtable<String, ScheduledFuture<?> >
 	m_releaseMessagesSchedulers = null;
     private ScheduledExecutorService m_congestionScheduler = null;
     private ScheduledExecutorService m_listenersScheduler = null;
@@ -402,13 +402,14 @@ public class Kernel
 				*/
 
 				Iterator<Hashtable.
-				         Entry<String, ScheduledFuture> >
+				         Entry<String, ScheduledFuture<?> > >
 				    it = m_releaseMessagesSchedulers.entrySet().
 				    iterator();
 
 				while(it.hasNext())
 				{
-				    Hashtable.Entry<String, ScheduledFuture>
+				    Hashtable.Entry
+					<String, ScheduledFuture<?> >
 					entry = it.next();
 
 				    if(entry.getValue() == null)
