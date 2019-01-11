@@ -2087,11 +2087,24 @@ public class Settings extends AppCompatActivity
 	    m_generalScheduler = Executors.newSingleThreadScheduledExecutor();
 	    m_generalScheduler.scheduleAtFixedRate(new Runnable()
 	    {
+		private String m_memory = "";
+
 		@Override
 		public void run()
 		{
 		    try
 		    {
+			Debug.MemoryInfo memoryInfo = new Debug.MemoryInfo();
+			Runtime runtime = Runtime.getRuntime();
+			long memory = (runtime.totalMemory() -
+				       runtime.freeMemory()) / 1048576L;
+
+			Debug.getMemoryInfo(memoryInfo);
+			m_memory = memory +
+			    " MiB Consumed (JVM)\n" +
+			    memoryInfo.getTotalPrivateDirty() / 1024 +
+			    " MiB Total Private Dirty";
+
 			Settings.this.runOnUiThread(new Runnable()
 			{
 			    @Override
@@ -2105,18 +2118,8 @@ public class Settings extends AppCompatActivity
 				 (R.id.database_cursors_opened)).setText
 				    (m_databaseHelper.cursorsOpened() +
 				     " Database Cursors Opened");
-
-				Debug.MemoryInfo memoryInfo =
-				    new Debug.MemoryInfo();
-				Runtime runtime = Runtime.getRuntime();
-				long memory = (runtime.totalMemory() -
-					       runtime.freeMemory()) / 1048576L;
-
-				Debug.getMemoryInfo(memoryInfo);
 				((TextView) findViewById(R.id.memory)).setText
-				    (memory + " MiB Consumed (JVM)\n" +
-				     memoryInfo.getTotalPrivateDirty() / 1024 +
-				     " MiB Total Private Dirty");
+				    (m_memory);
 			    }
 			});
 		    }
