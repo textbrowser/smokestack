@@ -40,6 +40,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public abstract class Neighbor
 {
     private ArrayList<String> m_queue = null;
+    private AtomicLong m_lastParsed = null;
     private ScheduledExecutorService m_parsingScheduler = null;
     private ScheduledExecutorService m_scheduler = null;
     private ScheduledExecutorService m_sendOutboundScheduler = null;
@@ -48,6 +49,7 @@ public abstract class Neighbor
     private final String m_echoMode = "full";
     private final static int BYTES_PER_READ = 1024 * 1024; // 1 MiB
     private final static int LANE_WIDTH = 32 * 1024 * 1024; // 32 MiB
+    private final static long DATA_LIFETIME = 15000; // 15 Seconds
     private final static long PARSING_INTERVAL = 100; // Milliseconds
     private final static long SEND_OUTBOUND_TIMER_INTERVAL = 25; // Milliseconds
     private final static long SILENCE = 90000; // 90 Seconds
@@ -140,6 +142,7 @@ public abstract class Neighbor
 	m_ipAddress = ipAddress;
 	m_ipPort = ipPort;
 	m_isPrivateServer = new AtomicBoolean(isPrivateServer);
+	m_lastParsed = new AtomicLong(System.currentTimeMillis());
 	m_lastTimeRead = new AtomicLong(System.nanoTime());
 	m_oid = new AtomicInteger(oid);
 	m_parsingScheduler = Executors.newSingleThreadScheduledExecutor();
@@ -170,12 +173,16 @@ public abstract class Neighbor
 
 		    /*
 		    ** Detect our end-of-message delimiter.
+		    ** If the end-of-message marker has not been detected
+		    ** for some period of time, purge m_stringBuffer.
 		    */
 
 		    int indexOf = -1;
 
 		    while((indexOf = m_stringBuffer.indexOf(Messages.EOM)) >= 0)
 		    {
+			m_lastParsed.set(System.currentTimeMillis());
+
 			String buffer = m_stringBuffer.
 			    substring(0, indexOf + Messages.EOM.length());
 
@@ -222,7 +229,9 @@ public abstract class Neighbor
 			}
 		    }
 
-		    if(m_stringBuffer.length() > MAXIMUM_BYTES)
+		    if(System.currentTimeMillis() - m_lastParsed.get() >
+		       DATA_LIFETIME ||
+		       m_stringBuffer.length() > MAXIMUM_BYTES)
 			m_stringBuffer.setLength(0);
 		}
 		catch(Exception exception)
