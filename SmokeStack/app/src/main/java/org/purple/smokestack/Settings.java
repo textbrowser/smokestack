@@ -36,6 +36,8 @@ import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Debug;
+import android.os.Debug.MemoryInfo;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputFilter;
@@ -2104,12 +2106,17 @@ public class Settings extends AppCompatActivity
 				    (m_databaseHelper.cursorsOpened() +
 				     " Database Cursors Opened");
 
+				Debug.MemoryInfo memoryInfo =
+				    new Debug.MemoryInfo();
 				Runtime runtime = Runtime.getRuntime();
 				long memory = (runtime.totalMemory() -
 					       runtime.freeMemory()) / 1048576L;
 
+				Debug.getMemoryInfo(memoryInfo);
 				((TextView) findViewById(R.id.memory)).setText
-				    (memory + " MiB Consumed (JVM)");
+				    (memory + " MiB Consumed (JVM)\n" +
+				     memoryInfo.getTotalPrivateDirty() / 1024 +
+				     " MiB Total Private Dirty");
 			    }
 			});
 		    }
