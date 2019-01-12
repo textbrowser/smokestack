@@ -233,6 +233,9 @@ public class Settings extends AppCompatActivity
 
     private void addListener()
     {
+	if(Settings.this.isFinishing())
+	    return;
+
 	CheckBox checkBox1 = (CheckBox) findViewById
 	    (R.id.automatic_refresh_listeners);
 	CheckBox checkBox2 = (CheckBox) findViewById(R.id.private_server);
@@ -267,6 +270,9 @@ public class Settings extends AppCompatActivity
 
     private void addNeighbor()
     {
+	if(Settings.this.isFinishing())
+	    return;
+
 	CheckBox checkBox1 = (CheckBox) findViewById
 	    (R.id.automatic_refresh_neighbors);
 	RadioGroup radioGroup1 = (RadioGroup) findViewById
@@ -1288,6 +1294,197 @@ public class Settings extends AppCompatActivity
 	arrayList.clear();
     }
 
+    private void prepareCredentials()
+    {
+	if(Settings.this.isFinishing())
+	    return;
+
+	final ProgressDialog dialog = new ProgressDialog(Settings.this);
+	final Spinner spinner1 = (Spinner) findViewById(R.id.iteration_count);
+	final TextView textView1 = (TextView) findViewById
+	    (R.id.password1);
+	final TextView textView2 = (TextView) findViewById
+	    (R.id.password2);
+	int iterationCount = 1000;
+
+	try
+	{
+	    iterationCount = Integer.parseInt
+		(spinner1.getSelectedItem().toString());
+	}
+	catch(Exception exception)
+	{
+	    iterationCount = 1000;
+	}
+
+	dialog.setCancelable(false);
+	dialog.setIndeterminate(true);
+	dialog.setMessage
+	    ("Generating confidential material. Please be patient and " +
+	     "do not rotate the device while the process executes.");
+	dialog.show();
+
+	class SingleShot implements Runnable
+	{
+	    private String m_error = "";
+	    private String m_password = "";
+	    private int m_iterationCount = 1000;
+
+	    SingleShot(String password,
+		       int iterationCount)
+	    {
+		m_iterationCount = iterationCount;
+		m_password = password;
+	    }
+
+	    @Override
+	    public void run()
+	    {
+		SecretKey encryptionKey = null;
+		SecretKey macKey = null;
+		byte encryptionSalt[] = null;
+		byte macSalt[] = null;
+
+		try
+		{
+		    encryptionSalt = Cryptography.randomBytes(32);
+		    encryptionKey = Cryptography.
+			generateEncryptionKey
+			(encryptionSalt,
+			 m_password.toCharArray(),
+			 m_iterationCount);
+
+		    if(encryptionSalt == null)
+		    {
+			m_error = "generateEncryptionKey() failure";
+			s_cryptography.reset();
+			return;
+		    }
+
+		    macSalt = Cryptography.randomBytes(64);
+		    macKey = Cryptography.generateMacKey
+			(macSalt,
+			 m_password.toCharArray(),
+			 m_iterationCount);
+
+		    if(macKey == null)
+		    {
+			m_error = "generateMacKey() failure";
+			s_cryptography.reset();
+			return;
+		    }
+
+		    /*
+		    ** Prepare the Cryptography object's data.
+		    */
+
+		    s_cryptography.setEncryptionKey
+			(encryptionKey);
+		    s_cryptography.setMacKey(macKey);
+
+		    /*
+		    ** Record the data.
+		    */
+
+		    m_databaseHelper.writeSetting
+			(null,
+			 "encryptionSalt",
+			 Base64.encodeToString(encryptionSalt,
+					       Base64.DEFAULT));
+		    m_databaseHelper.writeSetting
+			(null,
+			 "iterationCount",
+			 String.valueOf(m_iterationCount));
+		    m_databaseHelper.writeSetting
+			(null,
+			 "macSalt",
+			 Base64.encodeToString(macSalt,
+					       Base64.DEFAULT));
+
+		    byte saltedPassword[] = Cryptography.
+			sha512(m_password.getBytes(),
+			       encryptionSalt,
+			       macSalt);
+
+		    if(saltedPassword != null)
+			m_databaseHelper.writeSetting
+			    (null,
+			     "saltedPassword",
+			     Base64.encodeToString(saltedPassword,
+						   Base64.DEFAULT));
+		    else
+		    {
+			m_error = "sha512() failure";
+			s_cryptography.reset();
+		    }
+		}
+		catch(Exception exception)
+		{
+		    m_error = exception.getMessage().toLowerCase().trim();
+		    s_cryptography.reset();
+		}
+
+		Settings.this.runOnUiThread(new Runnable()
+		{
+		    @Override
+		    public void run()
+		    {
+			try
+			{
+			    dialog.dismiss();
+
+			    if(!m_error.isEmpty())
+				Miscellaneous.showErrorDialog
+				    (Settings.this,
+				     "An error (" + m_error +
+				     ") occurred while " +
+				     "generating the confidential " +
+				     "data.");
+			    else
+			    {
+				Settings.this.enableWidgets(true);
+				State.getInstance().setAuthenticated(true);
+				textView1.requestFocus();
+				textView1.setText("");
+				textView2.setText("");
+				populateOzoneAddresses();
+				populateParticipants();
+				startKernel();
+
+				if(m_databaseHelper.
+				   readSetting(null,
+					       "automatic_listeners_refresh").
+				   equals("true"))
+				    startListenersTimers();
+				else
+				    populateListeners(null);
+
+				if(m_databaseHelper.
+				   readSetting(null,
+					       "automatic_neighbors_refresh").
+				   equals("true"))
+				    startNeighborsTimers();
+				else
+				    populateNeighbors(null);
+			    }
+			}
+			catch(Exception exception)
+			{
+			}
+		    }
+		});
+
+		m_password = "";
+	    }
+	}
+
+	Thread thread = new Thread
+	    (new SingleShot(textView1.getText().toString(),
+			    iterationCount));
+
+	thread.start();
+    }
+
     private void prepareListenerIpAddress()
     {
 	RadioGroup radioGroup1 = (RadioGroup) findViewById
@@ -1346,6 +1543,9 @@ public class Settings extends AppCompatActivity
 
     private void prepareListeners()
     {
+	if(Settings.this.isFinishing())
+	    return;
+
 	Button button1 = null;
 	Spinner spinner1 = (Spinner) findViewById(R.id.neighbors_transport);
 
@@ -1869,197 +2069,6 @@ public class Settings extends AppCompatActivity
 		{
 		}
 	    });
-    }
-
-    private void prepareCredentials()
-    {
-	if(Settings.this.isFinishing())
-	    return;
-
-	final ProgressDialog dialog = new ProgressDialog(Settings.this);
-	final Spinner spinner1 = (Spinner) findViewById(R.id.iteration_count);
-	final TextView textView1 = (TextView) findViewById
-	    (R.id.password1);
-	final TextView textView2 = (TextView) findViewById
-	    (R.id.password2);
-	int iterationCount = 1000;
-
-	try
-	{
-	    iterationCount = Integer.parseInt
-		(spinner1.getSelectedItem().toString());
-	}
-	catch(Exception exception)
-	{
-	    iterationCount = 1000;
-	}
-
-	dialog.setCancelable(false);
-	dialog.setIndeterminate(true);
-	dialog.setMessage
-	    ("Generating confidential material. Please be patient and " +
-	     "do not rotate the device while the process executes.");
-	dialog.show();
-
-	class SingleShot implements Runnable
-	{
-	    private String m_error = "";
-	    private String m_password = "";
-	    private int m_iterationCount = 1000;
-
-	    SingleShot(String password,
-		       int iterationCount)
-	    {
-		m_iterationCount = iterationCount;
-		m_password = password;
-	    }
-
-	    @Override
-	    public void run()
-	    {
-		SecretKey encryptionKey = null;
-		SecretKey macKey = null;
-		byte encryptionSalt[] = null;
-		byte macSalt[] = null;
-
-		try
-		{
-		    encryptionSalt = Cryptography.randomBytes(32);
-		    encryptionKey = Cryptography.
-			generateEncryptionKey
-			(encryptionSalt,
-			 m_password.toCharArray(),
-			 m_iterationCount);
-
-		    if(encryptionSalt == null)
-		    {
-			m_error = "generateEncryptionKey() failure";
-			s_cryptography.reset();
-			return;
-		    }
-
-		    macSalt = Cryptography.randomBytes(64);
-		    macKey = Cryptography.generateMacKey
-			(macSalt,
-			 m_password.toCharArray(),
-			 m_iterationCount);
-
-		    if(macKey == null)
-		    {
-			m_error = "generateMacKey() failure";
-			s_cryptography.reset();
-			return;
-		    }
-
-		    /*
-		    ** Prepare the Cryptography object's data.
-		    */
-
-		    s_cryptography.setEncryptionKey
-			(encryptionKey);
-		    s_cryptography.setMacKey(macKey);
-
-		    /*
-		    ** Record the data.
-		    */
-
-		    m_databaseHelper.writeSetting
-			(null,
-			 "encryptionSalt",
-			 Base64.encodeToString(encryptionSalt,
-					       Base64.DEFAULT));
-		    m_databaseHelper.writeSetting
-			(null,
-			 "iterationCount",
-			 String.valueOf(m_iterationCount));
-		    m_databaseHelper.writeSetting
-			(null,
-			 "macSalt",
-			 Base64.encodeToString(macSalt,
-					       Base64.DEFAULT));
-
-		    byte saltedPassword[] = Cryptography.
-			sha512(m_password.getBytes(),
-			       encryptionSalt,
-			       macSalt);
-
-		    if(saltedPassword != null)
-			m_databaseHelper.writeSetting
-			    (null,
-			     "saltedPassword",
-			     Base64.encodeToString(saltedPassword,
-						   Base64.DEFAULT));
-		    else
-		    {
-			m_error = "sha512() failure";
-			s_cryptography.reset();
-		    }
-		}
-		catch(Exception exception)
-		{
-		    m_error = exception.getMessage().toLowerCase().trim();
-		    s_cryptography.reset();
-		}
-
-		Settings.this.runOnUiThread(new Runnable()
-		{
-		    @Override
-		    public void run()
-		    {
-			try
-			{
-			    dialog.dismiss();
-
-			    if(!m_error.isEmpty())
-				Miscellaneous.showErrorDialog
-				    (Settings.this,
-				     "An error (" + m_error +
-				     ") occurred while " +
-				     "generating the confidential " +
-				     "data.");
-			    else
-			    {
-				Settings.this.enableWidgets(true);
-				State.getInstance().setAuthenticated(true);
-				textView1.requestFocus();
-				textView1.setText("");
-				textView2.setText("");
-				populateOzoneAddresses();
-				populateParticipants();
-				startKernel();
-
-				if(m_databaseHelper.
-				   readSetting(null,
-					       "automatic_listeners_refresh").
-				   equals("true"))
-				    startListenersTimers();
-				else
-				    populateListeners(null);
-
-				if(m_databaseHelper.
-				   readSetting(null,
-					       "automatic_neighbors_refresh").
-				   equals("true"))
-				    startNeighborsTimers();
-				else
-				    populateNeighbors(null);
-			    }
-			}
-			catch(Exception exception)
-			{
-			}
-		    }
-		});
-
-		m_password = "";
-	    }
-	}
-
-	Thread thread = new Thread
-	    (new SingleShot(textView1.getText().toString(),
-			    iterationCount));
-
-	thread.start();
     }
 
     private void showAuthenticateActivity()
