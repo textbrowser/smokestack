@@ -577,6 +577,14 @@ public class Kernel
 			      UUID clientIdentity,
 			      boolean userDefined)
     {
+	/*
+	** false - echo
+	** true - do not echo
+	*/
+
+	if(buffer == null)
+	    return true;
+
 	long value = s_congestionSipHash.hmac(buffer.getBytes());
 
 	try
@@ -606,20 +614,17 @@ public class Kernel
 		else if(buffer.contains("type=0095b&content="))
 		{
 		    /*
-		    ** We've received identities. Incomplete.
+		    ** We've received identities.
 		    */
 
-		    /*
-		      s_databaseHelper.writeCongestionDigest(value);
-		      s_databaseHelper.deleteRoutingEntry
-		      (clientIdentity.toString());
+		    s_databaseHelper.writeCongestionDigest(value);
+		    s_databaseHelper.deleteRoutingEntry
+			(clientIdentity.toString());
 
-		      byte bytes[] = Base64.decode
-		      (Messages.stripMessage(buffer), Base64.DEFAULT);
+		    byte bytes[] = Base64.decode
+			(Messages.stripMessage(buffer), Base64.DEFAULT);
 
-		      s_databaseHelper.writeIdentities(clientIdentity, bytes);
-		    */
-
+		    s_databaseHelper.writeIdentities(clientIdentity, bytes);
 		    return true;
 		}
 		else if(buffer.contains("type=0096&content="))
@@ -1011,8 +1016,9 @@ public class Kernel
 
     public static void writeCongestionDigest(byte data[])
     {
-	s_databaseHelper.writeCongestionDigest
-	    (s_congestionSipHash.hmac(data));
+	if(data != null)
+	    s_databaseHelper.writeCongestionDigest
+		(s_congestionSipHash.hmac(data));
     }
 
     public void clearNeighborQueues()
@@ -1034,7 +1040,7 @@ public class Kernel
 
     public void echo(String message, int oid)
     {
-	if(message.trim().isEmpty())
+	if(message == null || message.trim().isEmpty())
 	    return;
 
 	synchronized(m_neighbors)
@@ -1068,7 +1074,7 @@ public class Kernel
 
     public void enqueueMessage(String message)
     {
-	if(message.trim().isEmpty())
+	if(message == null || message.trim().isEmpty())
 	    return;
 
 	ArrayList<NeighborElement> arrayList =
