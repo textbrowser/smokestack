@@ -147,6 +147,9 @@ public class Database extends SQLiteOpenHelper
 	    @Override
 	    public int compare(OzoneElement e1, OzoneElement e2)
 	    {
+		if(e1 == null || e2 == null)
+		    return -1;
+
 		/*
 		** Sort by address.
 		*/
@@ -160,6 +163,9 @@ public class Database extends SQLiteOpenHelper
 	    @Override
 	    public int compare(SipHashIdElement e1, SipHashIdElement e2)
 	    {
+		if(e1 == null || e2 == null)
+		    return -1;
+
 		/*
 		** Sort by name and Smoke identity.
 		*/
@@ -202,9 +208,10 @@ public class Database extends SQLiteOpenHelper
     {
 	if(cryptography == null ||
 	   data == null ||
-	   data.length() <= 0 ||
+	   data.length() == 0 ||
+	   m_db == null ||
 	   stringBuffer == null ||
-	   stringBuffer.length() <= 0)
+	   stringBuffer.length() == 0)
 	    return false;
 
 	Cursor cursor = null;
@@ -1913,9 +1920,11 @@ public class Database extends SQLiteOpenHelper
     public boolean containsRoutingIdentity(String clientIdentity,
 					   String message)
     {
-	if(clientIdentity.length() == 0 ||
-	   message.trim().isEmpty() ||
-	   m_db == null)
+	if(clientIdentity == null ||
+	   clientIdentity.length() == 0 ||
+	   m_db == null ||
+	   message == null ||
+	   message.trim().isEmpty())
 	    return false;
 
 	Cursor cursor = null;
@@ -2487,7 +2496,8 @@ public class Database extends SQLiteOpenHelper
 			      String address,
 			      byte addressStream[])
     {
-	if(address.trim().isEmpty() ||
+	if(address == null ||
+	   address.trim().isEmpty() ||
 	   addressStream == null ||
 	   addressStream.length == 0 ||
 	   cryptography == null ||
@@ -3296,18 +3306,19 @@ public class Database extends SQLiteOpenHelper
 	    return;
 
 	for(NeighborElement neighborElement : arrayList)
-	    saveNeighborInformation(cryptography,
-				    "0",             // Bytes Buffered
-				    "0",             // Bytes Read
-				    "0",             // Bytes Written
-				    "",              // Error
-				    "",              // IP Address
-				    "0",             // Port
-				    "0",             // Queue Size
-				    "",              // Session Cipher
-				    "disconnected",  // Status
-				    "0",             // Uptime
-				    String.valueOf(neighborElement.m_oid));
+	    if(neighborElement != null)
+		saveNeighborInformation(cryptography,
+					"0",             // Bytes Buffered
+					"0",             // Bytes Read
+					"0",             // Bytes Written
+					"",              // Error
+					"",              // IP Address
+					"0",             // Port
+					"0",             // Queue Size
+					"",              // Session Cipher
+					"disconnected",  // Status
+					"0",             // Uptime
+					String.valueOf(neighborElement.m_oid));
 
 	arrayList.clear();
     }
@@ -3404,7 +3415,10 @@ public class Database extends SQLiteOpenHelper
 				       boolean echo,
 				       int oid)
     {
-	if(cryptography == null || message.trim().isEmpty() || m_db == null)
+	if(cryptography == null ||
+	   message == null ||
+	   message.trim().isEmpty() ||
+	   m_db == null)
 	    return;
 
 	m_db.beginTransactionNonExclusive();
@@ -4378,7 +4392,10 @@ public class Database extends SQLiteOpenHelper
 
     public void writeIdentity(UUID clientIdentity, String identity)
     {
-	if(clientIdentity == null || identity.length() == 0 || m_db == null)
+	if(clientIdentity == null ||
+	   identity == null ||
+	   identity.length() == 0 ||
+	   m_db == null)
 	    return;
 
 	m_db.beginTransactionNonExclusive();
