@@ -300,14 +300,8 @@ public class TcpListener
 				    byte privateKey[],
 				    byte publicKey[])
     {
-	try
-	{
-	    if(m_keyStore != null)
-		return;
-	}
-	catch(Exception exception)
-	{
-	}
+	if(m_keyStore != null)
+	    return;
 
 	KeyPair keyPair = null;
 
