@@ -525,7 +525,7 @@ public abstract class Neighbor
 
     public void scheduleEchoSend(String message)
     {
-	if(!connected() || message.trim().isEmpty())
+	if(!connected() || message == null || message.trim().isEmpty())
 	    return;
 
 	m_databaseHelper.enqueueOutboundMessage
@@ -534,7 +534,7 @@ public abstract class Neighbor
 
     public void scheduleSend(String message)
     {
-	if(!connected() || message.trim().isEmpty())
+	if(!connected() || message == null || message.trim().isEmpty())
 	    return;
 
 	synchronized(m_queueMutex)

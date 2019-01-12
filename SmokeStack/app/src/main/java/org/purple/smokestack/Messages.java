@@ -180,6 +180,9 @@ public class Messages
 
     public static String stripMessage(String message)
     {
+	if(message == null)
+	    return "";
+
 	/*
 	** Remove SmokeStack-specific leading and trailing data.
 	*/
