@@ -36,8 +36,6 @@ import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Debug;
-import android.os.Debug.MemoryInfo;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputFilter;
@@ -2087,29 +2085,21 @@ public class Settings extends AppCompatActivity
 	    m_generalScheduler = Executors.newSingleThreadScheduledExecutor();
 	    m_generalScheduler.scheduleAtFixedRate(new Runnable()
 	    {
-		private String m_memory = "";
-
 		@Override
 		public void run()
 		{
 		    try
 		    {
-			Debug.MemoryInfo memoryInfo = new Debug.MemoryInfo();
-			Runtime runtime = Runtime.getRuntime();
-			long memory = (runtime.totalMemory() -
-				       runtime.freeMemory()) / 1048576L;
-
-			Debug.getMemoryInfo(memoryInfo);
-			m_memory = memory +
-			    " MiB Consumed (JVM)\n" +
-			    memoryInfo.getTotalPrivateDirty() / 1024 +
-			    " MiB Total Private Dirty";
-
 			Settings.this.runOnUiThread(new Runnable()
 			{
 			    @Override
 			    public void run()
 			    {
+				Runtime runtime = Runtime.getRuntime();
+				long memory = (runtime.totalMemory() -
+					       runtime.freeMemory()) / 1048576L;
+
+
 				((TextView) findViewById
 				 (R.id.database_cursors_closed)).setText
 				    (m_databaseHelper.cursorsClosed() +
@@ -2119,7 +2109,7 @@ public class Settings extends AppCompatActivity
 				    (m_databaseHelper.cursorsOpened() +
 				     " Database Cursors Opened");
 				((TextView) findViewById(R.id.memory)).setText
-				    (m_memory);
+				    (memory + " MiB Consumed (JVM)");
 			    }
 			});
 		    }
