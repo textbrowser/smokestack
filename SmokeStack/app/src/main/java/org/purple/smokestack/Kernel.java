@@ -58,7 +58,8 @@ public class Kernel
     private ScheduledExecutorService m_congestionScheduler = null;
     private ScheduledExecutorService m_listenersScheduler = null;
     private ScheduledExecutorService m_neighborsScheduler = null;
-    private ScheduledExecutorService m_purgeExpiredRoutingEntries = null;
+    private ScheduledExecutorService m_purgeExpiredRoutingEntriesScheduler =
+	null;
     private ScheduledExecutorService m_purgeReleasedMessagesScheduler = null;
     private WakeLock m_wakeLock = null;
     private WifiLock m_wifiLock = null;
@@ -441,11 +442,12 @@ public class Kernel
 	    }, 1500, PURGE_RELEASED_MESSAGES_INTERVAL, TimeUnit.MILLISECONDS);
 	}
 
-	if(m_purgeExpiredRoutingEntries == null)
+	if(m_purgeExpiredRoutingEntriesScheduler == null)
 	{
-	    m_purgeExpiredRoutingEntries = Executors.
+	    m_purgeExpiredRoutingEntriesScheduler = Executors.
 		newSingleThreadScheduledExecutor();
-	    m_purgeExpiredRoutingEntries.scheduleAtFixedRate(new Runnable()
+	    m_purgeExpiredRoutingEntriesScheduler.scheduleAtFixedRate
+		(new Runnable()
 	    {
 		@Override
 		public void run()
