@@ -59,6 +59,7 @@ public class UdpMulticastNeighbor extends Neighbor
     protected boolean send(String message)
     {
 	if(!connected() || message == null || message.isEmpty())
+	    return false;
 
 	try
 	{
@@ -66,6 +67,9 @@ public class UdpMulticastNeighbor extends Neighbor
 
 	    while(stringBuilder.length() > 0)
 	    {
+		if(m_aborted.get())
+		    return false;
+
 		byte bytes[] = stringBuilder.substring
 		    (0, Math.min(576, stringBuilder.length())).getBytes();
 

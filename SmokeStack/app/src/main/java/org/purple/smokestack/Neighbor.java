@@ -54,6 +54,7 @@ public abstract class Neighbor
     private final static long SEND_OUTBOUND_TIMER_INTERVAL = 25; // Milliseconds
     private final static long SILENCE = 90000; // 90 Seconds
     private final static long TIMER_INTERVAL = 2500; // 2.5 Seconds
+    protected AtomicBoolean m_aborted = null;
     protected AtomicBoolean m_allowUnsolicited = null;
     protected AtomicBoolean m_clientSupportsCryptographicDiscovery = null;
     protected AtomicBoolean m_isPrivateServer = null;
@@ -132,6 +133,7 @@ public abstract class Neighbor
 		       boolean userDefined,
 		       int oid)
     {
+	m_aborted = new AtomicBoolean(false);
 	m_allowUnsolicited = new AtomicBoolean(false);
 	m_bytes = new byte[BYTES_PER_READ];
 	m_bytesRead = new AtomicLong(0);
@@ -168,8 +170,11 @@ public abstract class Neighbor
 	    {
 		try
 		{
-		    if(!connected())
+		    if(!connected() || m_aborted.get())
+		    {
+			m_stringBuffer.setLength(0);
 			return;
+		    }
 
 		    /*
 		    ** Detect our end-of-message delimiter.
@@ -181,6 +186,9 @@ public abstract class Neighbor
 
 		    while((indexOf = m_stringBuffer.indexOf(Messages.EOM)) >= 0)
 		    {
+			if(m_aborted.get())
+			    break;
+
 			m_lastParsed.set(System.currentTimeMillis());
 
 			String buffer = m_stringBuffer.
@@ -289,7 +297,7 @@ public abstract class Neighbor
 	    {
 		try
 		{
-		    if(!connected())
+		    if(!connected() || m_aborted.get())
 			return;
 
 		    if(System.nanoTime() - m_accumulatedTime >= 1e+10)
@@ -431,6 +439,7 @@ public abstract class Neighbor
 
     protected synchronized void abort()
     {
+	m_aborted.set(true);
 	m_parsingScheduler.shutdown();
 
 	try
