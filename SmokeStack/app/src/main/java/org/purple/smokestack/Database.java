@@ -3420,7 +3420,7 @@ public class Database extends SQLiteOpenHelper
 		 Base64.encodeToString(cryptography.hmac(message.getBytes()),
 				       Base64.DEFAULT));
 	    values.put("neighbor_oid", oid);
-	    m_db.insert("outbound_queue", null, values);
+	    m_db.insertOrThrow("outbound_queue", null, values);
 	    m_db.setTransactionSuccessful();
 	}
 	catch(Exception exception)
