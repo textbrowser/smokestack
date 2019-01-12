@@ -171,10 +171,7 @@ public abstract class Neighbor
 		try
 		{
 		    if(!connected() || m_aborted.get())
-		    {
-			m_stringBuffer.setLength(0);
 			return;
-		    }
 
 		    /*
 		    ** Detect our end-of-message delimiter.
