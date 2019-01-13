@@ -434,37 +434,47 @@ public abstract class Neighbor
     protected abstract int getLocalPort();
     protected abstract void connect();
 
-    protected synchronized void abort()
+    protected void abort()
     {
 	m_aborted.set(true);
-	m_parsingScheduler.shutdown();
 
-	try
+	synchronized(m_parsingScheduler)
 	{
-	    m_parsingScheduler.awaitTermination(60, TimeUnit.SECONDS);
-	}
-	catch(Exception exception)
-	{
-	}
+	    m_parsingScheduler.shutdown();
 
-	m_scheduler.shutdown();
-
-	try
-	{
-	    m_scheduler.awaitTermination(60, TimeUnit.SECONDS);
-	}
-	catch(Exception exception)
-	{
+	    try
+	    {
+		m_parsingScheduler.awaitTermination(60, TimeUnit.SECONDS);
+	    }
+	    catch(Exception exception)
+	    {
+	    }
 	}
 
-	m_sendOutboundScheduler.shutdown();
+	synchronized(m_scheduler)
+	{
+	    m_scheduler.shutdown();
 
-	try
-	{
-	    m_sendOutboundScheduler.awaitTermination(60, TimeUnit.SECONDS);
+	    try
+	    {
+		m_scheduler.awaitTermination(60, TimeUnit.SECONDS);
+	    }
+	    catch(Exception exception)
+	    {
+	    }
 	}
-	catch(Exception exception)
+
+	synchronized(m_sendOutboundScheduler)
 	{
+	    m_sendOutboundScheduler.shutdown();
+
+	    try
+	    {
+		m_sendOutboundScheduler.awaitTermination(60, TimeUnit.SECONDS);
+	    }
+	    catch(Exception exception)
+	    {
+	    }
 	}
     }
 

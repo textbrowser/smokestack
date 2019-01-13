@@ -450,24 +450,31 @@ public class TcpListener
     public void abort()
     {
 	disconnect();
-	m_acceptScheduler.shutdown();
 
-	try
+	synchronized(m_acceptScheduler)
 	{
-	    m_acceptScheduler.awaitTermination(60, TimeUnit.SECONDS);
-	}
-	catch(Exception exception)
-	{
+	    m_acceptScheduler.shutdown();
+
+	    try
+	    {
+		m_acceptScheduler.awaitTermination(60, TimeUnit.SECONDS);
+	    }
+	    catch(Exception exception)
+	    {
+	    }
 	}
 
-	m_scheduler.shutdown();
+	synchronized(m_scheduler)
+	{
+	    m_scheduler.shutdown();
 
-	try
-	{
-	    m_scheduler.awaitTermination(60, TimeUnit.SECONDS);
-	}
-	catch(Exception exception)
-	{
+	    try
+	    {
+		m_scheduler.awaitTermination(60, TimeUnit.SECONDS);
+	    }
+	    catch(Exception exception)
+	    {
+	    }
 	}
     }
 

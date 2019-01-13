@@ -501,14 +501,17 @@ public class TcpNeighbor extends Neighbor
 	if(m_oid.get() >= 0)
 	    m_isValidCertificate.set(false);
 
-	m_readSocketScheduler.shutdown();
+	synchronized(m_readSocketScheduler)
+	{
+	    m_readSocketScheduler.shutdown();
 
-	try
-	{
-	    m_readSocketScheduler.awaitTermination(60, TimeUnit.SECONDS);
-	}
-	catch(Exception exception)
-	{
+	    try
+	    {
+		m_readSocketScheduler.awaitTermination(60, TimeUnit.SECONDS);
+	    }
+	    catch(Exception exception)
+	    {
+	    }
 	}
     }
 
