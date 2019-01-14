@@ -2191,11 +2191,18 @@ public class Settings extends AppCompatActivity
 	if(m_listenersScheduler == null)
 	    return;
 
-	m_listenersScheduler.shutdown();
+	try
+	{
+	    m_listenersScheduler.shutdown();
+	}
+	catch(Exception exception)
+	{
+	}
 
 	try
 	{
-	    m_listenersScheduler.awaitTermination(60, TimeUnit.SECONDS);
+	    if(!m_listenersScheduler.awaitTermination(60, TimeUnit.SECONDS))
+		m_listenersScheduler.shutdownNow();
 	}
 	catch(Exception exception)
 	{
@@ -2211,11 +2218,18 @@ public class Settings extends AppCompatActivity
 	if(m_neighborsScheduler == null)
 	    return;
 
-	m_neighborsScheduler.shutdown();
+	try
+	{
+	    m_neighborsScheduler.shutdown();
+	}
+	catch(Exception exception)
+	{
+	}
 
 	try
 	{
-	    m_neighborsScheduler.awaitTermination(60, TimeUnit.SECONDS);
+	    if(!m_neighborsScheduler.awaitTermination(60, TimeUnit.SECONDS))
+		m_neighborsScheduler.shutdownNow();
 	}
 	catch(Exception exception)
 	{

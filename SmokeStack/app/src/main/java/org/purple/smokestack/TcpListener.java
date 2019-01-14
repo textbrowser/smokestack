@@ -453,11 +453,18 @@ public class TcpListener
 
 	synchronized(m_acceptScheduler)
 	{
-	    m_acceptScheduler.shutdown();
+	    try
+	    {
+		m_acceptScheduler.shutdown();
+	    }
+	    catch(Exception exception)
+	    {
+	    }
 
 	    try
 	    {
-		m_acceptScheduler.awaitTermination(60, TimeUnit.SECONDS);
+		if(!m_acceptScheduler.awaitTermination(60, TimeUnit.SECONDS))
+		    m_acceptScheduler.shutdownNow();
 	    }
 	    catch(Exception exception)
 	    {
@@ -466,11 +473,18 @@ public class TcpListener
 
 	synchronized(m_scheduler)
 	{
-	    m_scheduler.shutdown();
+	    try
+	    {
+		m_scheduler.shutdown();
+	    }
+	    catch(Exception exception)
+	    {
+	    }
 
 	    try
 	    {
-		m_scheduler.awaitTermination(60, TimeUnit.SECONDS);
+		if(!m_scheduler.awaitTermination(60, TimeUnit.SECONDS))
+		    m_scheduler.shutdownNow();
 	    }
 	    catch(Exception exception)
 	    {
