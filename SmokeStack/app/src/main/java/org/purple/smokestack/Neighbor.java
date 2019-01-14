@@ -75,6 +75,7 @@ public abstract class Neighbor
     protected UUID m_uuid = null;
     protected byte m_bytes[] = null;
     protected final Object m_errorMutex = new Object();
+    protected final Object m_parsingSchedulerObject = new Object();
     protected final StringBuffer m_randomBuffer = new StringBuffer();
     protected final StringBuffer m_stringBuffer = new StringBuffer();
     protected final StringBuilder m_error = new StringBuilder();
@@ -172,6 +173,21 @@ public abstract class Neighbor
 		{
 		    if(!connected() || m_aborted.get())
 			return;
+
+		    /*
+		    ** Await new data.
+		    */
+
+		    synchronized(m_parsingSchedulerObject)
+		    {
+			try
+			{
+			    m_parsingSchedulerObject.wait();
+			}
+			catch(Exception exception)
+			{
+			}
+		    }
 
 		    /*
 		    ** Detect our end-of-message delimiter.
@@ -441,7 +457,15 @@ public abstract class Neighbor
 	synchronized(m_parsingScheduler)
 	{
 	    m_parsingScheduler.shutdown();
+	}
 
+	synchronized(m_parsingSchedulerObject)
+	{
+	    m_parsingSchedulerObject.notify();
+	}
+
+	synchronized(m_parsingScheduler)
+	{
 	    try
 	    {
 		m_parsingScheduler.awaitTermination(60, TimeUnit.SECONDS);
@@ -481,6 +505,11 @@ public abstract class Neighbor
     protected void disconnect()
     {
 	m_databaseHelper.deleteEchoQueue(m_oid.get());
+
+	synchronized(m_parsingSchedulerObject)
+	{
+	    m_parsingSchedulerObject.notify();
+	}
 
 	synchronized(m_queueMutex)
 	{

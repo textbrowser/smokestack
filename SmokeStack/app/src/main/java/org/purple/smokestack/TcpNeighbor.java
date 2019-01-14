@@ -292,6 +292,11 @@ public class TcpNeighbor extends Neighbor
 		    m_lastTimeRead.set(System.nanoTime());
 		    m_stringBuffer.append
 			(new String(m_bytes, 0, (int) bytesRead));
+
+		    synchronized(m_parsingSchedulerObject)
+		    {
+			m_parsingSchedulerObject.notify();
+		    }
 		}
 		catch(java.net.SocketException exception)
 		{
@@ -410,6 +415,11 @@ public class TcpNeighbor extends Neighbor
 		    m_lastTimeRead.set(System.nanoTime());
 		    m_stringBuffer.append
 			(new String(m_bytes, 0, (int) bytesRead));
+
+		    synchronized(m_parsingSchedulerObject)
+		    {
+			m_parsingSchedulerObject.notify();
+		    }
 		}
 		catch(java.net.SocketException exception)
 		{
