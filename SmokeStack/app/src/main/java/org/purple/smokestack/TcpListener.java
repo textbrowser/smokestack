@@ -165,10 +165,10 @@ public class TcpListener
 		       sslSocket == null)
 			return;
 
+		    m_socketsMutex.writeLock().lock();
+
 		    try
 		    {
-			m_socketsMutex.writeLock().lock();
-
 			ScheduledExecutorService scheduler = Executors.
 			    newSingleThreadScheduledExecutor();
 			TcpNeighbor neighbor = new TcpNeighbor
@@ -324,11 +324,11 @@ public class TcpListener
 		{
 		    ByteArrayInputStream byteArrayInputStream = new
 			ByteArrayInputStream(certificateBytes);
-		    CertificateFactory certificateFactory = CertificateFactory.
-			getInstance("X.509");
+		    CertificateFactory certificateFactory =
+			CertificateFactory.getInstance("X.509");
 		    X509Certificate certificate = (X509Certificate)
-			certificateFactory.
-			generateCertificate(byteArrayInputStream);
+			certificateFactory.generateCertificate
+			(byteArrayInputStream);
 
 		    m_keyStore = KeyStore.getInstance
 			(KeyStore.getDefaultType());
@@ -344,7 +344,8 @@ public class TcpListener
 	}
 	catch(Exception exception)
 	{
-	    setError("An error (" + exception.getMessage() +
+	    setError("An error (" +
+		     exception.getMessage() +
 		     ") occurred while preparing the key pair.");
 	    return;
 	}
@@ -555,10 +556,9 @@ public class TcpListener
 	    keyManagerFactory.init(m_keyStore, null);
 	    sslContext.init(keyManagerFactory.getKeyManagers(),
 			    null,
-			    SecureRandom.getInstance("SHA1PRNG"));
+			    null);
 	    m_socket = (SSLServerSocket)
 		sslContext.getServerSocketFactory().createServerSocket();
-	    m_socket.setPerformancePreferences(0, 1, 1);
 	    m_socket.setReceiveBufferSize(TcpNeighbor.SO_RCVBUF_SIZE);
 	    m_socket.setReuseAddress(true);
 	    m_socket.bind
