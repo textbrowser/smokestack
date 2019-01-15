@@ -148,22 +148,28 @@ public class TcpListener
 	    @Override
 	    public void run()
 	    {
+		SSLSocket sslSocket = null;
+
 		try
 		{
-		    if(!m_listen.get())
+		    if(!m_listen.get() || m_socket == null)
 			return;
 
-		    SSLSocket sslSocket = null;
+		    sslSocket = (SSLSocket) m_socket.accept();
 
-		    if(m_socket == null)
-			return;
-		    else
-			sslSocket = (SSLSocket) m_socket.accept();
+		    if(!m_listen.get() || m_socket == null || sslSocket == null)
+		    {
+			if(sslSocket != null)
+			    try
+			    {
+				sslSocket.close();
+			    }
+			    catch(Exception exception)
+			    {
+			    }
 
-		    if(!m_listen.get() ||
-		       m_socket == null ||
-		       sslSocket == null)
 			return;
+		    }
 
 		    m_socketsMutex.writeLock().lock();
 
@@ -177,22 +183,37 @@ public class TcpListener
 			     -m_neighborCounter.incrementAndGet());
 
 			Kernel.getInstance().recordNeighbor(neighbor);
-			scheduler.schedule
-			    (new ClientTask(neighbor),
-			     0,
-			     TimeUnit.MILLISECONDS);
+			scheduler.submit(new ClientTask(neighbor));
+			scheduler.shutdown();
+			scheduler.awaitTermination(30, TimeUnit.SECONDS);
 			m_sockets.add(neighbor);
 		    }
-		    catch(Exception exception)
+		    catch(Exception exception1)
 		    {
+			try
+			{
+			    if(sslSocket != null)
+				sslSocket.close();
+			}
+			catch(Exception exception2)
+			{
+			}
 		    }
 		    finally
 		    {
 			m_socketsMutex.writeLock().unlock();
 		    }
 		}
-		catch(Exception exception)
+		catch(Exception exception1)
 		{
+		    try
+		    {
+			if(sslSocket != null)
+			    sslSocket.close();
+		    }
+		    catch(Exception exception2)
+		    {
+		    }
 		}
 	    }
 	}, 0, ACCEPT_INTERVAL, TimeUnit.MILLISECONDS);
