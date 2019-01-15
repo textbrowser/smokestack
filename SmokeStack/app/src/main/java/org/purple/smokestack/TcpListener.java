@@ -536,6 +536,9 @@ public class TcpListener
 
     public void listen()
     {
+	if(listening())
+	    return;
+
 	m_listen.set(true);
 
 	try
