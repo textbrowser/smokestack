@@ -96,29 +96,6 @@ public class TcpListener
     private final static long ACCEPT_INTERVAL = 100; // Milliseconds
     private final static long TIMER_INTERVAL = 2500; // 2.5 Seconds
 
-    private class ClientTask implements Runnable
-    {
-	private TcpNeighbor m_neightbor = null;
-
-	public ClientTask(TcpNeighbor neightbor)
-	{
-	    m_neightbor = neightbor;
-        }
-
-        @Override
-        public void run()
-	{
-	    try
-	    {
-		if(m_neightbor != null && m_neightbor.connected())
-		    m_neightbor.startHandshake();
-	    }
-	    catch(Exception exception)
-	    {
-	    }
-        }
-    }
-
     public TcpListener(String ipAddress,
 		       String ipPort,
 		       String scopeId,
@@ -174,8 +151,6 @@ public class TcpListener
 			return;
 		    }
 
-		    ScheduledExecutorService scheduler = Executors.
-			newSingleThreadScheduledExecutor();
 		    TcpNeighbor neighbor = new TcpNeighbor
 			(sslSocket,
 			 m_isPrivateServer.get(),
@@ -185,24 +160,11 @@ public class TcpListener
 
 		    try
 		    {
-			scheduler.submit(new ClientTask(neighbor));
-			scheduler.shutdown();
-			scheduler.awaitTermination(30, TimeUnit.SECONDS);
 			m_sockets.add(neighbor);
 		    }
-		    catch(Exception exception1)
+		    catch(Exception exception)
 		    {
-			m_sockets.remove(neighbor);
 			neighbor.abort();
-
-			try
-			{
-			    if(sslSocket != null)
-				sslSocket.close();
-			}
-			catch(Exception exception2)
-			{
-			}
 		    }
 		    finally
 		    {
