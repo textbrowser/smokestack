@@ -252,6 +252,9 @@ public class TcpNeighbor extends Neighbor
 			else
 			    return;
 		    }
+		    else if(m_socket == null ||
+			    m_socket.getInputStream() == null)
+			return;
 		    else if(m_socket.getSoTimeout() == HANDSHAKE_TIMEOUT)
 			/*
 			** Reset SO_TIMEOUT from HANDSHAKE_TIMEOUT.

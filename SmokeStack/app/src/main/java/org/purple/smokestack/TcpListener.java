@@ -110,7 +110,7 @@ public class TcpListener
 	{
 	    try
 	    {
-		if(m_neightbor != null)
+		if(m_neightbor != null && m_neightbor.connected())
 		    m_neightbor.startHandshake();
 	    }
 	    catch(Exception exception)
