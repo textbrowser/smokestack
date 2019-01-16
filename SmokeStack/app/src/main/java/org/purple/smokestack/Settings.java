@@ -2108,7 +2108,6 @@ public class Settings extends AppCompatActivity
 				long memory = (runtime.totalMemory() -
 					       runtime.freeMemory()) / 1048576L;
 
-
 				((TextView) findViewById
 				 (R.id.database_cursors_closed)).setText
 				    (m_databaseHelper.cursorsClosed() +

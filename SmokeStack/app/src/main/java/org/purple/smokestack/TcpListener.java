@@ -157,7 +157,10 @@ public class TcpListener
 
 		    sslSocket = (SSLSocket) m_socket.accept();
 
-		    if(!m_listen.get() || m_socket == null || sslSocket == null)
+		    if(!isNetworkConnected() ||
+		       !m_listen.get() ||
+		       m_socket == null ||
+		       sslSocket == null)
 		    {
 			if(sslSocket != null)
 			    try
@@ -171,17 +174,17 @@ public class TcpListener
 			return;
 		    }
 
+		    ScheduledExecutorService scheduler = Executors.
+			newSingleThreadScheduledExecutor();
+		    TcpNeighbor neighbor = new TcpNeighbor
+			(sslSocket,
+			 m_isPrivateServer.get(),
+			 -m_neighborCounter.incrementAndGet());
+
 		    m_socketsMutex.writeLock().lock();
 
 		    try
 		    {
-			ScheduledExecutorService scheduler = Executors.
-			    newSingleThreadScheduledExecutor();
-			TcpNeighbor neighbor = new TcpNeighbor
-			    (sslSocket,
-			     m_isPrivateServer.get(),
-			     -m_neighborCounter.incrementAndGet());
-
 			Kernel.getInstance().recordNeighbor(neighbor);
 			scheduler.submit(new ClientTask(neighbor));
 			scheduler.shutdown();
@@ -190,6 +193,10 @@ public class TcpListener
 		    }
 		    catch(Exception exception1)
 		    {
+			Kernel.getInstance().removeNeighbor(neighbor);
+			m_sockets.remove(neighbor);
+			neighbor.abort();
+
 			try
 			{
 			    if(sslSocket != null)
@@ -262,8 +269,8 @@ public class TcpListener
 			    else if(!neighbor.connected())
 			    {
 				Kernel.getInstance().removeNeighbor(neighbor);
-				neighbor.abort();
 				m_sockets.remove(i);
+				neighbor.abort();
 			    }
 			}
 		    }
