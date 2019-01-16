@@ -83,13 +83,14 @@ public class TcpListener
     private String m_ipPort = "";
     private String m_scopeId = "";
     private String m_version = "";
-    private final ArrayList<TcpNeighbor> m_sockets = new ArrayList<> ();
+    private final ArrayList<TcpNeighbor> m_neighbors = new ArrayList<> ();
     private final AtomicBoolean m_listen = new AtomicBoolean(false);
     private final AtomicInteger m_neighborCounter = new AtomicInteger(0);
     private final AtomicLong m_startTime = new AtomicLong(System.nanoTime());
     private final Cryptography m_cryptography = Cryptography.getInstance();
     private final Database m_databaseHelper = Database.getInstance();
-    private final ReentrantReadWriteLock m_socketsMutex =
+    private final Object m_socketMutex = new Object();
+    private final ReentrantReadWriteLock m_neighborsMutex =
 	new ReentrantReadWriteLock();
     private final StringBuilder m_error = new StringBuilder();
     private final static int RSA_KEY_SIZE = 2048;
@@ -129,38 +130,33 @@ public class TcpListener
 
 		try
 		{
-		    if(!m_listen.get() || m_socket == null)
+		    if(!m_listen.get())
 			return;
 
-		    sslSocket = (SSLSocket) m_socket.accept();
-
-		    if(!isNetworkConnected() ||
-		       !m_listen.get() ||
-		       m_socket == null ||
-		       sslSocket == null)
+		    synchronized(m_socketMutex)
 		    {
-			if(sslSocket != null)
-			    try
-			    {
-				sslSocket.close();
-			    }
-			    catch(Exception exception)
-			    {
-			    }
-
-			return;
+			if(m_socket == null)
+			    return;
 		    }
+
+		    synchronized(m_socketMutex)
+		    {
+			sslSocket = (SSLSocket) m_socket.accept();
+		    }
+
+		    if(sslSocket == null)
+			return;
 
 		    TcpNeighbor neighbor = new TcpNeighbor
 			(sslSocket,
 			 m_isPrivateServer.get(),
 			 -m_neighborCounter.incrementAndGet());
 
-		    m_socketsMutex.writeLock().lock();
+		    m_neighborsMutex.writeLock().lock();
 
 		    try
 		    {
-			m_sockets.add(neighbor);
+			m_neighbors.add(neighbor);
 		    }
 		    catch(Exception exception)
 		    {
@@ -168,7 +164,7 @@ public class TcpListener
 		    }
 		    finally
 		    {
-			m_socketsMutex.writeLock().unlock();
+			m_neighborsMutex.writeLock().unlock();
 		    }
 		}
 		catch(Exception exception1)
@@ -216,19 +212,19 @@ public class TcpListener
 			return;
 		    }
 
-		    m_socketsMutex.writeLock().lock();
+		    m_neighborsMutex.writeLock().lock();
 
 		    try
 		    {
-			for(int i = m_sockets.size() - 1; i >= 0; i--)
+			for(int i = m_neighbors.size() - 1; i >= 0; i--)
 			{
-			    TcpNeighbor neighbor = m_sockets.get(i);
+			    TcpNeighbor neighbor = m_neighbors.get(i);
 
 			    if(neighbor == null)
-				m_sockets.remove(i);
+				m_neighbors.remove(i);
 			    else if(!neighbor.connected())
 			    {
-				m_sockets.remove(i);
+				m_neighbors.remove(i);
 				neighbor.abort();
 			    }
 			}
@@ -238,7 +234,7 @@ public class TcpListener
 		    }
 		    finally
 		    {
-			m_socketsMutex.writeLock().unlock();
+			m_neighborsMutex.writeLock().unlock();
 		    }
 
 		    saveStatistics();
@@ -272,12 +268,15 @@ public class TcpListener
 
     private boolean listening()
     {
-	try
+	synchronized(m_socketMutex)
 	{
-	    return m_socket != null && m_socket.isBound();
-	}
-	catch(Exception exception)
-	{
+	    try
+	    {
+		return m_socket != null && m_socket.isBound();
+	    }
+	    catch(Exception exception)
+	    {
+	    }
 	}
 
 	return false;
@@ -406,15 +405,15 @@ public class TcpListener
 	    error = m_error.toString();
 	}
 
-	m_socketsMutex.readLock().lock();
+	m_neighborsMutex.readLock().lock();
 
 	try
 	{
-	    peersCount = String.valueOf(m_sockets.size());
+	    peersCount = String.valueOf(m_neighbors.size());
 	}
 	finally
 	{
-	    m_socketsMutex.readLock().unlock();
+	    m_neighborsMutex.readLock().unlock();
 	}
 
 	m_databaseHelper.saveListenerInformation
@@ -484,27 +483,29 @@ public class TcpListener
     {
 	m_listen.set(false);
 
-	try
+	synchronized(m_socketMutex)
 	{
-	    if(m_socket != null)
-		m_socket.close();
-	}
-	catch(Exception exception)
-	{
-	}
-	finally
-	{
-	    m_socket = null;
-	    m_startTime.set(System.nanoTime());
-	}
-
-	m_socketsMutex.writeLock().lock();
-
-	try
-	{
-	    for(int i = m_sockets.size() - 1; i >= 0; i--)
+	    try
 	    {
-		TcpNeighbor neighbor = m_sockets.remove(i);
+		if(m_socket != null)
+		    m_socket.close();
+	    }
+	    catch(Exception exception)
+	    {
+	    }
+	    finally
+	    {
+		m_socket = null;
+	    }
+	}
+
+	m_neighborsMutex.writeLock().lock();
+
+	try
+	{
+	    for(int i = m_neighbors.size() - 1; i >= 0; i--)
+	    {
+		TcpNeighbor neighbor = m_neighbors.remove(i);
 
 		if(neighbor != null)
 		    neighbor.abort();
@@ -515,8 +516,10 @@ public class TcpListener
 	}
 	finally
 	{
-	    m_socketsMutex.writeLock().unlock();
+	    m_neighborsMutex.writeLock().unlock();
 	}
+
+	m_startTime.set(System.nanoTime());
     }
 
     public void listen()
@@ -528,9 +531,6 @@ public class TcpListener
 
 	try
 	{
-	    if(m_socket != null)
-		return;
-
 	    SSLContext sslContext = null;
 
 	    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
@@ -545,23 +545,29 @@ public class TcpListener
 	    sslContext.init(keyManagerFactory.getKeyManagers(),
 			    null,
 			    null);
-	    m_socket = (SSLServerSocket)
-		sslContext.getServerSocketFactory().createServerSocket();
-	    m_socket.setReceiveBufferSize(TcpNeighbor.SO_RCVBUF_SIZE);
-	    m_socket.setReuseAddress(true);
-	    m_socket.bind
-		(new InetSocketAddress(InetAddress.getByName(m_ipAddress),
-				       Integer.parseInt(m_ipPort)),
-		 0);
 
-	    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-		m_socket.setEnabledProtocols
-		    (new String[] {"TLSv1", "TLSv1.1", "TLSv1.2"});
-	    else
-		m_socket.setEnabledProtocols
-		    (new String[] {"SSLv3", "TLSv1", "TLSv1.1", "TLSv1.2"});
+	    synchronized(m_socketMutex)
+	    {
+		m_socket = (SSLServerSocket)
+		    sslContext.getServerSocketFactory().createServerSocket();
+		m_socket.setReceiveBufferSize(TcpNeighbor.SO_RCVBUF_SIZE);
+		m_socket.setReuseAddress(true);
+		m_socket.bind
+		    (new InetSocketAddress(InetAddress.getByName(m_ipAddress),
+					   Integer.parseInt(m_ipPort)),
+		     0);
 
-	    m_socket.setNeedClientAuth(false);
+		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+		    m_socket.setEnabledProtocols
+			(new String[] {"TLSv1", "TLSv1.1", "TLSv1.2"});
+		else
+		    m_socket.setEnabledProtocols
+			(new String[] {"SSLv3", "TLSv1", "TLSv1.1", "TLSv1.2"});
+
+		m_socket.setNeedClientAuth(false);
+		m_socket.setSoTimeout(2500);
+	    }
+
 	    m_startTime.set(System.nanoTime());
 	}
 	catch(Exception exception)
@@ -575,40 +581,40 @@ public class TcpListener
 
     public void scheduleEchoSend(String message, int oid)
     {
-	m_socketsMutex.readLock().lock();
+	m_neighborsMutex.readLock().lock();
 
 	try
 	{
-	    for(int i = 0; i < m_sockets.size(); i++)
-		if(m_sockets.get(i) != null)
-		    if(m_sockets.get(i).getOid() != oid)
-			m_sockets.get(i).scheduleEchoSend(message);
+	    for(int i = 0; i < m_neighbors.size(); i++)
+		if(m_neighbors.get(i) != null)
+		    if(m_neighbors.get(i).getOid() != oid)
+			m_neighbors.get(i).scheduleEchoSend(message);
 	}
 	catch(Exception exception)
 	{
 	}
 	finally
 	{
-	    m_socketsMutex.readLock().unlock();
+	    m_neighborsMutex.readLock().unlock();
 	}
     }
 
     public void scheduleSend(String message)
     {
-	m_socketsMutex.readLock().lock();
+	m_neighborsMutex.readLock().lock();
 
 	try
 	{
-	    for(int i = 0; i < m_sockets.size(); i++)
-		if(m_sockets.get(i) != null)
-		    m_sockets.get(i).scheduleSend(message);
+	    for(int i = 0; i < m_neighbors.size(); i++)
+		if(m_neighbors.get(i) != null)
+		    m_neighbors.get(i).scheduleSend(message);
 	}
 	catch(Exception exception)
 	{
 	}
 	finally
 	{
-	    m_socketsMutex.readLock().unlock();
+	    m_neighborsMutex.readLock().unlock();
 	}
     }
 }
