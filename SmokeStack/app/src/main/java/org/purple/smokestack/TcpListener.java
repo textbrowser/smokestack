@@ -185,7 +185,6 @@ public class TcpListener
 
 		    try
 		    {
-			Kernel.getInstance().recordNeighbor(neighbor);
 			scheduler.submit(new ClientTask(neighbor));
 			scheduler.shutdown();
 			scheduler.awaitTermination(30, TimeUnit.SECONDS);
@@ -193,7 +192,6 @@ public class TcpListener
 		    }
 		    catch(Exception exception1)
 		    {
-			Kernel.getInstance().removeNeighbor(neighbor);
 			m_sockets.remove(neighbor);
 			neighbor.abort();
 
@@ -268,7 +266,6 @@ public class TcpListener
 				m_sockets.remove(i);
 			    else if(!neighbor.connected())
 			    {
-				Kernel.getInstance().removeNeighbor(neighbor);
 				m_sockets.remove(i);
 				neighbor.abort();
 			    }
@@ -549,8 +546,6 @@ public class TcpListener
 
 		if(neighbor != null)
 		    neighbor.abort();
-
-		Kernel.getInstance().removeNeighbor(neighbor);
 	    }
 	}
 	catch(Exception exception)
@@ -613,6 +608,45 @@ public class TcpListener
 		     exception.getMessage() +
 		     ") occurred while attempting to listen.");
 	    disconnect();
+	}
+    }
+
+    public void scheduleEchoSend(String message, int oid)
+    {
+	m_socketsMutex.readLock().lock();
+
+	try
+	{
+	    for(int i = 0; i < m_sockets.size(); i++)
+		if(m_sockets.get(i) != null)
+		    if(m_sockets.get(i).getOid() != oid)
+			m_sockets.get(i).scheduleEchoSend(message);
+	}
+	catch(Exception exception)
+	{
+	}
+	finally
+	{
+	    m_socketsMutex.readLock().unlock();
+	}
+    }
+
+    public void scheduleSend(String message)
+    {
+	m_socketsMutex.readLock().lock();
+
+	try
+	{
+	    for(int i = 0; i < m_sockets.size(); i++)
+		if(m_sockets.get(i) != null)
+		    m_sockets.get(i).scheduleSend(message);
+	}
+	catch(Exception exception)
+	{
+	}
+	finally
+	{
+	    m_socketsMutex.readLock().unlock();
 	}
     }
 }

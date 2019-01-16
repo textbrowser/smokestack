@@ -63,12 +63,9 @@ public class Kernel
     private ScheduledExecutorService m_purgeReleasedMessagesScheduler = null;
     private WakeLock m_wakeLock = null;
     private WifiLock m_wifiLock = null;
-    private final ArrayList<TcpNeighbor> m_serverNeighbors = new ArrayList<> ();
     private final ReentrantReadWriteLock m_ozonesMutex = new
 	ReentrantReadWriteLock();
     private final ReentrantReadWriteLock m_releaseMessagesSchedulersMutex = new
-	ReentrantReadWriteLock();
-    private final ReentrantReadWriteLock m_serverNeighborsMutex = new
 	ReentrantReadWriteLock();
     private final ReentrantReadWriteLock m_sipHashIdsMutex = new
 	ReentrantReadWriteLock();
@@ -482,28 +479,6 @@ public class Kernel
 	    }
 
 	    m_listeners.clear();
-	}
-
-	m_serverNeighborsMutex.writeLock().lock();
-
-	try
-	{
-	    /*
-	    ** TcpListener will disconnect its sockets.
-	    */
-
-	    for(int i = 0; i < m_serverNeighbors.size(); i++)
-		if(m_serverNeighbors.get(i) != null)
-		    m_serverNeighbors.get(i).abort();
-
-	    m_serverNeighbors.clear();
-	}
-	catch(Exception exception)
-	{
-	}
-	finally
-	{
-	    m_serverNeighborsMutex.writeLock().unlock();
 	}
     }
 
@@ -1043,6 +1018,17 @@ public class Kernel
 	if(message == null || message.trim().isEmpty())
 	    return;
 
+	synchronized(m_listeners)
+	{
+	    for(int i = 0; i < m_listeners.size(); i++)
+	    {
+		int j = m_listeners.keyAt(i);
+
+		if(m_listeners.get(j) != null)
+		    m_listeners.get(j).scheduleEchoSend(message, oid);
+	    }
+	}
+
 	synchronized(m_neighbors)
 	{
 	    for(int i = 0; i < m_neighbors.size(); i++)
@@ -1054,28 +1040,23 @@ public class Kernel
 		    m_neighbors.get(j).scheduleEchoSend(message);
 	    }
 	}
-
-	m_serverNeighborsMutex.readLock().lock();
-
-	try
-	{
-	    for(int i = 0; i < m_serverNeighbors.size(); i++)
-		if(m_serverNeighbors.get(i) != null)
-		    m_serverNeighbors.get(i).scheduleEchoSend(message);
-	}
-	catch(Exception exception)
-	{
-	}
-	finally
-	{
-	    m_serverNeighborsMutex.readLock().unlock();
-	}
     }
 
     public void enqueueMessage(String message)
     {
 	if(message == null || message.trim().isEmpty())
 	    return;
+
+	synchronized(m_listeners)
+	{
+	    for(int i = 0; i < m_listeners.size(); i++)
+	    {
+		int j = m_listeners.keyAt(i);
+
+		if(m_listeners.get(j) != null)
+		    m_listeners.get(j).scheduleSend(message);
+	    }
+	}
 
 	ArrayList<NeighborElement> arrayList =
 	    s_databaseHelper.readNeighborOids(s_cryptography);
@@ -1093,22 +1074,6 @@ public class Kernel
 			 arrayList.get(i).m_oid);
 
 	    arrayList.clear();
-	}
-
-	m_serverNeighborsMutex.readLock().lock();
-
-	try
-	{
-	    for(int i = 0; i < m_serverNeighbors.size(); i++)
-		if(m_serverNeighbors.get(i) != null)
-		    m_serverNeighbors.get(i).scheduleSend(message);
-	}
-	catch(Exception exception)
-	{
-	}
-	finally
-	{
-	    m_serverNeighborsMutex.readLock().unlock();
 	}
     }
 
@@ -1238,49 +1203,5 @@ public class Kernel
 	}
 
 	listeners.clear();
-    }
-
-    public void recordNeighbor(TcpNeighbor neighbor)
-    {
-	if(neighbor == null)
-	    return;
-
-	m_serverNeighborsMutex.writeLock().lock();
-
-	try
-	{
-	    m_serverNeighbors.add(neighbor);
-	}
-	catch(Exception exception)
-	{
-	}
-	finally
-	{
-	    m_serverNeighborsMutex.writeLock().unlock();
-	}
-    }
-
-    public void removeNeighbor(TcpNeighbor neighbor)
-    {
-	if(neighbor == null)
-	    return;
-
-	m_serverNeighborsMutex.writeLock().lock();
-
-	try
-	{
-	    m_serverNeighbors.remove(neighbor);
-
-	    for(int i = m_serverNeighbors.size() - 1; i >= 0; i--)
-		if(m_serverNeighbors.get(i) == null)
-		    m_serverNeighbors.remove(i);
-	}
-	catch(Exception exception)
-	{
-	}
-	finally
-	{
-	    m_serverNeighborsMutex.writeLock().unlock();
-	}
     }
 }
