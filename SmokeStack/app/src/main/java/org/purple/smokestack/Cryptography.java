@@ -84,6 +84,13 @@ public class Cryptography
     private final static int SIPHASH_STREAM_CREATION_ITERATION_COUNT = 4096;
     private static Cryptography s_instance = null;
     private static SecureRandom s_secureRandom = null;
+    public final static Object s_cipherMutex = new Object();
+    public final static Object s_keyFactoryMutex = new Object();
+    public final static Object s_keyPairGeneratorMutex = new Object();
+    public final static Object s_macMutex = new Object();
+    public final static Object s_secretKeyFactoryMutex = new Object();
+    public final static Object s_signatureMutex = new Object();
+    public final static Object s_sha512Mutex = new Object();
     public final static int SIPHASH_ID_LENGTH = 19; // 0000-0000-0000-0000
 
     private Cryptography()
@@ -145,52 +152,61 @@ public class Cryptography
 
 	byte bytes[] = null;
 
+	m_encryptionKeyMutex.readLock().lock();
+
 	try
 	{
-	    m_encryptionKeyMutex.readLock().lock();
+	    if(m_encryptionKey == null)
+		return null;
 
-	    try
+	    byte iv[] = new byte[16];
+
+	    s_secureRandom.nextBytes(iv);
+
+	    synchronized(s_cipherMutex)
 	    {
-		if(m_encryptionKey == null)
-		    return null;
+		Cipher cipher = Cipher.getInstance
+		    (SYMMETRIC_CIPHER_TRANSFORMATION);
 
-		Cipher cipher = null;
-		byte iv[] = new byte[16];
-
-		cipher = Cipher.getInstance(SYMMETRIC_CIPHER_TRANSFORMATION);
-		s_secureRandom.nextBytes(iv);
 		cipher.init(Cipher.ENCRYPT_MODE,
 			    m_encryptionKey,
 			    new IvParameterSpec(iv));
 		bytes = cipher.doFinal(data);
-		bytes = Miscellaneous.joinByteArrays(iv, bytes);
-	    }
-	    finally
-	    {
-		m_encryptionKeyMutex.readLock().unlock();
 	    }
 
-	    m_macKeyMutex.readLock().lock();
+	    bytes = Miscellaneous.joinByteArrays(iv, bytes);
+	}
+	catch(Exception exception)
+	{
+	    return null;
+	}
+	finally
+	{
+	    m_encryptionKeyMutex.readLock().unlock();
+	}
 
-	    try
+	m_macKeyMutex.readLock().lock();
+
+	try
+	{
+	    if(m_macKey == null)
+		return null;
+
+	    synchronized(s_macMutex)
 	    {
-		if(m_macKey == null)
-		    return null;
+		Mac mac = Mac.getInstance(HMAC_ALGORITHM);
 
-		Mac mac = null;
-
-		mac = Mac.getInstance(HMAC_ALGORITHM);
 		mac.init(m_macKey);
 		bytes = Miscellaneous.joinByteArrays(bytes, mac.doFinal(bytes));
-	    }
-	    finally
-	    {
-		m_macKeyMutex.readLock().unlock();
 	    }
 	}
 	catch(Exception exception)
 	{
-	    bytes = null;
+	    return null;
+	}
+	finally
+	{
+	    m_macKeyMutex.readLock().unlock();
 	}
 
 	return bytes;
@@ -210,25 +226,25 @@ public class Cryptography
 
 	    byte bytes[] = null;
 
-	    try
+	    synchronized(s_macMutex)
 	    {
-		Mac mac = null;
+		Mac mac = Mac.getInstance(HMAC_ALGORITHM);
 
-		mac = Mac.getInstance(HMAC_ALGORITHM);
 		mac.init(m_macKey);
 		bytes = mac.doFinal(data);
 	    }
-	    catch(Exception exception)
-	    {
-		bytes = null;
-	    }
 
 	    return bytes;
+	}
+	catch(Exception exception)
+	{
 	}
 	finally
 	{
 	    m_macKeyMutex.readLock().unlock();
 	}
+
+	return null;
     }
 
     public byte[] mtd(byte data[]) // MAC-Then-Decrypt
@@ -284,10 +300,17 @@ public class Cryptography
 
 		Mac mac = null;
 
-		mac = Mac.getInstance(HMAC_ALGORITHM);
-		mac.init(m_macKey);
-		digest2 = mac.doFinal
-		    (Arrays.copyOf(data, data.length - 512 / 8));
+		synchronized(s_macMutex)
+		{
+		    mac = Mac.getInstance(HMAC_ALGORITHM);
+		    mac.init(m_macKey);
+		    digest2 = mac.doFinal
+			(Arrays.copyOf(data, data.length - 512 / 8));
+		}
+	    }
+	    catch(Exception exception)
+	    {
+		return null;
 	    }
 	    finally
 	    {
@@ -302,52 +325,56 @@ public class Cryptography
 	    return null;
 	}
 
-	byte bytes[] = null;
+	m_encryptionKeyMutex.readLock().lock();
 
 	try
 	{
-	    m_encryptionKeyMutex.readLock().lock();
+	    if(m_encryptionKey == null)
+		return null;
 
-	    try
+	    Cipher cipher = null;
+	    byte bytes[] = null;
+	    byte iv[] = Arrays.copyOf(data, 16);
+
+	    synchronized(s_cipherMutex)
 	    {
-		if(m_encryptionKey == null)
-		    return null;
-
-		Cipher cipher = null;
-		byte iv[] = Arrays.copyOf(data, 16);
-
-		cipher = Cipher.getInstance(SYMMETRIC_CIPHER_TRANSFORMATION);
+		cipher = Cipher.getInstance
+		    (SYMMETRIC_CIPHER_TRANSFORMATION);
 		cipher.init(Cipher.DECRYPT_MODE,
 			    m_encryptionKey,
 			    new IvParameterSpec(iv));
 		bytes = cipher.doFinal
 		    (Arrays.copyOfRange(data, 16, data.length - 512 / 8));
 	    }
-	    finally
-	    {
-		m_encryptionKeyMutex.readLock().unlock();
-	    }
+
+	    return bytes;
 	}
 	catch(Exception exception)
 	{
-	    bytes = null;
+	}
+	finally
+	{
+	    m_encryptionKeyMutex.readLock().unlock();
 	}
 
-	return bytes;
+	return null;
     }
 
-    public static KeyPair generatePrivatePublicKeyPair(String algorithm,
-						       int keySize)
+    public static KeyPair generatePrivatePublicKeyPair
+	(String algorithm, int keySize)
     {
 	prepareSecureRandom();
 
 	try
 	{
-	    KeyPairGenerator keyPairGenerator = KeyPairGenerator.
-		getInstance(algorithm);
+	    synchronized(s_keyPairGeneratorMutex)
+	    {
+		KeyPairGenerator keyPairGenerator = KeyPairGenerator.
+		    getInstance(algorithm);
 
-	    keyPairGenerator.initialize(keySize, s_secureRandom);
-	    return keyPairGenerator.generateKeyPair();
+		keyPairGenerator.initialize(keySize, s_secureRandom);
+		return keyPairGenerator.generateKeyPair();
+	    }
 	}
 	catch(Exception exception)
 	{
@@ -365,9 +392,16 @@ public class Cryptography
 	    EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec
 		(privateBytes);
 	    EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(publicBytes);
-	    KeyFactory generator = KeyFactory.getInstance(algorithm);
-	    PrivateKey privateKey = generator.generatePrivate(privateKeySpec);
-	    PublicKey publicKey = generator.generatePublic(publicKeySpec);
+	    PrivateKey privateKey = null;
+	    PublicKey publicKey = null;
+
+	    synchronized(s_keyFactoryMutex)
+	    {
+		KeyFactory keyFactory = KeyFactory.getInstance(algorithm);
+
+		privateKey = keyFactory.generatePrivate(privateKeySpec);
+		publicKey = keyFactory.generatePublic(publicKeySpec);
+	    }
 
 	    return new KeyPair(publicKey, privateKey);
 	}
@@ -393,23 +427,26 @@ public class Cryptography
 	    for(int i = 0; i < 3; i++)
 		try
 		{
-		    KeyFactory generator = null;
+		    KeyFactory keyFactory = null;
 
-		    switch(i)
+		    synchronized(s_keyFactoryMutex)
 		    {
-		    case 0:
-			generator = KeyFactory.getInstance("EC");
-			break;
-		    case 1:
-			generator = KeyFactory.getInstance
-                            (PQCObjectIdentifiers.mcElieceCca2.getId());
-			break;
-		    default:
-			generator = KeyFactory.getInstance("RSA");
-			break;
-		    }
+			switch(i)
+			{
+			case 0:
+			    keyFactory = KeyFactory.getInstance("EC");
+			    break;
+			case 1:
+			    keyFactory = KeyFactory.getInstance
+				(PQCObjectIdentifiers.mcElieceCca2.getId());
+			    break;
+			default:
+			    keyFactory = KeyFactory.getInstance("RSA");
+			    break;
+			}
 
-		    return generator.generatePublic(publicKeySpec);
+			return keyFactory.generatePublic(publicKeySpec);
+		    }
 		}
 		catch(Exception exception)
 		{
@@ -430,13 +467,15 @@ public class Cryptography
 	if(salt == null)
 	    return null;
 
-	int length = 256; // Bits.
+	KeySpec keySpec = new PBEKeySpec(password, salt, iterations, 256);
 
-	KeySpec keySpec = new PBEKeySpec(password, salt, iterations, length);
-	SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance
-	    ("PBKDF2WithHmacSHA1");
+	synchronized(s_secretKeyFactoryMutex)
+	{
+	    SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance
+		("PBKDF2WithHmacSHA1");
 
-	return secretKeyFactory.generateSecret(keySpec);
+	    return secretKeyFactory.generateSecret(keySpec);
+	}
     }
 
     public static SecretKey generateMacKey(byte salt[],
@@ -447,13 +486,15 @@ public class Cryptography
 	if(salt == null)
 	    return null;
 
-	int length = 512; // Bits.
+	KeySpec keySpec = new PBEKeySpec(password, salt, iterations, 512);
 
-	KeySpec keySpec = new PBEKeySpec(password, salt, iterations, length);
-	SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance
-	    ("PBKDF2WithHmacSHA1");
+	synchronized(s_secretKeyFactoryMutex)
+	{
+	    SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance
+		("PBKDF2WithHmacSHA1");
 
-	return secretKeyFactory.generateSecret(keySpec);
+	    return secretKeyFactory.generateSecret(keySpec);
+	}
     }
 
     public static String fingerPrint(byte bytes[])
@@ -509,35 +550,35 @@ public class Cryptography
 	if(bytes == null || data == null || publicKey == null)
 	    return false;
 
-	Signature signature = null;
-	boolean ok = false;
-
 	try
 	{
-	    if(publicKey.getAlgorithm().equals("EC"))
-		signature = Signature.getInstance
-		    (PKI_ECDSA_SIGNATURE_ALGORITHM);
-	    else
-		signature = Signature.getInstance(PKI_RSA_SIGNATURE_ALGORITHM);
+	    synchronized(s_signatureMutex)
+	    {
+		Signature signature = null;
 
-	    signature.initVerify(publicKey);
-	    signature.update(data);
-	    ok = signature.verify(bytes);
+		if(publicKey.getAlgorithm().equals("EC"))
+		    signature = Signature.getInstance
+			(PKI_ECDSA_SIGNATURE_ALGORITHM);
+		else
+		    signature = Signature.getInstance
+			(PKI_RSA_SIGNATURE_ALGORITHM);
+
+		signature.initVerify(publicKey);
+		signature.update(data);
+		return signature.verify(bytes);
+	    }
 	}
 	catch(Exception exception)
 	{
-	    return false;
 	}
 
-	return ok;
+	return false;
     }
 
     public static byte[] decrypt(byte data[], byte keyBytes[])
     {
 	if(data == null || keyBytes == null)
 	    return null;
-
-	byte bytes[] = null;
 
 	try
 	{
@@ -546,19 +587,21 @@ public class Cryptography
 		(keyBytes, SYMMETRIC_ALGORITHM);
 	    byte iv[] = Arrays.copyOf(data, 16);
 
-	    cipher = Cipher.getInstance(SYMMETRIC_CIPHER_TRANSFORMATION);
-	    cipher.init(Cipher.DECRYPT_MODE,
-			secretKey,
-			new IvParameterSpec(iv));
-	    bytes = cipher.doFinal
-		(Arrays.copyOfRange(data, 16, data.length));
+	    synchronized(s_cipherMutex)
+	    {
+		cipher = Cipher.getInstance(SYMMETRIC_CIPHER_TRANSFORMATION);
+		cipher.init(Cipher.DECRYPT_MODE,
+			    secretKey,
+			    new IvParameterSpec(iv));
+		return cipher.doFinal
+		    (Arrays.copyOfRange(data, 16, data.length));
+	    }
 	}
 	catch(Exception exception)
 	{
-	    bytes = null;
 	}
 
-	return bytes;
+	return null;
     }
 
     public static byte[] encrypt(byte data[], byte keyBytes[])
@@ -568,29 +611,32 @@ public class Cryptography
 
 	prepareSecureRandom();
 
-	byte bytes[] = null;
-
 	try
 	{
 	    Cipher cipher = null;
 	    SecretKey secretKey = new SecretKeySpec
 		(keyBytes, SYMMETRIC_ALGORITHM);
+	    byte bytes[] = null;
 	    byte iv[] = new byte[16];
 
-	    cipher = Cipher.getInstance(SYMMETRIC_CIPHER_TRANSFORMATION);
 	    s_secureRandom.nextBytes(iv);
-	    cipher.init(Cipher.ENCRYPT_MODE,
-			secretKey,
-			new IvParameterSpec(iv));
-	    bytes = cipher.doFinal(data);
-	    bytes = Miscellaneous.joinByteArrays(iv, bytes);
+
+	    synchronized(s_cipherMutex)
+	    {
+		cipher = Cipher.getInstance(SYMMETRIC_CIPHER_TRANSFORMATION);
+		cipher.init(Cipher.ENCRYPT_MODE,
+			    secretKey,
+			    new IvParameterSpec(iv));
+		bytes = cipher.doFinal(data);
+	    }
+
+	    return Miscellaneous.joinByteArrays(iv, bytes);
 	}
 	catch(Exception exception)
 	{
-	    bytes = null;
 	}
 
-	return bytes;
+	return null;
     }
 
     public static byte[] generateOzone(String string)
@@ -598,12 +644,10 @@ public class Cryptography
 	if(string == null || string.trim().isEmpty())
 	    return null;
 
-	byte bytes[] = null;
-	byte salt[] = null;
-
 	try
 	{
-	    salt = sha512(string.trim().getBytes("UTF-8"));
+	    byte bytes[] = null;
+	    byte salt[] = sha512(string.trim().getBytes("UTF-8"));
 
 	    if(salt != null)
 		bytes = pbkdf2
@@ -617,13 +661,14 @@ public class Cryptography
 			       new String(bytes).toCharArray(),
 			       1,
 			       768); // 8 * (32 + 64) Bits
+
+	    return bytes;
 	}
 	catch(Exception exception)
 	{
-	    bytes = null;
 	}
 
-	return bytes;
+	return null;
     }
 
     public static byte[] keyForSipHash(byte data[])
@@ -642,23 +687,23 @@ public class Cryptography
 	if(data == null || keyBytes == null)
 	    return null;
 
-	byte bytes[] = null;
-
 	try
 	{
 	    Mac mac = null;
 	    SecretKey key = new SecretKeySpec(keyBytes, HASH_ALGORITHM);
 
-	    mac = Mac.getInstance(HMAC_ALGORITHM);
-	    mac.init(key);
-	    bytes = mac.doFinal(data);
+	    synchronized(s_macMutex)
+	    {
+		mac = Mac.getInstance(HMAC_ALGORITHM);
+		mac.init(key);
+		return mac.doFinal(data);
+	    }
 	}
 	catch(Exception exception)
 	{
-	    bytes = null;
 	}
 
-	return bytes;
+	return null;
     }
 
     public static byte[] pbkdf2(byte salt[],
@@ -673,15 +718,20 @@ public class Cryptography
 	{
 	    KeySpec keySpec = new PBEKeySpec
 		(password, salt, iterations, length);
-	    SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance
-		("PBKDF2WithHmacSHA1");
 
-	    return secretKeyFactory.generateSecret(keySpec).getEncoded();
+	    synchronized(s_secretKeyFactoryMutex)
+	    {
+		SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance
+		    ("PBKDF2WithHmacSHA1");
+
+		return secretKeyFactory.generateSecret(keySpec).getEncoded();
+	    }
 	}
 	catch(Exception exception)
 	{
-	    return null;
 	}
+
+	return null;
     }
 
     public static byte[] randomBytes(int length)
@@ -708,43 +758,37 @@ public class Cryptography
 
     public static byte[] sha512(byte[] ... data)
     {
-	byte bytes[] = null;
-
 	try
 	{
-	    /*
-	    ** Thread-safe.
-	    */
+	    synchronized(s_sha512Mutex)
+	    {
+		MessageDigest messageDigest =
+		    MessageDigest.getInstance("SHA-512");
 
-	    MessageDigest messageDigest = MessageDigest.getInstance("SHA-512");
+		for(byte b[] : data)
+		    if(b != null)
+			messageDigest.update(b);
 
-	    for(byte b[] : data)
-		if(b != null)
-		    messageDigest.update(b);
-
-	    bytes = messageDigest.digest();
+		return messageDigest.digest();
+	    }
 	}
 	catch(Exception exception)
 	{
-	    bytes = null;
 	}
 
-	return bytes;
+	return null;
     }
 
     public static byte[] sipHashIdStream(String sipHashId)
     {
-	byte bytes[] = null;
-	byte salt[] = null;
-	byte temporary[] = null;
-
 	try
 	{
-	    salt = sha512(sipHashId.getBytes("UTF-8"));
-	    temporary = pbkdf2(salt,
-			       sipHashId.toCharArray(),
-			       SIPHASH_STREAM_CREATION_ITERATION_COUNT,
-			       160); // SHA-1
+	    byte bytes[] = null;
+	    byte salt[] = sha512(sipHashId.getBytes("UTF-8"));
+	    byte temporary[] = pbkdf2(salt,
+				      sipHashId.toCharArray(),
+				      SIPHASH_STREAM_CREATION_ITERATION_COUNT,
+				      160); // SHA-1
 
 	    if(temporary != null)
 		bytes = pbkdf2(salt,

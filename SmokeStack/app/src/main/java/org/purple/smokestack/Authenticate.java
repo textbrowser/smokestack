@@ -107,8 +107,7 @@ public class Authenticate extends AppCompatActivity
 		try
 		{
 		    iterationCount = Integer.parseInt
-			(m_databaseHelper.
-			 readSetting(null, "iterationCount"));
+			(m_databaseHelper.readSetting(null, "iterationCount"));
 		}
 		catch(Exception exception)
 		{
