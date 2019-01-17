@@ -224,17 +224,13 @@ public class Cryptography
 	    if(m_macKey == null)
 		return null;
 
-	    byte bytes[] = null;
-
 	    synchronized(s_macMutex)
 	    {
 		Mac mac = Mac.getInstance(HMAC_ALGORITHM);
 
 		mac.init(m_macKey);
-		bytes = mac.doFinal(data);
+		return mac.doFinal(data);
 	    }
-
-	    return bytes;
 	}
 	catch(Exception exception)
 	{
@@ -298,11 +294,10 @@ public class Cryptography
 		if(m_macKey == null)
 		    return null;
 
-		Mac mac = null;
-
 		synchronized(s_macMutex)
 		{
-		    mac = Mac.getInstance(HMAC_ALGORITHM);
+		    Mac mac = Mac.getInstance(HMAC_ALGORITHM);
+
 		    mac.init(m_macKey);
 		    digest2 = mac.doFinal
 			(Arrays.copyOf(data, data.length - 512 / 8));
@@ -332,22 +327,19 @@ public class Cryptography
 	    if(m_encryptionKey == null)
 		return null;
 
-	    Cipher cipher = null;
-	    byte bytes[] = null;
 	    byte iv[] = Arrays.copyOf(data, 16);
 
 	    synchronized(s_cipherMutex)
 	    {
-		cipher = Cipher.getInstance
+		Cipher cipher = Cipher.getInstance
 		    (SYMMETRIC_CIPHER_TRANSFORMATION);
+
 		cipher.init(Cipher.DECRYPT_MODE,
 			    m_encryptionKey,
 			    new IvParameterSpec(iv));
-		bytes = cipher.doFinal
+		return cipher.doFinal
 		    (Arrays.copyOfRange(data, 16, data.length - 512 / 8));
 	    }
-
-	    return bytes;
 	}
 	catch(Exception exception)
 	{
@@ -427,10 +419,10 @@ public class Cryptography
 	    for(int i = 0; i < 3; i++)
 		try
 		{
-		    KeyFactory keyFactory = null;
-
 		    synchronized(s_keyFactoryMutex)
 		    {
+			KeyFactory keyFactory = null;
+
 			switch(i)
 			{
 			case 0:
@@ -582,14 +574,15 @@ public class Cryptography
 
 	try
 	{
-	    Cipher cipher = null;
 	    SecretKey secretKey = new SecretKeySpec
 		(keyBytes, SYMMETRIC_ALGORITHM);
 	    byte iv[] = Arrays.copyOf(data, 16);
 
 	    synchronized(s_cipherMutex)
 	    {
-		cipher = Cipher.getInstance(SYMMETRIC_CIPHER_TRANSFORMATION);
+		Cipher cipher = Cipher.getInstance
+		    (SYMMETRIC_CIPHER_TRANSFORMATION);
+
 		cipher.init(Cipher.DECRYPT_MODE,
 			    secretKey,
 			    new IvParameterSpec(iv));
@@ -613,7 +606,6 @@ public class Cryptography
 
 	try
 	{
-	    Cipher cipher = null;
 	    SecretKey secretKey = new SecretKeySpec
 		(keyBytes, SYMMETRIC_ALGORITHM);
 	    byte bytes[] = null;
@@ -623,7 +615,9 @@ public class Cryptography
 
 	    synchronized(s_cipherMutex)
 	    {
-		cipher = Cipher.getInstance(SYMMETRIC_CIPHER_TRANSFORMATION);
+		Cipher cipher = Cipher.getInstance
+		    (SYMMETRIC_CIPHER_TRANSFORMATION);
+
 		cipher.init(Cipher.ENCRYPT_MODE,
 			    secretKey,
 			    new IvParameterSpec(iv));
@@ -689,12 +683,12 @@ public class Cryptography
 
 	try
 	{
-	    Mac mac = null;
 	    SecretKey key = new SecretKeySpec(keyBytes, HASH_ALGORITHM);
 
 	    synchronized(s_macMutex)
 	    {
-		mac = Mac.getInstance(HMAC_ALGORITHM);
+		Mac mac = Mac.getInstance(HMAC_ALGORITHM);
+
 		mac.init(key);
 		return mac.doFinal(data);
 	    }
@@ -741,19 +735,18 @@ public class Cryptography
 
 	prepareSecureRandom();
 
-	byte bytes[] = null;
-
 	try
 	{
-	    bytes = new byte[length];
+	    byte bytes[] = new byte[length];
+
 	    s_secureRandom.nextBytes(bytes);
+	    return bytes;
 	}
 	catch(Exception exception)
 	{
-	    bytes = null;
 	}
 
-	return bytes;
+	return null;
     }
 
     public static byte[] sha512(byte[] ... data)
