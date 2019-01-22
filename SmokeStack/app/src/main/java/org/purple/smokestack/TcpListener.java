@@ -585,7 +585,9 @@ public class TcpListener
 
 	try
 	{
-	    for(int i = 0; i < m_neighbors.size(); i++)
+	    int size = m_neighbors.size();
+
+	    for(int i = 0; i < size; i++)
 		if(m_neighbors.get(i) != null)
 		    if(m_neighbors.get(i).getOid() != oid)
 			m_neighbors.get(i).scheduleEchoSend(message);
@@ -605,7 +607,9 @@ public class TcpListener
 
 	try
 	{
-	    for(int i = 0; i < m_neighbors.size(); i++)
+	    int size = m_neighbors.size();
+
+	    for(int i = 0; i < size; i++)
 		if(m_neighbors.get(i) != null)
 		    m_neighbors.get(i).scheduleSend(message);
 	}

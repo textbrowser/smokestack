@@ -572,8 +572,9 @@ public class Settings extends AppCompatActivity
 
 	    CheckBox checkBox = null;
 	    TableRow row = null;
+	    int count = tableLayout.getChildCount();
 
-	    for(int j = 0; j < tableLayout.getChildCount(); j++)
+	    for(int j = 0; j < count; j++)
 	    {
 		TableRow r = (TableRow) tableLayout.getChildAt(j);
 
@@ -838,8 +839,9 @@ public class Settings extends AppCompatActivity
 	    Spinner spinner = null;
 	    TableRow row = null;
 	    TextView textView = null;
+	    int count = tableLayout.getChildCount();
 
-	    for(int j = 0; j < tableLayout.getChildCount(); j++)
+	    for(int j = 0; j < count; j++)
 	    {
 		TableRow r = (TableRow) tableLayout.getChildAt(j);
 
@@ -2589,8 +2591,9 @@ public class Settings extends AppCompatActivity
 			{
 			    TableLayout tableLayout = (TableLayout)
 				findViewById(R.id.participants);
+			    int count = tableLayout.getChildCount();
 
-			    for(int i = 0; i < tableLayout.getChildCount(); i++)
+			    for(int i = 0; i < count; i++)
 			    {
 				TableRow row = (TableRow) tableLayout.
 				    getChildAt(i);
@@ -2655,10 +2658,9 @@ public class Settings extends AppCompatActivity
 			    {
 				TableLayout tableLayout = (TableLayout)
 				    findViewById(R.id.participants);
+				int count = tableLayout.getChildCount();
 
-				for(int i = 0;
-				    i < tableLayout.getChildCount();
-				    i++)
+				for(int i = 0; i < count; i++)
 				{
 				    TableRow row = (TableRow) tableLayout.
 					getChildAt(i);

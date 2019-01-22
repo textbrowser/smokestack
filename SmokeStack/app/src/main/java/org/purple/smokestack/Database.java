@@ -304,7 +304,9 @@ public class Database extends SQLiteOpenHelper
 	    sparseArray.append(3, "signature_public_key_string");
 	    sparseArray.append(4, "signature_public_key_signature_string");
 
-	    for(int i = 0; i < sparseArray.size(); i++)
+	    int size = sparseArray.size();
+
+	    for(int i = 0; i < size; i++)
 	    {
 		bytes = cryptography.etm(strings[i + 1].getBytes());
 		values.put(sparseArray.get(i),
@@ -466,11 +468,12 @@ public class Database extends SQLiteOpenHelper
 		while(!cursor.isAfterLast())
 		{
 		    ListenerElement listenerElement = new ListenerElement();
-		    int oid = cursor.getInt(cursor.getColumnCount() - 1);
+		    int count = cursor.getColumnCount();
+		    int oid = cursor.getInt(count - 1);
 
-		    for(int i = 0; i < cursor.getColumnCount(); i++)
+		    for(int i = 0; i < count; i++)
 		    {
-			if(i == cursor.getColumnCount() - 1)
+			if(i == count - 1)
 			{
 			    listenerElement.m_oid = cursor.getInt(i);
 			    continue;
@@ -656,10 +659,11 @@ public class Database extends SQLiteOpenHelper
 		{
 		    NeighborElement neighborElement = new NeighborElement();
 		    boolean error = false;
+		    int count = cursor.getColumnCount();
 
-		    for(int i = 0; i < cursor.getColumnCount(); i++)
+		    for(int i = 0; i < count; i++)
 		    {
-			if(i == cursor.getColumnCount() - 1)
+			if(i == count - 1)
 			{
 			    neighborElement.m_oid = cursor.getInt(i);
 			    continue;
@@ -771,11 +775,12 @@ public class Database extends SQLiteOpenHelper
 		while(!cursor.isAfterLast())
 		{
 		    NeighborElement neighborElement = new NeighborElement();
-		    int oid = cursor.getInt(cursor.getColumnCount() - 1);
+		    int count = cursor.getColumnCount();
+		    int oid = cursor.getInt(count - 1);
 
-		    for(int i = 0; i < cursor.getColumnCount(); i++)
+		    for(int i = 0; i < count; i++)
 		    {
-			if(i == cursor.getColumnCount() - 1)
+			if(i == count - 1)
 			{
 			    neighborElement.m_oid = cursor.getInt(i);
 			    continue;
@@ -1033,11 +1038,12 @@ public class Database extends SQLiteOpenHelper
 		while(!cursor.isAfterLast())
 		{
 		    OzoneElement ozoneElement = new OzoneElement();
-		    int oid = cursor.getInt(cursor.getColumnCount() - 1);
+		    int count = cursor.getColumnCount();
+		    int oid = cursor.getInt(count - 1);
 
-		    for(int i = 0; i < cursor.getColumnCount(); i++)
+		    for(int i = 0; i < count; i++)
 		    {
-			if(i == cursor.getColumnCount() - 1)
+			if(i == count - 1)
 			{
 			    ozoneElement.m_oid = cursor.getInt(i);
 			    continue;
@@ -1148,9 +1154,10 @@ public class Database extends SQLiteOpenHelper
 		while(!cursor.isAfterLast())
 		{
 		    SipHashIdElement sipHashIdElement = new SipHashIdElement();
-		    int oid = cursor.getInt(cursor.getColumnCount() - 1);
+		    int count = cursor.getColumnCount();
+		    int oid = cursor.getInt(count - 1);
 
-		    for(int i = 0; i < cursor.getColumnCount(); i++)
+		    for(int i = 0; i < count; i++)
 		    {
 			switch(i)
 			{
@@ -1206,7 +1213,7 @@ public class Database extends SQLiteOpenHelper
 			    break;
 			}
 
-			if(i == cursor.getColumnCount() - 1)
+			if(i == count - 1)
 			{
 			    sipHashIdElement.m_oid = cursor.getInt(i);
 			    continue;
@@ -1328,8 +1335,9 @@ public class Database extends SQLiteOpenHelper
 		while(!cursor.isAfterLast())
 		{
 		    boolean error = false;
+		    int count = cursor.getColumnCount();
 
-		    for(int i = 0; i < cursor.getColumnCount(); i++)
+		    for(int i = 0; i < count; i++)
 		    {
 			byte bytes[] = null;
 
@@ -1817,8 +1825,9 @@ public class Database extends SQLiteOpenHelper
 		array = new String[5];
 
 		boolean error = false;
+		int count = cursor.getColumnCount();
 
-		for(int i = 0; i < cursor.getColumnCount(); i++)
+		for(int i = 0; i < count; i++)
 		{
 		    byte bytes[] = cryptography.mtd
 			(Base64.decode(cursor.getString(i).getBytes(),
@@ -2206,7 +2215,9 @@ public class Database extends SQLiteOpenHelper
 		}
 	    }
 
-	    for(int i = 0; i < sparseArray.size(); i++)
+	    int size = sparseArray.size();
+
+	    for(int i = 0; i < size; i++)
 	    {
 		switch(sparseArray.get(i))
 		{
@@ -2381,7 +2392,9 @@ public class Database extends SQLiteOpenHelper
 		}
 	    }
 
-	    for(int i = 0; i < sparseArray.size(); i++)
+	    int size = sparseArray.size();
+
+	    for(int i = 0; i < size; i++)
 	    {
 		switch(sparseArray.get(i))
 		{
@@ -2532,7 +2545,9 @@ public class Database extends SQLiteOpenHelper
 	    sparseArray.append(1, "ozone_address_digest");
 	    sparseArray.append(2, "ozone_address_stream");
 
-	    for(int i = 0; i < sparseArray.size(); i++)
+	    int size = sparseArray.size();
+
+	    for(int i = 0; i < size; i++)
 	    {
 		switch(sparseArray.get(i))
 		{
@@ -2798,7 +2813,9 @@ public class Database extends SQLiteOpenHelper
 	    sparseArray.append(5, "siphash_id");
 	    sparseArray.append(6, "siphash_id_digest");
 
-	    for(int i = 0; i < sparseArray.size(); i++)
+	    int size = sparseArray.size();
+
+	    for(int i = 0; i < size; i++)
 	    {
 		byte bytes[] = null;
 
@@ -2954,7 +2971,9 @@ public class Database extends SQLiteOpenHelper
 	    sparseArray.append(4, "stream");
 	    sparseArray.append(5, "timestamp");
 
-	    for(int i = 0; i < sparseArray.size(); i++)
+	    int size = sparseArray.size();
+
+	    for(int i = 0; i < size; i++)
 	    {
 		switch(sparseArray.get(i))
 		{
@@ -4366,7 +4385,9 @@ public class Database extends SQLiteOpenHelper
 
 	    simpleDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
 
-	    for(int i = 0; i < bytes.length; i += 64)
+	    int length = bytes.length;
+
+	    for(int i = 0; i < length; i += 64)
 	    {
 		values.clear();
 		values.put("algorithm", "sha-512");

@@ -470,7 +470,9 @@ public class Kernel
 
 	synchronized(m_listeners)
 	{
-	    for(int i = 0; i < m_listeners.size(); i++)
+	    int size = m_listeners.size();
+
+	    for(int i = 0; i < size; i++)
 	    {
 		int j = m_listeners.keyAt(i);
 
@@ -490,7 +492,9 @@ public class Kernel
 
 	synchronized(m_neighbors)
 	{
-	    for(int i = 0; i < m_neighbors.size(); i++)
+	    int size = m_neighbors.size();
+
+	    for(int i = 0; i < size; i++)
 	    {
 		int j = m_neighbors.keyAt(i);
 
@@ -1000,7 +1004,9 @@ public class Kernel
     {
 	synchronized(m_neighbors)
 	{
-	    for(int i = 0; i < m_neighbors.size(); i++)
+	    int size = m_neighbors.size();
+
+	    for(int i = 0; i < size; i++)
 	    {
 		int j = m_neighbors.keyAt(i);
 
@@ -1020,7 +1026,9 @@ public class Kernel
 
 	synchronized(m_listeners)
 	{
-	    for(int i = 0; i < m_listeners.size(); i++)
+	    int size = m_listeners.size();
+
+	    for(int i = 0; i < size; i++)
 	    {
 		int j = m_listeners.keyAt(i);
 
@@ -1031,7 +1039,9 @@ public class Kernel
 
 	synchronized(m_neighbors)
 	{
-	    for(int i = 0; i < m_neighbors.size(); i++)
+	    int size = m_neighbors.size();
+
+	    for(int i = 0; i < size; i++)
 	    {
 		int j = m_neighbors.keyAt(i);
 
@@ -1049,7 +1059,9 @@ public class Kernel
 
 	synchronized(m_listeners)
 	{
-	    for(int i = 0; i < m_listeners.size(); i++)
+	    int size = m_listeners.size();
+
+	    for(int i = 0; i < size; i++)
 	    {
 		int j = m_listeners.keyAt(i);
 
@@ -1063,7 +1075,9 @@ public class Kernel
 
 	if(arrayList != null && arrayList.size() > 0)
 	{
-	    for(int i = 0; i < arrayList.size(); i++)
+	    int size = arrayList.size();
+
+	    for(int i = 0; i < size; i++)
 		if(arrayList.get(i) != null &&
 		   arrayList.get(i).m_statusControl.toLowerCase().
 		   equals("connect"))

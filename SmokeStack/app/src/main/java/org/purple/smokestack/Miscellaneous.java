@@ -77,10 +77,11 @@ public abstract class Miscellaneous
 	try
 	{
 	    StringBuilder stringBuilder = new StringBuilder();
+	    int length = string.length();
 
-	    for(int i = 0; i < string.length(); i += offset)
+	    for(int i = 0; i < length; i += offset)
 	    {
-		if(i < string.length() - offset)
+		if(i < length - offset)
 		    stringBuilder.append(string, i, i + offset);
 		else
 		    stringBuilder.append(string.substring(i));
@@ -110,10 +111,11 @@ public abstract class Miscellaneous
 	try
 	{
 	    StringBuilder stringBuilder = new StringBuilder();
+	    int length = string.length();
 
-	    for(int i = 0; i < string.length(); i += offset)
+	    for(int i = 0; i < length; i += offset)
 	    {
-		if(i < string.length() - offset)
+		if(i < length - offset)
 		    stringBuilder.append(string, i, i + offset);
 		else
 		    stringBuilder.append(string.substring(i));
@@ -184,8 +186,10 @@ public abstract class Miscellaneous
 
 	    stringBuilder.append("-----BEGIN CERTIFICATE-----\n");
 
-	    for(int i = 0; i < string.length(); i += 64)
-		if(i < string.length() - 64)
+	    int length = string.length();
+
+	    for(int i = 0; i < length; i += 64)
+		if(i < length - 64)
 		{
 		    stringBuilder.append(string, i, i + 64);
 		    stringBuilder.append("\n");
@@ -292,8 +296,9 @@ public abstract class Miscellaneous
 	    return 0;
 
 	int count = 0;
+	int length = stringBuilder.length();
 
-	for(int i = 0; i < stringBuilder.length(); i++)
+	for(int i = 0; i < length; i++)
 	    if(character == stringBuilder.charAt(i))
 		count += 1;
 
