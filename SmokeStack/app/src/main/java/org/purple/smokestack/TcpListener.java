@@ -37,7 +37,6 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.security.KeyPair;
 import java.security.KeyStore;
-import java.security.SecureRandom;
 import java.security.Security;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
