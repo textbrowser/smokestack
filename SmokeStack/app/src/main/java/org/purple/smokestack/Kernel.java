@@ -37,6 +37,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Base64;
 import android.util.SparseArray;
 import java.net.InetAddress;
+import java.nio.charset.StandardCharsets;
 import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -673,7 +674,9 @@ public class Kernel
 						 bytes.length - 64),
 				     Cryptography.
 				     sha512(sipHashIdElement.
-					    m_sipHashId.getBytes("UTF-8"))))))
+					    m_sipHashId.
+					    getBytes(StandardCharsets.
+						     UTF_8))))))
 			continue;
 
 		    s_databaseHelper.writeCongestionDigest(value);
@@ -833,7 +836,7 @@ public class Kernel
 
 			String sipHashId = new String
 			    (Arrays.copyOfRange(aes256, 28, aes256.length),
-			     "UTF-8");
+			     StandardCharsets.UTF_8);
 			String array[] = s_databaseHelper.readPublicKeyPair
 			    (s_cryptography, sipHashId);
 
@@ -872,7 +875,7 @@ public class Kernel
 			     copyOfRange(aes256,
 					 9,
 					 9 + Cryptography.SIPHASH_ID_LENGTH),
-			     "UTF-8");
+			     StandardCharsets.UTF_8);
 
 			name = sipHashId.toUpperCase().trim();
 
@@ -934,13 +937,14 @@ public class Kernel
 			       memcmp(array2,
 				      Cryptography.
 				      hmac(Miscellaneous.
-					   joinByteArrays(array1,
-							  sipHashIdElement.
-							  m_sipHashId.
-							  getBytes("UTF-8"),
-							  Miscellaneous.
-							  longToByteArray
-							  (i + minutes)),
+					   joinByteArrays
+					   (array1,
+					    sipHashIdElement.
+					    m_sipHashId.
+					    getBytes(StandardCharsets.UTF_8),
+					    Miscellaneous.
+					    longToByteArray
+					    (i + minutes)),
 					   Arrays.copyOfRange(ozoneElement.
 							      m_addressStream,
 							      32,

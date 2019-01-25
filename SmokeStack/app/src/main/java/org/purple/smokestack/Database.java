@@ -38,6 +38,7 @@ import android.util.Patterns;
 import android.util.SparseArray;
 import android.util.SparseIntArray;
 import java.net.InetAddress;
+import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
 import java.security.PublicKey;
 import java.security.spec.X509EncodedKeySpec;
@@ -314,16 +315,16 @@ public class Database extends SQLiteOpenHelper
 	    }
 
 	    bytes = cryptography.etm
-		(sipHashId.toUpperCase().trim().getBytes("UTF-8"));
+		(sipHashId.toUpperCase().trim().
+		 getBytes(StandardCharsets.UTF_8));
 	    values.put
 		("siphash_id", Base64.encodeToString(bytes, Base64.DEFAULT));
 	    values.put
 		("siphash_id_digest",
-		 Base64.encodeToString(cryptography.hmac(sipHashId.
-							 toUpperCase().
-							 trim().
-							 getBytes("UTF-8")),
-				       Base64.DEFAULT));
+		 Base64.encodeToString
+		 (cryptography.hmac(sipHashId.toUpperCase().trim().
+				    getBytes(StandardCharsets.UTF_8)),
+		  Base64.DEFAULT));
 	    m_db.replace("public_key_pairs", null, values);
 	}
 	catch(Exception exception)
@@ -1260,7 +1261,7 @@ public class Database extends SQLiteOpenHelper
 			case 7:
 			    if(bytes != null)
 				sipHashIdElement.m_sipHashId = new String
-				    (bytes, "UTF-8");
+				    (bytes, StandardCharsets.UTF_8);
 			    else
 				sipHashIdElement.m_sipHashId =
 				    "error (" + oid + ")";
@@ -1569,10 +1570,11 @@ public class Database extends SQLiteOpenHelper
 	    cursor = m_db.rawQuery
 		("SELECT name FROM siphash_ids WHERE siphash_id_digest = ?",
 		 new String[] {Base64.
-			       encodeToString(cryptography.
-					      hmac(sipHashId.toUpperCase().
-						   trim().getBytes("UTF-8")),
-					      Base64.DEFAULT)});
+			       encodeToString
+			       (cryptography.
+				hmac(sipHashId.toUpperCase().trim().
+				     getBytes(StandardCharsets.UTF_8)),
+				Base64.DEFAULT)});
 
 	    if(cursor != null)
 		m_cursorsOpened.getAndIncrement();
@@ -1812,10 +1814,11 @@ public class Database extends SQLiteOpenHelper
 		 "signature_public_key_signature_string " +
 		 "FROM public_key_pairs WHERE siphash_id_digest = ?",
 		 new String[] {Base64.
-			       encodeToString(cryptography.
-					      hmac(sipHashId.toUpperCase().
-						   trim().getBytes("UTF-8")),
-					      Base64.DEFAULT)});
+			       encodeToString
+			       (cryptography.
+				hmac(sipHashId.toUpperCase().trim().
+				     getBytes(StandardCharsets.UTF_8)),
+				Base64.DEFAULT)});
 
 	    if(cursor != null)
 		m_cursorsOpened.getAndIncrement();
@@ -2552,10 +2555,12 @@ public class Database extends SQLiteOpenHelper
 		switch(sparseArray.get(i))
 		{
 		case "ozone_address":
-		    bytes = cryptography.etm(address.trim().getBytes("UTF-8"));
+		    bytes = cryptography.etm
+			(address.trim().getBytes(StandardCharsets.UTF_8));
 		    break;
 		case "ozone_address_digest":
-		    bytes = cryptography.hmac(address.trim().getBytes("UTF-8"));
+		    bytes = cryptography.hmac
+			(address.trim().getBytes(StandardCharsets.UTF_8));
 		    break;
 		default:
 		    bytes = cryptography.etm(addressStream);
@@ -2837,10 +2842,12 @@ public class Database extends SQLiteOpenHelper
 		    bytes = Cryptography.sha512(signatureKey.getEncoded());
 		    break;
 		case "siphash_id":
-		    bytes = cryptography.etm(sipHashId.getBytes("UTF-8"));
+		    bytes = cryptography.etm
+			(sipHashId.getBytes(StandardCharsets.UTF_8));
 		    break;
 		case "siphash_id_digest":
-		    bytes = cryptography.hmac(sipHashId.getBytes("UTF-8"));
+		    bytes = cryptography.hmac
+			(sipHashId.getBytes(StandardCharsets.UTF_8));
 		    break;
 		}
 
@@ -2987,11 +2994,11 @@ public class Database extends SQLiteOpenHelper
 		    break;
 		case "siphash_id":
 		    bytes = cryptography.etm
-			(sipHashId.getBytes("UTF-8"));
+			(sipHashId.getBytes(StandardCharsets.UTF_8));
 		    break;
 		case "siphash_id_digest":
 		    bytes = cryptography.hmac
-			(sipHashId.getBytes("UTF-8"));
+			(sipHashId.getBytes(StandardCharsets.UTF_8));
 		    break;
 		case "timestamp":
 		    SimpleDateFormat simpleDateFormat = new SimpleDateFormat
@@ -3004,7 +3011,7 @@ public class Database extends SQLiteOpenHelper
 		    continue;
 		default:
 		    byte salt[] = Cryptography.sha512
-			(sipHashId.trim().getBytes("UTF-8"));
+			(sipHashId.trim().getBytes(StandardCharsets.UTF_8));
 		    byte temporary[] = Cryptography.
 			pbkdf2(salt,
 			       sipHashId.toCharArray(),
@@ -3015,7 +3022,8 @@ public class Database extends SQLiteOpenHelper
 			bytes = cryptography.etm
 			    (Cryptography.
 			     pbkdf2(salt,
-				    new String(temporary, "UTF-8").
+				    new String(temporary,
+					       StandardCharsets.UTF_8).
 				    toCharArray(),
 				    1,
 				    768)); // 8 * (32 + 64) Bits
@@ -3056,12 +3064,11 @@ public class Database extends SQLiteOpenHelper
 			  values,
 			  "siphash_id_digest = ?",
 			  new String[] {Base64.
-					encodeToString(cryptography.
-						       hmac(sipHashId.
-							    toUpperCase().
-							    trim().
-							    getBytes("UTF-8")),
-						       Base64.DEFAULT)}) <= 0)
+					encodeToString
+					(cryptography.
+					 hmac(sipHashId.toUpperCase().trim().
+					      getBytes(StandardCharsets.UTF_8)),
+					 Base64.DEFAULT)}) <= 0)
 		    if(m_db.replace("siphash_ids", null, values) == -1)
 			ok = false;
 
@@ -4553,14 +4560,14 @@ public class Database extends SQLiteOpenHelper
 				       Base64.DEFAULT));
 	    values.put
 		("siphash_id",
-		 Base64.encodeToString(cryptography.etm(sipHashId.
-							getBytes("UTF-8")),
-				       Base64.DEFAULT));
+		 Base64.encodeToString
+		 (cryptography.etm(sipHashId.getBytes(StandardCharsets.UTF_8)),
+		  Base64.DEFAULT));
 	    values.put
 		("siphash_id_digest",
-		 Base64.encodeToString(cryptography.hmac(sipHashId.
-							 getBytes("UTF-8")),
-				       Base64.DEFAULT));
+		 Base64.encodeToString
+		 (cryptography.hmac(sipHashId.getBytes(StandardCharsets.UTF_8)),
+		  Base64.DEFAULT));
 	    values.put
 		("verified_digest",
 		 Base64.encodeToString(cryptography.hmac("false".getBytes()),

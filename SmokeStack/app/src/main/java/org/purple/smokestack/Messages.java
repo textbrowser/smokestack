@@ -28,6 +28,7 @@
 package org.purple.smokestack;
 
 import android.util.Base64;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 public class Messages
@@ -288,7 +289,8 @@ public class Messages
 
 	    byte destination[] = Cryptography.hmac
 		(Miscellaneous.joinByteArrays(aes256, sha512),
-		 Cryptography.sha512(sipHashId.getBytes("UTF-8")));
+		 Cryptography.
+		 sha512(sipHashId.getBytes(StandardCharsets.UTF_8)));
 
 	    return Miscellaneous.joinByteArrays(aes256, sha512, destination);
 	}
@@ -328,7 +330,7 @@ public class Messages
 		 ** [ SipHash Identity ]
 		 */
 
-		 sipHashId.getBytes("UTF-8"),
+		 sipHashId.getBytes(StandardCharsets.UTF_8),
 
 		 /*
 		 ** [ Temporary Identity ]
@@ -362,7 +364,8 @@ public class Messages
 
 	    byte destination[] = Cryptography.hmac
 		(Miscellaneous.joinByteArrays(aes256, sha512),
-		 Cryptography.sha512(sipHashId.getBytes("UTF-8")));
+		 Cryptography.
+		 sha512(sipHashId.getBytes(StandardCharsets.UTF_8)));
 
 	    return Miscellaneous.joinByteArrays(aes256, sha512, destination);
 	}

@@ -27,6 +27,7 @@
 
 package org.purple.smokestack;
 
+import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -580,7 +581,8 @@ public class Cryptography
 	try
 	{
 	    byte bytes[] = null;
-	    byte salt[] = sha512(string.trim().getBytes("UTF-8"));
+	    byte salt[] = sha512
+		(string.trim().getBytes(StandardCharsets.UTF_8));
 
 	    if(salt != null)
 		bytes = pbkdf2
@@ -704,7 +706,7 @@ public class Cryptography
 	try
 	{
 	    byte bytes[] = null;
-	    byte salt[] = sha512(sipHashId.getBytes("UTF-8"));
+	    byte salt[] = sha512(sipHashId.getBytes(StandardCharsets.UTF_8));
 	    byte temporary[] = pbkdf2(salt,
 				      sipHashId.toCharArray(),
 				      SIPHASH_STREAM_CREATION_ITERATION_COUNT,
