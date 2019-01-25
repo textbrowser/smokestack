@@ -44,9 +44,7 @@ public abstract class Neighbor
     private ScheduledExecutorService m_parsingScheduler = null;
     private ScheduledExecutorService m_scheduler = null;
     private ScheduledExecutorService m_sendOutboundScheduler = null;
-    private String m_scopeId = "";
     private final Object m_queueMutex = new Object();
-    private final String m_echoMode = "full";
     private final static int BYTES_PER_READ = 1024 * 1024; // 1 MiB
     private final static int LANE_WIDTH = 32 * 1024 * 1024; // 32 MiB
     private final static long DATA_LIFETIME = 15000; // 15 Seconds
@@ -153,7 +151,6 @@ public abstract class Neighbor
 	m_remoteUserAuthenticated = new AtomicBoolean(userDefined);
 	m_requestUnsolicitedSent = new AtomicBoolean(false);
 	m_scheduler = Executors.newSingleThreadScheduledExecutor();
-	m_scopeId = scopeId;
 	m_sendOutboundScheduler = Executors.newSingleThreadScheduledExecutor();
 	m_startTime = new AtomicLong(System.nanoTime());
 	m_userDefined = new AtomicBoolean(userDefined);
@@ -409,7 +406,7 @@ public abstract class Neighbor
 	    message.append("\n");
 	    message.append(String.valueOf(LANE_WIDTH));
 	    message.append("\n");
-	    message.append(m_echoMode);
+	    message.append("full"); // Echo Mode
 
 	    StringBuilder results = new StringBuilder();
 

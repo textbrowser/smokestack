@@ -81,8 +81,6 @@ public class TcpListener
     private ScheduledExecutorService m_scheduler = null;
     private String m_ipAddress = "";
     private String m_ipPort = "";
-    private String m_scopeId = "";
-    private String m_version = "";
     private final ArrayList<TcpNeighbor> m_neighbors = new ArrayList<> ();
     private final AtomicBoolean m_listen = new AtomicBoolean(false);
     private final AtomicInteger m_neighborCounter = new AtomicInteger(0);
@@ -114,8 +112,6 @@ public class TcpListener
 	m_ipPort = ipPort;
 	m_isPrivateServer = new AtomicBoolean(isPrivateServer);
 	m_scheduler = Executors.newSingleThreadScheduledExecutor();
-	m_scopeId = scopeId;
-	m_version = version;
 
 	/*
 	** Launch the schedulers.
