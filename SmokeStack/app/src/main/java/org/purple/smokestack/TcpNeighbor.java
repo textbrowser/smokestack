@@ -34,7 +34,6 @@ import java.net.Proxy;
 import java.net.Socket;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.net.ssl.HandshakeCompletedEvent;
@@ -199,7 +198,6 @@ public class TcpNeighbor extends Neighbor
 
 	super("", "", "", "TCP", "", isPrivateServer, false, oid);
 	m_isValidCertificate = new AtomicBoolean(true);
-	m_readSocketScheduler = Executors.newSingleThreadScheduledExecutor();
 	m_socket = socket;
 	m_userDefined.set(false);
 
@@ -356,7 +354,6 @@ public class TcpNeighbor extends Neighbor
 		m_proxyInetSocketAddress = null;
 	    }
 
-	m_readSocketScheduler = Executors.newSingleThreadScheduledExecutor();
 	m_readSocketScheduler.scheduleAtFixedRate(new Runnable()
 	{
 	    private boolean m_error = false;

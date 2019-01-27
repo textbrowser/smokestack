@@ -76,8 +76,10 @@ public class TcpListener
     private AtomicInteger m_oid;
     private KeyStore m_keyStore = null;
     private SSLServerSocket m_socket = null;
-    private ScheduledExecutorService m_acceptScheduler = null;
-    private ScheduledExecutorService m_scheduler = null;
+    private final ScheduledExecutorService m_acceptScheduler =
+	Executors.newSingleThreadScheduledExecutor();
+    private final ScheduledExecutorService m_scheduler =
+	Executors.newSingleThreadScheduledExecutor();
     private String m_ipAddress = "";
     private String m_ipPort = "";
     private final ArrayList<TcpNeighbor> m_neighbors = new ArrayList<> ();
@@ -106,11 +108,9 @@ public class TcpListener
     {
 	m_oid = new AtomicInteger(oid);
 	prepareCertificate(certificate, privateKey, publicKey);
-	m_acceptScheduler = Executors.newSingleThreadScheduledExecutor();
 	m_ipAddress = ipAddress;
 	m_ipPort = ipPort;
 	m_isPrivateServer = new AtomicBoolean(isPrivateServer);
-	m_scheduler = Executors.newSingleThreadScheduledExecutor();
 
 	/*
 	** Launch the schedulers.

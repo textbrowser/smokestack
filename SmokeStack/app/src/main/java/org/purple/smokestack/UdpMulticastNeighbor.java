@@ -31,7 +31,6 @@ import java.io.ByteArrayOutputStream;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class UdpMulticastNeighbor extends Neighbor
@@ -139,7 +138,6 @@ public class UdpMulticastNeighbor extends Neighbor
 				int oid)
     {
 	super(ipAddress, ipPort, scopeId, "UDP", version, false, true, oid);
-	m_readSocketScheduler = Executors.newSingleThreadScheduledExecutor();
 	m_readSocketScheduler.scheduleAtFixedRate(new Runnable()
 	{
 	    private boolean m_error = false;

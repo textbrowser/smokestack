@@ -41,10 +41,13 @@ public abstract class Neighbor
 {
     private ArrayList<String> m_queue = null;
     private AtomicLong m_lastParsed = null;
-    private ScheduledExecutorService m_parsingScheduler = null;
-    private ScheduledExecutorService m_scheduler = null;
-    private ScheduledExecutorService m_sendOutboundScheduler = null;
     private final Object m_queueMutex = new Object();
+    private final ScheduledExecutorService m_parsingScheduler =
+	Executors.newSingleThreadScheduledExecutor();
+    private final ScheduledExecutorService m_scheduler =
+	Executors.newSingleThreadScheduledExecutor();
+    private final ScheduledExecutorService m_sendOutboundScheduler =
+	Executors.newSingleThreadScheduledExecutor();
     private final static int BYTES_PER_READ = 1024 * 1024; // 1 MiB
     private final static int LANE_WIDTH = 32 * 1024 * 1024; // 32 MiB
     private final static long DATA_LIFETIME = 15000; // 15 Seconds
@@ -66,7 +69,6 @@ public abstract class Neighbor
     protected AtomicLong m_startTime = null;
     protected Cryptography m_cryptography = null;
     protected Database m_databaseHelper = null;
-    protected ScheduledExecutorService m_readSocketScheduler = null;
     protected String m_ipAddress = "";
     protected String m_ipPort = "";
     protected String m_version = "";
@@ -74,6 +76,8 @@ public abstract class Neighbor
     protected byte m_bytes[] = null;
     protected final Object m_errorMutex = new Object();
     protected final Object m_parsingSchedulerObject = new Object();
+    protected final ScheduledExecutorService m_readSocketScheduler =
+	Executors.newSingleThreadScheduledExecutor();
     protected final StringBuffer m_randomBuffer = new StringBuffer();
     protected final StringBuffer m_stringBuffer = new StringBuffer();
     protected final StringBuilder m_error = new StringBuilder();
@@ -146,12 +150,9 @@ public abstract class Neighbor
 	m_lastParsed = new AtomicLong(System.currentTimeMillis());
 	m_lastTimeRead = new AtomicLong(System.nanoTime());
 	m_oid = new AtomicInteger(oid);
-	m_parsingScheduler = Executors.newSingleThreadScheduledExecutor();
 	m_queue = new ArrayList<> ();
 	m_remoteUserAuthenticated = new AtomicBoolean(userDefined);
 	m_requestUnsolicitedSent = new AtomicBoolean(false);
-	m_scheduler = Executors.newSingleThreadScheduledExecutor();
-	m_sendOutboundScheduler = Executors.newSingleThreadScheduledExecutor();
 	m_startTime = new AtomicLong(System.nanoTime());
 	m_userDefined = new AtomicBoolean(userDefined);
 	m_uuid = UUID.randomUUID();
