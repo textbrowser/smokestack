@@ -155,6 +155,7 @@ public class TcpListener
 		    }
 		    catch(Exception exception)
 		    {
+			m_neighbors.remove(neighbor);
 			neighbor.abort();
 		    }
 		    finally
