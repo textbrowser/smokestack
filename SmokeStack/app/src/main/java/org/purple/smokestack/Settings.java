@@ -928,8 +928,6 @@ public class Settings extends AppCompatActivity
 				    deleteEntry(String.valueOf(parent.getId()),
 						"neighbors"))
 			    {
-				m_databaseHelper.cleanDanglingOutboundQueued();
-
 				/*
 				** Prepare the kernel's neighbors container
 				** if a neighbor was deleted as the OID
@@ -2101,6 +2099,9 @@ public class Settings extends AppCompatActivity
 		{
 		    try
 		    {
+			m_databaseHelper.cleanDanglingMessages();
+			m_databaseHelper.cleanDanglingOutboundQueued();
+			m_databaseHelper.cleanDanglingParticipants();
 			Settings.this.runOnUiThread(new Runnable()
 			{
 			    @Override
@@ -2357,7 +2358,8 @@ public class Settings extends AppCompatActivity
 	    "1000", "2500", "5000", "7500", "10000", "12500",
 	    "15000", "17500", "20000", "25000", "30000", "35000",
 	    "40000", "45000", "50000", "55000", "60000", "65000",
-	    "70000", "100000"
+	    "70000", "75000", "100000", "150000", "250000", "500000",
+	    "1000000"
 	};
 	arrayAdapter = new ArrayAdapter<>
 	    (Settings.this, android.R.layout.simple_spinner_item, array);
@@ -2497,9 +2499,6 @@ public class Settings extends AppCompatActivity
 	else
 	    spinner1.setSelection(0);
 
-	m_databaseHelper.cleanDanglingMessages();
-	m_databaseHelper.cleanDanglingOutboundQueued();
-	m_databaseHelper.cleanDanglingParticipants();
 	m_databaseHelper.deleteEchoQueue();
 	prepareListenerIpAddress();
 	startGeneralTimer();
@@ -2622,8 +2621,6 @@ public class Settings extends AppCompatActivity
 			if(m_databaseHelper.
 			   deleteOzoneAndSipHashId(String.valueOf(itemId)))
 			{
-			    m_databaseHelper.cleanDanglingMessages();
-			    m_databaseHelper.cleanDanglingParticipants();
 			    Kernel.getInstance().populateOzones();
 			    Kernel.getInstance().populateSipHashIds();
 			    populateOzoneAddresses();

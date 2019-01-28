@@ -93,6 +93,7 @@ public class TcpListener
 	new ReentrantReadWriteLock();
     private final StringBuilder m_error = new StringBuilder();
     private final static int RSA_KEY_SIZE = 2048;
+    private final static int SO_TIMEOUT = 2500; // 2.5 Seconds
     private final static long ACCEPT_INTERVAL = 100; // Milliseconds
     private final static long TIMER_INTERVAL = 2500; // 2.5 Seconds
 
@@ -561,7 +562,7 @@ public class TcpListener
 			(new String[] {"SSLv3", "TLSv1", "TLSv1.1", "TLSv1.2"});
 
 		m_socket.setNeedClientAuth(false);
-		m_socket.setSoTimeout(2500);
+		m_socket.setSoTimeout(SO_TIMEOUT);
 	    }
 
 	    m_startTime.set(System.nanoTime());
