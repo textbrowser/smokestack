@@ -544,6 +544,7 @@ public class TcpNeighbor extends Neighbor
 	{
 	    m_bytesRead.set(0);
 	    m_bytesWritten.set(0);
+	    m_lastParsed.set(System.currentTimeMillis());
 	    m_lastTimeRead.set(System.nanoTime());
 
 	    InetSocketAddress inetSocketAddress =

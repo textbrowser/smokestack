@@ -40,7 +40,6 @@ import java.util.concurrent.atomic.AtomicLong;
 public abstract class Neighbor
 {
     private ArrayList<String> m_queue = null;
-    private AtomicLong m_lastParsed = null;
     private final Object m_queueMutex = new Object();
     private final ScheduledExecutorService m_parsingScheduler =
 	Executors.newSingleThreadScheduledExecutor();
@@ -65,6 +64,7 @@ public abstract class Neighbor
     protected AtomicInteger m_oid = null;
     protected AtomicLong m_bytesRead = null;
     protected AtomicLong m_bytesWritten = null;
+    protected AtomicLong m_lastParsed = null;
     protected AtomicLong m_lastTimeRead = null;
     protected AtomicLong m_startTime = null;
     protected Cryptography m_cryptography = null;
@@ -550,6 +550,7 @@ public abstract class Neighbor
 	m_bytesRead.set(0);
 	m_bytesWritten.set(0);
 	m_clientSupportsCryptographicDiscovery.set(false);
+	m_lastParsed.set(0);
 	m_remoteUserAuthenticated.set(false);
 	m_requestUnsolicitedSent.set(false);
 	m_startTime.set(System.nanoTime());
