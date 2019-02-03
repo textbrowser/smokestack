@@ -93,7 +93,7 @@ public class TcpListener
 	new ReentrantReadWriteLock();
     private final StringBuilder m_error = new StringBuilder();
     private final static int RSA_KEY_SIZE = 2048;
-    private final static int SO_TIMEOUT = 2500; // 2.5 Seconds
+    private final static int SO_TIMEOUT = 500; // 0.5 Seconds
     private final static long ACCEPT_INTERVAL = 100; // Milliseconds
     private final static long TIMER_INTERVAL = 2500; // 2.5 Seconds
 
@@ -122,6 +122,14 @@ public class TcpListener
 	    @Override
 	    public void run()
 	    {
+		try
+		{
+		    saveStatistics();
+		}
+		catch(Exception exception)
+		{
+		}
+
 		SSLSocket sslSocket = null;
 
 		try
@@ -133,10 +141,7 @@ public class TcpListener
 		    {
 			if(m_socket == null)
 			    return;
-		    }
 
-		    synchronized(m_socketMutex)
-		    {
 			sslSocket = (SSLSocket) m_socket.accept();
 		    }
 
