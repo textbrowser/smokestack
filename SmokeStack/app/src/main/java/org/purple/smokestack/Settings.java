@@ -2246,6 +2246,7 @@ public class Settings extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState)
     {
 	super.onCreate(savedInstanceState);
+	SmokeStackService.startForegroundTask(getApplicationContext());
 	m_databaseHelper = Database.getInstance(getApplicationContext());
 	m_receiver = new SettingsBroadcastReceiver();
         setContentView(R.layout.activity_settings);
