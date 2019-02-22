@@ -47,18 +47,32 @@ public class SmokeStackService extends Service
     private void prepareNotification()
     {
 	Intent notificationIntent = new Intent(this, Settings.class);
-	Notification notification = null;
+	Notification.Builder builder = new Notification.Builder(this);
 	PendingIntent pendingIntent = PendingIntent.getActivity
 	    (this, 0, notificationIntent, 0);
 
-	notification = new Notification.Builder(this).
-	    setContentTitle("SmokeStack Activity").
-	    setContentText("SmokeStack Activity").
-	    setSmallIcon(R.drawable.smokestack).
-	    setContentIntent(pendingIntent).
-	    setTicker("SmokeStack Activity").
-	    build();
-	startForeground(NOTIFICATION_ID, notification);
+	builder.setContentIntent(pendingIntent);
+	builder.setContentText("SmokeStack Activity");
+	builder.setContentTitle("SmokeStack Activity");
+	builder.setSmallIcon(R.drawable.smokestack);
+	builder.setTicker("SmokeStack Activity");
+
+	/*
+	** Stop!
+	*/
+
+	Intent stopIntent = new Intent(this, SmokeStackService.class);
+
+        stopIntent.setAction("stop");
+
+	PendingIntent pendingStopIntent = PendingIntent.getService
+	    (this, 0, stopIntent, 0);
+
+	builder.addAction
+	    (new Notification.Action(R.drawable.stop,
+				     "Stop SmokeStack Foreground Service",
+				     pendingStopIntent));
+	startForeground(NOTIFICATION_ID, builder.build());
     }
 
     private void start()
