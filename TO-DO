@@ -18,18 +18,13 @@ Completed Items
 - Refresh Ozones.
 - Rename participant in Participants section.
 - Replace SipHash ID with Smoke ID.
+- Share-identity confirmation.
 - Signed release.
 - m_isValidCertificate should be an AtomicBoolean.
 
-Future Items
-
-Ignored / Impossible Items
-
-- Distribute routing identity algorithms.
-
 Remaining Items
 
-- Abnormal native termination on Android 8.x.
-- Share-identity confirmation.
+- Abnormal native termination on Android 8.x. SSL/TLS and/or libc.
+- Distribute routing identity algorithms.
 - Steam.
 - The Settings activity has many views (ANDROID_LINT_MAX_VIEW_COUNT).
