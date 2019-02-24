@@ -32,6 +32,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Icon;
 import android.os.IBinder;
 
 public class SmokeStackService extends Service
@@ -69,9 +70,10 @@ public class SmokeStackService extends Service
 	    (this, 0, stopIntent, 0);
 
 	builder.addAction
-	    (new Notification.Action(R.drawable.stop,
-				     "Stop SmokeStack Foreground Service",
-				     pendingStopIntent));
+	    (new Notification.Action.
+	     Builder(Icon.createWithResource(this, R.drawable.smokestack),
+		     "Stop SmokeStack Foreground Service",
+		     pendingStopIntent).build());
 	startForeground(NOTIFICATION_ID, builder.build());
     }
 
