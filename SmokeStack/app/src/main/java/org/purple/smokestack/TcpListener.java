@@ -163,6 +163,7 @@ public class TcpListener
 		    {
 			m_neighbors.remove(neighbor);
 			neighbor.abort();
+			neighbor = null;
 		    }
 		    finally
 		    {
@@ -228,6 +229,7 @@ public class TcpListener
 			    {
 				m_neighbors.remove(i);
 				neighbor.abort();
+				neighbor = null;
 			    }
 			}
 		    }
@@ -511,6 +513,8 @@ public class TcpListener
 
 		if(neighbor != null)
 		    neighbor.abort();
+
+		neighbor = null;
 	    }
 	}
 	catch(Exception exception)

@@ -284,8 +284,14 @@ public class Kernel
 				    readTaggedMessage
 				    (sipHashIdDigest, s_cryptography);
 
-				if(arrayList == null || arrayList.size() != 2)
+				if(arrayList == null)
 				    break;
+
+				if(arrayList.size() != 2)
+				{
+				    arrayList.clear();
+				    break;
+				}
 
 				byte destination[] = Cryptography.hmac
 				    (arrayList.get(0), identity);
@@ -302,6 +308,7 @@ public class Kernel
 				s_databaseHelper.timestampReleasedMessage
 				    (s_cryptography, arrayList.get(1));
 				Thread.sleep(200);
+				arrayList.clear();
 			    }
 			}
 			catch(Exception exception)

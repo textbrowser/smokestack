@@ -107,6 +107,9 @@ public class Settings extends AppCompatActivity
 	    catch(Exception exception)
 	    {
 	    }
+
+	    if(m_arrayList != null)
+		m_arrayList.clear();
 	}
     }
 
@@ -129,6 +132,9 @@ public class Settings extends AppCompatActivity
 	    catch(Exception exception)
 	    {
 	    }
+
+	    if(m_arrayList != null)
+		m_arrayList.clear();
 	}
     }
 
