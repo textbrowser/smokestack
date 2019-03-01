@@ -223,7 +223,8 @@ public abstract class Neighbor
 				if(!m_remoteUserAuthenticated.get())
 				    continue;
 				else
-				    m_randomBuffer.setLength(0);
+				    m_randomBuffer.delete
+					(0, m_randomBuffer.length());
 			    }
 
 			if(!Kernel.getInstance().
@@ -249,7 +250,7 @@ public abstract class Neighbor
 		    if(System.currentTimeMillis() - m_lastParsed.get() >
 		       DATA_LIFETIME ||
 		       m_stringBuffer.length() > MAXIMUM_BYTES)
-			m_stringBuffer.setLength(0);
+			m_stringBuffer.delete(0, m_stringBuffer.length());
 		}
 		catch(Exception exception)
 		{
@@ -534,7 +535,7 @@ public abstract class Neighbor
 	    m_queue.clear();
 	}
 
-	m_stringBuffer.setLength(0);
+	m_stringBuffer.delete(0, m_stringBuffer.length());
     }
 
     protected void echo(String message)
@@ -558,7 +559,7 @@ public abstract class Neighbor
     {
 	synchronized(m_errorMutex)
 	{
-	    m_error.setLength(0);
+	    m_error.delete(0, m_error.length());
 	    m_error.append(error);
 	}
     }

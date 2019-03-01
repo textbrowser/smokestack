@@ -433,7 +433,7 @@ public class TcpListener
     {
 	synchronized(m_error)
 	{
-	    m_error.setLength(0);
+	    m_error.delete(0, m_error.length());
 	    m_error.append(error);
 	}
     }

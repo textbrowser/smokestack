@@ -60,7 +60,7 @@ public class TcpNeighbor extends Neighbor
 
     private void prepareMRandom()
     {
-	m_randomBuffer.setLength(0);
+	m_randomBuffer.delete(0, m_randomBuffer.length());
 
 	try
 	{
@@ -74,7 +74,7 @@ public class TcpNeighbor extends Neighbor
 	}
 	catch(Exception exception)
 	{
-	    m_randomBuffer.setLength(0);
+	    m_randomBuffer.delete(0, m_randomBuffer.length());
 	}
     }
 
@@ -184,7 +184,7 @@ public class TcpNeighbor extends Neighbor
 	    if(m_oid.get() >= 0)
 		m_isValidCertificate.set(false);
 
-	    m_randomBuffer.setLength(0);
+	    m_randomBuffer.delete(0, m_randomBuffer.length());
 	    m_socket = null;
 	    reset();
 	}

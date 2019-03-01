@@ -544,7 +544,7 @@ public class Settings extends AppCompatActivity
 
 	    for(ListenerElement listenerElement : arrayList)
 	    {
-		stringBuilder.setLength(0);
+		stringBuilder.delete(0, stringBuilder.length());
 		stringBuilder.append(listenerElement.m_localIpAddress);
 
 		if(listenerElement.m_ipVersion.equals("IPv6"))
@@ -592,7 +592,7 @@ public class Settings extends AppCompatActivity
 		if(c == null)
 		    continue;
 
-		stringBuilder.setLength(0);
+		stringBuilder.delete(0, stringBuilder.length());
 		stringBuilder.append(listenerElement.m_localIpAddress);
 
 		if(listenerElement.m_ipVersion.equals("IPv6"))
@@ -645,7 +645,7 @@ public class Settings extends AppCompatActivity
 	    else
 		checkBox.setTextColor(Color.rgb(183, 28, 28)); // Dark Red
 
-	    stringBuilder.setLength(0);
+	    stringBuilder.delete(0, stringBuilder.length());
 	    stringBuilder.append("Control: ");
 
 	    try
@@ -806,7 +806,7 @@ public class Settings extends AppCompatActivity
 
 	    for(NeighborElement neighborElement : arrayList)
 	    {
-		stringBuilder.setLength(0);
+		stringBuilder.delete(0, stringBuilder.length());
 		stringBuilder.append(neighborElement.m_remoteIpAddress);
 
 		if(neighborElement.m_ipVersion.equals("IPv6"))
@@ -859,7 +859,7 @@ public class Settings extends AppCompatActivity
 		if(t == null)
 		    continue;
 
-		stringBuilder.setLength(0);
+		stringBuilder.delete(0, stringBuilder.length());
 		stringBuilder.append(neighborElement.m_remoteIpAddress);
 
 		if(neighborElement.m_ipVersion.equals("IPv6"))
@@ -991,7 +991,7 @@ public class Settings extends AppCompatActivity
                 break;
 	    }
 
-	    stringBuilder.setLength(0);
+	    stringBuilder.delete(0, stringBuilder.length());
 	    stringBuilder.append("Control: ");
 
 	    try

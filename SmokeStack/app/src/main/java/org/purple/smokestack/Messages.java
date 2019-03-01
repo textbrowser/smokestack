@@ -267,7 +267,7 @@ public class Messages
 		(stringBuilder.toString().getBytes(),
 		 Arrays.copyOfRange(keyStream, 0, 32));
 
-	    stringBuilder.setLength(0);
+	    stringBuilder.delete(0, stringBuilder.length());
 
 	    if(aes256 == null)
 		return null;
