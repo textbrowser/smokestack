@@ -282,7 +282,6 @@ public abstract class Miscellaneous
 	try
 	{
 	    return ByteBuffer.allocate(LONG_BYTES).putLong(value).array();
-
 	}
 	catch(Exception exception)
 	{
