@@ -28,9 +28,9 @@
             android:id="@+id/password"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentStart="true"
             android:layout_below="@+id/textView"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
             android:ems="10"
             android:hint="@string/authenticate_password"
             android:inputType="textPassword"
@@ -43,21 +43,6 @@
             android:layout_alignParentStart="true"
             android:layout_below="@+id/password"
             android:text="@string/authenticate_authenticate" />
-
-        <TextView
-            android:id="@+id/textView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:background="@drawable/sectiongradient"
-            android:paddingEnd="5dp"
-            android:paddingStart="5dp"
-            android:text="@string/authenticate"
-            android:textColor="@android:color/white"
-            android:textSize="20sp"
-            android:textStyle="normal|bold" />
 
         <Button
             android:id="@+id/reset"

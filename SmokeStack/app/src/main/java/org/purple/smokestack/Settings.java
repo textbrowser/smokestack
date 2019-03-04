@@ -2257,6 +2257,14 @@ public class Settings extends AppCompatActivity
 	m_receiver = new SettingsBroadcastReceiver();
         setContentView(R.layout.activity_settings);
 
+	try
+	{
+	    getSupportActionBar().setTitle("SmokeStack | Settings");
+	}
+	catch(Exception exception)
+	{
+	}
+
 	boolean isAuthenticated = State.getInstance().isAuthenticated();
         Button button1 = null;
 

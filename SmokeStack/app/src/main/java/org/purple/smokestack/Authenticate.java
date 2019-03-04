@@ -318,6 +318,15 @@ public class Authenticate extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState)
     {
 	super.onCreate(savedInstanceState);
+
+	try
+	{
+	    getSupportActionBar().setTitle("SmokeStack | Authenticate");
+	}
+	catch(Exception exception)
+	{
+	}
+
 	m_databaseHelper = Database.getInstance(getApplicationContext());
 	m_databaseHelper.clearTable("log");
 	m_databaseHelper.clearTable("routing_identities");

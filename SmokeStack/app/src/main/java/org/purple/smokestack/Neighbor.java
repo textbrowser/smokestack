@@ -310,7 +310,7 @@ public abstract class Neighbor
 		    if(!connected() || m_aborted.get())
 			return;
 
-		    if(System.nanoTime() - m_accumulatedTime >= 1e+10)
+		    if(System.nanoTime() - m_accumulatedTime >= 3e+10)
 		    {
 			m_accumulatedTime = System.nanoTime();
 			send(getCapabilities());

@@ -45,11 +45,11 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="5dp"
                     android:background="@drawable/sectiongradient"
-                    android:paddingEnd="5dp"
                     android:paddingStart="5dp"
+                    android:paddingEnd="5dp"
                     android:text="@string/about"
                     android:textColor="@android:color/white"
-                    android:textSize="20sp"
+                    android:textSize="18sp"
                     android:textStyle="normal|bold" />
 
                 <TextView
@@ -95,11 +95,11 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="5dp"
                     android:background="@drawable/sectiongradient"
-                    android:paddingEnd="5dp"
                     android:paddingStart="5dp"
+                    android:paddingEnd="5dp"
                     android:text="@string/listeners"
                     android:textColor="@android:color/white"
-                    android:textSize="20sp"
+                    android:textSize="18sp"
                     android:textStyle="normal|bold" />
 
                 <TextView
@@ -233,11 +233,11 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="5dp"
                     android:background="@drawable/sectiongradient"
-                    android:paddingEnd="5dp"
                     android:paddingStart="5dp"
+                    android:paddingEnd="5dp"
                     android:text="@string/neighbors"
                     android:textColor="@android:color/white"
-                    android:textSize="20sp"
+                    android:textSize="18sp"
                     android:textStyle="normal|bold" />
 
                 <TextView
@@ -443,11 +443,11 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="5dp"
                     android:background="@drawable/sectiongradient"
-                    android:paddingEnd="5dp"
                     android:paddingStart="5dp"
+                    android:paddingEnd="5dp"
                     android:text="@string/ozones"
                     android:textColor="@android:color/white"
-                    android:textSize="20sp"
+                    android:textSize="18sp"
                     android:textStyle="normal|bold" />
 
                 <android.support.v4.widget.NestedScrollView
@@ -507,11 +507,11 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="5dp"
                     android:background="@drawable/sectiongradient"
-                    android:paddingEnd="5dp"
                     android:paddingStart="5dp"
+                    android:paddingEnd="5dp"
                     android:text="@string/participants"
                     android:textColor="@android:color/white"
-                    android:textSize="20sp"
+                    android:textSize="18sp"
                     android:textStyle="normal|bold" />
 
                 <TextView
@@ -647,11 +647,11 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="5dp"
                     android:background="@drawable/sectiongradient"
-                    android:paddingEnd="5dp"
                     android:paddingStart="5dp"
+                    android:paddingEnd="5dp"
                     android:text="@string/password"
                     android:textColor="@android:color/white"
-                    android:textSize="20sp"
+                    android:textSize="18sp"
                     android:textStyle="normal|bold" />
 
                 <LinearLayout
