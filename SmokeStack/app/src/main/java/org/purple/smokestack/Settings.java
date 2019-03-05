@@ -506,6 +506,10 @@ public class Settings extends AppCompatActivity
 
     private void populateListeners(ArrayList<ListenerElement> arrayList)
     {
+	((TextView) findViewById(R.id.internal_listeners)).setText
+	    ("Internal Listeners Container Size: " +
+	     Kernel.getInstance().listenersCount());
+
 	if(arrayList == null)
 	    arrayList = m_databaseHelper.readListeners(s_cryptography);
 
@@ -2077,6 +2081,19 @@ public class Settings extends AppCompatActivity
 	    });
     }
 
+    private void releaseResources()
+    {
+	if(m_receiverRegistered)
+	{
+	    LocalBroadcastManager.getInstance(this).unregisterReceiver
+		(m_receiver);
+	    m_receiverRegistered = false;
+	}
+
+	stopListenersTimers();
+	stopNeighborsTimers();
+    }
+
     private void showAuthenticateActivity()
     {
 	Intent intent = new Intent(Settings.this, Authenticate.class);
@@ -2552,11 +2569,10 @@ public class Settings extends AppCompatActivity
     }
 
     @Override
-    protected void onDestroy()
+    protected void onStop()
     {
-	super.onDestroy();
-	stopListenersTimers();
-	stopNeighborsTimers();
+	super.onStop();
+	releaseResources();
     }
 
     @Override
@@ -2888,13 +2904,7 @@ public class Settings extends AppCompatActivity
     public void onPause()
     {
 	super.onPause();
-
-	if(m_receiverRegistered)
-	{
-	    LocalBroadcastManager.getInstance(this).unregisterReceiver
-		(m_receiver);
-	    m_receiverRegistered = false;
-	}
+	releaseResources();
     }
 
     @Override
@@ -2963,19 +2973,6 @@ public class Settings extends AppCompatActivity
 	    LocalBroadcastManager.getInstance(this).registerReceiver
 		(m_receiver, intentFilter);
 	    m_receiverRegistered = true;
-	}
-    }
-
-    @Override
-    public void onStop()
-    {
-	super.onStop();
-
-	if(m_receiverRegistered)
-	{
-	    LocalBroadcastManager.getInstance(this).unregisterReceiver
-		(m_receiver);
-	    m_receiverRegistered = false;
 	}
     }
 }

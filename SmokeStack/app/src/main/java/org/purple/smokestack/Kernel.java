@@ -981,6 +981,14 @@ public class Kernel
 	return false;
     }
 
+    public int listenersCount()
+    {
+	synchronized(m_listeners)
+	{
+	    return m_listeners.size();
+	}
+    }
+
     public int neighborsCount()
     {
 	synchronized(m_neighbors)

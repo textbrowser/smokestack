@@ -326,6 +326,7 @@ public class Database extends SQLiteOpenHelper
 				    getBytes(StandardCharsets.UTF_8)),
 		  Base64.DEFAULT));
 	    m_db.replace("public_key_pairs", null, values);
+	    sparseArray.clear();
 	}
 	catch(Exception exception)
 	{
@@ -2262,6 +2263,8 @@ public class Database extends SQLiteOpenHelper
 
 		if(bytes == null)
 		{
+		    sparseArray.clear();
+
 		    StringBuilder stringBuilder = new StringBuilder();
 
 		    stringBuilder.append
@@ -2276,6 +2279,8 @@ public class Database extends SQLiteOpenHelper
 
 		values.put(sparseArray.get(i), str);
 	    }
+
+	    sparseArray.clear();
 	}
 	catch(Exception exception)
 	{
@@ -2462,6 +2467,8 @@ public class Database extends SQLiteOpenHelper
 
 		if(bytes == null)
 		{
+		    sparseArray.clear();
+
 		    StringBuilder stringBuilder = new StringBuilder();
 
 		    stringBuilder.append
@@ -2476,6 +2483,8 @@ public class Database extends SQLiteOpenHelper
 
 		values.put(sparseArray.get(i), str);
 	    }
+
+	    sparseArray.clear();
 	}
 	catch(Exception exception)
 	{
@@ -2569,6 +2578,8 @@ public class Database extends SQLiteOpenHelper
 
 		if(bytes == null)
 		{
+		    sparseArray.clear();
+
 		    StringBuilder stringBuilder = new StringBuilder();
 
 		    stringBuilder.append
@@ -2583,6 +2594,8 @@ public class Database extends SQLiteOpenHelper
 
 		values.put(sparseArray.get(i), str);
 	    }
+
+	    sparseArray.clear();
 	}
 	catch(Exception exception)
 	{
@@ -2852,11 +2865,16 @@ public class Database extends SQLiteOpenHelper
 		}
 
 		if(bytes == null)
+		{
+		    sparseArray.clear();
 		    return false;
+		}
 
 		values.put(sparseArray.get(i),
 			   Base64.encodeToString(bytes, Base64.DEFAULT));
 	    }
+
+	    sparseArray.clear();
 	}
 	catch(Exception exception)
 	{
@@ -3033,6 +3051,8 @@ public class Database extends SQLiteOpenHelper
 
 		if(bytes == null)
 		{
+		    sparseArray.clear();
+
 		    StringBuilder stringBuilder = new StringBuilder();
 
 		    stringBuilder.append
@@ -3047,6 +3067,8 @@ public class Database extends SQLiteOpenHelper
 
 		values.put(sparseArray.get(i), str);
 	    }
+
+	    sparseArray.clear();
 	}
 	catch(Exception exception)
 	{
