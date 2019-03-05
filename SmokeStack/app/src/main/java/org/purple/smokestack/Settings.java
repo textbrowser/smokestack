@@ -2090,6 +2090,7 @@ public class Settings extends AppCompatActivity
 	    m_receiverRegistered = false;
 	}
 
+	stopGeneralTimers();
 	stopListenersTimers();
 	stopNeighborsTimers();
     }
@@ -2211,6 +2212,33 @@ public class Settings extends AppCompatActivity
         }
     }
 
+    private void stopGeneralTimers()
+    {
+	if(m_generalScheduler == null)
+	    return;
+
+	try
+	{
+	    m_generalScheduler.shutdown();
+	}
+	catch(Exception exception)
+	{
+	}
+
+	try
+	{
+	    if(!m_generalScheduler.awaitTermination(60, TimeUnit.SECONDS))
+		m_generalScheduler.shutdownNow();
+	}
+	catch(Exception exception)
+	{
+	}
+	finally
+	{
+	    m_generalScheduler = null;
+	}
+    }
+
     private void stopListenersTimers()
     {
 	if(m_listenersScheduler == null)
@@ -2271,6 +2299,18 @@ public class Settings extends AppCompatActivity
 	super.onCreate(savedInstanceState);
 	SmokeStackService.startForegroundTask(getApplicationContext());
 	m_databaseHelper = Database.getInstance(getApplicationContext());
+
+	/*
+	** Show the Authenticate activity if an account is present.
+	*/
+
+	if(!State.getInstance().isAuthenticated())
+	    if(m_databaseHelper.accountPrepared())
+	    {
+		showAuthenticateActivity();
+		return;
+	    }
+
 	m_receiver = new SettingsBroadcastReceiver();
         setContentView(R.layout.activity_settings);
 
@@ -2558,14 +2598,6 @@ public class Settings extends AppCompatActivity
 	else
 	    ((TextView) findViewById(R.id.internal_neighbors)).setText
 		("Internal Neighbors Container Size: 0");
-
-	/*
-	** Show the Authenticate activity if an account is present.
-	*/
-
-	if(!State.getInstance().isAuthenticated())
-	    if(m_databaseHelper.accountPrepared())
-		showAuthenticateActivity();
     }
 
     @Override
