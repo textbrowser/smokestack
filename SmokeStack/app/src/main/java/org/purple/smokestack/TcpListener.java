@@ -312,23 +312,41 @@ public class TcpListener
 
 		if(keyPair != null)
 		{
-		    ByteArrayInputStream byteArrayInputStream = new
-			ByteArrayInputStream(certificateBytes);
-		    CertificateFactory certificateFactory =
-			CertificateFactory.getInstance("X.509");
-		    X509Certificate certificate = (X509Certificate)
-			certificateFactory.generateCertificate
-			(byteArrayInputStream);
+		    ByteArrayInputStream byteArrayInputStream = null;
 
-		    m_keyStore = KeyStore.getInstance
-			(KeyStore.getDefaultType());
-		    m_keyStore.load(null, null);
-		    m_keyStore.deleteEntry(m_ipAddress);
-		    m_keyStore.setKeyEntry(m_ipAddress,
-					   keyPair.getPrivate(),
-					   null,
-					   new X509Certificate[] {certificate});
-		    return;
+		    try
+		    {
+			byteArrayInputStream = new
+			    ByteArrayInputStream(certificateBytes);
+
+			CertificateFactory certificateFactory =
+			    CertificateFactory.getInstance("X.509");
+			X509Certificate certificate = (X509Certificate)
+			    certificateFactory.generateCertificate
+			    (byteArrayInputStream);
+
+			m_keyStore = KeyStore.getInstance
+			    (KeyStore.getDefaultType());
+			m_keyStore.load(null, null);
+			m_keyStore.deleteEntry(m_ipAddress);
+			m_keyStore.setKeyEntry
+			    (m_ipAddress,
+			     keyPair.getPrivate(),
+			     null,
+			     new X509Certificate[] {certificate});
+			return;
+		    }
+		    catch(Exception exception)
+		    {
+			setError("An error (" +
+				 exception.getMessage() +
+				 ") occurred while preparing the key pair.");
+		    }
+		    finally
+		    {
+			if(byteArrayInputStream != null)
+			    byteArrayInputStream.close();
+		    }
 		}
 	    }
 	}
