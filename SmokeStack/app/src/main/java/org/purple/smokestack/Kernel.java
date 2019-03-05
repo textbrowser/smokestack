@@ -635,6 +635,7 @@ public class Kernel
 	    */
 
 	    ArrayList<SipHashIdElement> arrayList1 = null;
+
 	    m_sipHashIdsMutex.readLock().lock();
 
 	    try
