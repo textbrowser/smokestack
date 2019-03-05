@@ -77,7 +77,7 @@ import javax.crypto.SecretKey;
 
 public class Settings extends AppCompatActivity
 {
-    private abstract class ContextMenuEnumerator
+    static private abstract class ContextMenuEnumerator
     {
 	public final static int DELETE_ALL_MESSAGES = 0;
 	public final static int DELETE_LISTENER = 1;
