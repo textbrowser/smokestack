@@ -2115,6 +2115,7 @@ public class Settings extends AppCompatActivity
     {
 	if(m_generalScheduler == null)
 	{
+	    m_databaseHelper.releaseMemory();
 	    m_generalScheduler = Executors.newSingleThreadScheduledExecutor();
 	    m_generalScheduler.scheduleAtFixedRate(new Runnable()
 	    {

@@ -72,13 +72,12 @@ public abstract class Neighbor
     protected String m_ipPort = "";
     protected String m_version = "";
     protected UUID m_uuid = null;
-    protected final Object m_errorMutex = new Object();
     protected final Object m_parsingSchedulerObject = new Object();
     protected final ScheduledExecutorService m_readSocketScheduler =
 	Executors.newSingleThreadScheduledExecutor();
+    protected final StringBuffer m_error = new StringBuffer();
     protected final StringBuffer m_randomBuffer = new StringBuffer();
     protected final StringBuffer m_stringBuffer = new StringBuffer();
-    protected final StringBuilder m_error = new StringBuilder();
     protected final static int BYTES_PER_READ = 1024 * 1024; // 1 MiB
     protected final static int MAXIMUM_BYTES = LANE_WIDTH;
     protected final static int SO_TIMEOUT = 0; // 0 Seconds
@@ -86,18 +85,12 @@ public abstract class Neighbor
 
     private void saveStatistics()
     {
-	String error = "";
 	String localIp = getLocalIp();
 	String localPort = String.valueOf(getLocalPort());
 	String queueSize = "";
 	String sessionCiper = getSessionCipher();
 	boolean connected = connected();
 	long uptime = System.nanoTime() - m_startTime.get();
-
-	synchronized(m_errorMutex)
-	{
-	    error = m_error.toString();
-	}
 
 	synchronized(m_queueMutex)
 	{
@@ -109,7 +102,7 @@ public abstract class Neighbor
 	     String.valueOf(m_stringBuffer.length()),
 	     String.valueOf(m_bytesRead.get()),
 	     String.valueOf(m_bytesWritten.get()),
-	     error,
+	     m_error.toString(),
 	     localIp,
 	     localPort,
 	     queueSize,
@@ -557,11 +550,8 @@ public abstract class Neighbor
 
     protected void setError(String error)
     {
-	synchronized(m_errorMutex)
-	{
-	    m_error.delete(0, m_error.length());
-	    m_error.append(error);
-	}
+	m_error.delete(0, m_error.length());
+	m_error.append(error);
     }
 
     public int getOid()

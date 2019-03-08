@@ -4023,6 +4023,11 @@ public class Database extends SQLiteOpenHelper
 	}
     }
 
+    public void releaseMemory()
+    {
+	SQLiteDatabase.releaseMemory();
+    }
+
     public void reset()
     {
 	if(m_db == null)

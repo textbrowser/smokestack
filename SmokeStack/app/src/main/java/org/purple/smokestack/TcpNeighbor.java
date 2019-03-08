@@ -494,12 +494,9 @@ public class TcpNeighbor extends Neighbor
 		    }
 
 		    if(!m_isValidCertificate.get())
-			synchronized(m_errorMutex)
-			{
-			    if(m_error.length() == 0)
-				m_error.append
-				    ("A generic certificate error occurred.");
-			}
+			if(m_error.length() == 0)
+			    m_error.append
+				("A generic certificate error occurred.");
 		}
 	    }
 	};
