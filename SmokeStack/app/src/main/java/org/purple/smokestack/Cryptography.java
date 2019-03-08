@@ -465,8 +465,7 @@ public class Cryptography
 
 	    for(int i = 0; i < length; i += 2)
 		if(i < length - 2)
-		    stringBuilder.append(fingerprint, i, i + 2).
-			append(":");
+		    stringBuilder.append(fingerprint, i, i + 2).append(":");
 		else
 		    stringBuilder.append(fingerprint.substring(i));
 	}
