@@ -93,7 +93,7 @@ public class TcpListener
 	new ReentrantReadWriteLock();
     private final StringBuilder m_error = new StringBuilder();
     private final static int RSA_KEY_SIZE = 2048;
-    private final static int SO_TIMEOUT = 500; // 0.5 Seconds
+    private final static int SO_TIMEOUT = 5000; // 5 Seconds
     private final static long ACCEPT_INTERVAL = 100; // Milliseconds
     private final static long TIMER_INTERVAL = 2500; // 2.5 Seconds
 
