@@ -3458,6 +3458,27 @@ public class Database extends SQLiteOpenHelper
 	}
     }
 
+    public void deleteSetting(String name)
+    {
+	if(m_db == null)
+	    return;
+
+	m_db.beginTransactionNonExclusive();
+
+	try
+	{
+	    m_db.delete("settings", "name = ?", new String[] {name});
+	    m_db.setTransactionSuccessful();
+	}
+	catch(Exception exception)
+	{
+	}
+	finally
+	{
+	    m_db.endTransaction();
+	}
+    }
+
     public void enqueueOutboundMessage(Cryptography cryptography,
 				       String message,
 				       boolean echo,
@@ -4021,11 +4042,6 @@ public class Database extends SQLiteOpenHelper
 		m_db.endTransaction();
 	    }
 	}
-    }
-
-    public void releaseMemory()
-    {
-	SQLiteDatabase.releaseMemory();
     }
 
     public void reset()

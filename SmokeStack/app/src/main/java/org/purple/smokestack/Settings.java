@@ -2010,31 +2010,6 @@ public class Settings extends AppCompatActivity
 		}
 	    });
 
-	checkBox1 = (CheckBox) findViewById(R.id.prefer_active_screen);
-	checkBox1.setOnCheckedChangeListener
-	    (new CompoundButton.OnCheckedChangeListener()
-	    {
-		@Override
-		public void onCheckedChanged
-		    (CompoundButton buttonView, boolean isChecked)
-		{
-		    if(isChecked)
-		    {
-			getWindow().addFlags
-			    (WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-			m_databaseHelper.writeSetting
-			    (null, "prefer_active_screen", "true");
-		    }
-		    else
-		    {
-			getWindow().clearFlags
-			    (WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-			m_databaseHelper.writeSetting
-			    (null, "prefer_active_screen", "false");
-		    }
-		}
-	    });
-
 	spinner1.setOnItemSelectedListener
 	    (new OnItemSelectedListener()
 	    {
@@ -2115,7 +2090,6 @@ public class Settings extends AppCompatActivity
     {
 	if(m_generalScheduler == null)
 	{
-	    m_databaseHelper.releaseMemory();
 	    m_generalScheduler = Executors.newSingleThreadScheduledExecutor();
 	    m_generalScheduler.scheduleAtFixedRate(new Runnable()
 	    {
@@ -2300,6 +2274,7 @@ public class Settings extends AppCompatActivity
 	super.onCreate(savedInstanceState);
 	SmokeStackService.startForegroundTask(getApplicationContext());
 	m_databaseHelper = Database.getInstance(getApplicationContext());
+	m_databaseHelper.deleteSetting("prefer_active_screen");
 
 	/*
 	** Show the Authenticate activity if an account is present.
@@ -2377,22 +2352,6 @@ public class Settings extends AppCompatActivity
 	    checkBox1.setChecked(true);
 	else
 	    checkBox1.setChecked(false);
-
-	checkBox1 = (CheckBox) findViewById(R.id.prefer_active_screen);
-
-	if(m_databaseHelper.
-	   readSetting(null, "prefer_active_screen").equals("true"))
-	{
-	    checkBox1.setChecked(true);
-	    getWindow().addFlags
-	    (WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-	}
-	else
-	{
-	    checkBox1.setChecked(false);
-	    getWindow().clearFlags
-		(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-	}
 
         RadioButton radioButton1 = null;
 
@@ -2978,22 +2937,6 @@ public class Settings extends AppCompatActivity
 	    checkBox1.setChecked(true);
 	else
 	    checkBox1.setChecked(false);
-
-	checkBox1 = (CheckBox) findViewById(R.id.prefer_active_screen);
-
-	if(m_databaseHelper.
-	   readSetting(null, "prefer_active_screen").equals("true"))
-	{
-	    checkBox1.setChecked(true);
-	    getWindow().addFlags
-	    (WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-	}
-	else
-	{
-	    checkBox1.setChecked(false);
-	    getWindow().clearFlags
-		(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-	}
 
 	if(!m_receiverRegistered)
 	{
