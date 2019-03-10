@@ -40,9 +40,7 @@
     <string name="settings">Settings</string>
     <string name="smoke_id">Smoke ID</string>
     <string name="steam">Steam</string>
-    <string name="title_activity_steam">Steam</string>
     <string name="refresh">Refresh</string>
-    <string name="prefer_active_screen">Prefer Active Screen</string>
     <string name="last_activity">Last Activity</string>
     <string name="private_server">Private Server</string>
 </resources>
