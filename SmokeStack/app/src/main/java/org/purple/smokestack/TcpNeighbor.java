@@ -54,9 +54,7 @@ public class TcpNeighbor extends Neighbor
     private TrustManager m_trustManagers[] = null;
     private final static int CONNECTION_TIMEOUT = 10000; // 10 Seconds
     private final static int HANDSHAKE_TIMEOUT = 10000; // 10 Seconds
-    private final static int SO_SNDBUF_SIZE = 131072;
     private int m_proxyPort = -1;
-    public final static int SO_RCVBUF_SIZE = 131072;
 
     private void prepareMRandom()
     {
@@ -219,7 +217,6 @@ public class TcpNeighbor extends Neighbor
 			    }
 			});
 
-		m_socket.setSendBufferSize(SO_SNDBUF_SIZE);
 		m_socket.setSoLinger(true, 0);
 		m_socket.setSoTimeout(HANDSHAKE_TIMEOUT);
 		m_socket.setTcpNoDelay(true);
@@ -562,8 +559,6 @@ public class TcpNeighbor extends Neighbor
 	    {
 		m_socket = (SSLSocket) sslContext.getSocketFactory().
 		    createSocket();
-		m_socket.setReceiveBufferSize(SO_RCVBUF_SIZE);
-		m_socket.setSendBufferSize(SO_SNDBUF_SIZE);
 		m_socket.connect(inetSocketAddress, CONNECTION_TIMEOUT);
 	    }
 	    else
@@ -577,8 +572,6 @@ public class TcpNeighbor extends Neighbor
 		    socket = new Socket
 			(new Proxy(Proxy.Type.SOCKS, m_proxyInetSocketAddress));
 
-		socket.setReceiveBufferSize(SO_RCVBUF_SIZE);
-		socket.setSendBufferSize(SO_SNDBUF_SIZE);
 		socket.connect(inetSocketAddress, CONNECTION_TIMEOUT);
 		m_socket = (SSLSocket) sslContext.getSocketFactory().
 		    createSocket(socket, m_proxyIpAddress, m_proxyPort, true);
