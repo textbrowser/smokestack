@@ -87,17 +87,6 @@ purge:
 
 release: clean
 	rm -rf SmokeStack/build SmokeStack/captures
-	mkdir -p SmokeStack/app/src/main/assets
-	zip -r smokestack.src.d.zip \
-	Android \
-	Documentation \
-	Makefile \
-	Makefile.linux \
-	SmokeStack \
-	TO-DO \
-	adb.bash \
-	-x *.git* -x *.gradle* -x *.idea* \
-	&& mv smokestack.src.d.zip SmokeStack/app/src/main/assets/.
 	$(GRADLEW) -Dorg.gradle.java.home=$(JDK) \
 	--build-file SmokeStack/build.gradle assembleRelease \
 	--configure-on-demand --daemon --parallel
