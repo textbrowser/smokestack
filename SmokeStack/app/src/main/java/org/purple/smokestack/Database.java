@@ -344,7 +344,7 @@ public class Database extends SQLiteOpenHelper
 
 	Cursor cursor = null;
 
-	m_db.beginTransactionNonExclusive();
+	m_db.beginTransaction();
 
 	try
 	{
@@ -2011,7 +2011,7 @@ public class Database extends SQLiteOpenHelper
 
 	boolean ok = false;
 
-	m_db.beginTransactionNonExclusive();
+	m_db.beginTransaction();
 
 	try
 	{
@@ -2037,7 +2037,7 @@ public class Database extends SQLiteOpenHelper
 
 	boolean ok = false;
 
-	m_db.beginTransactionNonExclusive();
+	m_db.beginTransaction();
 
 	try
 	{
@@ -2067,7 +2067,7 @@ public class Database extends SQLiteOpenHelper
 
 	boolean ok = false;
 
-	m_db.beginTransactionNonExclusive();
+	m_db.beginTransaction();
 
 	try
 	{
@@ -2093,7 +2093,7 @@ public class Database extends SQLiteOpenHelper
 
 	boolean ok = false;
 
-	m_db.beginTransactionNonExclusive();
+	m_db.beginTransaction();
 
 	try
 	{
@@ -2124,7 +2124,7 @@ public class Database extends SQLiteOpenHelper
 
 	boolean ok = false;
 
-	m_db.beginTransactionNonExclusive();
+	m_db.beginTransaction();
 
 	try
 	{
@@ -2287,7 +2287,7 @@ public class Database extends SQLiteOpenHelper
 	    ok = false;
 	}
 
-	m_db.beginTransactionNonExclusive();
+	m_db.beginTransaction();
 
 	try
 	{
@@ -2491,7 +2491,7 @@ public class Database extends SQLiteOpenHelper
 	    ok = false;
 	}
 
-	m_db.beginTransactionNonExclusive();
+	m_db.beginTransaction();
 
 	try
 	{
@@ -2602,7 +2602,7 @@ public class Database extends SQLiteOpenHelper
 	    ok = false;
 	}
 
-	m_db.beginTransactionNonExclusive();
+	m_db.beginTransaction();
 
 	try
 	{
@@ -2892,7 +2892,7 @@ public class Database extends SQLiteOpenHelper
 	if(values == null)
 	    return false;
 
-	m_db.beginTransactionNonExclusive();
+	m_db.beginTransaction();
 
 	try
 	{
@@ -2925,7 +2925,7 @@ public class Database extends SQLiteOpenHelper
 	   name.trim().isEmpty())
 	    return false;
 
-	m_db.beginTransactionNonExclusive();
+	m_db.beginTransaction();
 
 	try
 	{
@@ -3075,7 +3075,7 @@ public class Database extends SQLiteOpenHelper
 	    ok = false;
 	}
 
-	m_db.beginTransactionNonExclusive();
+	m_db.beginTransaction();
 
 	try
 	{
@@ -3216,7 +3216,7 @@ public class Database extends SQLiteOpenHelper
 
 	Cursor cursor = null;
 
-	m_db.beginTransactionNonExclusive();
+	m_db.beginTransaction();
 
 	try
 	{
@@ -3252,7 +3252,7 @@ public class Database extends SQLiteOpenHelper
 
 	Cursor cursor = null;
 
-	m_db.beginTransactionNonExclusive();
+	m_db.beginTransaction();
 
 	try
 	{
@@ -3288,7 +3288,7 @@ public class Database extends SQLiteOpenHelper
 
 	Cursor cursor = null;
 
-	m_db.beginTransactionNonExclusive();
+	m_db.beginTransaction();
 
 	try
 	{
@@ -3317,7 +3317,7 @@ public class Database extends SQLiteOpenHelper
 	}
 
 	cursor = null;
-	m_db.beginTransactionNonExclusive();
+	m_db.beginTransaction();
 
 	try
 	{
@@ -3376,7 +3376,7 @@ public class Database extends SQLiteOpenHelper
 	if(m_db == null)
 	    return;
 
-	m_db.beginTransactionNonExclusive();
+	m_db.beginTransaction();
 
 	try
 	{
@@ -3397,7 +3397,7 @@ public class Database extends SQLiteOpenHelper
 	if(m_db == null)
 	    return;
 
-	m_db.beginTransactionNonExclusive();
+	m_db.beginTransaction();
 
 	try
 	{
@@ -3418,7 +3418,7 @@ public class Database extends SQLiteOpenHelper
 	if(m_db == null)
 	    return;
 
-	m_db.beginTransactionNonExclusive();
+	m_db.beginTransaction();
 
 	try
 	{
@@ -3441,7 +3441,7 @@ public class Database extends SQLiteOpenHelper
 	if(m_db == null)
 	    return;
 
-	m_db.beginTransactionNonExclusive();
+	m_db.beginTransaction();
 
 	try
 	{
@@ -3463,7 +3463,7 @@ public class Database extends SQLiteOpenHelper
 	if(m_db == null)
 	    return;
 
-	m_db.beginTransactionNonExclusive();
+	m_db.beginTransaction();
 
 	try
 	{
@@ -3490,7 +3490,7 @@ public class Database extends SQLiteOpenHelper
 	   m_db == null)
 	    return;
 
-	m_db.beginTransactionNonExclusive();
+	m_db.beginTransaction();
 
 	try
 	{
@@ -3523,7 +3523,7 @@ public class Database extends SQLiteOpenHelper
 	if(cryptography == null || m_db == null)
 	    return;
 
-	m_db.beginTransactionNonExclusive();
+	m_db.beginTransaction();
 
 	try
 	{
@@ -3553,7 +3553,7 @@ public class Database extends SQLiteOpenHelper
 	if(cryptography == null || m_db == null)
 	    return;
 
-	m_db.beginTransactionNonExclusive();
+	m_db.beginTransaction();
 
 	try
 	{
@@ -3587,7 +3587,7 @@ public class Database extends SQLiteOpenHelper
     {
 	try
 	{
-	    db.enableWriteAheadLogging();
+	    db.disableWriteAheadLogging();
 	}
 	catch(Exception exception)
 	{
@@ -3905,7 +3905,7 @@ public class Database extends SQLiteOpenHelper
 	if(m_db == null)
 	    return;
 
-	m_db.beginTransactionNonExclusive();
+	m_db.beginTransaction();
 
 	try
 	{
@@ -3934,7 +3934,7 @@ public class Database extends SQLiteOpenHelper
 	if(m_db == null)
 	    return;
 
-	m_db.beginTransactionNonExclusive();
+	m_db.beginTransaction();
 
 	try
 	{
@@ -4025,7 +4025,7 @@ public class Database extends SQLiteOpenHelper
 
 	if(stringBuilder.length() > 0)
 	{
-	    m_db.beginTransactionNonExclusive();
+	    m_db.beginTransaction();
 
 	    try
 	    {
@@ -4049,7 +4049,7 @@ public class Database extends SQLiteOpenHelper
 	if(m_db == null)
 	    return;
 
-	m_db.beginTransactionNonExclusive();
+	m_db.beginTransaction();
 
 	try
 	{
@@ -4130,7 +4130,7 @@ public class Database extends SQLiteOpenHelper
 	if(cryptography == null || m_db == null)
 	    return;
 
-	m_db.beginTransactionNonExclusive();
+	m_db.beginTransaction();
 
 	try
 	{
@@ -4189,7 +4189,7 @@ public class Database extends SQLiteOpenHelper
 	if(cryptography == null || m_db == null)
 	    return;
 
-	m_db.beginTransactionNonExclusive();
+	m_db.beginTransaction();
 
 	try
 	{
@@ -4281,7 +4281,7 @@ public class Database extends SQLiteOpenHelper
 	if(cryptography == null || m_db == null)
 	    return;
 
-	m_db.beginTransactionNonExclusive();
+	m_db.beginTransaction();
 
 	try
 	{
@@ -4318,7 +4318,7 @@ public class Database extends SQLiteOpenHelper
 	   m_db == null)
 	    return;
 
-	m_db.beginTransactionNonExclusive();
+	m_db.beginTransaction();
 
 	try
 	{
@@ -4355,7 +4355,7 @@ public class Database extends SQLiteOpenHelper
 	if(digest == null || digest.length == 0 || m_db == null)
 	    return;
 
-	m_db.beginTransactionNonExclusive();
+	m_db.beginTransaction();
 
 	try
 	{
@@ -4389,7 +4389,7 @@ public class Database extends SQLiteOpenHelper
 
 	try
 	{
-	    m_db.beginTransactionNonExclusive();
+	    m_db.beginTransaction();
 
 	    try
 	    {
@@ -4425,7 +4425,7 @@ public class Database extends SQLiteOpenHelper
 	   m_db == null)
 	    return;
 
-	m_db.beginTransactionNonExclusive();
+	m_db.beginTransaction();
 
 	try
 	{
@@ -4469,7 +4469,7 @@ public class Database extends SQLiteOpenHelper
 	   m_db == null)
 	    return;
 
-	m_db.beginTransactionNonExclusive();
+	m_db.beginTransaction();
 
 	try
 	{
@@ -4520,7 +4520,7 @@ public class Database extends SQLiteOpenHelper
 	   publicKey.length == 0)
 	    return;
 
-	m_db.beginTransactionNonExclusive();
+	m_db.beginTransaction();
 
 	try
 	{
@@ -4558,7 +4558,7 @@ public class Database extends SQLiteOpenHelper
 	if(m_db == null)
 	    return;
 
-	m_db.beginTransactionNonExclusive();
+	m_db.beginTransaction();
 
 	try
 	{
@@ -4587,7 +4587,7 @@ public class Database extends SQLiteOpenHelper
 	   message.length == 0)
 	    return;
 
-	m_db.beginTransactionNonExclusive();
+	m_db.beginTransaction();
 
 	try
 	{
@@ -4634,7 +4634,7 @@ public class Database extends SQLiteOpenHelper
 	if(m_db == null)
 	    return;
 
-	m_db.beginTransactionNonExclusive();
+	m_db.beginTransaction();
 
 	try
 	{
