@@ -284,7 +284,8 @@ public class Database extends SQLiteOpenHelper
     {
 	if(cryptography == null ||
 	   m_db == null ||
-	   sipHashId.isEmpty() ||
+	   sipHashId == null ||
+	   sipHashId.length() != Cryptography.SIPHASH_ID_LENGTH ||
 	   strings == null ||
 	   strings.length != Messages.EPKS_GROUP_ONE_ELEMENT_COUNT)
 	    return false;
@@ -2627,6 +2628,7 @@ public class Database extends SQLiteOpenHelper
     }
 
     public boolean writeParticipant(Cryptography cryptography,
+				    String sipHashId,
 				    boolean ignoreSignatures,
 				    byte data[])
     {
@@ -2798,20 +2800,7 @@ public class Database extends SQLiteOpenHelper
 		    break;
 		}
 
-	    /*
-	    ** We shall use the two public keys to generate the
-	    ** provider's SipHash ID. If a SipHash ID is not defined,
-	    ** we'll reject the data.
-	    */
-
-	    String name = "";
-	    String sipHashId = Miscellaneous.
-		sipHashIdFromData(Miscellaneous.
-				  joinByteArrays(encryptionKey.getEncoded(),
-						 signatureKey.getEncoded())).
-		toUpperCase();
-
-	    name = nameFromSipHashId(cryptography, sipHashId);
+	    String name = nameFromSipHashId(cryptography, sipHashId).trim();
 
 	    if(name.isEmpty())
 		return false;
