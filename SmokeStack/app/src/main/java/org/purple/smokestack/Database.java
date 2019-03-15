@@ -1827,10 +1827,10 @@ public class Database extends SQLiteOpenHelper
 
 	    if(cursor != null && cursor.moveToFirst())
 	    {
-		array = new String[5];
-
 		boolean error = false;
 		int count = cursor.getColumnCount();
+
+		array = new String[count + 1];
 
 		for(int i = 0; i < count; i++)
 		{
@@ -1854,6 +1854,11 @@ public class Database extends SQLiteOpenHelper
 		    else
 			array[i] = new String(bytes);
 		}
+
+		if(!error)
+		    array[count] = Base64.encodeToString
+			(sipHashId.getBytes(StandardCharsets.UTF_8),
+			 Base64.NO_WRAP);
 
 		if(error)
 		    array = null;
