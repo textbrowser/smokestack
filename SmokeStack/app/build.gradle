@@ -8,7 +8,7 @@ android {
 	buildConfigField "long", "BUILD_TIME", System.currentTimeMillis() + "L"
         minSdkVersion 19
         multiDexEnabled true
-        targetSdkVersion 28
+        targetSdkVersion 26
         versionCode 20190303
         versionName "2019.03.03"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"

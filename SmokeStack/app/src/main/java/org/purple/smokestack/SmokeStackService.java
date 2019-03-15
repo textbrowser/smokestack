@@ -53,10 +53,10 @@ public class SmokeStackService extends Service
 	    (this, 0, notificationIntent, 0);
 
 	builder.setContentIntent(pendingIntent);
-	builder.setContentText("SmokeStack Activity");
-	builder.setContentTitle("SmokeStack Activity");
+	builder.setContentText("SmokeStack");
+	builder.setContentTitle("SmokeStack");
 	builder.setSmallIcon(R.drawable.smokestack);
-	builder.setTicker("SmokeStack Activity");
+	builder.setTicker("SmokeStack");
 
 	/*
 	** Stop!

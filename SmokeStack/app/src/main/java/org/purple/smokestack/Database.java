@@ -272,7 +272,9 @@ public class Database extends SQLiteOpenHelper
 	    if(cursor != null)
 	    {
 		cursor.close();
-		m_cursorsClosed.getAndIncrement();
+
+		if(cursor.isClosed())
+		    m_cursorsClosed.getAndIncrement();
 	    }
 	}
 
@@ -368,7 +370,9 @@ public class Database extends SQLiteOpenHelper
 	    if(cursor != null)
 	    {
 		cursor.close();
-		m_cursorsClosed.getAndIncrement();
+
+		if(cursor.isClosed())
+		    m_cursorsClosed.getAndIncrement();
 	    }
 
 	    m_db.endTransaction();
@@ -426,7 +430,9 @@ public class Database extends SQLiteOpenHelper
 	    if(cursor != null)
 	    {
 		cursor.close();
-		m_cursorsClosed.getAndIncrement();
+
+		if(cursor.isClosed())
+		    m_cursorsClosed.getAndIncrement();
 	    }
 	}
 
@@ -630,7 +636,9 @@ public class Database extends SQLiteOpenHelper
 	    if(cursor != null)
 	    {
 		cursor.close();
-		m_cursorsClosed.getAndIncrement();
+
+		if(cursor.isClosed())
+		    m_cursorsClosed.getAndIncrement();
 	    }
 	}
 
@@ -718,7 +726,9 @@ public class Database extends SQLiteOpenHelper
 	    if(cursor != null)
 	    {
 		cursor.close();
-		m_cursorsClosed.getAndIncrement();
+
+		if(cursor.isClosed())
+		    m_cursorsClosed.getAndIncrement();
 	    }
 
 	}
@@ -1007,7 +1017,9 @@ public class Database extends SQLiteOpenHelper
 	    if(cursor != null)
 	    {
 		cursor.close();
-		m_cursorsClosed.getAndIncrement();
+
+		if(cursor.isClosed())
+		    m_cursorsClosed.getAndIncrement();
 	    }
 	}
 
@@ -1107,7 +1119,9 @@ public class Database extends SQLiteOpenHelper
 	    if(cursor != null)
 	    {
 		cursor.close();
-		m_cursorsClosed.getAndIncrement();
+
+		if(cursor.isClosed())
+		    m_cursorsClosed.getAndIncrement();
 	    }
 	}
 
@@ -1300,7 +1314,9 @@ public class Database extends SQLiteOpenHelper
 	    if(cursor != null)
 	    {
 		cursor.close();
-		m_cursorsClosed.getAndIncrement();
+
+		if(cursor.isClosed())
+		    m_cursorsClosed.getAndIncrement();
 	    }
 	}
 
@@ -1390,7 +1406,9 @@ public class Database extends SQLiteOpenHelper
 	    if(cursor != null)
 	    {
 		cursor.close();
-		m_cursorsClosed.getAndIncrement();
+
+		if(cursor.isClosed())
+		    m_cursorsClosed.getAndIncrement();
 	    }
 	}
 
@@ -1439,7 +1457,9 @@ public class Database extends SQLiteOpenHelper
 	    if(cursor != null)
 	    {
 		cursor.close();
-		m_cursorsClosed.getAndIncrement();
+
+		if(cursor.isClosed())
+		    m_cursorsClosed.getAndIncrement();
 	    }
 	}
 
@@ -1504,7 +1524,9 @@ public class Database extends SQLiteOpenHelper
 	    if(cursor != null)
 	    {
 		cursor.close();
-		m_cursorsClosed.getAndIncrement();
+
+		if(cursor.isClosed())
+		    m_cursorsClosed.getAndIncrement();
 	    }
 	}
 
@@ -1552,7 +1574,9 @@ public class Database extends SQLiteOpenHelper
 	    if(cursor != null)
 	    {
 		cursor.close();
-		m_cursorsClosed.getAndIncrement();
+
+		if(cursor.isClosed())
+		    m_cursorsClosed.getAndIncrement();
 	    }
 	}
 
@@ -1599,7 +1623,9 @@ public class Database extends SQLiteOpenHelper
 	    if(cursor != null)
 	    {
 		cursor.close();
-		m_cursorsClosed.getAndIncrement();
+
+		if(cursor.isClosed())
+		    m_cursorsClosed.getAndIncrement();
 	    }
 	}
 
@@ -1642,7 +1668,9 @@ public class Database extends SQLiteOpenHelper
 	    if(cursor != null)
 	    {
 		cursor.close();
-		m_cursorsClosed.getAndIncrement();
+
+		if(cursor.isClosed())
+		    m_cursorsClosed.getAndIncrement();
 	    }
 	}
 
@@ -1699,7 +1727,9 @@ public class Database extends SQLiteOpenHelper
 	    if(cursor != null)
 	    {
 		cursor.close();
-		m_cursorsClosed.getAndIncrement();
+
+		if(cursor.isClosed())
+		    m_cursorsClosed.getAndIncrement();
 	    }
 	}
 
@@ -1747,7 +1777,9 @@ public class Database extends SQLiteOpenHelper
 	    if(cursor != null)
 	    {
 		cursor.close();
-		m_cursorsClosed.getAndIncrement();
+
+		if(cursor.isClosed())
+		    m_cursorsClosed.getAndIncrement();
 	    }
 	}
 
@@ -1789,7 +1821,9 @@ public class Database extends SQLiteOpenHelper
 	    if(cursor != null)
 	    {
 		cursor.close();
-		m_cursorsClosed.getAndIncrement();
+
+		if(cursor.isClosed())
+		    m_cursorsClosed.getAndIncrement();
 	    }
 	}
 
@@ -1873,7 +1907,9 @@ public class Database extends SQLiteOpenHelper
 	    if(cursor != null)
 	    {
 		cursor.close();
-		m_cursorsClosed.getAndIncrement();
+
+		if(cursor.isClosed())
+		    m_cursorsClosed.getAndIncrement();
 	    }
 	}
 
@@ -1924,7 +1960,9 @@ public class Database extends SQLiteOpenHelper
 		if(cursor != null)
 		{
 		    cursor.close();
-		    m_cursorsClosed.getAndIncrement();
+
+		    if(cursor.isClosed())
+			m_cursorsClosed.getAndIncrement();
 		}
 	    }
 	}
@@ -2003,7 +2041,9 @@ public class Database extends SQLiteOpenHelper
 	    if(cursor != null)
 	    {
 		cursor.close();
-		m_cursorsClosed.getAndIncrement();
+
+		if(cursor.isClosed())
+		    m_cursorsClosed.getAndIncrement();
 	    }
 	}
 
@@ -2714,8 +2754,11 @@ public class Database extends SQLiteOpenHelper
 		    if(cursor != null)
 		    {
 			cursor.close();
+
+			if(cursor.isClosed())
+			    m_cursorsClosed.getAndIncrement();
+
 			cursor = null;
-			m_cursorsClosed.getAndIncrement();
 		    }
 
 		    encryptionKey = Cryptography.publicKeyFromBytes
@@ -2754,8 +2797,11 @@ public class Database extends SQLiteOpenHelper
 		    if(cursor != null)
 		    {
 			cursor.close();
+
+			if(cursor.isClosed())
+			    m_cursorsClosed.getAndIncrement();
+
 			cursor = null;
-			m_cursorsClosed.getAndIncrement();
 		    }
 
 		    signatureKey = Cryptography.publicKeyFromBytes
@@ -2882,7 +2928,9 @@ public class Database extends SQLiteOpenHelper
 	    if(cursor != null)
 	    {
 		cursor.close();
-		m_cursorsClosed.getAndIncrement();
+
+		if(cursor.isClosed())
+		    m_cursorsClosed.getAndIncrement();
 	    }
 	}
 
@@ -3138,7 +3186,9 @@ public class Database extends SQLiteOpenHelper
 	    if(cursor != null)
 	    {
 		cursor.close();
-		m_cursorsClosed.getAndIncrement();
+
+		if(cursor.isClosed())
+		    m_cursorsClosed.getAndIncrement();
 	    }
 	}
 
@@ -3176,7 +3226,9 @@ public class Database extends SQLiteOpenHelper
 	    if(cursor != null)
 	    {
 		cursor.close();
-		m_cursorsClosed.getAndIncrement();
+
+		if(cursor.isClosed())
+		    m_cursorsClosed.getAndIncrement();
 	    }
 	}
 
@@ -3235,7 +3287,9 @@ public class Database extends SQLiteOpenHelper
 	    if(cursor != null)
 	    {
 		cursor.close();
-		m_cursorsClosed.getAndIncrement();
+
+		if(cursor.isClosed())
+		    m_cursorsClosed.getAndIncrement();
 	    }
 
 	    m_db.endTransaction();
@@ -3271,7 +3325,9 @@ public class Database extends SQLiteOpenHelper
 	    if(cursor != null)
 	    {
 		cursor.close();
-		m_cursorsClosed.getAndIncrement();
+
+		if(cursor.isClosed())
+		    m_cursorsClosed.getAndIncrement();
 	    }
 
 	    m_db.endTransaction();
@@ -3307,7 +3363,9 @@ public class Database extends SQLiteOpenHelper
 	    if(cursor != null)
 	    {
 		cursor.close();
-		m_cursorsClosed.getAndIncrement();
+
+		if(cursor.isClosed())
+		    m_cursorsClosed.getAndIncrement();
 	    }
 
 	    m_db.endTransaction();
@@ -3336,7 +3394,9 @@ public class Database extends SQLiteOpenHelper
 	    if(cursor != null)
 	    {
 		cursor.close();
-		m_cursorsClosed.getAndIncrement();
+
+		if(cursor.isClosed())
+		    m_cursorsClosed.getAndIncrement();
 	    }
 
 	    m_db.endTransaction();
@@ -4016,7 +4076,9 @@ public class Database extends SQLiteOpenHelper
 	    if(cursor != null)
 	    {
 		cursor.close();
-		m_cursorsClosed.getAndIncrement();
+
+		if(cursor.isClosed())
+		    m_cursorsClosed.getAndIncrement();
 	    }
 	}
 
