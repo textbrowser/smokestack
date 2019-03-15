@@ -6,6 +6,7 @@
 	Public Key Signature (4)		Variable Bytes (Base-64)
 	Signature Public Key (5)		Variable Bytes (Base-64)
 	Signature Public Key Signature (6)	Variable Bytes (Base-64)
+	Sender's Smoke Identity (7)		Variable Bytes (Base-64)
 }
 
 [SHA-512 HMAC] (2)				64 Bytes

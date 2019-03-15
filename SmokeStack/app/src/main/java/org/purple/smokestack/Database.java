@@ -2797,6 +2797,9 @@ public class Database extends SQLiteOpenHelper
 			    return false;
 		    }
 
+		    ii += 1;
+		    break;
+		case 6:
 		    break;
 		}
 

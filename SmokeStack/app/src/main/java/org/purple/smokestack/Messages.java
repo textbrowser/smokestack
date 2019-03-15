@@ -40,7 +40,7 @@ public class Messages
     public final static byte SHARE_SIPHASH_ID[] = new byte[] {0x02};
     public final static byte SHARE_SIPHASH_ID_CONFIRIMATION[] =
 	new byte[] {0x03};
-    public final static int EPKS_GROUP_ONE_ELEMENT_COUNT = 6;
+    public final static int EPKS_GROUP_ONE_ELEMENT_COUNT = 7;
 
     public static String bytesToMessageString(byte bytes[])
     {
@@ -262,6 +262,13 @@ public class Messages
 	    */
 
 	    stringBuilder.append(strings[4]);
+	    stringBuilder.append("\n");
+
+	    /*
+	    ** [ Sender's Smoke Identity ]
+	    */
+
+	    stringBuilder.append(strings[5]);
 
 	    byte aes256[] = Cryptography.encrypt
 		(stringBuilder.toString().getBytes(),
