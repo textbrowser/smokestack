@@ -2950,5 +2950,19 @@ public class Settings extends AppCompatActivity
 		(m_receiver, intentFilter);
 	    m_receiverRegistered = true;
 	}
+
+	startGeneralTimer();
+
+	if(m_databaseHelper.
+	   readSetting(null, "automatic_listeners_refresh").equals("true"))
+	    startListenersTimers();
+	else
+	    populateListeners(null);
+
+	if(m_databaseHelper.
+	   readSetting(null, "automatic_neighbors_refresh").equals("true"))
+	    startNeighborsTimers();
+	else
+	    populateNeighbors(null);
     }
 }
