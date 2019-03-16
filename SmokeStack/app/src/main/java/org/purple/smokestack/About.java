@@ -49,7 +49,7 @@ public class About
 		SimpleDateFormat("yyyy-MM-dd h:mm:ss", Locale.getDefault());
 
 	    simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-            s_about = "Version 2019.03.03 Curious Circuit " +
+            s_about = "Version 2019.04.01 Smashing Stacks " +
                 (BuildConfig.DEBUG ? "(Debug) " : "(Release)") +
                 "\nBuild Date " +
                 simpleDateFormat.format(new Date(BuildConfig.BUILD_TIME)) +
