@@ -69,7 +69,7 @@ load-apk-release: release
 	$(JARSIGNER) -verbose -keystore \
 	~/Android-Keys/smokestack-release.keystore \
 	./SmokeStack/app/build/outputs/apk/release/apk/smokestack.apk \
-	smokestack-release
+	smokestack
 	$(JARSIGNER) -verify \
 	./SmokeStack/app/build/outputs/apk/release/apk/smokestack.apk
 	./adb.bash install -r \
