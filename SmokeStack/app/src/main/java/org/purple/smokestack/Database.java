@@ -302,19 +302,32 @@ public class Database extends SQLiteOpenHelper
 	    SparseArray<String> sparseArray = new SparseArray<> ();
 	    byte bytes[] = null;
 
-	    sparseArray.append(0, "key_type");
-	    sparseArray.append(1, "public_key_string");
-	    sparseArray.append(2, "public_key_signature_string");
-	    sparseArray.append(3, "signature_public_key_string");
-	    sparseArray.append(4, "signature_public_key_signature_string");
+	    /*
+	    ** strings[0] - A Timestamp
+	    ** strings[1] - Key Type
+	    ** strings[2] - Sender's Smoke Identity
+	    ** strings[3] - Public Key
+	    ** strings[4] - Public Key Signature
+	    ** strings[5] - Signature Public Key
+	    ** strings[6] - Signature Public Key Signature
+	    */
+
+	    bytes = cryptography.etm(strings[1].getBytes());
+	    values.put
+		("key_type", Base64.encodeToString(bytes, Base64.DEFAULT));
+	    sparseArray.append(0, "public_key_string");
+	    sparseArray.append(1, "public_key_signature_string");
+	    sparseArray.append(2, "signature_public_key_string");
+	    sparseArray.append(3, "signature_public_key_signature_string");
 
 	    int size = sparseArray.size();
 
 	    for(int i = 0; i < size; i++)
 	    {
-		bytes = cryptography.etm(strings[i + 1].getBytes());
-		values.put(sparseArray.get(i),
-			   Base64.encodeToString(bytes, Base64.DEFAULT));
+		bytes = cryptography.etm(strings[i + 3].getBytes());
+		values.put
+		    (sparseArray.get(i),
+		     Base64.encodeToString(bytes, Base64.DEFAULT));
 	    }
 
 	    bytes = cryptography.etm
@@ -2699,6 +2712,7 @@ public class Database extends SQLiteOpenHelper
 	    byte keyType[] = null;
 	    byte encryptionKeySignature[] = null;
 	    byte signatureKeySignature[] = null;
+	    byte sipHashIdBytes[] = sipHashId.getBytes(StandardCharsets.UTF_8);
 	    int ii = 0;
 
 	    for(String string : strings)
@@ -2731,6 +2745,13 @@ public class Database extends SQLiteOpenHelper
 		    ii += 1;
 		    break;
 		case 2:
+		    /*
+		    ** Sender's Smoke Identity!
+		    */
+
+		    ii += 1;
+		    break;
+		case 3:
 		    cursor = m_db.rawQuery
 			("SELECT EXISTS(SELECT 1 " +
 			 "FROM participants WHERE " +
@@ -2769,10 +2790,12 @@ public class Database extends SQLiteOpenHelper
 
 		    ii += 1;
 		    break;
-		case 3:
+		case 4:
+		    encryptionKeySignature = Base64.decode
+			(string.getBytes(), Base64.NO_WRAP);
 		    ii += 1;
 		    break;
-		case 4:
+		case 5:
 		    cursor = m_db.rawQuery
 			("SELECT EXISTS(SELECT 1 " +
 			 "FROM participants WHERE " +
@@ -2812,20 +2835,17 @@ public class Database extends SQLiteOpenHelper
 
 		    ii += 1;
 		    break;
-		case 5:
+		case 6:
 		    signatureKeySignature = Base64.decode
 			(string.getBytes(), Base64.NO_WRAP);
 
 		    if(!encryptionKey.getAlgorithm().equals("McEliece-CCA2"))
-		    {
-			encryptionKeySignature = Base64.decode
-			    (string.getBytes(), Base64.NO_WRAP);
-
 			if(!Cryptography.
 			   verifySignature(encryptionKey,
 					   encryptionKeySignature,
 					   Miscellaneous.
-					   joinByteArrays(encryptionKey.
+					   joinByteArrays(sipHashIdBytes,
+							  encryptionKey.
 							  getEncoded(),
 							  signatureKey.
 							  getEncoded())))
@@ -2833,13 +2853,13 @@ public class Database extends SQLiteOpenHelper
 			    if(!ignoreSignatures)
 				return false;
 			}
-		    }
 
 		    if(!Cryptography.
 		       verifySignature(signatureKey,
 				       signatureKeySignature,
 				       Miscellaneous.
-				       joinByteArrays(encryptionKey.
+				       joinByteArrays(sipHashIdBytes,
+						      encryptionKey.
 						      getEncoded(),
 						      signatureKey.
 						      getEncoded())))
@@ -2848,9 +2868,6 @@ public class Database extends SQLiteOpenHelper
 			    return false;
 		    }
 
-		    ii += 1;
-		    break;
-		case 6:
 		    break;
 		}
 

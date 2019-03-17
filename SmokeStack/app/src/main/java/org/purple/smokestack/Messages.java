@@ -237,6 +237,13 @@ public class Messages
 	    stringBuilder.append("\n");
 
 	    /*
+	    ** [ Sender's Smoke Identity ]
+	    */
+
+	    stringBuilder.append(strings[5]);
+	    stringBuilder.append("\n");
+
+	    /*
 	    ** [ Encryption Public Key ]
 	    */
 
@@ -262,13 +269,6 @@ public class Messages
 	    */
 
 	    stringBuilder.append(strings[4]);
-	    stringBuilder.append("\n");
-
-	    /*
-	    ** [ Sender's Smoke Identity ]
-	    */
-
-	    stringBuilder.append(strings[5]);
 
 	    byte aes256[] = Cryptography.encrypt
 		(stringBuilder.toString().getBytes(),

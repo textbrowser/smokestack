@@ -1,12 +1,18 @@
 [AES-256] (1)
 {
 	A Timestamp (1)				8 Bytes (Base-64)
+	\n
 	Key Type (2)				1 Byte (Base-64)
-	Public Key (3)				Variable Bytes (Base-64)
-	Public Key Signature (4)		Variable Bytes (Base-64)
-	Signature Public Key (5)		Variable Bytes (Base-64)
-	Signature Public Key Signature (6)	Variable Bytes (Base-64)
-	Sender's Smoke Identity (7)		Variable Bytes (Base-64)
+	\n
+	Sender's Smoke Identity (3)		Variable Bytes (Base-64)
+	\n
+	Public Key (4)				Variable Bytes (Base-64)
+	\n
+	Public Key Signature (5)		Variable Bytes (Base-64)
+	\n
+	Signature Public Key (6)		Variable Bytes (Base-64)
+	\n
+	Signature Public Key Signature (7)	Variable Bytes (Base-64)
 }
 
 [SHA-512 HMAC] (2)				64 Bytes
