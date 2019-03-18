@@ -3669,6 +3669,15 @@ public class Database extends SQLiteOpenHelper
 
 	try
 	{
+	    db.execSQL("VACUUM");
+	    db.execSQL("PRAGMA auto_vacuum = Full", null);
+	}
+	catch(Exception exception)
+	{
+	}
+
+	try
+	{
 	    db.execSQL("PRAGMA secure_delete = True", null);
 	}
 	catch(Exception exception)
