@@ -244,6 +244,8 @@ public abstract class Neighbor
 		       DATA_LIFETIME ||
 		       m_stringBuffer.length() > MAXIMUM_BYTES)
 			m_stringBuffer.delete(0, m_stringBuffer.length());
+
+		    m_stringBuffer.trimToSize();
 		}
 		catch(Exception exception)
 		{
