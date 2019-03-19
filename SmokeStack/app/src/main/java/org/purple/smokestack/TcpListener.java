@@ -452,6 +452,7 @@ public class TcpListener
 	synchronized(m_error)
 	{
 	    m_error.delete(0, m_error.length());
+	    m_error.trimToSize();
 	    m_error.append(error);
 	}
     }

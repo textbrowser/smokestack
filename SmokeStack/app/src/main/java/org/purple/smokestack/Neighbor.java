@@ -216,8 +216,11 @@ public abstract class Neighbor
 				if(!m_remoteUserAuthenticated.get())
 				    continue;
 				else
+				{
 				    m_randomBuffer.delete
 					(0, m_randomBuffer.length());
+				    m_randomBuffer.trimToSize();
+				}
 			    }
 
 			if(!Kernel.getInstance().
@@ -531,6 +534,7 @@ public abstract class Neighbor
 	}
 
 	m_stringBuffer.delete(0, m_stringBuffer.length());
+	m_stringBuffer.trimToSize();
     }
 
     protected void echo(String message)
@@ -553,6 +557,7 @@ public abstract class Neighbor
     protected void setError(String error)
     {
 	m_error.delete(0, m_error.length());
+	m_error.trimToSize();
 	m_error.append(error);
     }
 
