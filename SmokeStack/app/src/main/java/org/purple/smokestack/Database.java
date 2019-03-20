@@ -227,42 +227,39 @@ public class Database extends SQLiteOpenHelper
 	    if(cursor != null)
 		m_cursorsOpened.getAndIncrement();
 
-	    if(cursor != null && cursor.moveToFirst())
-		while(!cursor.isAfterLast())
-		{
-		    PublicKey publicKey = null;
-		    byte bytes[] = cryptography.mtd
-			(Base64.decode(cursor.getString(0).getBytes(),
-				       Base64.DEFAULT));
+	    while(cursor.moveToNext())
+	    {
+		PublicKey publicKey = null;
+		byte bytes[] = cryptography.mtd
+		    (Base64.decode(cursor.getString(0).getBytes(),
+				   Base64.DEFAULT));
 
-		    if(bytes != null)
-			for(int i = 0; i < 2; i++)
-			    try
-			    {
-				if(i == 0)
-				    publicKey = KeyFactory.getInstance("EC").
-					generatePublic
-					(new X509EncodedKeySpec(bytes));
-				else
-				    publicKey = KeyFactory.getInstance("RSA").
-					generatePublic
-					(new X509EncodedKeySpec(bytes));
+		if(bytes != null)
+		    for(int i = 0; i < 2; i++)
+			try
+			{
+			    if(i == 0)
+				publicKey = KeyFactory.getInstance("EC").
+				    generatePublic
+				    (new X509EncodedKeySpec(bytes));
+			    else
+				publicKey = KeyFactory.getInstance("RSA").
+				    generatePublic
+				    (new X509EncodedKeySpec(bytes));
 
-				break;
-			    }
-			    catch(Exception exception)
-			    {
-			    }
+			    break;
+			}
+			catch(Exception exception)
+			{
+			}
 
-		    if(publicKey != null)
-			if(Cryptography.
-			   verifySignature(publicKey,
-					   signature,
-					   stringBuffer.toString().getBytes()))
-			    return true;
-
-		    cursor.moveToNext();
-		}
+		if(publicKey != null)
+		    if(Cryptography.
+		       verifySignature(publicKey,
+				       signature,
+				       stringBuffer.toString().getBytes()))
+			return true;
+	    }
 	}
 	catch(Exception exception)
 	{
@@ -415,20 +412,15 @@ public class Database extends SQLiteOpenHelper
 	    if(cursor != null)
 		m_cursorsOpened.getAndIncrement();
 
-	    if(cursor != null && cursor.moveToFirst())
+	    arrayList = new ArrayList<> ();
+
+	    while(cursor.moveToNext())
 	    {
-		arrayList = new ArrayList<> ();
+		byte bytes[] = Base64.decode
+		    (cursor.getString(0).getBytes(), Base64.DEFAULT);
 
-		while(!cursor.isAfterLast())
-		{
-		    byte bytes[] = Base64.decode
-			(cursor.getString(0).getBytes(), Base64.DEFAULT);
-
-		    if(bytes != null)
-			arrayList.add(bytes);
-
-		    cursor.moveToNext();
-		}
+		if(bytes != null)
+		    arrayList.add(bytes);
 	    }
 	}
 	catch(Exception exception)
@@ -483,159 +475,154 @@ public class Database extends SQLiteOpenHelper
 	    if(cursor != null)
 		m_cursorsOpened.getAndIncrement();
 
-	    if(cursor != null && cursor.moveToFirst())
+	    arrayList = new ArrayList<> ();
+
+	    while(cursor.moveToNext())
 	    {
-		arrayList = new ArrayList<> ();
+		ListenerElement listenerElement = new ListenerElement();
+		int count = cursor.getColumnCount();
+		int oid = cursor.getInt(count - 1);
 
-		while(!cursor.isAfterLast())
+		for(int i = 0; i < count; i++)
 		{
-		    ListenerElement listenerElement = new ListenerElement();
-		    int count = cursor.getColumnCount();
-		    int oid = cursor.getInt(count - 1);
-
-		    for(int i = 0; i < count; i++)
+		    if(i == count - 1)
 		    {
-			if(i == count - 1)
-			{
-			    listenerElement.m_oid = cursor.getInt(i);
-			    continue;
-			}
-
-			byte bytes[] = cryptography.mtd
-			    (Base64.decode(cursor.getString(i).getBytes(),
-					   Base64.DEFAULT));
-
-			if(bytes == null)
-			{
-			    StringBuilder stringBuilder = new StringBuilder();
-
-			    stringBuilder.append("Database::readListeners(): ");
-			    stringBuilder.append("error on column ");
-			    stringBuilder.append(cursor.getColumnName(i));
-			    stringBuilder.append(".");
-			    writeLog(stringBuilder.toString());
-			}
-
-			switch(i)
-			{
-			case 0:
-			    if(bytes != null)
-				listenerElement.m_certificate = Miscellaneous.
-				    deepCopy(bytes);
-
-			    break;
-			case 1:
-			    if(bytes != null)
-				listenerElement.m_ipVersion = new String(bytes);
-			    else
-				listenerElement.m_ipVersion =
-				    "error (" + oid + ")";
-
-			    break;
-			case 2:
-			    if(bytes != null)
-				listenerElement.m_isPrivate =
-				    new String(bytes).equals("true");
-			    else
-				listenerElement.m_isPrivate = false;
-
-			    break;
-			case 3:
-			    if(bytes != null)
-				listenerElement.m_error = new String(bytes);
-			    else
-				listenerElement.m_error =
-				    "error (" + oid + ")";
-
-			    break;
-			case 4:
-			    if(bytes != null)
-				listenerElement.m_localIpAddress = new String
-				    (bytes);
-			    else
-				listenerElement.m_localIpAddress =
-				    "error (" + oid + ")";
-
-			    break;
-			case 5:
-			    if(bytes != null)
-				listenerElement.m_localPort = new String(bytes);
-			    else
-				listenerElement.m_localPort =
-				    "error (" + oid + ")";
-
-			    break;
-			case 6:
-			    if(bytes != null)
-				listenerElement.m_localScopeId = new String
-				    (bytes);
-			    else
-				listenerElement.m_localScopeId =
-				    "error (" + oid + ")";
-
-			    break;
-			case 7:
-			    try
-			    {
-				if(bytes != null)
-				    listenerElement.m_peersCount =
-					Long.parseLong(new String(bytes));
-				else
-				    listenerElement.m_peersCount = 0;
-			    }
-			    catch(Exception exception)
-			    {
-				listenerElement.m_peersCount = 0;
-			    }
-
-			    break;
-			case 8:
-			    if(bytes != null)
-				listenerElement.m_privateKey = Miscellaneous.
-				    deepCopy(bytes);
-
-			    break;
-			case 9:
-			    if(bytes != null)
-				listenerElement.m_publicKey = Miscellaneous.
-				    deepCopy(bytes);
-
-			    break;
-			case 10:
-			    if(bytes != null)
-				listenerElement.m_status = new String(bytes);
-			    else
-				listenerElement.m_status =
-				    "error (" + oid + ")";
-
-			    break;
-			case 11:
-			    if(bytes != null)
-				listenerElement.m_statusControl = new String
-				    (bytes);
-			    else
-				listenerElement.m_statusControl =
-				    "error (" + oid + ")";
-
-			    break;
-			case 12:
-			    if(bytes != null)
-				listenerElement.m_uptime = new String(bytes);
-			    else
-				listenerElement.m_uptime =
-				    "error (" + oid + ")";
-
-			    break;
-			}
+			listenerElement.m_oid = cursor.getInt(i);
+			continue;
 		    }
 
-		    arrayList.add(listenerElement);
-		    cursor.moveToNext();
+		    byte bytes[] = cryptography.mtd
+			(Base64.decode(cursor.getString(i).getBytes(),
+				       Base64.DEFAULT));
+
+		    if(bytes == null)
+		    {
+			StringBuilder stringBuilder = new StringBuilder();
+
+			stringBuilder.append("Database::readListeners(): ");
+			stringBuilder.append("error on column ");
+			stringBuilder.append(cursor.getColumnName(i));
+			stringBuilder.append(".");
+			writeLog(stringBuilder.toString());
+		    }
+
+		    switch(i)
+		    {
+		    case 0:
+			if(bytes != null)
+			    listenerElement.m_certificate = Miscellaneous.
+				deepCopy(bytes);
+
+			break;
+		    case 1:
+			if(bytes != null)
+			    listenerElement.m_ipVersion = new String(bytes);
+			else
+			    listenerElement.m_ipVersion =
+				"error (" + oid + ")";
+
+			break;
+		    case 2:
+			if(bytes != null)
+			    listenerElement.m_isPrivate =
+				new String(bytes).equals("true");
+			else
+			    listenerElement.m_isPrivate = false;
+
+			break;
+		    case 3:
+			if(bytes != null)
+			    listenerElement.m_error = new String(bytes);
+			else
+			    listenerElement.m_error = "error (" + oid + ")";
+
+			break;
+		    case 4:
+			if(bytes != null)
+			    listenerElement.m_localIpAddress = new String
+				(bytes);
+			else
+			    listenerElement.m_localIpAddress =
+				"error (" + oid + ")";
+
+			break;
+		    case 5:
+			if(bytes != null)
+			    listenerElement.m_localPort = new String(bytes);
+			else
+			    listenerElement.m_localPort =
+				"error (" + oid + ")";
+
+			break;
+		    case 6:
+			if(bytes != null)
+			    listenerElement.m_localScopeId = new String
+				(bytes);
+			else
+			    listenerElement.m_localScopeId =
+				"error (" + oid + ")";
+
+			break;
+		    case 7:
+			try
+			{
+			    if(bytes != null)
+				listenerElement.m_peersCount =
+				    Long.parseLong(new String(bytes));
+			    else
+				listenerElement.m_peersCount = 0;
+			}
+			catch(Exception exception)
+			{
+			    listenerElement.m_peersCount = 0;
+			}
+
+			break;
+		    case 8:
+			if(bytes != null)
+			    listenerElement.m_privateKey = Miscellaneous.
+				deepCopy(bytes);
+
+			break;
+		    case 9:
+			if(bytes != null)
+			    listenerElement.m_publicKey = Miscellaneous.
+				deepCopy(bytes);
+
+			break;
+		    case 10:
+			if(bytes != null)
+			    listenerElement.m_status = new String(bytes);
+			else
+			    listenerElement.m_status =
+				"error (" + oid + ")";
+
+			break;
+		    case 11:
+			if(bytes != null)
+			    listenerElement.m_statusControl = new String
+				(bytes);
+			else
+			    listenerElement.m_statusControl =
+				"error (" + oid + ")";
+
+			break;
+		    case 12:
+			if(bytes != null)
+			    listenerElement.m_uptime = new String(bytes);
+			else
+			    listenerElement.m_uptime =
+				"error (" + oid + ")";
+
+			break;
+		    }
 		}
 
-		if(arrayList.size() > 1)
-		    Collections.sort(arrayList, s_readListenersComparator);
+		arrayList.add(listenerElement);
 	    }
+
+	    if(arrayList.size() > 1)
+		Collections.sort(arrayList, s_readListenersComparator);
 	}
 	catch(Exception exception)
 	{
@@ -675,56 +662,51 @@ public class Database extends SQLiteOpenHelper
 	    if(cursor != null)
 		m_cursorsOpened.getAndIncrement();
 
-	    if(cursor != null && cursor.moveToFirst())
+	    arrayList = new ArrayList<> ();
+
+	    while(cursor.moveToNext())
 	    {
-		arrayList = new ArrayList<> ();
+		NeighborElement neighborElement = new NeighborElement();
+		boolean error = false;
+		int count = cursor.getColumnCount();
 
-		while(!cursor.isAfterLast())
+		for(int i = 0; i < count; i++)
 		{
-		    NeighborElement neighborElement = new NeighborElement();
-		    boolean error = false;
-		    int count = cursor.getColumnCount();
-
-		    for(int i = 0; i < count; i++)
+		    if(i == count - 1)
 		    {
-			if(i == count - 1)
-			{
-			    neighborElement.m_oid = cursor.getInt(i);
-			    continue;
-			}
-
-			byte bytes[] = cryptography.mtd
-			    (Base64.decode(cursor.getString(i).getBytes(),
-					   Base64.DEFAULT));
-
-			if(bytes == null)
-			{
-			    error = true;
-
-			    StringBuilder stringBuilder = new StringBuilder();
-
-			    stringBuilder.append
-				("Database::readNeighborOids(): ");
-			    stringBuilder.append("error on column ");
-			    stringBuilder.append(cursor.getColumnName(i));
-			    stringBuilder.append(".");
-			    writeLog(stringBuilder.toString());
-			    break;
-			}
-
-			switch(i)
-			{
-			case 0:
-			    neighborElement.m_statusControl = new String(bytes);
-			    break;
-			}
+			neighborElement.m_oid = cursor.getInt(i);
+			continue;
 		    }
 
-		    if(!error)
-			arrayList.add(neighborElement);
+		    byte bytes[] = cryptography.mtd
+			(Base64.decode(cursor.getString(i).getBytes(),
+				       Base64.DEFAULT));
 
-		    cursor.moveToNext();
+		    if(bytes == null)
+		    {
+			error = true;
+
+			StringBuilder stringBuilder = new StringBuilder();
+
+			stringBuilder.append
+			    ("Database::readNeighborOids(): ");
+			stringBuilder.append("error on column ");
+			stringBuilder.append(cursor.getColumnName(i));
+			stringBuilder.append(".");
+			writeLog(stringBuilder.toString());
+			break;
+		    }
+
+		    switch(i)
+		    {
+		    case 0:
+			neighborElement.m_statusControl = new String(bytes);
+			break;
+		    }
 		}
+
+		if(!error)
+		    arrayList.add(neighborElement);
 	    }
 	}
 	catch(Exception exception)
@@ -793,229 +775,225 @@ public class Database extends SQLiteOpenHelper
 	    if(cursor != null)
 		m_cursorsOpened.getAndIncrement();
 
-	    if(cursor != null && cursor.moveToFirst())
+	    arrayList = new ArrayList<> ();
+
+	    while(cursor.moveToNext())
 	    {
-		arrayList = new ArrayList<> ();
+		NeighborElement neighborElement = new NeighborElement();
+		int count = cursor.getColumnCount();
+		int oid = cursor.getInt(count - 1);
 
-		while(!cursor.isAfterLast())
+		for(int i = 0; i < count; i++)
 		{
-		    NeighborElement neighborElement = new NeighborElement();
-		    int count = cursor.getColumnCount();
-		    int oid = cursor.getInt(count - 1);
-
-		    for(int i = 0; i < count; i++)
+		    if(i == count - 1)
 		    {
-			if(i == count - 1)
-			{
-			    neighborElement.m_oid = cursor.getInt(i);
-			    continue;
-			}
-
-			byte bytes[] = null;
-
-			if(i != 0 && i != 1)
-			    bytes = cryptography.mtd
-				(Base64.decode(cursor.getString(i).getBytes(),
-					       Base64.DEFAULT));
-
-			if(bytes == null && i != 0 && i != 1)
-			{
-			    StringBuilder stringBuilder = new StringBuilder();
-
-			    stringBuilder.append("Database::readNeighbors(): ");
-			    stringBuilder.append("error on column ");
-			    stringBuilder.append(cursor.getColumnName(i));
-			    stringBuilder.append(".");
-			    writeLog(stringBuilder.toString());
-			}
-
-			switch(i)
-			{
-			case 0:
-			    neighborElement.m_outboundQueued = cursor.
-				getLong(i);
-			    break;
-			case 1:
-			    neighborElement.m_outboundEchoQueued =
-				cursor.getLong(i);
-			    break;
-			case 2:
-			    if(bytes != null)
-				neighborElement.m_bytesBuffered =
-				    new String(bytes);
-			    else
-				neighborElement.m_bytesBuffered =
-				    "error (" + oid + ")";
-
-			    break;
-			case 3:
-			    if(bytes != null)
-				neighborElement.m_bytesRead = new String(bytes);
-			    else
-				neighborElement.m_bytesRead =
-				    "error (" + oid + ")";
-
-			    break;
-			case 4:
-			    if(bytes != null)
-				neighborElement.m_bytesWritten =
-				    new String(bytes);
-			    else
-				neighborElement.m_bytesWritten =
-				    "error (" + oid + ")";
-
-			    break;
-			case 5:
-			    if(bytes != null)
-				neighborElement.m_ipVersion = new String(bytes);
-			    else
-				neighborElement.m_ipVersion =
-				    "error (" + oid + ")";
-
-			    break;
-			case 6:
-			    if(bytes != null)
-				neighborElement.m_error = new String(bytes);
-			    else
-				neighborElement.m_error =
-				    "error (" + oid + ")";
-
-			    break;
-			case 7:
-			    if(bytes != null)
-				neighborElement.m_localIpAddress =
-				    new String(bytes);
-			    else
-				neighborElement.m_localIpAddress =
-				    "error (" + oid + ")";
-
-			    break;
-			case 8:
-			    if(bytes != null)
-				neighborElement.m_localPort = new String(bytes);
-			    else
-				neighborElement.m_localPort =
-				    "error (" + oid + ")";
-
-			    break;
-			case 9:
-			    if(bytes != null)
-				neighborElement.m_proxyIpAddress =
-				    new String(bytes);
-			    else
-				neighborElement.m_proxyIpAddress =
-				    "error (" + oid + ")";
-
-			    break;
-			case 10:
-			    if(bytes != null)
-				neighborElement.m_proxyPort = new String(bytes);
-			    else
-				neighborElement.m_proxyPort =
-				    "error (" + oid + ")";
-
-			    break;
-			case 11:
-			    if(bytes != null)
-				neighborElement.m_proxyType = new String(bytes);
-			    else
-				neighborElement.m_proxyType =
-				    "error (" + oid + ")";
-
-			    break;
-			case 12:
-			    if(bytes != null)
-				neighborElement.m_queueSize = new String(bytes);
-			    else
-				neighborElement.m_queueSize =
-				    "error (" + oid + ")";
-
-			    break;
-			case 13:
-			    if(bytes != null)
-				neighborElement.m_remoteCertificate =
-				    Miscellaneous.deepCopy(bytes);
-
-			    break;
-			case 14:
-			    if(bytes != null)
-				neighborElement.m_remoteIpAddress =
-				    new String(bytes);
-			    else
-				neighborElement.m_remoteIpAddress =
-				    "error (" + oid + ")";
-
-			    break;
-			case 15:
-			    if(bytes != null)
-				neighborElement.m_remotePort =
-				    new String(bytes);
-			    else
-				neighborElement.m_remotePort =
-				    "error (" + oid + ")";
-
-			    break;
-			case 16:
-			    if(bytes != null)
-				neighborElement.m_remoteScopeId =
-				    new String(bytes);
-			    else
-				neighborElement.m_remoteScopeId =
-				    "error (" + oid + ")";
-
-			    break;
-			case 17:
-			    if(bytes != null)
-				neighborElement.m_sessionCipher =
-				    new String(bytes);
-			    else
-				neighborElement.m_sessionCipher =
-				    "error (" + oid + ")";
-
-			    break;
-			case 18:
-			    if(bytes != null)
-				neighborElement.m_status = new String(bytes);
-			    else
-				neighborElement.m_status =
-				    "error (" + oid + ")";
-
-			    break;
-			case 19:
-			    if(bytes != null)
-				neighborElement.m_statusControl =
-				    new String(bytes);
-			    else
-				neighborElement.m_statusControl =
-				    "error (" + oid + ")";
-
-			    break;
-			case 20:
-			    if(bytes != null)
-				neighborElement.m_transport = new String(bytes);
-			    else
-				neighborElement.m_transport =
-				    "error (" + oid + ")";
-
-			    break;
-			case 21:
-			    if(bytes != null)
-				neighborElement.m_uptime = new String(bytes);
-			    else
-				neighborElement.m_uptime =
-				    "error (" + oid + ")";
-
-			    break;
-			}
+			neighborElement.m_oid = cursor.getInt(i);
+			continue;
 		    }
 
-		    arrayList.add(neighborElement);
-		    cursor.moveToNext();
+		    byte bytes[] = null;
+
+		    if(i != 0 && i != 1)
+			bytes = cryptography.mtd
+			    (Base64.decode(cursor.getString(i).getBytes(),
+					   Base64.DEFAULT));
+
+		    if(bytes == null && i != 0 && i != 1)
+		    {
+			StringBuilder stringBuilder = new StringBuilder();
+
+			stringBuilder.append("Database::readNeighbors(): ");
+			stringBuilder.append("error on column ");
+			stringBuilder.append(cursor.getColumnName(i));
+			stringBuilder.append(".");
+			writeLog(stringBuilder.toString());
+		    }
+
+		    switch(i)
+		    {
+		    case 0:
+			neighborElement.m_outboundQueued = cursor.
+			    getLong(i);
+			break;
+		    case 1:
+			neighborElement.m_outboundEchoQueued =
+			    cursor.getLong(i);
+			break;
+		    case 2:
+			if(bytes != null)
+			    neighborElement.m_bytesBuffered =
+				new String(bytes);
+			else
+			    neighborElement.m_bytesBuffered =
+				"error (" + oid + ")";
+
+			break;
+		    case 3:
+			if(bytes != null)
+			    neighborElement.m_bytesRead = new String(bytes);
+			else
+			    neighborElement.m_bytesRead =
+				"error (" + oid + ")";
+
+			break;
+		    case 4:
+			if(bytes != null)
+			    neighborElement.m_bytesWritten =
+				new String(bytes);
+			else
+			    neighborElement.m_bytesWritten =
+				"error (" + oid + ")";
+
+			break;
+		    case 5:
+			if(bytes != null)
+			    neighborElement.m_ipVersion = new String(bytes);
+			else
+			    neighborElement.m_ipVersion =
+				"error (" + oid + ")";
+
+			break;
+		    case 6:
+			if(bytes != null)
+			    neighborElement.m_error = new String(bytes);
+			else
+			    neighborElement.m_error =
+				"error (" + oid + ")";
+
+			break;
+		    case 7:
+			if(bytes != null)
+			    neighborElement.m_localIpAddress =
+				new String(bytes);
+			else
+			    neighborElement.m_localIpAddress =
+				"error (" + oid + ")";
+
+			break;
+		    case 8:
+			if(bytes != null)
+			    neighborElement.m_localPort = new String(bytes);
+			else
+			    neighborElement.m_localPort =
+				"error (" + oid + ")";
+
+			break;
+		    case 9:
+			if(bytes != null)
+			    neighborElement.m_proxyIpAddress =
+				new String(bytes);
+			else
+			    neighborElement.m_proxyIpAddress =
+				"error (" + oid + ")";
+
+			break;
+		    case 10:
+			if(bytes != null)
+			    neighborElement.m_proxyPort = new String(bytes);
+			else
+			    neighborElement.m_proxyPort =
+				"error (" + oid + ")";
+
+			break;
+		    case 11:
+			if(bytes != null)
+			    neighborElement.m_proxyType = new String(bytes);
+			else
+			    neighborElement.m_proxyType =
+				"error (" + oid + ")";
+
+			break;
+		    case 12:
+			if(bytes != null)
+			    neighborElement.m_queueSize = new String(bytes);
+			else
+			    neighborElement.m_queueSize =
+				"error (" + oid + ")";
+
+			break;
+		    case 13:
+			if(bytes != null)
+			    neighborElement.m_remoteCertificate =
+				Miscellaneous.deepCopy(bytes);
+
+			break;
+		    case 14:
+			if(bytes != null)
+			    neighborElement.m_remoteIpAddress =
+				new String(bytes);
+			else
+			    neighborElement.m_remoteIpAddress =
+				"error (" + oid + ")";
+
+			break;
+		    case 15:
+			if(bytes != null)
+			    neighborElement.m_remotePort =
+				new String(bytes);
+			else
+			    neighborElement.m_remotePort =
+				"error (" + oid + ")";
+
+			break;
+		    case 16:
+			if(bytes != null)
+			    neighborElement.m_remoteScopeId =
+				new String(bytes);
+			else
+			    neighborElement.m_remoteScopeId =
+				"error (" + oid + ")";
+
+			break;
+		    case 17:
+			if(bytes != null)
+			    neighborElement.m_sessionCipher =
+				new String(bytes);
+			else
+			    neighborElement.m_sessionCipher =
+				"error (" + oid + ")";
+
+			break;
+		    case 18:
+			if(bytes != null)
+			    neighborElement.m_status = new String(bytes);
+			else
+			    neighborElement.m_status =
+				"error (" + oid + ")";
+
+			break;
+		    case 19:
+			if(bytes != null)
+			    neighborElement.m_statusControl =
+				new String(bytes);
+			else
+			    neighborElement.m_statusControl =
+				"error (" + oid + ")";
+
+			break;
+		    case 20:
+			if(bytes != null)
+			    neighborElement.m_transport = new String(bytes);
+			else
+			    neighborElement.m_transport =
+				"error (" + oid + ")";
+
+			break;
+		    case 21:
+			if(bytes != null)
+			    neighborElement.m_uptime = new String(bytes);
+			else
+			    neighborElement.m_uptime =
+				"error (" + oid + ")";
+
+			break;
+		    }
 		}
 
-		if(arrayList.size() > 1)
-		    Collections.sort(arrayList, s_readNeighborsComparator);
+		arrayList.add(neighborElement);
 	    }
+
+	    if(arrayList.size() > 1)
+		Collections.sort(arrayList, s_readNeighborsComparator);
 	}
 	catch(Exception exception)
 	{
@@ -1058,66 +1036,62 @@ public class Database extends SQLiteOpenHelper
 	    if(cursor != null)
 		m_cursorsOpened.getAndIncrement();
 
-	    if(cursor != null && cursor.moveToFirst())
+	    arrayList = new ArrayList<> ();
+
+	    while(cursor.moveToNext())
 	    {
-		arrayList = new ArrayList<> ();
+		OzoneElement ozoneElement = new OzoneElement();
+		int count = cursor.getColumnCount();
+		int oid = cursor.getInt(count - 1);
 
-		while(!cursor.isAfterLast())
+		for(int i = 0; i < count; i++)
 		{
-		    OzoneElement ozoneElement = new OzoneElement();
-		    int count = cursor.getColumnCount();
-		    int oid = cursor.getInt(count - 1);
-
-		    for(int i = 0; i < count; i++)
+		    if(i == count - 1)
 		    {
-			if(i == count - 1)
-			{
-			    ozoneElement.m_oid = cursor.getInt(i);
-			    continue;
-			}
-
-			byte bytes[] = cryptography.mtd
-			    (Base64.decode(cursor.getString(i).getBytes(),
-					   Base64.DEFAULT));
-
-			if(bytes == null)
-			{
-			    StringBuilder stringBuilder = new StringBuilder();
-
-			    stringBuilder.append
-				("Database::readOzones(): ");
-			    stringBuilder.append("error on column ");
-			    stringBuilder.append(cursor.getColumnName(i));
-			    stringBuilder.append(".");
-			    writeLog(stringBuilder.toString());
-			}
-
-			switch(i)
-			{
-			case 0:
-			    if(bytes != null)
-				ozoneElement.m_address = new String(bytes);
-			    else
-				ozoneElement.m_address =
-				    "error (" + oid + ")";
-
-			    break;
-			case 1:
-			    if(bytes != null)
-				ozoneElement.m_addressStream = Miscellaneous.
-				    deepCopy(bytes);
-
-			    break;
-			}
+			ozoneElement.m_oid = cursor.getInt(i);
+			continue;
 		    }
 
-		    arrayList.add(ozoneElement);
-		    cursor.moveToNext();
+		    byte bytes[] = cryptography.mtd
+			(Base64.decode(cursor.getString(i).getBytes(),
+				       Base64.DEFAULT));
+
+		    if(bytes == null)
+		    {
+			StringBuilder stringBuilder = new StringBuilder();
+
+			stringBuilder.append
+			    ("Database::readOzones(): ");
+			stringBuilder.append("error on column ");
+			stringBuilder.append(cursor.getColumnName(i));
+			stringBuilder.append(".");
+			writeLog(stringBuilder.toString());
+		    }
+
+		    switch(i)
+		    {
+		    case 0:
+			if(bytes != null)
+			    ozoneElement.m_address = new String(bytes);
+			else
+			    ozoneElement.m_address =
+				"error (" + oid + ")";
+
+			break;
+		    case 1:
+			if(bytes != null)
+			    ozoneElement.m_addressStream = Miscellaneous.
+				deepCopy(bytes);
+
+			break;
+		    }
 		}
 
-		if(arrayList.size() > 1)
-		    Collections.sort(arrayList, s_readOzonesComparator);
+		arrayList.add(ozoneElement);
 	    }
+
+	    if(arrayList.size() > 1)
+		Collections.sort(arrayList, s_readOzonesComparator);
 	}
 	catch(Exception exception)
 	{
@@ -1176,143 +1150,136 @@ public class Database extends SQLiteOpenHelper
 	    if(cursor != null)
 		m_cursorsOpened.getAndIncrement();
 
-	    if(cursor != null && cursor.moveToFirst())
+	    arrayList = new ArrayList<> ();
+
+	    while(cursor.moveToNext())
 	    {
-		arrayList = new ArrayList<> ();
+		SipHashIdElement sipHashIdElement = new SipHashIdElement();
+		int count = cursor.getColumnCount();
+		int oid = cursor.getInt(count - 1);
 
-		while(!cursor.isAfterLast())
+		for(int i = 0; i < count; i++)
 		{
-		    SipHashIdElement sipHashIdElement = new SipHashIdElement();
-		    int count = cursor.getColumnCount();
-		    int oid = cursor.getInt(count - 1);
-
-		    for(int i = 0; i < count; i++)
+		    switch(i)
 		    {
-			switch(i)
+		    case 0:
+			if(cursor.isNull(i) || cursor.getString(i).isEmpty())
 			{
-			case 0:
-			    if(cursor.isNull(i) ||
-			       cursor.getString(i).isEmpty())
-			    {
-				sipHashIdElement.m_epksCompleted = false;
-				continue;
-			    }
-
-			    String string_a = cursor.getString(i);
-			    String string_b = Base64.encodeToString
-				(Cryptography.sha512("".getBytes()),
-				 Base64.DEFAULT);
-
-			    string_b += string_b;
-			    sipHashIdElement.m_epksCompleted =
-				!string_a.equals(string_b);
-			    continue;
-			case 1:
-			    if(cursor.isNull(i) ||
-			       cursor.getString(i).isEmpty())
-			    {
-				sipHashIdElement.m_chatEncryptionKeyDigest =
-				    null;
-				continue;
-			    }
-
-			    sipHashIdElement.m_chatEncryptionKeyDigest =
-				Base64.decode(cursor.getString(i),
-					      Base64.DEFAULT);
-			    continue;
-			case 2:
-			    sipHashIdElement.m_keysSigned =
-				cursor.getLong(i) > 0;
-			    continue;
-			case 3:
-			    sipHashIdElement.m_inMessages =
-				cursor.getLong(i);
-			    continue;
-			case 4:
-			    sipHashIdElement.m_outMessages =
-				cursor.getLong(i);
-			    sipHashIdElement.m_totalMessages =
-				sipHashIdElement.m_inMessages +
-				sipHashIdElement.m_outMessages;
-			    continue;
-			case 9:
-			    sipHashIdElement.m_timestamp = cursor.getString(i);
-			    continue;
-			default:
-			    break;
-			}
-
-			if(i == count - 1)
-			{
-			    sipHashIdElement.m_oid = cursor.getInt(i);
+			    sipHashIdElement.m_epksCompleted = false;
 			    continue;
 			}
 
-			byte bytes[] = cryptography.mtd
-			    (Base64.decode(cursor.getString(i).getBytes(),
-					   Base64.DEFAULT));
+			String string_a = cursor.getString(i);
+			String string_b = Base64.encodeToString
+			    (Cryptography.sha512("".getBytes()),
+			     Base64.DEFAULT);
 
-			if(bytes == null)
+			string_b += string_b;
+			sipHashIdElement.m_epksCompleted =
+			    !string_a.equals(string_b);
+			continue;
+		    case 1:
+			if(cursor.isNull(i) || cursor.getString(i).isEmpty())
 			{
-			    StringBuilder stringBuilder = new StringBuilder();
-
-			    stringBuilder.append
-				("Database::readSipHashIds(): ");
-			    stringBuilder.append("error on column ");
-			    stringBuilder.append(cursor.getColumnName(i));
-			    stringBuilder.append(".");
-			    writeLog(stringBuilder.toString());
+			    sipHashIdElement.m_chatEncryptionKeyDigest = null;
+			    continue;
 			}
 
-			switch(i)
-			{
-			case 0:
-			case 1:
-			case 2:
-			case 3:
-			case 4:
-			    break;
-			case 5:
-			    if(bytes != null)
-				sipHashIdElement.m_acceptWithoutSignatures =
-				    new String(bytes).equals("true");
-
-			    break;
-			case 6:
-			    if(bytes != null)
-				sipHashIdElement.m_name = new String(bytes);
-			    else
-				sipHashIdElement.m_name =
-				    "error (" + oid + ")";
-
-			    break;
-			case 7:
-			    if(bytes != null)
-				sipHashIdElement.m_sipHashId = new String
-				    (bytes, StandardCharsets.UTF_8);
-			    else
-				sipHashIdElement.m_sipHashId =
-				    "error (" + oid + ")";
-
-			    break;
-			case 8:
-			    if(bytes != null)
-				sipHashIdElement.m_stream = Miscellaneous.
-				    deepCopy(bytes);
-
-			    break;
-			default:
-			    break;
-			}
+			sipHashIdElement.m_chatEncryptionKeyDigest =
+			    Base64.decode(cursor.getString(i),
+					  Base64.DEFAULT);
+			continue;
+		    case 2:
+			sipHashIdElement.m_keysSigned =
+			    cursor.getLong(i) > 0;
+			continue;
+		    case 3:
+			sipHashIdElement.m_inMessages =
+			    cursor.getLong(i);
+			continue;
+		    case 4:
+			sipHashIdElement.m_outMessages =
+			    cursor.getLong(i);
+			sipHashIdElement.m_totalMessages =
+			    sipHashIdElement.m_inMessages +
+			    sipHashIdElement.m_outMessages;
+			continue;
+		    case 9:
+			sipHashIdElement.m_timestamp = cursor.getString(i);
+			continue;
+		    default:
+			break;
 		    }
 
-		    arrayList.add(sipHashIdElement);
-		    cursor.moveToNext();
+		    if(i == count - 1)
+		    {
+			sipHashIdElement.m_oid = cursor.getInt(i);
+			continue;
+		    }
+
+		    byte bytes[] = cryptography.mtd
+			(Base64.decode(cursor.getString(i).getBytes(),
+				       Base64.DEFAULT));
+
+		    if(bytes == null)
+		    {
+			StringBuilder stringBuilder = new StringBuilder();
+
+			stringBuilder.append
+			    ("Database::readSipHashIds(): ");
+			stringBuilder.append("error on column ");
+			stringBuilder.append(cursor.getColumnName(i));
+			stringBuilder.append(".");
+			writeLog(stringBuilder.toString());
+		    }
+
+		    switch(i)
+		    {
+		    case 0:
+		    case 1:
+		    case 2:
+		    case 3:
+		    case 4:
+			break;
+		    case 5:
+			if(bytes != null)
+			    sipHashIdElement.m_acceptWithoutSignatures =
+				new String(bytes).equals("true");
+
+			break;
+		    case 6:
+			if(bytes != null)
+			    sipHashIdElement.m_name = new String(bytes);
+			else
+			    sipHashIdElement.m_name =
+				"error (" + oid + ")";
+
+			break;
+		    case 7:
+			if(bytes != null)
+			    sipHashIdElement.m_sipHashId = new String
+				(bytes, StandardCharsets.UTF_8);
+			else
+			    sipHashIdElement.m_sipHashId =
+				"error (" + oid + ")";
+
+			break;
+		    case 8:
+			if(bytes != null)
+			    sipHashIdElement.m_stream = Miscellaneous.
+				deepCopy(bytes);
+
+			break;
+		    default:
+			break;
+		    }
 		}
 
-		if(arrayList.size() > 1)
-		    Collections.sort(arrayList, s_readSipHashIdsComparator);
+		arrayList.add(sipHashIdElement);
 	    }
+
+	    if(arrayList.size() > 1)
+		Collections.sort(arrayList, s_readSipHashIdsComparator);
 	}
 	catch(Exception exception)
 	{
@@ -1359,52 +1326,47 @@ public class Database extends SQLiteOpenHelper
 	    if(cursor != null)
 		m_cursorsOpened.getAndIncrement();
 
-	    if(cursor != null && cursor.moveToFirst())
+	    arrayList = new ArrayList<> ();
+
+	    while(cursor.moveToNext())
 	    {
-		arrayList = new ArrayList<> ();
+		boolean error = false;
+		int count = cursor.getColumnCount();
 
-		while(!cursor.isAfterLast())
+		for(int i = 0; i < count; i++)
 		{
-		    boolean error = false;
-		    int count = cursor.getColumnCount();
+		    byte bytes[] = null;
 
-		    for(int i = 0; i < count; i++)
+		    switch(i)
 		    {
-			byte bytes[] = null;
+		    case 0:
+			bytes = cryptography.mtd
+			    (Base64.decode(cursor.getString(i).getBytes(),
+					   Base64.DEFAULT));
 
-			switch(i)
-			{
-			case 0:
-			    bytes = cryptography.mtd
-				(Base64.decode(cursor.getString(i).getBytes(),
-					       Base64.DEFAULT));
+			if(bytes != null)
+			    arrayList.add(bytes);
+			else
+			    error = true;
 
-			    if(bytes != null)
-				arrayList.add(bytes);
-			    else
-				error = true;
-
-			    break;
-			case 1:
-			    arrayList.add(cursor.getString(i).getBytes());
-			    break;
-			}
-
-			if(error)
-			    break;
+			break;
+		    case 1:
+			arrayList.add(cursor.getString(i).getBytes());
+			break;
 		    }
 
 		    if(error)
-			arrayList.clear();
-		    else
 			break;
-
-		    cursor.moveToNext();
 		}
 
-		if(arrayList.isEmpty())
-		    arrayList = null;
+		if(error)
+		    arrayList.clear();
+		else
+		    break;
 	    }
+
+	    if(arrayList.isEmpty())
+		arrayList = null;
 	}
 	catch(Exception exception)
 	{
@@ -1560,18 +1522,14 @@ public class Database extends SQLiteOpenHelper
 	    if(cursor != null)
 		m_cursorsOpened.getAndIncrement();
 
-	    if(cursor != null && cursor.moveToFirst())
+	    int index = -1;
+
+	    sparseArray = new SparseIntArray();
+
+	    while(cursor.moveToNext())
 	    {
-		int index = -1;
-
-		sparseArray = new SparseIntArray();
-
-		while(!cursor.isAfterLast())
-		{
-		    index += 1;
-		    sparseArray.append(index, cursor.getInt(0));
-		    cursor.moveToNext();
-		}
+		index += 1;
+		sparseArray.append(index, cursor.getInt(0));
 	    }
 	}
 	catch(Exception exception)
@@ -2028,22 +1986,19 @@ public class Database extends SQLiteOpenHelper
 	    if(cursor != null)
 		m_cursorsOpened.getAndIncrement();
 
-	    if(cursor != null && cursor.moveToFirst())
-		while(!cursor.isAfterLast())
+	    while(cursor.moveToNext())
+	    {
+		byte bytes[] = Base64.decode
+		    (cursor.getString(0), Base64.DEFAULT);
+
+		if(Cryptography.
+		   memcmp(Cryptography.hmac(array1, bytes), array2))
 		{
-		    byte bytes[] = Base64.decode(cursor.getString(0),
-						 Base64.DEFAULT);
-
-		    if(Cryptography.
-		       memcmp(Cryptography.hmac(array1, bytes), array2))
-		    {
-			updateRoutingIdentityTimestamp
-			    (clientIdentity, cursor.getString(0));
-			return true;
-		    }
-
-		    cursor.moveToNext();
+		    updateRoutingIdentityTimestamp
+			(clientIdentity, cursor.getString(0));
+		    return true;
 		}
+	    }
 	}
 	catch(Exception exception)
 	{
@@ -4062,36 +4017,33 @@ public class Database extends SQLiteOpenHelper
 	    if(cursor != null)
 		m_cursorsOpened.getAndIncrement();
 
-	    if(cursor != null && cursor.moveToFirst())
-		while(!cursor.isAfterLast())
-		{
-		    byte bytes[] = cryptography.mtd
-			(Base64.decode(cursor.getString(0).getBytes(),
-				       Base64.DEFAULT));
+	    while(cursor.moveToNext())
+	    {
+		byte bytes[] = cryptography.mtd
+		    (Base64.decode(cursor.getString(0).getBytes(),
+				   Base64.DEFAULT));
 
-		    if(bytes == null)
+		if(bytes == null)
+		{
+		    if(stringBuilder.length() > 0)
+			stringBuilder.append(",");
+
+		    stringBuilder.append(cursor.getInt(1));
+		}
+		else
+		{
+		    long timestamp = Miscellaneous.byteArrayToLong(bytes);
+
+		    if(Math.abs(System.currentTimeMillis() - timestamp) >
+		       ONE_WEEK)
 		    {
 			if(stringBuilder.length() > 0)
 			    stringBuilder.append(",");
 
 			stringBuilder.append(cursor.getInt(1));
 		    }
-		    else
-		    {
-			long timestamp = Miscellaneous.byteArrayToLong(bytes);
-
-			if(Math.abs(System.currentTimeMillis() - timestamp) >
-			   ONE_WEEK)
-			{
-			    if(stringBuilder.length() > 0)
-				stringBuilder.append(",");
-
-			    stringBuilder.append(cursor.getInt(1));
-			}
-		    }
-
-		    cursor.moveToNext();
 		}
+	    }
 	}
 	catch(Exception exception)
 	{
