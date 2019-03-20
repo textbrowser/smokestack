@@ -743,7 +743,6 @@ public class Database extends SQLiteOpenHelper
 		if(cursor.isClosed())
 		    m_cursorsClosed.getAndIncrement();
 	    }
-
 	}
 
 	return arrayList;
