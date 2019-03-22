@@ -422,6 +422,9 @@ public class Database extends SQLiteOpenHelper
 		if(bytes != null)
 		    arrayList.add(bytes);
 	    }
+
+	    if(arrayList.isEmpty())
+		arrayList = null;
 	}
 	catch(Exception exception)
 	{
@@ -621,7 +624,9 @@ public class Database extends SQLiteOpenHelper
 		arrayList.add(listenerElement);
 	    }
 
-	    if(arrayList.size() > 1)
+	    if(arrayList.isEmpty())
+		arrayList = null;
+	    else if(arrayList.size() > 1)
 		Collections.sort(arrayList, s_readListenersComparator);
 	}
 	catch(Exception exception)
@@ -708,6 +713,9 @@ public class Database extends SQLiteOpenHelper
 		if(!error)
 		    arrayList.add(neighborElement);
 	    }
+
+	    if(arrayList.isEmpty())
+		arrayList = null;
 	}
 	catch(Exception exception)
 	{
@@ -992,7 +1000,9 @@ public class Database extends SQLiteOpenHelper
 		arrayList.add(neighborElement);
 	    }
 
-	    if(arrayList.size() > 1)
+	    if(arrayList.isEmpty())
+		arrayList = null;
+	    else if(arrayList.size() > 1)
 		Collections.sort(arrayList, s_readNeighborsComparator);
 	}
 	catch(Exception exception)
@@ -1090,7 +1100,9 @@ public class Database extends SQLiteOpenHelper
 		arrayList.add(ozoneElement);
 	    }
 
-	    if(arrayList.size() > 1)
+	    if(arrayList.isEmpty())
+		arrayList = null;
+	    else if(arrayList.size() > 1)
 		Collections.sort(arrayList, s_readOzonesComparator);
 	}
 	catch(Exception exception)
@@ -1278,7 +1290,9 @@ public class Database extends SQLiteOpenHelper
 		arrayList.add(sipHashIdElement);
 	    }
 
-	    if(arrayList.size() > 1)
+	    if(arrayList.isEmpty())
+		arrayList = null;
+	    else if(arrayList.size() > 1)
 		Collections.sort(arrayList, s_readSipHashIdsComparator);
 	}
 	catch(Exception exception)
@@ -1531,6 +1545,9 @@ public class Database extends SQLiteOpenHelper
 		index += 1;
 		sparseArray.append(index, cursor.getInt(0));
 	    }
+
+	    if(index == -1)
+		sparseArray = null;
 	}
 	catch(Exception exception)
 	{
