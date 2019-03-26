@@ -220,17 +220,6 @@ public abstract class Miscellaneous
 	     '-', 4);
     }
 
-    public static byte[] deepCopy(byte bytes[])
-    {
-	if(bytes == null || bytes.length == 0)
-	    return null;
-
-	byte array[] = new byte[bytes.length];
-
-	System.arraycopy(bytes, 0, array, 0, array.length);
-	return array;
-    }
-
     public static byte[] intToByteArray(int value)
     {
 	try

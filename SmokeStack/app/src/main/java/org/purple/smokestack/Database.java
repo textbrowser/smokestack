@@ -513,8 +513,7 @@ public class Database extends SQLiteOpenHelper
 		    {
 		    case 0:
 			if(bytes != null)
-			    listenerElement.m_certificate = Miscellaneous.
-				deepCopy(bytes);
+			    listenerElement.m_certificate = bytes;
 
 			break;
 		    case 1:
@@ -583,14 +582,12 @@ public class Database extends SQLiteOpenHelper
 			break;
 		    case 8:
 			if(bytes != null)
-			    listenerElement.m_privateKey = Miscellaneous.
-				deepCopy(bytes);
+			    listenerElement.m_privateKey = bytes;
 
 			break;
 		    case 9:
 			if(bytes != null)
-			    listenerElement.m_publicKey = Miscellaneous.
-				deepCopy(bytes);
+			    listenerElement.m_publicKey = bytes;
 
 			break;
 		    case 10:
@@ -921,8 +918,7 @@ public class Database extends SQLiteOpenHelper
 			break;
 		    case 13:
 			if(bytes != null)
-			    neighborElement.m_remoteCertificate =
-				Miscellaneous.deepCopy(bytes);
+			    neighborElement.m_remoteCertificate = bytes;
 
 			break;
 		    case 14:
@@ -1090,8 +1086,7 @@ public class Database extends SQLiteOpenHelper
 			break;
 		    case 1:
 			if(bytes != null)
-			    ozoneElement.m_addressStream = Miscellaneous.
-				deepCopy(bytes);
+			    ozoneElement.m_addressStream = bytes;
 
 			break;
 		    }
@@ -1278,8 +1273,7 @@ public class Database extends SQLiteOpenHelper
 			break;
 		    case 8:
 			if(bytes != null)
-			    sipHashIdElement.m_stream = Miscellaneous.
-				deepCopy(bytes);
+			    sipHashIdElement.m_stream = bytes;
 
 			break;
 		    default:
