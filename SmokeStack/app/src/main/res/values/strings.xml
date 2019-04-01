@@ -16,6 +16,7 @@
     <string name="ipv4">IPv4</string>
     <string name="ipv6">IPv6</string>
     <string name="iteration_count">Iteration Count</string>
+    <string name="last_activity">Last Activity</string>
     <string name="listeners">Listeners</string>
     <string name="local">Local</string>
     <string name="name">Name</string>
@@ -26,8 +27,10 @@
     <string name="password">Password</string>
     <string name="password_confirmation">Password Confirmation</string>
     <string name="port">Port</string>
+    <string name="private_server">Private Server</string>
     <string name="proxy_ip_address">Proxy IP Address</string>
     <string name="proxy_port">Proxy Port</string>
+    <string name="refresh">Refresh</string>
     <string name="refresh_neighbors">Refresh</string>
     <string name="refresh_participants">Refresh</string>
     <string name="remote">Remote</string>
@@ -40,7 +43,4 @@
     <string name="settings">Settings</string>
     <string name="smoke_id">Smoke ID</string>
     <string name="steam">Steam</string>
-    <string name="refresh">Refresh</string>
-    <string name="last_activity">Last Activity</string>
-    <string name="private_server">Private Server</string>
 </resources>
