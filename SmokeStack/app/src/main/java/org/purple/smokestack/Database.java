@@ -3240,6 +3240,11 @@ public class Database extends SQLiteOpenHelper
 	return s_instance;
     }
 
+    public static void releaseMemory()
+    {
+	SQLiteDatabase.releaseMemory();
+    }
+
     public void cleanDanglingMessages()
     {
 	if(m_db == null)

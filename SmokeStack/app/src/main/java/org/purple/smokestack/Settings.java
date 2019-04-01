@@ -2106,6 +2106,8 @@ public class Settings extends AppCompatActivity
 			    @Override
 			    public void run()
 			    {
+				Database.releaseMemory();
+
 				Runtime runtime = Runtime.getRuntime();
 				long memory = (runtime.totalMemory() -
 					       runtime.freeMemory()) / 1048576L;
