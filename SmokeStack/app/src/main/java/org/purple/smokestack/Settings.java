@@ -2563,9 +2563,9 @@ public class Settings extends AppCompatActivity
     }
 
     @Override
-    protected void onStop()
+    protected void onPause()
     {
-	super.onStop();
+	super.onPause();
 	releaseResources();
     }
 
@@ -2892,13 +2892,6 @@ public class Settings extends AppCompatActivity
 	    {
 	    }
 	}
-    }
-
-    @Override
-    public void onPause()
-    {
-	super.onPause();
-	releaseResources();
     }
 
     @Override
