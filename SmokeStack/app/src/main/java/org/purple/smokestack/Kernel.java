@@ -29,6 +29,8 @@ package org.purple.smokestack;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.wifi.WifiManager.WifiLock;
 import android.net.wifi.WifiManager;
 import android.os.PowerManager.WakeLock;
@@ -153,8 +155,36 @@ public class Kernel
 	prepareSchedulers();
     }
 
+    public boolean isNetworkAvailable()
+    {
+	try
+	{
+	    ConnectivityManager connectivityManager = (ConnectivityManager)
+		SmokeStack.getApplication().getApplicationContext().
+		getSystemService(Context.CONNECTIVITY_SERVICE);
+	    NetworkInfo networkInfo = connectivityManager.
+		getActiveNetworkInfo();
+
+	    if(networkInfo.getState() !=
+	       android.net.NetworkInfo.State.CONNECTED)
+		return false;
+	}
+	catch(Exception exception)
+	{
+	    return false;
+	}
+
+	return true;
+    }
+
     private void prepareNeighbors()
     {
+	if(!isNetworkAvailable())
+	{
+	    purgeNeighbors();
+	    return;
+	}
+
 	ArrayList<NeighborElement> neighbors = purgeDeletedNeighbors();
 
 	if(neighbors == null)
@@ -280,6 +310,9 @@ public class Kernel
 			{
 			    while(true)
 			    {
+				if(!isNetworkAvailable())
+				    return;
+
 				ArrayList<byte[]> arrayList = s_databaseHelper.
 				    readTaggedMessage
 				    (sipHashIdDigest, s_cryptography);
@@ -1075,7 +1108,7 @@ public class Kernel
 
     public void enqueueMessage(String message)
     {
-	if(message == null || message.trim().isEmpty())
+	if(!isNetworkAvailable() || message == null || message.trim().isEmpty())
 	    return;
 
 	synchronized(m_listeners)
@@ -1148,6 +1181,12 @@ public class Kernel
 
     public void prepareListeners()
     {
+	if(!isNetworkAvailable())
+	{
+	    purgeListeners();
+	    return;
+	}
+
 	ArrayList<ListenerElement> listeners =
 	    s_databaseHelper.readListeners(s_cryptography);
 
