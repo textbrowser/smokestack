@@ -27,6 +27,7 @@
 
 package org.purple.smokestack;
 
+import android.util.Base64;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
 import java.security.KeyPair;
@@ -592,7 +593,8 @@ public class Cryptography
 
 	    if(bytes != null)
 		bytes = pbkdf2(salt,
-			       new String(bytes).toCharArray(),
+			       Base64.encodeToString(bytes, Base64.NO_WRAP).
+			       toCharArray(),
 			       1,
 			       768); // 8 * (32 + 64) Bits
 
@@ -712,10 +714,12 @@ public class Cryptography
 				      160); // SHA-1
 
 	    if(temporary != null)
-		bytes = pbkdf2(salt,
-			       new String(temporary).toCharArray(),
-			       1,
-			       768); // 8 * (32 + 64) Bits
+		bytes = pbkdf2
+		    (salt,
+		     Base64.encodeToString(temporary, Base64.NO_WRAP).
+		     toCharArray(),
+		     1,
+		     768); // 8 * (32 + 64) Bits
 
 	    return bytes;
 	}
