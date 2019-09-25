@@ -49,7 +49,10 @@ public class About
 		SimpleDateFormat("yyyy-MM-dd h:mm:ss", Locale.getDefault());
 
 	    simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-            s_about = "Version 2019.04.14 April Acaena " +
+
+	    // Must agree with SmokeStack/app/build.gradle.
+
+	    s_about = "Version 2019.09.30 Smooth September " +
                 (BuildConfig.DEBUG ? "(Debug) " : "(Release)") +
                 "\nBuild Date " +
                 simpleDateFormat.format(new Date(BuildConfig.BUILD_TIME)) +
