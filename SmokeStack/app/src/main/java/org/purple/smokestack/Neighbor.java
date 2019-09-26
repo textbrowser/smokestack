@@ -197,6 +197,7 @@ public abstract class Neighbor
 			    substring(0, indexOf + Messages.EOM.length());
 
 			m_stringBuffer.delete(0, buffer.length());
+			m_stringBuffer.trimToSize();
 
 			if(m_isPrivateServer.get())
 			    if(!m_remoteUserAuthenticated.get())

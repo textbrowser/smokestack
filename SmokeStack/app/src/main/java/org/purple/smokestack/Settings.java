@@ -2058,6 +2058,8 @@ public class Settings extends AppCompatActivity
 
     private void releaseResources()
     {
+	m_databaseHelper.releaseMemory();
+
 	if(m_receiverRegistered)
 	{
 	    LocalBroadcastManager.getInstance(this).unregisterReceiver
@@ -2563,9 +2565,24 @@ public class Settings extends AppCompatActivity
     }
 
     @Override
+
+    protected void onDestroy()
+    {
+	super.onDestroy();
+	releaseResources();
+    }
+
+    @Override
     protected void onPause()
     {
 	super.onPause();
+	releaseResources();
+    }
+
+    @Override
+    protected void onStop()
+    {
+	super.onStop();
 	releaseResources();
     }
 
