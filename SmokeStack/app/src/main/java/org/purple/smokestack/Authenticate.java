@@ -328,11 +328,7 @@ public class Authenticate extends AppCompatActivity
 	{
 	}
 
-	m_databaseHelper = Database.getInstance(getApplicationContext());
-	m_databaseHelper.clearTable("log");
-	m_databaseHelper.clearTable("routing_identities");
         setContentView(R.layout.activity_authenticate);
-	prepareListeners();
 
 	boolean isAuthenticated = State.getInstance().isAuthenticated();
 	Button button1 = (Button) findViewById(R.id.authenticate);
@@ -342,6 +338,16 @@ public class Authenticate extends AppCompatActivity
 	TextView textView1 = (TextView) findViewById(R.id.password);
 
 	textView1.setEnabled(!isAuthenticated);
+    }
+
+    @Override
+    protected void onStart()
+    {
+	super.onStart();
+	m_databaseHelper = Database.getInstance(getApplicationContext());
+	m_databaseHelper.clearTable("log");
+	m_databaseHelper.clearTable("routing_identities");
+	prepareListeners();
     }
 
     @Override

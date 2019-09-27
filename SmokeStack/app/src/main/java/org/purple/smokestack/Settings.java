@@ -2058,7 +2058,7 @@ public class Settings extends AppCompatActivity
 
     private void releaseResources()
     {
-	m_databaseHelper.releaseMemory();
+	Database.releaseMemory();
 
 	if(m_receiverRegistered)
 	{
@@ -2277,21 +2277,6 @@ public class Settings extends AppCompatActivity
     {
 	super.onCreate(savedInstanceState);
 	SmokeStackService.startForegroundTask(getApplicationContext());
-	m_databaseHelper = Database.getInstance(getApplicationContext());
-	m_databaseHelper.deleteSetting("prefer_active_screen");
-
-	/*
-	** Show the Authenticate activity if an account is present.
-	*/
-
-	if(!State.getInstance().isAuthenticated())
-	    if(m_databaseHelper.accountPrepared())
-	    {
-		showAuthenticateActivity();
-		return;
-	    }
-
-	m_receiver = new SettingsBroadcastReceiver();
         setContentView(R.layout.activity_settings);
 
 	try
@@ -2335,7 +2320,8 @@ public class Settings extends AppCompatActivity
 
 	checkBox1 = (CheckBox) findViewById(R.id.automatic_refresh_listeners);
 
-	if(m_databaseHelper.
+	if(m_databaseHelper != null &&
+	   m_databaseHelper.
 	   readSetting(null, "automatic_listeners_refresh").equals("true"))
 	    checkBox1.setChecked(true);
 	else
@@ -2343,7 +2329,8 @@ public class Settings extends AppCompatActivity
 
 	checkBox1 = (CheckBox) findViewById(R.id.automatic_refresh_neighbors);
 
-	if(m_databaseHelper.
+	if(m_databaseHelper != null &&
+	   m_databaseHelper.
 	   readSetting(null, "automatic_neighbors_refresh").equals("true"))
 	    checkBox1.setChecked(true);
 	else
@@ -2351,7 +2338,8 @@ public class Settings extends AppCompatActivity
 
 	checkBox1 = (CheckBox) findViewById(R.id.neighbor_details);
 
-	if(m_databaseHelper.
+	if(m_databaseHelper != null &&
+	   m_databaseHelper.
 	   readSetting(null, "neighbors_details").equals("true"))
 	    checkBox1.setChecked(true);
 	else
@@ -2400,8 +2388,11 @@ public class Settings extends AppCompatActivity
 	arrayAdapter = new ArrayAdapter<>
 	    (Settings.this, android.R.layout.simple_spinner_item, array);
 
-	int index = arrayAdapter.getPosition
-	    (m_databaseHelper.readSetting(null, "iterationCount"));
+	int index = 0;
+
+	if(m_databaseHelper != null)
+	    index = arrayAdapter.getPosition
+		(m_databaseHelper.readSetting(null, "iterationCount"));
 
 	spinner1 = (Spinner) findViewById(R.id.iteration_count);
 	spinner1.setAdapter(arrayAdapter);
@@ -2522,7 +2513,6 @@ public class Settings extends AppCompatActivity
 	textView1 = (TextView) findViewById(R.id.proxy_port);
 	textView1.setEnabled(isAuthenticated);
 	textView1.setFilters(new InputFilter[] { s_portFilter });
-	prepareListeners();
 
 	/*
 	** Restore some settings.
@@ -2534,10 +2524,87 @@ public class Settings extends AppCompatActivity
 	    spinner1.setSelection(index);
 	else
 	    spinner1.setSelection(0);
+    }
+
+    @Override
+    protected void onStart()
+    {
+	super.onStart();
+	m_databaseHelper = Database.getInstance(getApplicationContext());
+	m_databaseHelper.deleteSetting("prefer_active_screen");
+
+	/*
+	** Show the Authenticate activity if an account is present.
+	*/
+
+	if(!State.getInstance().isAuthenticated())
+	    if(m_databaseHelper.accountPrepared())
+	    {
+		showAuthenticateActivity();
+		return;
+	    }
+
+	m_receiver = new SettingsBroadcastReceiver();
+
+	CheckBox checkBox1 = null;
+
+	checkBox1 = (CheckBox) findViewById(R.id.automatic_refresh_listeners);
+
+	if(m_databaseHelper.
+	   readSetting(null, "automatic_listeners_refresh").equals("true"))
+	    checkBox1.setChecked(true);
+	else
+	    checkBox1.setChecked(false);
+
+	checkBox1 = (CheckBox) findViewById(R.id.automatic_refresh_neighbors);
+
+	if(m_databaseHelper.
+	   readSetting(null, "automatic_neighbors_refresh").equals("true"))
+	    checkBox1.setChecked(true);
+	else
+	    checkBox1.setChecked(false);
+
+	checkBox1 = (CheckBox) findViewById(R.id.neighbor_details);
+
+	if(m_databaseHelper.
+	   readSetting(null, "neighbors_details").equals("true"))
+	    checkBox1.setChecked(true);
+	else
+	    checkBox1.setChecked(false);
+
+	if(!m_receiverRegistered)
+	{
+	    IntentFilter intentFilter = new IntentFilter();
+
+	    intentFilter.addAction
+		("org.purple.smokestack.populate_ozones_participants");
+	    intentFilter.addAction
+		("org.purple.smokestack.populate_participants");
+	    LocalBroadcastManager.getInstance(this).registerReceiver
+		(m_receiver, intentFilter);
+	    m_receiverRegistered = true;
+	}
+
+	startGeneralTimer();
+
+	if(m_databaseHelper.
+	   readSetting(null, "automatic_listeners_refresh").equals("true"))
+	    startListenersTimers();
+	else
+	    populateListeners(null);
+
+	if(m_databaseHelper.
+	   readSetting(null, "automatic_neighbors_refresh").equals("true"))
+	    startNeighborsTimers();
+	else
+	    populateNeighbors(null);
 
 	m_databaseHelper.deleteEchoQueue();
 	prepareListenerIpAddress();
+	prepareListeners();
 	startGeneralTimer();
+
+	boolean isAuthenticated = State.getInstance().isAuthenticated();
 
 	if(isAuthenticated)
 	{
@@ -2562,21 +2629,6 @@ public class Settings extends AppCompatActivity
 	else
 	    ((TextView) findViewById(R.id.internal_neighbors)).setText
 		("Internal Neighbors Container Size: 0");
-    }
-
-    @Override
-
-    protected void onDestroy()
-    {
-	super.onDestroy();
-	releaseResources();
-    }
-
-    @Override
-    protected void onPause()
-    {
-	super.onPause();
-	releaseResources();
     }
 
     @Override
@@ -2917,64 +2969,5 @@ public class Settings extends AppCompatActivity
 	/*
 	** Empty.
 	*/
-    }
-
-    @Override
-    public void onResume()
-    {
-	super.onResume();
-
-	CheckBox checkBox1 = null;
-
-	checkBox1 = (CheckBox) findViewById(R.id.automatic_refresh_listeners);
-
-	if(m_databaseHelper.
-	   readSetting(null, "automatic_listeners_refresh").equals("true"))
-	    checkBox1.setChecked(true);
-	else
-	    checkBox1.setChecked(false);
-
-	checkBox1 = (CheckBox) findViewById(R.id.automatic_refresh_neighbors);
-
-	if(m_databaseHelper.
-	   readSetting(null, "automatic_neighbors_refresh").equals("true"))
-	    checkBox1.setChecked(true);
-	else
-	    checkBox1.setChecked(false);
-
-	checkBox1 = (CheckBox) findViewById(R.id.neighbor_details);
-
-	if(m_databaseHelper.
-	   readSetting(null, "neighbors_details").equals("true"))
-	    checkBox1.setChecked(true);
-	else
-	    checkBox1.setChecked(false);
-
-	if(!m_receiverRegistered)
-	{
-	    IntentFilter intentFilter = new IntentFilter();
-
-	    intentFilter.addAction
-		("org.purple.smokestack.populate_ozones_participants");
-	    intentFilter.addAction
-		("org.purple.smokestack.populate_participants");
-	    LocalBroadcastManager.getInstance(this).registerReceiver
-		(m_receiver, intentFilter);
-	    m_receiverRegistered = true;
-	}
-
-	startGeneralTimer();
-
-	if(m_databaseHelper.
-	   readSetting(null, "automatic_listeners_refresh").equals("true"))
-	    startListenersTimers();
-	else
-	    populateListeners(null);
-
-	if(m_databaseHelper.
-	   readSetting(null, "automatic_neighbors_refresh").equals("true"))
-	    startNeighborsTimers();
-	else
-	    populateNeighbors(null);
     }
 }
