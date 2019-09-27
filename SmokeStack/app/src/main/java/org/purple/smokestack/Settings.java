@@ -2316,35 +2316,6 @@ public class Settings extends AppCompatActivity
 	button1.setCompoundDrawablesWithIntrinsicBounds
 	    (R.drawable.help, 0, 0, 0);
 
-	CheckBox checkBox1 = null;
-
-	checkBox1 = (CheckBox) findViewById(R.id.automatic_refresh_listeners);
-
-	if(m_databaseHelper != null &&
-	   m_databaseHelper.
-	   readSetting(null, "automatic_listeners_refresh").equals("true"))
-	    checkBox1.setChecked(true);
-	else
-	    checkBox1.setChecked(false);
-
-	checkBox1 = (CheckBox) findViewById(R.id.automatic_refresh_neighbors);
-
-	if(m_databaseHelper != null &&
-	   m_databaseHelper.
-	   readSetting(null, "automatic_neighbors_refresh").equals("true"))
-	    checkBox1.setChecked(true);
-	else
-	    checkBox1.setChecked(false);
-
-	checkBox1 = (CheckBox) findViewById(R.id.neighbor_details);
-
-	if(m_databaseHelper != null &&
-	   m_databaseHelper.
-	   readSetting(null, "neighbors_details").equals("true"))
-	    checkBox1.setChecked(true);
-	else
-	    checkBox1.setChecked(false);
-
         RadioButton radioButton1 = null;
 
 	radioButton1 = (RadioButton) findViewById(R.id.listeners_ipv4);
@@ -2387,13 +2358,6 @@ public class Settings extends AppCompatActivity
 	};
 	arrayAdapter = new ArrayAdapter<>
 	    (Settings.this, android.R.layout.simple_spinner_item, array);
-
-	int index = 0;
-
-	if(m_databaseHelper != null)
-	    index = arrayAdapter.getPosition
-		(m_databaseHelper.readSetting(null, "iterationCount"));
-
 	spinner1 = (Spinner) findViewById(R.id.iteration_count);
 	spinner1.setAdapter(arrayAdapter);
 
@@ -2457,7 +2421,9 @@ public class Settings extends AppCompatActivity
 	** Enable widgets.
 	*/
 
-	checkBox1 = (CheckBox) findViewById(R.id.accept_without_signatures);
+	CheckBox checkBox1 = (CheckBox) findViewById
+	    (R.id.accept_without_signatures);
+
 	checkBox1.setEnabled(isAuthenticated);
 	checkBox1 = (CheckBox) findViewById(R.id.overwrite);
 	checkBox1.setChecked(!isAuthenticated);
@@ -2513,17 +2479,6 @@ public class Settings extends AppCompatActivity
 	textView1 = (TextView) findViewById(R.id.proxy_port);
 	textView1.setEnabled(isAuthenticated);
 	textView1.setFilters(new InputFilter[] { s_portFilter });
-
-	/*
-	** Restore some settings.
-	*/
-
-	spinner1 = (Spinner) findViewById(R.id.iteration_count);
-
-	if(index >= 0)
-	    spinner1.setSelection(index);
-	else
-	    spinner1.setSelection(0);
     }
 
     @Override
@@ -2572,6 +2527,25 @@ public class Settings extends AppCompatActivity
 	else
 	    checkBox1.setChecked(false);
 
+	Spinner spinner1 = (Spinner) findViewById(R.id.iteration_count);
+
+	try
+	{
+	    @SuppressWarnings("unchecked") ArrayAdapter<String>
+		arrayAdapter = (ArrayAdapter<String>) spinner1.getAdapter();
+	    int index = arrayAdapter.getPosition
+		(m_databaseHelper.readSetting(null, "iterationCount"));
+
+	    if(index >= 0)
+		spinner1.setSelection(index);
+	    else
+		spinner1.setSelection(0);
+	}
+	catch(Exception exception)
+	{
+	    spinner1.setSelection(0);
+	}
+
 	if(!m_receiverRegistered)
 	{
 	    IntentFilter intentFilter = new IntentFilter();
@@ -2584,8 +2558,6 @@ public class Settings extends AppCompatActivity
 		(m_receiver, intentFilter);
 	    m_receiverRegistered = true;
 	}
-
-	startGeneralTimer();
 
 	if(m_databaseHelper.
 	   readSetting(null, "automatic_listeners_refresh").equals("true"))
