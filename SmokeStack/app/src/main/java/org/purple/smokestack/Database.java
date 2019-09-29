@@ -2699,7 +2699,8 @@ public class Database extends SQLiteOpenHelper
 
 		    sipHashId = new String
 			(Base64.decode(string.getBytes(StandardCharsets.UTF_8),
-				       Base64.NO_WRAP));
+				       Base64.NO_WRAP),
+			 StandardCharsets.UTF_8);
 		    sipHashIdBytes = sipHashId.getBytes(StandardCharsets.UTF_8);
 		    ii += 1;
 		    break;
