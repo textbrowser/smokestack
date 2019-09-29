@@ -1193,20 +1193,16 @@ public class Database extends SQLiteOpenHelper
 			}
 
 			sipHashIdElement.m_chatEncryptionKeyDigest =
-			    Base64.decode(cursor.getString(i),
-					  Base64.DEFAULT);
+			    Base64.decode(cursor.getString(i), Base64.DEFAULT);
 			continue;
 		    case 2:
-			sipHashIdElement.m_keysSigned =
-			    cursor.getLong(i) > 0;
+			sipHashIdElement.m_keysSigned = cursor.getLong(i) > 0;
 			continue;
 		    case 3:
-			sipHashIdElement.m_inMessages =
-			    cursor.getLong(i);
+			sipHashIdElement.m_inMessages = cursor.getLong(i);
 			continue;
 		    case 4:
-			sipHashIdElement.m_outMessages =
-			    cursor.getLong(i);
+			sipHashIdElement.m_outMessages = cursor.getLong(i);
 			sipHashIdElement.m_totalMessages =
 			    sipHashIdElement.m_inMessages +
 			    sipHashIdElement.m_outMessages;
