@@ -728,7 +728,6 @@ public class Kernel
 
 		    if(s_databaseHelper.
 		       writeParticipant(s_cryptography,
-					sipHashIdElement.m_sipHashId,
 					sipHashIdElement.
 					m_acceptWithoutSignatures,
 					aes256))

@@ -1133,9 +1133,8 @@ public class Database extends SQLiteOpenHelper
 	{
 	    cursor = m_db.rawQuery
 		("SELECT " +
-		 "(SELECT p.encryption_public_key_digest || " +
-		 "p.signature_public_key_digest FROM participants p " +
-		 "WHERE p.siphash_id_digest = si.siphash_id_digest) AS a, " +
+		 "(SELECT EXISTS(SELECT 1 FROM participants p " +
+		 "WHERE p.siphash_id_digest = si.siphash_id_digest)) AS a, " +
 		 "(SELECT p.encryption_public_key_digest FROM participants p " +
 		 "WHERE p.siphash_id_digest = si.siphash_id_digest) AS b, " +
 		 "(SELECT COUNT(p.OID) FROM public_key_pairs p " +
@@ -1170,20 +1169,8 @@ public class Database extends SQLiteOpenHelper
 		    switch(i)
 		    {
 		    case 0:
-			if(cursor.isNull(i) || cursor.getString(i).isEmpty())
-			{
-			    sipHashIdElement.m_epksCompleted = false;
-			    continue;
-			}
-
-			String string_a = cursor.getString(i);
-			String string_b = Base64.encodeToString
-			    (Cryptography.sha512("".getBytes()),
-			     Base64.DEFAULT);
-
-			string_b += string_b;
 			sipHashIdElement.m_epksCompleted =
-			    !string_a.equals(string_b);
+			    cursor.getInt(i) > 0;
 			continue;
 		    case 1:
 			if(cursor.isNull(i) || cursor.getString(i).isEmpty())
@@ -2647,7 +2634,6 @@ public class Database extends SQLiteOpenHelper
     }
 
     public boolean writeParticipant(Cryptography cryptography,
-				    String sipHashId,
 				    boolean ignoreSignatures,
 				    byte data[])
     {
@@ -2669,11 +2655,12 @@ public class Database extends SQLiteOpenHelper
 
 	    PublicKey encryptionKey = null;
 	    PublicKey signatureKey = null;
+	    String sipHashId = "";
 	    boolean exists = false;
 	    byte keyType[] = null;
 	    byte encryptionKeySignature[] = null;
 	    byte signatureKeySignature[] = null;
-	    byte sipHashIdBytes[] = sipHashId.getBytes(StandardCharsets.UTF_8);
+	    byte sipHashIdBytes[] = null;
 	    int ii = 0;
 
 	    for(String string : strings)
@@ -2710,6 +2697,10 @@ public class Database extends SQLiteOpenHelper
 		    ** Sender's Smoke Identity!
 		    */
 
+		    sipHashId = new String
+			(Base64.decode(string.getBytes(StandardCharsets.UTF_8),
+				       Base64.NO_WRAP));
+		    sipHashIdBytes = sipHashId.getBytes(StandardCharsets.UTF_8);
 		    ii += 1;
 		    break;
 		case 3:
