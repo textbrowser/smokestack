@@ -1,10 +1,14 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
+        android:id="@+id/action_exit"
         android:orderInCategory="100"
-        android:title="@string/action_settings"
-        android:id="@+id/action_settings" />
+        android:title="@string/exit" />
+    <item
+        android:id="@+id/action_settings"
+        android:orderInCategory="200"
+        android:title="@string/action_settings" />
     <item
         android:id="@+id/action_steam"
-        android:orderInCategory="101"
+        android:orderInCategory="300"
         android:title="@string/steam" />
 </menu>

@@ -27,7 +27,9 @@
 
 package org.purple.smokestack;
 
+import android.app.Activity;
 import android.app.Application;
+import android.content.Context;
 
 public class SmokeStack extends Application
 {
@@ -40,6 +42,16 @@ public class SmokeStack extends Application
 	*/
 
 	return s_instance;
+    }
+
+    public static synchronized void exit(Context context)
+    {
+	SmokeStackService.stopForegroundTask(getApplication());
+
+	if(context != null && context instanceof Activity)
+	    ((Activity) context).finishAndRemoveTask();
+
+	android.os.Process.killProcess(android.os.Process.myPid());
     }
 
     @Override

@@ -360,18 +360,21 @@ public class Authenticate extends AppCompatActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
-	int id = item.getItemId();
-
-        if(id == R.id.action_settings)
-	{
-	    showSettingsActivity();
-            return true;
-        }
-	else if(id == R.id.action_steam)
-	{
-	    showSteamActivity();
-	    return true;
-	}
+	if(item != null)
+	    switch(item.getItemId())
+	    {
+	    case R.id.action_exit:
+		SmokeStack.exit(Authenticate.this);
+		return true;
+	    case R.id.action_settings:
+		showSettingsActivity();
+		return true;
+	    case R.id.action_steam:
+		showSteamActivity();
+		return true;
+	    default:
+		break;
+	    }
 
         return super.onOptionsItemSelected(item);
     }

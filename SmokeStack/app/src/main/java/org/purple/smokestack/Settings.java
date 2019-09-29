@@ -2499,7 +2499,8 @@ public class Settings extends AppCompatActivity
 		return;
 	    }
 
-	m_receiver = new SettingsBroadcastReceiver();
+	if(m_receiver == null)
+	    m_receiver = new SettingsBroadcastReceiver();
 
 	CheckBox checkBox1 = null;
 
@@ -2849,17 +2850,22 @@ public class Settings extends AppCompatActivity
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem menuItem)
+    public boolean onOptionsItemSelected(MenuItem item)
     {
-	int id = menuItem.getItemId();
+	if(item != null)
+	    switch(item.getItemId())
+	    {
+	    case R.id.action_exit:
+		SmokeStack.exit(Settings.this);
+		return true;
+	    case R.id.action_steam:
+		showSteamActivity();
+		return true;
+	    default:
+		break;
+	    }
 
-	if(id == R.id.action_steam)
-	{
-	    showSteamActivity();
-	    return true;
-	}
-
-        return super.onOptionsItemSelected(menuItem);
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
