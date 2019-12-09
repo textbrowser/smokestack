@@ -34,6 +34,8 @@ import java.net.Proxy;
 import java.net.Socket;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.net.ssl.HandshakeCompletedEvent;
@@ -52,8 +54,12 @@ public class TcpNeighbor extends Neighbor
     private String m_proxyIpAddress = "";
     private String m_proxyType = "";
     private TrustManager m_trustManagers[] = null;
+    private final ScheduledExecutorService m_requestAuthenticationScheduler =
+	Executors.newSingleThreadScheduledExecutor();
     private final static int CONNECTION_TIMEOUT = 10000; // 10 Seconds
     private final static int HANDSHAKE_TIMEOUT = 10000; // 10 Seconds
+    private final static long REQUEST_AUTHENTICATION_INTERVAL =
+	10000; // 10 Seconds
     private int m_proxyPort = -1;
 
     private void prepareMRandom()
@@ -231,6 +237,30 @@ public class TcpNeighbor extends Neighbor
 	/*
 	** Launch the schedulers.
 	*/
+
+	if(isPrivateServer)
+	    m_requestAuthenticationScheduler.scheduleAtFixedRate(new Runnable()
+	    {
+		@Override
+		public void run()
+		{
+		    try
+		    {
+			if(connected() && !m_remoteUserAuthenticated.get())
+			{
+			    prepareMRandom();
+			    scheduleSend
+				(Messages.
+				 requestAuthentication(m_randomBuffer));
+			}
+		    }
+		    catch(Exception exception)
+		    {
+		    }
+		}
+	    }, REQUEST_AUTHENTICATION_INTERVAL,
+		REQUEST_AUTHENTICATION_INTERVAL,
+		TimeUnit.MILLISECONDS);
 
 	m_readSocketScheduler.scheduleAtFixedRate(new Runnable()
 	{

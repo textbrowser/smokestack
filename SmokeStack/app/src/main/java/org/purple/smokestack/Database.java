@@ -219,10 +219,25 @@ public class Database extends SQLiteOpenHelper
 
 	try
 	{
-	    byte signature[] = Base64.decode(data, Base64.NO_WRAP);
+	    byte buffer[] = Base64.decode(data.getBytes(), Base64.NO_WRAP);
+
+	    if(buffer.length < 129)
+		// Random (64) + Signature Key Digest (64) + Signature (?)
+		return false;
+
+	    byte random[] = Arrays.copyOfRange(buffer, 0, 64);
+
+	    if(Cryptography.memcmp(random, stringBuffer.toString().getBytes()))
+		return false;
+
+	    byte signature[] = Arrays.copyOfRange(buffer, 128, buffer.length);
+	    byte signatureKeyDigest[] = Arrays.copyOfRange(buffer, 64, 128);
 
 	    cursor = m_db.rawQuery
-		("SELECT signature_public_key FROM participants", null);
+		("SELECT signature_public_key FROM participants " +
+		 "WHERE signature_public_key_digest = ?",
+		 new String[] {Base64.encodeToString(signatureKeyDigest,
+						     Base64.DEFAULT)});
 
 	    if(cursor != null)
 		m_cursorsOpened.getAndIncrement();
@@ -254,11 +269,16 @@ public class Database extends SQLiteOpenHelper
 			}
 
 		if(publicKey != null)
+		{
+		    buffer = Miscellaneous.joinByteArrays
+			(random,
+			 signatureKeyDigest,
+			 stringBuffer.toString().getBytes());
+
 		    if(Cryptography.
-		       verifySignature(publicKey,
-				       signature,
-				       stringBuffer.toString().getBytes()))
+		       verifySignature(publicKey, signature, buffer))
 			return true;
+		}
 	    }
 	}
 	catch(Exception exception)
