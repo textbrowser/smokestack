@@ -9,8 +9,8 @@ android {
         minSdkVersion 19
         multiDexEnabled true
         targetSdkVersion 26
-        versionCode 20190930
-        versionName "2019.09.30"
+        versionCode 20191210
+        versionName "2019.12.10"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     dexOptions {
@@ -40,8 +40,8 @@ dependencies {
     implementation 'com.android.support:design:25.4.0'
     testImplementation 'junit:junit:4.12'
     implementation 'com.android.support:support-v4:25.4.0'
-    implementation files('libs/bcprov-ext-jdk15on-163.jar')
-    implementation files('libs/bcpkix-jdk15on-163.jar')
+    implementation files('libs/bcprov-ext-jdk15on-164.jar')
+    implementation files('libs/bcpkix-jdk15on-164.jar')
 }
 
 tasks.withType(JavaCompile) {
