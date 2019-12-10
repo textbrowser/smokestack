@@ -50,12 +50,11 @@ public class TcpNeighbor extends Neighbor
     private AtomicBoolean m_isValidCertificate = null;
     private InetSocketAddress m_proxyInetSocketAddress = null;
     private SSLSocket m_socket = null;
+    private ScheduledExecutorService m_requestAuthenticationScheduler = null;
     private String m_protocols[] = null;
     private String m_proxyIpAddress = "";
     private String m_proxyType = "";
     private TrustManager m_trustManagers[] = null;
-    private final ScheduledExecutorService m_requestAuthenticationScheduler =
-	Executors.newSingleThreadScheduledExecutor();
     private final static int CONNECTION_TIMEOUT = 10000; // 10 Seconds
     private final static int HANDSHAKE_TIMEOUT = 10000; // 10 Seconds
     private final static long REQUEST_AUTHENTICATION_INTERVAL =
@@ -239,6 +238,9 @@ public class TcpNeighbor extends Neighbor
 	*/
 
 	if(isPrivateServer)
+	{
+	    m_requestAuthenticationScheduler = Executors.
+		newSingleThreadScheduledExecutor();
 	    m_requestAuthenticationScheduler.scheduleAtFixedRate(new Runnable()
 	    {
 		@Override
@@ -261,6 +263,7 @@ public class TcpNeighbor extends Neighbor
 	    }, REQUEST_AUTHENTICATION_INTERVAL,
 		REQUEST_AUTHENTICATION_INTERVAL,
 		TimeUnit.MILLISECONDS);
+	}
 
 	m_readSocketScheduler.scheduleAtFixedRate(new Runnable()
 	{
@@ -543,6 +546,28 @@ public class TcpNeighbor extends Neighbor
 
 	if(m_oid.get() >= 0)
 	    m_isValidCertificate.set(false);
+
+	if(m_requestAuthenticationScheduler != null)
+	    synchronized(m_requestAuthenticationScheduler)
+	    {
+		try
+		{
+		    m_requestAuthenticationScheduler.shutdown();
+		}
+		catch(Exception exception)
+		{
+		}
+
+		try
+		{
+		    if(!m_requestAuthenticationScheduler.
+		       awaitTermination(60, TimeUnit.SECONDS))
+			m_requestAuthenticationScheduler.shutdownNow();
+		}
+		catch(Exception exception)
+		{
+		}
+	    }
 
 	synchronized(m_readSocketScheduler)
 	{
