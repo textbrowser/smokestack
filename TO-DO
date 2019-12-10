@@ -13,6 +13,7 @@ Completed Items
 - Optional signatures on shared key pairs.
 - Per-participant message retrieval schedulers.
 - Populate containers in the kernel as required.
+- Private servers are susceptible to replay attacks.
 - Private servers. SHA-512 (Random || Time).
 - Purge expired messages.
 - Refresh Ozones.
@@ -27,6 +28,5 @@ Remaining Items
 - Abnormal native termination on Android 8.x. SSL/TLS and/or libc.
 - Dialogs are not dismissed correctly on rotation changes.
 - Distribute routing identity algorithms.
-- Private servers are susceptible to replay attacks.
 - Steam.
 - The Settings activity has many views (ANDROID_LINT_MAX_VIEW_COUNT).
