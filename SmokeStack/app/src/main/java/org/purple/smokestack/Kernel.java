@@ -177,6 +177,106 @@ public class Kernel
 	return true;
     }
 
+    private void prepareListeners()
+    {
+	if(!isNetworkAvailable())
+	{
+	    purgeListeners();
+	    return;
+	}
+
+	ArrayList<ListenerElement> listeners =
+	    s_databaseHelper.readListeners(s_cryptography);
+
+	if(listeners == null || listeners.size() == 0)
+	{
+	    purgeListeners();
+	    return;
+	}
+
+	synchronized(m_listeners)
+	{
+	    for(int i = m_listeners.size() - 1; i >= 0; i--)
+	    {
+		/*
+		** Remove listener objects which do not exist in the database.
+		** Also removed will be listeners having disconnected statuses.
+		*/
+
+		boolean found = false;
+		int oid = m_listeners.keyAt(i);
+
+		for(ListenerElement listenerElement : listeners)
+		    if(listenerElement != null && listenerElement.m_oid == oid)
+		    {
+			if(!listenerElement.m_statusControl.toLowerCase().
+			   equals("disconnect"))
+			    found = true;
+
+			break;
+		    }
+
+		if(!found)
+		{
+		    if(m_listeners.get(oid) != null)
+			m_listeners.get(oid).abort();
+
+		    m_listeners.remove(oid);
+		}
+	    }
+	}
+
+	for(ListenerElement listenerElement : listeners)
+	{
+	    if(listenerElement == null)
+		continue;
+	    else
+	    {
+		synchronized(m_listeners)
+		{
+		    if(m_listeners.get(listenerElement.m_oid) != null)
+			continue;
+		}
+
+		if(listenerElement.m_statusControl.toLowerCase().
+		   equals("delete") ||
+		   listenerElement.m_statusControl.toLowerCase().
+		   equals("disconnect"))
+		{
+		    if(listenerElement.m_statusControl.toLowerCase().
+		       equals("disconnect"))
+			s_databaseHelper.saveListenerInformation
+			    (s_cryptography,
+			     "",              // Error
+			     "0",             // Peers Count
+			     "disconnected",  // Status
+			     "0",             // Uptime
+			     String.valueOf(listenerElement.m_oid));
+
+		    continue;
+		}
+	    }
+
+	    TcpListener listener = new TcpListener
+		(listenerElement.m_localIpAddress,
+		 listenerElement.m_localPort,
+		 listenerElement.m_localScopeId,
+		 listenerElement.m_ipVersion,
+		 listenerElement.m_isPrivate,
+		 listenerElement.m_certificate,
+		 listenerElement.m_privateKey,
+		 listenerElement.m_publicKey,
+		 listenerElement.m_oid);
+
+	    synchronized(m_listeners)
+	    {
+		m_listeners.append(listenerElement.m_oid, listener);
+	    }
+	}
+
+	listeners.clear();
+    }
+
     private void prepareNeighbors()
     {
 	if(!isNetworkAvailable())
@@ -1178,103 +1278,25 @@ public class Kernel
 	}
     }
 
-    public void prepareListeners()
+    public void prepareListenersScheduled()
     {
-	if(!isNetworkAvailable())
-	{
-	    purgeListeners();
-	    return;
-	}
+	ScheduledExecutorService scheduler =
+	    Executors.newScheduledThreadPool(1);
 
-	ArrayList<ListenerElement> listeners =
-	    s_databaseHelper.readListeners(s_cryptography);
-
-	if(listeners == null || listeners.size() == 0)
+	scheduler.schedule(new Runnable()
 	{
-	    purgeListeners();
-	    return;
-	}
-
-	synchronized(m_listeners)
-	{
-	    for(int i = m_listeners.size() - 1; i >= 0; i--)
+	    @Override
+	    public void run()
 	    {
-		/*
-		** Remove listener objects which do not exist in the database.
-		** Also removed will be listeners having disconnected statuses.
-		*/
-
-		boolean found = false;
-		int oid = m_listeners.keyAt(i);
-
-		for(ListenerElement listenerElement : listeners)
-		    if(listenerElement != null && listenerElement.m_oid == oid)
-		    {
-			if(!listenerElement.m_statusControl.toLowerCase().
-			   equals("disconnect"))
-			    found = true;
-
-			break;
-		    }
-
-		if(!found)
+		try
 		{
-		    if(m_listeners.get(oid) != null)
-			m_listeners.get(oid).abort();
-
-		    m_listeners.remove(oid);
+		    prepareListeners();
+		}
+		catch(Exception exception)
+		{
 		}
 	    }
-	}
-
-	for(ListenerElement listenerElement : listeners)
-	{
-	    if(listenerElement == null)
-		continue;
-	    else
-	    {
-		synchronized(m_listeners)
-		{
-		    if(m_listeners.get(listenerElement.m_oid) != null)
-			continue;
-		}
-
-		if(listenerElement.m_statusControl.toLowerCase().
-		   equals("delete") ||
-		   listenerElement.m_statusControl.toLowerCase().
-		   equals("disconnect"))
-		{
-		    if(listenerElement.m_statusControl.toLowerCase().
-		       equals("disconnect"))
-			s_databaseHelper.saveListenerInformation
-			    (s_cryptography,
-			     "",              // Error
-			     "0",             // Peers Count
-			     "disconnected",  // Status
-			     "0",             // Uptime
-			     String.valueOf(listenerElement.m_oid));
-
-		    continue;
-		}
-	    }
-
-	    TcpListener listener = new TcpListener
-		(listenerElement.m_localIpAddress,
-		 listenerElement.m_localPort,
-		 listenerElement.m_localScopeId,
-		 listenerElement.m_ipVersion,
-		 listenerElement.m_isPrivate,
-		 listenerElement.m_certificate,
-		 listenerElement.m_privateKey,
-		 listenerElement.m_publicKey,
-		 listenerElement.m_oid);
-
-	    synchronized(m_listeners)
-	    {
-		m_listeners.append(listenerElement.m_oid, listener);
-	    }
-	}
-
-	listeners.clear();
+	}, 0, TimeUnit.MILLISECONDS);
+	scheduler.shutdown();
     }
 }

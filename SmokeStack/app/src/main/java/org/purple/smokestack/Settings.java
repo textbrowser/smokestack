@@ -2827,7 +2827,7 @@ public class Settings extends AppCompatActivity
 		** field may represent a recycled value.
 		*/
 
-		Kernel.getInstance().prepareListeners();
+		Kernel.getInstance().prepareListenersScheduled();
 
 		TableLayout tableLayout = (TableLayout)
 		    findViewById(R.id.listeners);
