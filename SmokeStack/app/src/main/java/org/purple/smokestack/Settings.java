@@ -927,13 +927,13 @@ public class Settings extends AppCompatActivity
 						   int position,
 						   long id)
 			{
-			    if(position == 1) // Connect
+			    if(position == 1) // Connect.
 				m_databaseHelper.listenerNeighborControlStatus
 				    (s_cryptography,
 				     "connect",
 				     String.valueOf(parent.getId()),
 				     "neighbors");
-			    else if(position == 2 && // Delete
+			    else if(position == 2 && // Delete.
 				    m_databaseHelper.
 				    deleteEntry(String.valueOf(parent.getId()),
 						"neighbors"))
@@ -951,13 +951,13 @@ public class Settings extends AppCompatActivity
 
 				tableLayout.removeView(row);
 			    }
-			    else if(position == 3) // Disconnect
+			    else if(position == 3) // Disconnect.
 				m_databaseHelper.listenerNeighborControlStatus
 				    (s_cryptography,
 				     "disconnect",
 				     String.valueOf(parent.getId()),
 				     "neighbors");
-			    else if(position == 4) // Reset SSL/TLS Credentials
+			    else if(position == 4) // Reset SSL/TLS credentials.
 			    {
 				m_databaseHelper.neighborRecordCertificate
 				    (s_cryptography,

@@ -265,8 +265,8 @@ public class Cryptography
 	    ** Verify the computed digest with the provided digest.
 	    */
 
-	    byte digest1[] = null; // Provided Digest
-	    byte digest2[] = null; // Computed Digest
+	    byte digest1[] = null; // Provided digest.
+	    byte digest2[] = null; // Computed digest.
 
 	    digest1 = Arrays.copyOfRange
 		(data, data.length - 512 / 8, data.length);
@@ -596,7 +596,7 @@ public class Cryptography
 			       Base64.encodeToString(bytes, Base64.NO_WRAP).
 			       toCharArray(),
 			       1,
-			       768); // 8 * (32 + 64) Bits
+			       768); // 8 * (32 + 64) bits.
 
 	    return bytes;
 	}
@@ -719,7 +719,7 @@ public class Cryptography
 		     Base64.encodeToString(temporary, Base64.NO_WRAP).
 		     toCharArray(),
 		     1,
-		     768); // 8 * (32 + 64) Bits
+		     768); // 8 * (32 + 64) bits.
 
 	    return bytes;
 	}

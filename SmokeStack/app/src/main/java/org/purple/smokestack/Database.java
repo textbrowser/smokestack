@@ -3079,7 +3079,7 @@ public class Database extends SQLiteOpenHelper
 							  Base64.NO_WRAP).
 				    toCharArray(),
 				    1,
-				    768)); // 8 * (32 + 64) Bits
+				    768)); // 8 * (32 + 64) bits.
 
 		    break;
 		}
