@@ -55,8 +55,8 @@ public class SipHash
 
 	long value = 0;
 
-	value |= (((long) bytes[0 + offset]) & 0xff) << (Long.BYTES * 0);
-	value |= (((long) bytes[1 + offset]) & 0xff) << (Long.BYTES * 1);
+	value |= (((long) bytes[offset]) & 0xff) << (0);
+	value |= (((long) bytes[1 + offset]) & 0xff) << (Long.BYTES);
 	value |= (((long) bytes[2 + offset]) & 0xff) << (Long.BYTES * 2);
 	value |= (((long) bytes[3 + offset]) & 0xff) << (Long.BYTES * 3);
 	value |= (((long) bytes[4 + offset]) & 0xff) << (Long.BYTES * 4);
