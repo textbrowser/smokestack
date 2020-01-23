@@ -30,6 +30,8 @@ package org.purple.smokestack;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.os.Build;
+import android.os.Process;
 
 public class SmokeStack extends Application
 {
@@ -48,10 +50,11 @@ public class SmokeStack extends Application
     {
 	SmokeStackService.stopForegroundTask(getApplication());
 
-	if(context != null && context instanceof Activity)
-	    ((Activity) context).finishAndRemoveTask();
+	if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+	    if(context != null && context instanceof Activity)
+		((Activity) context).finishAndRemoveTask();
 
-	android.os.Process.killProcess(android.os.Process.myPid());
+	Process.killProcess(Process.myPid());
     }
 
     @Override
