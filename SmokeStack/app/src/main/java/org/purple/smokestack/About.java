@@ -52,7 +52,7 @@ public class About
 
 	    // Must agree with SmokeStack/app/build.gradle.
 
-	    s_about = "Version 2019.12.10 Digital Disco " +
+	    s_about = "Version 2020.02.02 Digital Disco " +
                 (BuildConfig.DEBUG ? "(Debug) " : "(Release)") +
                 "\nBuild Date " +
                 simpleDateFormat.format(new Date(BuildConfig.BUILD_TIME)) +
