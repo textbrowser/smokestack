@@ -704,15 +704,21 @@ public class Kernel
 
 	    for(int i = 0; i < size; i++)
 	    {
-		ArrayList<String> addresses = null;
 		int j = m_listeners.keyAt(i);
 
 		if(m_listeners.get(j) != null)
-		    addresses = m_listeners.get(j).clientAddresses();
+		{
+		    ArrayList<String> addresses =
+			m_listeners.get(j).clientsAddresses();
 
-		if(addresses != null)
-		    for(String address : addresses)
-			arrayList.add(address);
+		    if(addresses != null)
+		    {
+			for(String address : addresses)
+			    arrayList.add(address);
+
+			addresses.clear();
+		    }
+		}
 	    }
 	}
 
@@ -1171,7 +1177,7 @@ public class Kernel
 		int j = m_listeners.keyAt(i);
 
 		if(m_listeners.get(j) != null)
-		    count += m_listeners.get(j).clientCount();
+		    count += m_listeners.get(j).clientsCount();
 	    }
 	}
 

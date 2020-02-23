@@ -457,7 +457,7 @@ public class TcpListener
 	}
     }
 
-    public ArrayList<String> clientAddresses()
+    public ArrayList<String> clientsAddresses()
     {
 	ArrayList<String> arrayList = new ArrayList<> ();
 
@@ -482,7 +482,7 @@ public class TcpListener
 	return arrayList;
     }
 
-    public int clientCount()
+    public int clientsCount()
     {
 	m_neighborsMutex.readLock().lock();
 
