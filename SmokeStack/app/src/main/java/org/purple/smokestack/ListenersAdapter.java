@@ -30,7 +30,6 @@ package org.purple.smokestack;
 import android.support.v7.widget.RecyclerView;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnCreateContextMenuListener;
 import android.view.ViewGroup;
@@ -65,10 +64,16 @@ public class ListenersAdapter extends RecyclerView.Adapter
 	{
 	    if(clientElement == null)
 	    {
+		if(m_clientBubble != null)
+		    m_clientBubble.setAddress("");
+
 		m_position = position;
 	    }
 	    else if(m_clientBubble == null)
 		return;
+
+	    m_clientBubble.setAddress(clientElement.m_address);
+	    m_position = position;
 	}
     }
 
@@ -81,13 +86,14 @@ public class ListenersAdapter extends RecyclerView.Adapter
     public ListenersAdapter.ViewHolder onCreateViewHolder
 	(ViewGroup parent, int viewType)
     {
-	return null;
+	return new ViewHolder
+	    (new ClientBubble(parent.getContext(), m_settings, parent));
     }
 
     @Override
     public int getItemCount()
     {
-	return 0;
+	return Kernel.getInstance().remoteClientsCount();
     }
 
     @Override
@@ -95,5 +101,11 @@ public class ListenersAdapter extends RecyclerView.Adapter
     {
 	if(viewHolder == null)
 	    return;
+
+	ClientElement clientElement = new ClientElement();
+
+	clientElement.m_address = Kernel.getInstance().
+	    remoteClientAddress(position);
+	viewHolder.setData(clientElement, position);
     }
 }

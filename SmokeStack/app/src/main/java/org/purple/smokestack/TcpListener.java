@@ -457,6 +457,50 @@ public class TcpListener
 	}
     }
 
+    public ArrayList<String> clientAddresses()
+    {
+	ArrayList<String> arrayList = new ArrayList<> ();
+
+	m_neighborsMutex.readLock().lock();
+
+	try
+	{
+	    int size = m_neighbors.size();
+
+	    for(int i = 0; i < size; i++)
+		if(m_neighbors.get(i) != null)
+		    arrayList.add(m_neighbors.get(i).address());
+	}
+	catch(Exception exception)
+	{
+	}
+	finally
+	{
+	    m_neighborsMutex.readLock().unlock();
+	}
+
+	return arrayList;
+    }
+
+    public int clientCount()
+    {
+	m_neighborsMutex.readLock().lock();
+
+	try
+	{
+	    return m_neighbors.size();
+	}
+	catch(Exception exception)
+	{
+	}
+	finally
+	{
+	    m_neighborsMutex.readLock().unlock();
+	}
+
+	return 0;
+    }
+
     public void abort()
     {
 	disconnect();

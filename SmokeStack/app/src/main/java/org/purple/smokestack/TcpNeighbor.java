@@ -100,6 +100,11 @@ public class TcpNeighbor extends Neighbor
 	    return "::";
     }
 
+    protected String getRemoteIp()
+    {
+	return m_ipAddress;
+    }
+
     protected String getSessionCipher()
     {
 	try
@@ -163,6 +168,19 @@ public class TcpNeighbor extends Neighbor
 	{
 	    if(m_socket != null && !m_socket.isClosed())
 		return m_socket.getLocalPort();
+	}
+	catch(Exception exception)
+	{
+	}
+
+	return 0;
+    }
+
+    protected int getRemotePort()
+    {
+	try
+	{
+	    return Integer.parseInt(m_ipPort);
 	}
 	catch(Exception exception)
 	{

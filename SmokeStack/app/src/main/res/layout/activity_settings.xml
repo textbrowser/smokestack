@@ -105,12 +105,13 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="5dp"
-                    android:text="@string/local_clients" />
+                    android:text="@string/remote_clients" />
 
                 <android.support.v7.widget.RecyclerView
-                    android:id="@+id/clients"
+                    android:id="@+id/listeners_clients_recycler_view"
                     android:layout_width="match_parent"
-                    android:layout_height="100dp" />
+                    android:layout_height="100dp"
+                    android:layout_marginEnd="5dp" />
 
                 <android.support.v4.widget.NestedScrollView
                     android:layout_width="match_parent"

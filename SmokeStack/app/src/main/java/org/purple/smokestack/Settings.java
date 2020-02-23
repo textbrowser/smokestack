@@ -191,6 +191,7 @@ public class Settings extends AppCompatActivity
 
     private Database m_databaseHelper = null;
     private ListenersLinearLayoutManager m_listenersLayoutManager = null;
+    private RecyclerView m_listenersRecyclerView = null;
     private RecyclerView.Adapter<?> m_listenersAdapter = null;
     private ScheduledExecutorService m_generalScheduler = null;
     private ScheduledExecutorService m_listenersScheduler = null;
@@ -2308,6 +2309,7 @@ public class Settings extends AppCompatActivity
 	m_listenersLayoutManager = new ListenersLinearLayoutManager
 	    (Settings.this);
 	m_listenersLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+	m_listenersLayoutManager.setStackFromEnd(true);
         setContentView(R.layout.activity_settings);
 
 	try
@@ -2317,6 +2319,10 @@ public class Settings extends AppCompatActivity
 	catch(Exception exception)
 	{
 	}
+
+	m_listenersRecyclerView = (RecyclerView) findViewById
+	    (R.id.listeners_clients_recycler_view);
+	m_listenersRecyclerView.setHasFixedSize(true);
 
 	boolean isAuthenticated = State.getInstance().isAuthenticated();
         Button button1 = null;
@@ -2510,6 +2516,50 @@ public class Settings extends AppCompatActivity
 	textView1 = (TextView) findViewById(R.id.proxy_port);
 	textView1.setEnabled(isAuthenticated);
 	textView1.setFilters(new InputFilter[] { s_portFilter });
+
+	/*
+	** Prepare recycler views.
+	*/
+
+	m_listenersAdapter = new ListenersAdapter(this);
+	m_listenersAdapter.registerAdapterDataObserver
+	    (new RecyclerView.AdapterDataObserver()
+	    {
+		@Override
+		public void onItemRangeInserted
+		    (int positionStart, int itemCount)
+		{
+		    m_listenersLayoutManager.smoothScrollToPosition
+			(m_listenersRecyclerView, null, positionStart);
+		}
+
+		@Override
+		public void onItemRangeRemoved
+		    (int positionStart, int itemCount)
+		{
+		    m_listenersLayoutManager.smoothScrollToPosition
+			(m_listenersRecyclerView,
+			 null,
+			 positionStart - itemCount);
+		}
+	    });
+	m_listenersRecyclerView.setAdapter(m_listenersAdapter);
+	m_listenersRecyclerView.setLayoutManager(m_listenersLayoutManager);
+
+	/*
+	** Restore states.
+	*/
+
+	try
+	{
+	    m_listenersLayoutManager.smoothScrollToPosition
+		(m_listenersRecyclerView,
+		 null,
+		 m_listenersAdapter.getItemCount() - 1);
+	}
+	catch(Exception exception)
+	{
+	}
     }
 
     @Override
@@ -2969,6 +3019,24 @@ public class Settings extends AppCompatActivity
 	    catch(Exception exception)
 	    {
 	    }
+	}
+    }
+
+    @Override
+    public void onResume()
+    {
+	super.onResume();
+
+	try
+	{
+	    m_listenersAdapter.notifyDataSetChanged();
+	    m_listenersLayoutManager.smoothScrollToPosition
+		(m_listenersRecyclerView,
+		 null,
+		 m_listenersAdapter.getItemCount() - 1);
+	}
+	catch(Exception exception)
+	{
 	}
     }
 

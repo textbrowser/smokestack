@@ -31,6 +31,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 public class ClientBubble extends View
 {
@@ -50,11 +51,17 @@ public class ClientBubble extends View
 	    (Context.LAYOUT_INFLATER_SERVICE);
 
 	m_view = inflater.inflate(R.layout.client_bubble, viewGroup, false);
-	m_view.setId(-1);
     }
 
     public View view()
     {
 	return m_view;
+    }
+
+    public void setAddress(String address)
+    {
+	TextView textView = (TextView) m_view.findViewById(R.id.address);
+
+	textView.setText(address);
     }
 }

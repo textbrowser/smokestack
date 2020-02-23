@@ -43,6 +43,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.UUID;
@@ -693,6 +694,32 @@ public class Kernel
 	return neighbors;
     }
 
+    public String remoteClientAddress(int position)
+    {
+	ArrayList<String> arrayList = new ArrayList<String> ();
+
+	synchronized(m_listeners)
+	{
+	    int size = m_listeners.size();
+
+	    for(int i = 0; i < size; i++)
+	    {
+		ArrayList<String> addresses = null;
+		int j = m_listeners.keyAt(i);
+
+		if(m_listeners.get(j) != null)
+		    addresses = m_listeners.get(j).clientAddresses();
+
+		if(addresses != null)
+		    for(String address : addresses)
+			arrayList.add(address);
+	    }
+	}
+
+	Collections.sort(arrayList);
+	return arrayList.get(position);
+    }
+
     public boolean ourMessage(String buffer,
 			      UUID clientIdentity,
 			      boolean userDefined)
@@ -1129,6 +1156,26 @@ public class Kernel
 	{
 	    return m_neighbors.size();
 	}
+    }
+
+    public int remoteClientsCount()
+    {
+	int count = 0;
+
+	synchronized(m_listeners)
+	{
+	    int size = m_listeners.size();
+
+	    for(int i = 0; i < size; i++)
+	    {
+		int j = m_listeners.keyAt(i);
+
+		if(m_listeners.get(j) != null)
+		    count += m_listeners.get(j).clientCount();
+	    }
+	}
+
+	return count;
     }
 
     public static synchronized Kernel getInstance()

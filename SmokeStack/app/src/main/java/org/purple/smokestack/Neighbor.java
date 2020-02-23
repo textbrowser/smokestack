@@ -441,9 +441,11 @@ public abstract class Neighbor
     }
 
     protected abstract String getLocalIp();
+    protected abstract String getRemoteIp();
     protected abstract boolean connected();
     protected abstract boolean send(String message);
     protected abstract int getLocalPort();
+    protected abstract int getRemotePort();
     protected abstract void connect();
 
     protected void abort()
@@ -560,6 +562,14 @@ public abstract class Neighbor
 	m_error.delete(0, m_error.length());
 	m_error.trimToSize();
 	m_error.append(error);
+    }
+
+    public String address()
+    {
+	return "Local IP: " + getLocalIp() +
+	    " Local Port: " + getLocalPort() +
+	    " Remote IP: " + getRemoteIp() +
+	    " Remote Port: " + getRemotePort();
     }
 
     public int getOid()

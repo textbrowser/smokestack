@@ -43,6 +43,11 @@ public class UdpMulticastNeighbor extends Neighbor
 	return m_ipAddress;
     }
 
+    protected String getRemoteIp()
+    {
+	return m_ipAddress;
+    }
+
     protected boolean connected()
     {
 	try
@@ -106,6 +111,11 @@ public class UdpMulticastNeighbor extends Neighbor
 	}
 
 	return 0;
+    }
+
+    protected int getRemotePort()
+    {
+	return getLocalPort();
     }
 
     protected void disconnect()
