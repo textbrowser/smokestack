@@ -566,10 +566,10 @@ public abstract class Neighbor
 
     public String address()
     {
-	return "Local IP: " + getLocalIp() +
-	    " Local Port: " + getLocalPort() +
-	    " Remote IP: " + getRemoteIp() +
-	    " Remote Port: " + getRemotePort();
+	return "Local: " + getLocalIp() +
+	    ":" + getLocalPort() +
+	    " Remote: " + getRemoteIp() +
+	    ":" + getRemotePort();
     }
 
     public int getOid()

@@ -102,7 +102,19 @@ public class TcpNeighbor extends Neighbor
 
     protected String getRemoteIp()
     {
-	return m_ipAddress;
+	try
+	{
+	    if(m_socket != null && m_socket.getInetAddress() != null)
+		return m_socket.getInetAddress().getHostAddress();
+	}
+	catch(Exception exception)
+	{
+	}
+
+	if(m_version.equals("IPv4"))
+	    return "0.0.0.0";
+	else
+	    return "::";
     }
 
     protected String getSessionCipher()
@@ -180,7 +192,8 @@ public class TcpNeighbor extends Neighbor
     {
 	try
 	{
-	    return Integer.parseInt(m_ipPort);
+	    if(m_socket != null)
+		return m_socket.getPort();
 	}
 	catch(Exception exception)
 	{

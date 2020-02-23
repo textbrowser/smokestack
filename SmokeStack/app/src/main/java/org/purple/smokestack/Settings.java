@@ -2306,11 +2306,11 @@ public class Settings extends AppCompatActivity
     {
 	super.onCreate(savedInstanceState);
 	SmokeStackService.startForegroundTask(getApplicationContext());
+        setContentView(R.layout.activity_settings);
 	m_listenersLayoutManager = new ListenersLinearLayoutManager
 	    (Settings.this);
 	m_listenersLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-	m_listenersLayoutManager.setStackFromEnd(true);
-        setContentView(R.layout.activity_settings);
+	m_listenersLayoutManager.setStackFromEnd(false);
 
 	try
 	{
@@ -2545,21 +2545,6 @@ public class Settings extends AppCompatActivity
 	    });
 	m_listenersRecyclerView.setAdapter(m_listenersAdapter);
 	m_listenersRecyclerView.setLayoutManager(m_listenersLayoutManager);
-
-	/*
-	** Restore states.
-	*/
-
-	try
-	{
-	    m_listenersLayoutManager.smoothScrollToPosition
-		(m_listenersRecyclerView,
-		 null,
-		 m_listenersAdapter.getItemCount() - 1);
-	}
-	catch(Exception exception)
-	{
-	}
     }
 
     @Override
@@ -3026,6 +3011,19 @@ public class Settings extends AppCompatActivity
     public void onResume()
     {
 	super.onResume();
+
+	if(!m_receiverRegistered)
+	{
+	    IntentFilter intentFilter = new IntentFilter();
+
+	    intentFilter.addAction
+		("org.purple.smokestack.populate_ozones_participants");
+	    intentFilter.addAction
+		("org.purple.smokestack.populate_participants");
+	    LocalBroadcastManager.getInstance(this).registerReceiver
+		(m_receiver, intentFilter);
+	    m_receiverRegistered = true;
+	}
 
 	try
 	{
