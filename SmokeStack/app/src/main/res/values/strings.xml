@@ -18,7 +18,7 @@
     <string name="iteration_count">Iteration Count</string>
     <string name="last_activity">Last Activity</string>
     <string name="listeners">Listeners</string>
-    <string name="local">Local</string>
+    <string name="local_clients">Local Clients</string>
     <string name="name">Name</string>
     <string name="neighbors">Neighbors</string>
     <string name="out_in_total">Out / In / Total</string>

@@ -38,6 +38,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.text.Spanned;
@@ -85,6 +87,31 @@ public class Settings extends AppCompatActivity
 	public final static int DELETE_PARTICIPANT = 4;
 	public final static int NEW_NAME = 5;
 	public final static int RESET_RETRIEVAL_STATE = 6;
+    }
+
+    private class ListenersLinearLayoutManager extends LinearLayoutManager
+    {
+	ListenersLinearLayoutManager(Context context)
+	{
+	    super(context);
+	}
+
+	@Override
+	public void onLayoutChildren(RecyclerView.Recycler recycler,
+				     RecyclerView.State state)
+	{
+	    /*
+	    ** Android may terminate!
+	    */
+
+	    try
+	    {
+		super.onLayoutChildren(recycler, state);
+	    }
+	    catch(Exception exception)
+	    {
+	    }
+	}
     }
 
     private class PopulateListeners implements Runnable
@@ -163,6 +190,8 @@ public class Settings extends AppCompatActivity
     }
 
     private Database m_databaseHelper = null;
+    private ListenersLinearLayoutManager m_listenersLayoutManager = null;
+    private RecyclerView.Adapter<?> m_listenersAdapter = null;
     private ScheduledExecutorService m_generalScheduler = null;
     private ScheduledExecutorService m_listenersScheduler = null;
     private ScheduledExecutorService m_neighborsScheduler = null;
@@ -2276,6 +2305,9 @@ public class Settings extends AppCompatActivity
     {
 	super.onCreate(savedInstanceState);
 	SmokeStackService.startForegroundTask(getApplicationContext());
+	m_listenersLayoutManager = new ListenersLinearLayoutManager
+	    (Settings.this);
+	m_listenersLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         setContentView(R.layout.activity_settings);
 
 	try
