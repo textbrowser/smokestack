@@ -696,7 +696,7 @@ public class Kernel
 
     public String remoteClientAddress(int position)
     {
-	ArrayList<String> arrayList = new ArrayList<String> ();
+	ArrayList<String> arrayList = new ArrayList<>();
 
 	synchronized(m_listeners)
 	{
@@ -713,9 +713,7 @@ public class Kernel
 
 		    if(addresses != null)
 		    {
-			for(String address : addresses)
-			    arrayList.add(address);
-
+			arrayList.addAll(addresses);
 			addresses.clear();
 		    }
 		}
