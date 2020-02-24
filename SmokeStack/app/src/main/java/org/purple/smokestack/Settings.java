@@ -932,14 +932,18 @@ public class Settings extends AppCompatActivity
 		    array = new String[]
 		    {
 			"Action",
-			"Connect", "Delete", "Disconnect",
+			"Connect",
+			"Delete",
+			"Disconnect",
 			"Reset SSL/TLS Credentials"
 		    };
 		else
 		    array = new String[]
 		    {
 			"Action",
-			"Connect", "Delete", "Disconnect"
+			"Connect",
+			"Delete",
+			"Disconnect"
 		    };
 
 		arrayAdapter = new ArrayAdapter<>
