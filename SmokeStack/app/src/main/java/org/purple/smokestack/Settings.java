@@ -300,8 +300,20 @@ public class Settings extends AppCompatActivity
 	    Miscellaneous.showErrorDialog
 		(Settings.this,
 		 "An error occurred while saving the listener information.");
-	else if(!checkBox1.isChecked())
-	    populateListeners(null);
+	else
+	{
+	    if(generateOzone(textView1.getText().toString() +
+			     ":" +
+			     textView2.getText().toString() +
+			     ":TCP"))
+	    {
+		Kernel.getInstance().populateOzones();
+		populateOzoneAddresses();
+	    }
+
+	    if(!checkBox1.isChecked())
+		populateListeners(null);
+	}
     }
 
     private void addNeighbor()
