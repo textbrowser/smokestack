@@ -89,7 +89,8 @@ public class Settings extends AppCompatActivity
 	public final static int RESET_RETRIEVAL_STATE = 6;
     }
 
-    private class ListenersLinearLayoutManager extends LinearLayoutManager
+    private static class ListenersLinearLayoutManager
+	extends LinearLayoutManager
     {
 	ListenersLinearLayoutManager(Context context)
 	{

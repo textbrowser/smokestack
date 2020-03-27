@@ -51,7 +51,7 @@ public class SmokeStack extends Application
 	SmokeStackService.stopForegroundTask(getApplication());
 
 	if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-	    if(context != null && context instanceof Activity)
+	    if(context instanceof Activity)
 		((Activity) context).finishAndRemoveTask();
 
 	Process.killProcess(Process.myPid());

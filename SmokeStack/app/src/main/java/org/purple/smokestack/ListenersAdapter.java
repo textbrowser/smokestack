@@ -39,7 +39,7 @@ public class ListenersAdapter extends RecyclerView.Adapter
 {
     private Settings m_settings = null;
 
-    public class ViewHolder extends RecyclerView.ViewHolder
+    public static class ViewHolder extends RecyclerView.ViewHolder
 	implements OnCreateContextMenuListener
     {
 	ClientBubble m_clientBubble = null;
@@ -55,8 +55,6 @@ public class ListenersAdapter extends RecyclerView.Adapter
 					View view,
 					ContextMenuInfo menuInfo)
 	{
-	    if(menu == null || view == null)
-		return;
 	}
 
 	public void setData(ClientElement clientElement, int position)
