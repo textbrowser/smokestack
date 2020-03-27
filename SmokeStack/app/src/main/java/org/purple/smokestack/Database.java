@@ -242,7 +242,7 @@ public class Database extends SQLiteOpenHelper
 	    if(cursor != null)
 		m_cursorsOpened.getAndIncrement();
 
-	    while(cursor.moveToNext())
+	    while(cursor != null && cursor.moveToNext())
 	    {
 		PublicKey publicKey = null;
 		byte bytes[] = cryptography.mtd
@@ -434,7 +434,7 @@ public class Database extends SQLiteOpenHelper
 
 	    arrayList = new ArrayList<> ();
 
-	    while(cursor.moveToNext())
+	    while(cursor != null && cursor.moveToNext())
 	    {
 		byte bytes[] = Base64.decode
 		    (cursor.getString(0).getBytes(), Base64.DEFAULT);
@@ -500,7 +500,7 @@ public class Database extends SQLiteOpenHelper
 
 	    arrayList = new ArrayList<> ();
 
-	    while(cursor.moveToNext())
+	    while(cursor != null && cursor.moveToNext())
 	    {
 		ListenerElement listenerElement = new ListenerElement();
 		int count = cursor.getColumnCount();
@@ -686,7 +686,7 @@ public class Database extends SQLiteOpenHelper
 
 	    arrayList = new ArrayList<> ();
 
-	    while(cursor.moveToNext())
+	    while(cursor != null && cursor.moveToNext())
 	    {
 		NeighborElement neighborElement = new NeighborElement();
 		boolean error = false;
@@ -802,7 +802,7 @@ public class Database extends SQLiteOpenHelper
 
 	    arrayList = new ArrayList<> ();
 
-	    while(cursor.moveToNext())
+	    while(cursor != null && cursor.moveToNext())
 	    {
 		NeighborElement neighborElement = new NeighborElement();
 		int count = cursor.getColumnCount();
@@ -1064,7 +1064,7 @@ public class Database extends SQLiteOpenHelper
 
 	    arrayList = new ArrayList<> ();
 
-	    while(cursor.moveToNext())
+	    while(cursor != null && cursor.moveToNext())
 	    {
 		OzoneElement ozoneElement = new OzoneElement();
 		int count = cursor.getColumnCount();
@@ -1178,7 +1178,7 @@ public class Database extends SQLiteOpenHelper
 
 	    arrayList = new ArrayList<> ();
 
-	    while(cursor.moveToNext())
+	    while(cursor != null && cursor.moveToNext())
 	    {
 		SipHashIdElement sipHashIdElement = new SipHashIdElement();
 		int count = cursor.getColumnCount();
@@ -1339,7 +1339,7 @@ public class Database extends SQLiteOpenHelper
 
 	    arrayList = new ArrayList<> ();
 
-	    while(cursor.moveToNext())
+	    while(cursor != null && cursor.moveToNext())
 	    {
 		boolean error = false;
 		int count = cursor.getColumnCount();
@@ -1537,7 +1537,7 @@ public class Database extends SQLiteOpenHelper
 
 	    sparseArray = new SparseIntArray();
 
-	    while(cursor.moveToNext())
+	    while(cursor != null && cursor.moveToNext())
 	    {
 		index += 1;
 		sparseArray.append(index, cursor.getInt(0));
@@ -2000,7 +2000,7 @@ public class Database extends SQLiteOpenHelper
 	    if(cursor != null)
 		m_cursorsOpened.getAndIncrement();
 
-	    while(cursor.moveToNext())
+	    while(cursor != null && cursor.moveToNext())
 	    {
 		byte bytes[] = Base64.decode
 		    (cursor.getString(0), Base64.DEFAULT);
@@ -4041,7 +4041,7 @@ public class Database extends SQLiteOpenHelper
 	    if(cursor != null)
 		m_cursorsOpened.getAndIncrement();
 
-	    while(cursor.moveToNext())
+	    while(cursor != null && cursor.moveToNext())
 	    {
 		byte bytes[] = cryptography.mtd
 		    (Base64.decode(cursor.getString(0).getBytes(),

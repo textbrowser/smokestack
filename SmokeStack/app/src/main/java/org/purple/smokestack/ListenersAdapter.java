@@ -63,6 +63,8 @@ public class ListenersAdapter extends RecyclerView.Adapter
 	    {
 		if(m_clientBubble != null)
 		    m_clientBubble.setAddress("");
+
+		return;
 	    }
 	    else if(m_clientBubble == null)
 		return;
