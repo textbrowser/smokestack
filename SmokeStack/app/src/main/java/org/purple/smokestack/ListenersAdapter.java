@@ -43,7 +43,6 @@ public class ListenersAdapter extends RecyclerView.Adapter
 	implements OnCreateContextMenuListener
     {
 	ClientBubble m_clientBubble = null;
-	int m_position = -1;
 
         public ViewHolder(ClientBubble clientBubble)
 	{
@@ -66,14 +65,11 @@ public class ListenersAdapter extends RecyclerView.Adapter
 	    {
 		if(m_clientBubble != null)
 		    m_clientBubble.setAddress("");
-
-		m_position = position;
 	    }
 	    else if(m_clientBubble == null)
 		return;
 
 	    m_clientBubble.setAddress(clientElement.m_address);
-	    m_position = position;
 	}
     }
 

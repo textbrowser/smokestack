@@ -35,8 +35,6 @@ import android.widget.TextView;
 
 public class ClientBubble extends View
 {
-    private Context m_context = null;
-    private Settings m_settings = null;
     private View m_view = null;
 
     public ClientBubble(Context context,
@@ -44,10 +42,8 @@ public class ClientBubble extends View
 			ViewGroup viewGroup)
     {
 	super(context);
-	m_context = context;
-	m_settings = settings;
 
-	LayoutInflater inflater = (LayoutInflater) m_context.getSystemService
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService
 	    (Context.LAYOUT_INFLATER_SERVICE);
 
 	m_view = inflater.inflate(R.layout.client_bubble, viewGroup, false);

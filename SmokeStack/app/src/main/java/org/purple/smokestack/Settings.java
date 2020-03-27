@@ -366,7 +366,6 @@ public class Settings extends AppCompatActivity
 	    return;
 
 	String string = "";
-	StringBuilder stringBuilder = new StringBuilder();
 	TextView textView1 = (TextView) findViewById
 	    (R.id.participant_siphash_id);
 
