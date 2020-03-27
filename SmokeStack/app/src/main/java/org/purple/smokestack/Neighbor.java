@@ -555,6 +555,8 @@ public abstract class Neighbor
 	m_remoteUserAuthenticated.set(false);
 	m_requestUnsolicitedSent.set(false);
 	m_startTime.set(System.nanoTime());
+	m_stringBuffer.delete(0, m_stringBuffer.length());
+	m_stringBuffer.trimToSize();
     }
 
     protected void setError(String error)
