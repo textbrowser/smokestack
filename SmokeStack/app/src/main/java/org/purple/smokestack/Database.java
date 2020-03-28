@@ -467,7 +467,8 @@ public class Database extends SQLiteOpenHelper
 	return arrayList;
     }
 
-    public ArrayList<ListenerElement> readListeners(Cryptography cryptography)
+    public ArrayList<ListenerElement> readListeners
+	(Cryptography cryptography, int listenerOid)
     {
 	if(cryptography == null || m_db == null)
 	    return null;
@@ -477,23 +478,43 @@ public class Database extends SQLiteOpenHelper
 
 	try
 	{
-	    cursor = m_db.rawQuery
-		("SELECT " +
-		 "certificate, " +
-		 "ip_version, " +
-		 "is_private, " +
-		 "last_error, " +
-		 "local_ip_address, " +
-		 "local_port, " +
-		 "local_scope_id, " +
-		 "peers_count, " +
-		 "private_key, " +
-		 "public_key, " +
-		 "status, " +
-		 "status_control, " +
-		 "uptime, " +
-		 "OID " +
-		 "FROM listeners", null);
+	    if(listenerOid == -1)
+		cursor = m_db.rawQuery
+		    ("SELECT " +
+		     "certificate, " +
+		     "ip_version, " +
+		     "is_private, " +
+		     "last_error, " +
+		     "local_ip_address, " +
+		     "local_port, " +
+		     "local_scope_id, " +
+		     "peers_count, " +
+		     "private_key, " +
+		     "public_key, " +
+		     "status, " +
+		     "status_control, " +
+		     "uptime, " +
+		     "OID " +
+		     "FROM listeners", null);
+	    else
+		cursor = m_db.rawQuery
+		    ("SELECT " +
+		     "certificate, " +
+		     "ip_version, " +
+		     "is_private, " +
+		     "last_error, " +
+		     "local_ip_address, " +
+		     "local_port, " +
+		     "local_scope_id, " +
+		     "peers_count, " +
+		     "private_key, " +
+		     "public_key, " +
+		     "status, " +
+		     "status_control, " +
+		     "uptime, " +
+		     "OID " +
+		     "FROM listeners WHERE OID = ?",
+		     new String[] {String.valueOf(listenerOid)});
 
 	    if(cursor != null)
 		m_cursorsOpened.getAndIncrement();
@@ -2057,6 +2078,43 @@ public class Database extends SQLiteOpenHelper
 	return ok;
     }
 
+    public boolean deleteOzone(Cryptography cryptography,
+			       ListenerElement listenerElement)
+    {
+	if(cryptography == null || listenerElement == null || m_db == null)
+	    return false;
+
+	String ozone = listenerElement.m_localIpAddress +
+	    ":" +
+	    listenerElement.m_localPort +
+	    ":TCP";
+	String ozoneAddressDigest = Base64.encodeToString
+	    (cryptography.
+	     hmac(ozone.getBytes(StandardCharsets.UTF_8)), Base64.DEFAULT);
+	boolean ok = true;
+
+	m_db.beginTransactionNonExclusive();
+
+	try
+	{
+	    ok = m_db.delete
+		("ozones",
+		 "ozone_address_digest = ?",
+		 new String[] {ozoneAddressDigest}) > 0;
+	    m_db.setTransactionSuccessful();
+	}
+	catch(Exception exception)
+	{
+	    ok = false;
+	}
+	finally
+	{
+	    m_db.endTransaction();
+	}
+
+	return ok;
+    }
+
     public boolean deleteOzoneAndSipHashId(String oid)
     {
 	if(m_db == null)
@@ -3183,14 +3241,6 @@ public class Database extends SQLiteOpenHelper
 	}
 
 	return bytes;
-    }
-
-    public int listenerOzoneOid(Cryptography cryptography, int oid)
-    {
-	if(cryptography == null || m_db == null)
-	    return -1;
-
-	return -1;
     }
 
     public long count(String table)

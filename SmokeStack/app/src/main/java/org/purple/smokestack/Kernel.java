@@ -187,7 +187,7 @@ public class Kernel
 	}
 
 	ArrayList<ListenerElement> listeners =
-	    s_databaseHelper.readListeners(s_cryptography);
+	    s_databaseHelper.readListeners(s_cryptography, -1);
 
 	if(listeners == null || listeners.size() == 0)
 	{
@@ -1327,27 +1327,5 @@ public class Kernel
 	{
 	    m_sipHashIdsMutex.writeLock().unlock();
 	}
-    }
-
-    public void prepareListenersScheduled()
-    {
-	ScheduledExecutorService scheduler =
-	    Executors.newScheduledThreadPool(1);
-
-	scheduler.schedule(new Runnable()
-	{
-	    @Override
-	    public void run()
-	    {
-		try
-		{
-		    prepareListeners();
-		}
-		catch(Exception exception)
-		{
-		}
-	    }
-	}, 0, TimeUnit.MILLISECONDS);
-	scheduler.shutdown();
     }
 }

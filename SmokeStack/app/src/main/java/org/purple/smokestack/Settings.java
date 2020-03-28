@@ -553,7 +553,7 @@ public class Settings extends AppCompatActivity
 	     Kernel.getInstance().listenersCount());
 
 	if(arrayList == null)
-	    arrayList = m_databaseHelper.readListeners(s_cryptography);
+	    arrayList = m_databaseHelper.readListeners(s_cryptography, -1);
 
 	final TableLayout tableLayout = (TableLayout)
 	    findViewById(R.id.listeners);
@@ -2203,7 +2203,8 @@ public class Settings extends AppCompatActivity
 			Settings.this.runOnUiThread
 			    (new
 			     PopulateListeners(m_databaseHelper.
-					       readListeners(s_cryptography)));
+					       readListeners(s_cryptography,
+							     -1)));
 		    }
 		    catch(Exception exception)
 		    {
@@ -2902,8 +2903,8 @@ public class Settings extends AppCompatActivity
 		 replace(")", "") + "?");
 	    break;
 	case ContextMenuEnumerator.DELETE_LISTENER:
-	    int oid = m_databaseHelper.listenerOzoneOid
-		(s_cryptography, itemId);
+	    ArrayList<ListenerElement> arrayList = m_databaseHelper.
+		readListeners(s_cryptography, itemId);
 
 	    if(m_databaseHelper.
 	       deleteEntry(String.valueOf(itemId), "listeners"))
@@ -2914,8 +2915,13 @@ public class Settings extends AppCompatActivity
 		** field may represent a recycled value.
 		*/
 
-		Kernel.getInstance().prepareListenersScheduled();
-		m_databaseHelper.deleteEntry(String.valueOf(oid), "ozones");
+		if(arrayList != null && !arrayList.isEmpty())
+		    if(m_databaseHelper.deleteOzone(s_cryptography,
+						    arrayList.get(0)))
+		    {
+			Kernel.getInstance().populateOzones();
+			populateOzoneAddresses();
+		    }
 
 		TableLayout tableLayout = (TableLayout)
 		    findViewById(R.id.listeners);
