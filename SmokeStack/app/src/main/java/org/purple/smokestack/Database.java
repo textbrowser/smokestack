@@ -3185,6 +3185,14 @@ public class Database extends SQLiteOpenHelper
 	return bytes;
     }
 
+    public int listenerOzoneOid(Cryptography cryptography, int oid)
+    {
+	if(cryptography == null || m_db == null)
+	    return -1;
+
+	return -1;
+    }
+
     public long count(String table)
     {
 	if(m_db == null)

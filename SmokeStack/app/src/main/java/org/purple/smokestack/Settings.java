@@ -2902,6 +2902,9 @@ public class Settings extends AppCompatActivity
 		 replace(")", "") + "?");
 	    break;
 	case ContextMenuEnumerator.DELETE_LISTENER:
+	    int oid = m_databaseHelper.listenerOzoneOid
+		(s_cryptography, itemId);
+
 	    if(m_databaseHelper.
 	       deleteEntry(String.valueOf(itemId), "listeners"))
 	    {
@@ -2912,6 +2915,7 @@ public class Settings extends AppCompatActivity
 		*/
 
 		Kernel.getInstance().prepareListenersScheduled();
+		m_databaseHelper.deleteEntry(String.valueOf(oid), "ozones");
 
 		TableLayout tableLayout = (TableLayout)
 		    findViewById(R.id.listeners);
