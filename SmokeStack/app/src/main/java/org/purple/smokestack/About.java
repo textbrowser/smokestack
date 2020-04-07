@@ -52,7 +52,7 @@ public class About
 
 	    // Must agree with SmokeStack/app/build.gradle.
 
-	    s_about = "Version 2020.04.04 Atom " +
+	    s_about = "Version 2020.05.05 Atom " +
                 (BuildConfig.DEBUG ? "(Debug) " : "(Release)") +
                 "\nBuild Date " +
                 simpleDateFormat.format(new Date(BuildConfig.BUILD_TIME)) +
