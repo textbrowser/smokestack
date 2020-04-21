@@ -9,8 +9,8 @@ android {
         minSdkVersion 19
         multiDexEnabled true
         targetSdkVersion 26
-        versionCode 20200505
-        versionName "2020.05.05"
+        versionCode 20200422
+        versionName "2020.04.22"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     dexOptions {

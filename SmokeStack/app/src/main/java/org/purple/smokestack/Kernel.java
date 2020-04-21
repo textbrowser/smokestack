@@ -65,6 +65,8 @@ public class Kernel
     private ScheduledExecutorService m_purgeExpiredRoutingEntriesScheduler =
 	null;
     private ScheduledExecutorService m_purgeReleasedMessagesScheduler = null;
+    private WakeLock m_wakeLock = null;
+    private WifiLock m_wifiLock = null;
     private final ReentrantReadWriteLock m_ozonesMutex = new
 	ReentrantReadWriteLock();
     private final ReentrantReadWriteLock m_releaseMessagesSchedulersMutex = new
@@ -108,17 +110,16 @@ public class Kernel
 	    PowerManager powerManager = (PowerManager)
 		SmokeStack.getApplication().getApplicationContext().
 		getSystemService(Context.POWER_SERVICE);
-	    WakeLock wakeLock = null;
 
 	    if(powerManager != null)
-		wakeLock = powerManager.newWakeLock
+		m_wakeLock = powerManager.newWakeLock
 		    (PowerManager.PARTIAL_WAKE_LOCK,
 		     "SmokeStack:SmokeStackWakeLockTag");
 
-	    if(wakeLock != null)
+	    if(m_wakeLock != null)
 	    {
-		wakeLock.setReferenceCounted(false);
-		wakeLock.acquire();
+		m_wakeLock.setReferenceCounted(false);
+		m_wakeLock.acquire();
 	    }
 	}
 	catch(Exception exception)
@@ -130,17 +131,16 @@ public class Kernel
 	    WifiManager wifiManager = (WifiManager)
 		SmokeStack.getApplication().getApplicationContext().
 		getSystemService(Context.WIFI_SERVICE);
-	    WifiLock wifiLock = null;
 
 	    if(wifiManager != null)
-		wifiLock = wifiManager.createWifiLock
+		m_wifiLock = wifiManager.createWifiLock
 		    (WifiManager.WIFI_MODE_FULL_HIGH_PERF,
-		     "SmokeStackWiFiLockTag");
+		     "SmokeStack:SmokeStackWiFiLockTag");
 
-	    if(wifiLock != null)
+	    if(m_wifiLock != null)
 	    {
-		wifiLock.setReferenceCounted(false);
-		wifiLock.acquire();
+		m_wifiLock.setReferenceCounted(false);
+		m_wifiLock.acquire();
 	    }
 	}
 	catch(Exception exception)
