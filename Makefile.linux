@@ -18,8 +18,12 @@ clean:
 	rm -f smokestack.src.d.zip
 	$(GRADLEW) --build-file SmokeStack/build.gradle clean
 
-clear-smoke-stack:
+clear-smokestack:
 	./adb.bash shell pm clear org.purple.smokestack
+
+copy-apk: all
+	cp ./SmokeStack/app/build/outputs/apk/debug/apk/smokestack.apk \
+	~/Desktop/.
 
 debug-with-source: clean all
 	rm -rf SmokeStack/build SmokeStack/captures
@@ -99,5 +103,5 @@ remove-database:
 	./adb.bash shell run-as org.purple.smokestack \
 	rm -f /data/data/org.purple.smokestack/databases/smokestack.db-journal
 
-stop-smoke-stack:
+stop-smokestack:
 	./adb.bash shell am force-stop org.purple.smokestack

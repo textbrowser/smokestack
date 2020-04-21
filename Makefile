@@ -12,8 +12,11 @@ all:
 clean:
 	$(MAKE) -f $(MAKEFILE) clean
 
-clear-smoke-stack:
-	$(MAKE) -f $(MAKEFILE) clear-smoke-stack
+clear-smokestack:
+	$(MAKE) -f $(MAKEFILE) clear-smokestack
+
+copy-apk:
+	$(MAKE) -f $(MAKEFILE) copy-apk
 
 debug-with-source:
 	$(MAKE) -f $(MAKEFILE) debug-with-source
@@ -54,5 +57,5 @@ release:
 remove-database:
 	$(MAKE) -f $(MAKEFILE) remove-database
 
-stop-smoke-stack:
-	$(MAKE) -f $(MAKEFILE) stop-smoke-stack
+stop-smokestack:
+	$(MAKE) -f $(MAKEFILE) stop-smokestack
