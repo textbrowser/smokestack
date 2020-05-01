@@ -28,5 +28,5 @@ Remaining Items
 - Abnormal native termination on Android 8.x. SSL/TLS and/or libc.
 - Dialogs are not dismissed correctly on rotation changes.
 - Distribute routing identity algorithms.
-- Steam.
+- TLS 1.3 and Android 10.
 - The Settings activity has many views (ANDROID_LINT_MAX_VIEW_COUNT).
