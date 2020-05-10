@@ -38,7 +38,7 @@ public class Messages
     public final static byte CHAT_MESSAGE_RETRIEVAL[] = new byte[] {0x00};
     public final static byte PKP_MESSAGE_REQUEST[] = new byte[] {0x01};
     public final static byte SHARE_SIPHASH_ID[] = new byte[] {0x02};
-    public final static byte SHARE_SIPHASH_ID_CONFIRIMATION[] =
+    public final static byte SHARE_SIPHASH_IDENTITY_CONFIRIMATION[] =
 	new byte[] {0x03};
     public final static int EPKS_GROUP_ONE_ELEMENT_COUNT = 7;
 
@@ -325,7 +325,7 @@ public class Messages
 		 ** [ A Byte ]
 		 */
 
-		 SHARE_SIPHASH_ID_CONFIRIMATION,
+		 SHARE_SIPHASH_IDENTITY_CONFIRIMATION,
 
 		 /*
 		 ** [ A Timestamp ]

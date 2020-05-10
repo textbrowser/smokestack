@@ -375,7 +375,7 @@ public class Settings extends AppCompatActivity
 	     replace(" ", "").replace("-", "").replace(":", "").trim(),
 	     '-', 4);
 
-	if(string.length() != Cryptography.SIPHASH_ID_LENGTH)
+	if(string.length() != Cryptography.SIPHASH_IDENTITY_LENGTH)
 	{
 	    Miscellaneous.showErrorDialog
 		(Settings.this,

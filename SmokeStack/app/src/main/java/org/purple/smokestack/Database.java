@@ -304,7 +304,7 @@ public class Database extends SQLiteOpenHelper
 	if(cryptography == null ||
 	   m_db == null ||
 	   sipHashId == null ||
-	   sipHashId.length() != Cryptography.SIPHASH_ID_LENGTH ||
+	   sipHashId.length() != Cryptography.SIPHASH_IDENTITY_LENGTH ||
 	   strings == null ||
 	   strings.length != Messages.EPKS_GROUP_ONE_ELEMENT_COUNT)
 	    return false;

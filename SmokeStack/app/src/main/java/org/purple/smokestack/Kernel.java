@@ -94,7 +94,8 @@ public class Kernel
     private final static long PURGE_RELEASED_MESSAGES_INTERVAL =
 	5000; // 5 Seconds
     private final static long ROUTING_INTERVAL = 15000; // 15 Seconds
-    private final static long SHARE_SIPHASH_ID_WINDOW = 30000; // 30 Seconds
+    private final static long SHARE_SIPHASH_IDENTITY_WINDOW =
+	30000; // 30 Seconds
     private static Kernel s_instance = null;
 
     private Kernel()
@@ -1019,7 +1020,8 @@ public class Kernel
 			    (Arrays.
 			     copyOfRange(aes256,
 					 9,
-					 9 + Cryptography.SIPHASH_ID_LENGTH));
+					 9 + Cryptography.
+					 SIPHASH_IDENTITY_LENGTH));
 
 			String message = Messages.bytesToMessageString
 			    (Messages.epksMessage(sipHashId, array));
@@ -1035,10 +1037,12 @@ public class Kernel
 
 			if(current - timestamp < 0)
 			{
-			    if(timestamp - current > SHARE_SIPHASH_ID_WINDOW)
+			    if(timestamp - current >
+			       SHARE_SIPHASH_IDENTITY_WINDOW)
 				return true;
 			}
-			else if(current - timestamp > SHARE_SIPHASH_ID_WINDOW)
+			else if(current - timestamp >
+				SHARE_SIPHASH_IDENTITY_WINDOW)
 			    return true;
 
 			String name = "";
@@ -1046,7 +1050,8 @@ public class Kernel
 			    (Arrays.
 			     copyOfRange(aes256,
 					 9,
-					 9 + Cryptography.SIPHASH_ID_LENGTH),
+					 9 + Cryptography.
+					 SIPHASH_IDENTITY_LENGTH),
 			     StandardCharsets.UTF_8);
 
 			name = sipHashId.toUpperCase().trim();
