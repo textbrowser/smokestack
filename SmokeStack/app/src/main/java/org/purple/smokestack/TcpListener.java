@@ -625,7 +625,13 @@ public class TcpListener
 					   Integer.parseInt(m_ipPort)),
 		     0);
 
-		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+		if(Build.VERSION.SDK_INT >= 29) // Android 10
+		    m_socket.setEnabledProtocols
+			(new String[] {"TLSv1",
+				       "TLSv1.1",
+				       "TLSv1.2",
+				       "TLSv1.3"});
+		else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
 		    m_socket.setEnabledProtocols
 			(new String[] {"TLSv1", "TLSv1.1", "TLSv1.2"});
 		else
