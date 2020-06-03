@@ -182,7 +182,7 @@ public class TcpListener
 		    }
 		}
 	    }
-	}, 0, ACCEPT_INTERVAL, TimeUnit.MILLISECONDS);
+	}, 0L, ACCEPT_INTERVAL, TimeUnit.MILLISECONDS);
 	m_scheduler.scheduleAtFixedRate(new Runnable()
 	{
 	    @Override
@@ -247,7 +247,7 @@ public class TcpListener
 		{
 		}
 	    }
-	}, 0, TIMER_INTERVAL, TimeUnit.MILLISECONDS);
+	}, 0L, TIMER_INTERVAL, TimeUnit.MILLISECONDS);
     }
 
     protected boolean isNetworkConnected()
@@ -517,7 +517,7 @@ public class TcpListener
 
 	    try
 	    {
-		if(!m_acceptScheduler.awaitTermination(60, TimeUnit.SECONDS))
+		if(!m_acceptScheduler.awaitTermination(60L, TimeUnit.SECONDS))
 		    m_acceptScheduler.shutdownNow();
 	    }
 	    catch(Exception exception)
@@ -537,7 +537,7 @@ public class TcpListener
 
 	    try
 	    {
-		if(!m_scheduler.awaitTermination(60, TimeUnit.SECONDS))
+		if(!m_scheduler.awaitTermination(60L, TimeUnit.SECONDS))
 		    m_scheduler.shutdownNow();
 	    }
 	    catch(Exception exception)

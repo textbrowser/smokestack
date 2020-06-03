@@ -2178,7 +2178,7 @@ public class Settings extends AppCompatActivity
 		    {
 		    }
 		}
-	    }, 0, TIMER_INTERVAL, TimeUnit.MILLISECONDS);
+	    }, 0L, TIMER_INTERVAL, TimeUnit.MILLISECONDS);
         }
     }
 
@@ -2210,7 +2210,7 @@ public class Settings extends AppCompatActivity
 		    {
 		    }
 		}
-	    }, 0, REFRESH_INTERVAL, TimeUnit.MILLISECONDS);
+	    }, 0L, REFRESH_INTERVAL, TimeUnit.MILLISECONDS);
         }
     }
 
@@ -2235,7 +2235,7 @@ public class Settings extends AppCompatActivity
 		    {
 		    }
 		}
-	    }, 0, REFRESH_INTERVAL, TimeUnit.MILLISECONDS);
+	    }, 0L, REFRESH_INTERVAL, TimeUnit.MILLISECONDS);
         }
     }
 
@@ -2254,7 +2254,7 @@ public class Settings extends AppCompatActivity
 
 	try
 	{
-	    if(!m_generalScheduler.awaitTermination(60, TimeUnit.SECONDS))
+	    if(!m_generalScheduler.awaitTermination(60L, TimeUnit.SECONDS))
 		m_generalScheduler.shutdownNow();
 	}
 	catch(Exception exception)
@@ -2281,7 +2281,7 @@ public class Settings extends AppCompatActivity
 
 	try
 	{
-	    if(!m_listenersScheduler.awaitTermination(60, TimeUnit.SECONDS))
+	    if(!m_listenersScheduler.awaitTermination(60L, TimeUnit.SECONDS))
 		m_listenersScheduler.shutdownNow();
 	}
 	catch(Exception exception)
@@ -2308,7 +2308,7 @@ public class Settings extends AppCompatActivity
 
 	try
 	{
-	    if(!m_neighborsScheduler.awaitTermination(60, TimeUnit.SECONDS))
+	    if(!m_neighborsScheduler.awaitTermination(60L, TimeUnit.SECONDS))
 		m_neighborsScheduler.shutdownNow();
 	}
 	catch(Exception exception)

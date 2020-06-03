@@ -450,7 +450,7 @@ public class Kernel
 			{
 			}
 		    }
-		}, 1500, TimeUnit.MILLISECONDS));
+		}, 1500L, TimeUnit.MILLISECONDS));
 	}
 	catch(Exception exception)
 	{
@@ -480,7 +480,7 @@ public class Kernel
 		    {
 		    }
 		}
-	    }, 1500, CONGESTION_INTERVAL, TimeUnit.MILLISECONDS);
+	    }, 1500L, CONGESTION_INTERVAL, TimeUnit.MILLISECONDS);
 	}
 
 	if(m_listenersScheduler == null)
@@ -499,7 +499,7 @@ public class Kernel
 		    {
 		    }
 		}
-	    }, 1500, LISTENERS_INTERVAL, TimeUnit.MILLISECONDS);
+	    }, 1500L, LISTENERS_INTERVAL, TimeUnit.MILLISECONDS);
 	}
 
 	if(m_neighborsScheduler == null)
@@ -518,7 +518,7 @@ public class Kernel
 		    {
 		    }
 		}
-	    }, 1500, NEIGHBORS_INTERVAL, TimeUnit.MILLISECONDS);
+	    }, 1500L, NEIGHBORS_INTERVAL, TimeUnit.MILLISECONDS);
 	}
 
 	if(m_purgeReleasedMessagesScheduler == null)
@@ -579,7 +579,7 @@ public class Kernel
 		    {
 		    }
 		}
-	    }, 1500, PURGE_RELEASED_MESSAGES_INTERVAL, TimeUnit.MILLISECONDS);
+	    }, 1500L, PURGE_RELEASED_MESSAGES_INTERVAL, TimeUnit.MILLISECONDS);
 	}
 
 	if(m_purgeExpiredRoutingEntriesScheduler == null)
@@ -601,7 +601,7 @@ public class Kernel
 		    {
 		    }
 		}
-	    }, 1500, ROUTING_INTERVAL, TimeUnit.MILLISECONDS);
+	    }, 1500L, ROUTING_INTERVAL, TimeUnit.MILLISECONDS);
 	}
     }
 

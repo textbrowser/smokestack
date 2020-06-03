@@ -376,7 +376,7 @@ public class TcpNeighbor extends Neighbor
 		{
 		}
 	    }
-	}, 0, READ_SOCKET_INTERVAL, TimeUnit.MILLISECONDS);
+	}, 0L, READ_SOCKET_INTERVAL, TimeUnit.MILLISECONDS);
     }
 
     public TcpNeighbor(String proxyIpAddress,
@@ -501,7 +501,7 @@ public class TcpNeighbor extends Neighbor
 		{
 		}
 	    }
-	}, 0, READ_SOCKET_INTERVAL, TimeUnit.MILLISECONDS);
+	}, 0L, READ_SOCKET_INTERVAL, TimeUnit.MILLISECONDS);
 
 	m_trustManagers = new TrustManager[]
 	{
@@ -592,7 +592,7 @@ public class TcpNeighbor extends Neighbor
 		try
 		{
 		    if(!m_requestAuthenticationScheduler.
-		       awaitTermination(60, TimeUnit.SECONDS))
+		       awaitTermination(60L, TimeUnit.SECONDS))
 			m_requestAuthenticationScheduler.shutdownNow();
 		}
 		catch(Exception exception)
@@ -613,7 +613,7 @@ public class TcpNeighbor extends Neighbor
 	    try
 	    {
 		if(!m_readSocketScheduler.
-		   awaitTermination(60, TimeUnit.SECONDS))
+		   awaitTermination(60L, TimeUnit.SECONDS))
 		    m_readSocketScheduler.shutdownNow();
 	    }
 	    catch(Exception exception)

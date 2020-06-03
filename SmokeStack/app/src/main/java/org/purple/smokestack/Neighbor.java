@@ -256,7 +256,7 @@ public abstract class Neighbor
 		{
 		}
 	    }
-	}, 0, PARSING_INTERVAL, TimeUnit.MILLISECONDS);
+	}, 0L, PARSING_INTERVAL, TimeUnit.MILLISECONDS);
 	m_scheduler.scheduleAtFixedRate(new Runnable()
 	{
 	    @Override
@@ -297,7 +297,7 @@ public abstract class Neighbor
 		{
 		}
 	    }
-	}, 0, TIMER_INTERVAL, TimeUnit.MILLISECONDS);
+	}, 0L, TIMER_INTERVAL, TimeUnit.MILLISECONDS);
 	m_sendOutboundScheduler.scheduleAtFixedRate(new Runnable()
 	{
 	    private long m_accumulatedTime = System.nanoTime();
@@ -393,7 +393,7 @@ public abstract class Neighbor
 		{
 		}
 	    }
-	}, 0, SEND_OUTBOUND_TIMER_INTERVAL, TimeUnit.MILLISECONDS);
+	}, 0L, SEND_OUTBOUND_TIMER_INTERVAL, TimeUnit.MILLISECONDS);
     }
 
     protected String getCapabilities()
@@ -473,7 +473,7 @@ public abstract class Neighbor
 	{
 	    try
 	    {
-		if(!m_parsingScheduler.awaitTermination(60, TimeUnit.SECONDS))
+		if(!m_parsingScheduler.awaitTermination(60L, TimeUnit.SECONDS))
 		    m_parsingScheduler.shutdownNow();
 	    }
 	    catch(Exception exception)
@@ -493,7 +493,7 @@ public abstract class Neighbor
 
 	    try
 	    {
-		if(!m_scheduler.awaitTermination(60, TimeUnit.SECONDS))
+		if(!m_scheduler.awaitTermination(60L, TimeUnit.SECONDS))
 		    m_scheduler.shutdownNow();
 	    }
 	    catch(Exception exception)
@@ -514,7 +514,7 @@ public abstract class Neighbor
 	    try
 	    {
 		if(!m_sendOutboundScheduler.
-		   awaitTermination(60, TimeUnit.SECONDS))
+		   awaitTermination(60L, TimeUnit.SECONDS))
 		    m_sendOutboundScheduler.shutdownNow();
 	    }
 	    catch(Exception exception)
