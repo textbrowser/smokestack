@@ -42,7 +42,7 @@ public class ListenerElement
     public byte m_privateKey[] = null;
     public byte m_publicKey[] = null;
     public int m_oid = -1;
-    public long m_peersCount = 0;
+    public long m_peersCount = 0L;
 
     public ListenerElement()
     {

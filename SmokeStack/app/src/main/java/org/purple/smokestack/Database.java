@@ -58,8 +58,8 @@ import java.util.regex.Matcher;
 public class Database extends SQLiteOpenHelper
 {
     private SQLiteDatabase m_db = null;
-    private final AtomicLong m_cursorsClosed = new AtomicLong(0);
-    private final AtomicLong m_cursorsOpened = new AtomicLong(0);
+    private final AtomicLong m_cursorsClosed = new AtomicLong(0L);
+    private final AtomicLong m_cursorsOpened = new AtomicLong(0L);
     private final static Comparator<ListenerElement>
 	s_readListenersComparator = new Comparator<ListenerElement> ()
 	{
@@ -186,7 +186,7 @@ public class Database extends SQLiteOpenHelper
     private final static int SIPHASH_STREAM_CREATION_ITERATION_COUNT = 4096;
     private final static long ONE_WEEK = 604800000L;
     private final static long WRITE_PARTICIPANT_TIME_DELTA =
-	60000; // 60 Seconds
+	60000L; // 60 Seconds
     private static Database s_instance = null;
 
     private Database(Context context)
@@ -1224,7 +1224,7 @@ public class Database extends SQLiteOpenHelper
 			    Base64.decode(cursor.getString(i), Base64.DEFAULT);
 			continue;
 		    case 2:
-			sipHashIdElement.m_keysSigned = cursor.getLong(i) > 0;
+			sipHashIdElement.m_keysSigned = cursor.getLong(i) > 0L;
 			continue;
 		    case 3:
 			sipHashIdElement.m_inMessages = cursor.getLong(i);
@@ -2749,7 +2749,7 @@ public class Database extends SQLiteOpenHelper
 		    long timestamp = Miscellaneous.byteArrayToLong
 			(Base64.decode(string.getBytes(), Base64.NO_WRAP));
 
-		    if(current - timestamp < 0)
+		    if(current - timestamp < 0L)
 		    {
 			if(timestamp - current > WRITE_PARTICIPANT_TIME_DELTA)
 			    return false;
@@ -3246,10 +3246,10 @@ public class Database extends SQLiteOpenHelper
     public long count(String table)
     {
 	if(m_db == null)
-	    return -1;
+	    return -1L;
 
 	Cursor cursor = null;
-	long c = 0;
+	long c = 0L;
 
 	try
 	{
@@ -3267,7 +3267,7 @@ public class Database extends SQLiteOpenHelper
 	}
 	catch(Exception exception)
 	{
-	    c = -1;
+	    c = -1L;
 	}
 	finally
 	{

@@ -82,20 +82,20 @@ public class Kernel
 	(Cryptography.randomBytes(SipHash.KEY_LENGTH));
     private final static int CONGESTION_LIFETIME = 60;
     private final static int ROUTING_ENTRY_LIFETIME = CONGESTION_LIFETIME;
-    private final static long CHAT_MESSAGE_RETRIEVAL_WINDOW = 30000; /*
-								     ** 30
-								     ** Seconds
-								     */
-    private final static long CONGESTION_INTERVAL = 15000; // 15 Seconds
-    private final static long LISTENERS_INTERVAL = 5000; // 5 Seconds
-    private final static long NEIGHBORS_INTERVAL = 5000; // 5 Seconds
+    private final static long CHAT_MESSAGE_RETRIEVAL_WINDOW = 30000L; /*
+								      ** 30
+								      ** Seconds
+								      */
+    private final static long CONGESTION_INTERVAL = 15000L; // 15 Seconds
+    private final static long LISTENERS_INTERVAL = 5000L; // 5 Seconds
+    private final static long NEIGHBORS_INTERVAL = 5000L; // 5 Seconds
     private final static long PKP_MESSAGE_RETRIEVAL_WINDOW =
-	30000; // 30 Seconds
+	30000L; // 30 Seconds
     private final static long PURGE_RELEASED_MESSAGES_INTERVAL =
-	5000; // 5 Seconds
-    private final static long ROUTING_INTERVAL = 15000; // 15 Seconds
+	5000L; // 5 Seconds
+    private final static long ROUTING_INTERVAL = 15000L; // 15 Seconds
     private final static long SHARE_SIPHASH_IDENTITY_WINDOW =
-	30000; // 30 Seconds
+	30000L; // 30 Seconds
     private static Kernel s_instance = null;
 
     private Kernel()
@@ -933,7 +933,7 @@ public class Kernel
 			long timestamp = Miscellaneous.byteArrayToLong
 			    (Arrays.copyOfRange(aes256, 1, 1 + 8));
 
-			if(current - timestamp < 0)
+			if(current - timestamp < 0L)
 			{
 			    if(timestamp - current >
 			       CHAT_MESSAGE_RETRIEVAL_WINDOW)
@@ -997,7 +997,7 @@ public class Kernel
 			long timestamp = Miscellaneous.byteArrayToLong
 			    (Arrays.copyOfRange(aes256, 1, 1 + 8));
 
-			if(current - timestamp < 0)
+			if(current - timestamp < 0L)
 			{
 			    if(timestamp - current >
 			       PKP_MESSAGE_RETRIEVAL_WINDOW)
@@ -1035,7 +1035,7 @@ public class Kernel
 			long timestamp = Miscellaneous.byteArrayToLong
 			    (Arrays.copyOfRange(aes256, 1, 1 + 8));
 
-			if(current - timestamp < 0)
+			if(current - timestamp < 0L)
 			{
 			    if(timestamp - current >
 			       SHARE_SIPHASH_IDENTITY_WINDOW)

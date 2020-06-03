@@ -29,9 +29,9 @@ package org.purple.smokestack;
 
 public class MessageTotals
 {
-    public long m_inMessages = 0;
-    public long m_outMessages = 0;
-    public long m_totalMessages = 0;
+    public long m_inMessages = 0L;
+    public long m_outMessages = 0L;
+    public long m_totalMessages = 0L;
 
     public MessageTotals()
     {

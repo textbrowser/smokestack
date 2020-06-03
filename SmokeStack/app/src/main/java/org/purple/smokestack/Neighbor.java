@@ -48,11 +48,12 @@ public abstract class Neighbor
     private final ScheduledExecutorService m_sendOutboundScheduler =
 	Executors.newSingleThreadScheduledExecutor();
     private final static int LANE_WIDTH = 8 * 1024 * 1024; // 8 MiB
-    private final static long DATA_LIFETIME = 15000; // 15 Seconds
-    private final static long PARSING_INTERVAL = 100; // Milliseconds
-    private final static long SEND_OUTBOUND_TIMER_INTERVAL = 25; // Milliseconds
-    private final static long SILENCE = 90000; // 90 Seconds
-    private final static long TIMER_INTERVAL = 2500; // 2.5 Seconds
+    private final static long DATA_LIFETIME = 15000L; // 15 Seconds
+    private final static long PARSING_INTERVAL = 100L; // Milliseconds
+    private final static long SEND_OUTBOUND_TIMER_INTERVAL =
+	25L; // Milliseconds
+    private final static long SILENCE = 90000L; // 90 Seconds
+    private final static long TIMER_INTERVAL = 2500L; // 2.5 Seconds
     protected AtomicBoolean m_aborted = null;
     protected AtomicBoolean m_allowUnsolicited = null;
     protected AtomicBoolean m_clientSupportsCryptographicDiscovery = null;
@@ -81,7 +82,7 @@ public abstract class Neighbor
     protected final static int BYTES_PER_READ = 1024 * 1024; // 1 MiB
     protected final static int MAXIMUM_BYTES = LANE_WIDTH;
     protected final static int SO_TIMEOUT = 0; // 0 Seconds
-    protected final static long READ_SOCKET_INTERVAL = 50; // 50 Milliseconds
+    protected final static long READ_SOCKET_INTERVAL = 50L; // 50 Milliseconds
 
     private void saveStatistics()
     {
@@ -115,7 +116,7 @@ public abstract class Neighbor
 
     private void terminateOnSilence()
     {
-	if((System.nanoTime() - m_lastTimeRead.get()) / 1000000 > SILENCE)
+	if((System.nanoTime() - m_lastTimeRead.get()) / 1000000L > SILENCE)
 	    disconnect();
     }
 
@@ -130,8 +131,8 @@ public abstract class Neighbor
     {
 	m_aborted = new AtomicBoolean(false);
 	m_allowUnsolicited = new AtomicBoolean(false);
-	m_bytesRead = new AtomicLong(0);
-	m_bytesWritten = new AtomicLong(0);
+	m_bytesRead = new AtomicLong(0L);
+	m_bytesWritten = new AtomicLong(0L);
 	m_clientSupportsCryptographicDiscovery = new AtomicBoolean(false);
 	m_cryptography = Cryptography.getInstance();
 	m_databaseHelper = Database.getInstance();
@@ -309,7 +310,7 @@ public abstract class Neighbor
 		    if(!connected() || m_aborted.get())
 			return;
 
-		    if(System.nanoTime() - m_accumulatedTime >= 3e+10)
+		    if(System.nanoTime() - m_accumulatedTime >= 30000000000L)
 		    {
 			m_accumulatedTime = System.nanoTime();
 			send(getCapabilities());

@@ -94,8 +94,8 @@ public class TcpListener
     private final StringBuilder m_error = new StringBuilder();
     private final static int RSA_KEY_SIZE = 3072;
     private final static int SO_TIMEOUT = 5000; // 5 Seconds
-    private final static long ACCEPT_INTERVAL = 100; // Milliseconds
-    private final static long TIMER_INTERVAL = 2500; // 2.5 Seconds
+    private final static long ACCEPT_INTERVAL = 100L; // Milliseconds
+    private final static long TIMER_INTERVAL = 2500L; // 2.5 Seconds
 
     public TcpListener(String ipAddress,
 		       String ipPort,

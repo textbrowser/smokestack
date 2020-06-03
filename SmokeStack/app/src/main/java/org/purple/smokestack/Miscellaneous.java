@@ -44,7 +44,7 @@ public abstract class Miscellaneous
 {
     public static final int INTEGER_BYTES = 4;
     public static final int LONG_BYTES = 8;
-    public static final long LONG_LONG_BYTES = 8;
+    public static final long LONG_LONG_BYTES = 8L;
 
     public static String byteArrayAsHexString(byte bytes[])
     {
@@ -144,26 +144,27 @@ public abstract class Miscellaneous
 	    StringBuilder stringBuilder = new StringBuilder();
 	    long v = Integer.decode(bytes).longValue();
 
-	    if(v < 1024)
+	    if(v < 1024L)
 	    {
 		stringBuilder.append(decimalFormat.format(v));
 		stringBuilder.append(" B");
 	    }
-	    else if(v < 1024 * 1024)
+	    else if(v < 1024L * 1024L)
 	    {
-		stringBuilder.append(decimalFormat.format(v / (1.0 * 1024)));
+		stringBuilder.append(decimalFormat.format(v / (1.0 * 1024.0)));
 		stringBuilder.append(" KiB");
 	    }
-	    else if(v < 1024 * 1024 * 1024)
+	    else if(v < 1024L * 1024L * 1024L)
 	    {
 		stringBuilder.append
-		    (decimalFormat.format(v / (1.0 * 1024 * 1024)));
+		    (decimalFormat.format(v / (1.0 * 1024.0 * 1024.0)));
 		stringBuilder.append(" MiB");
 	    }
 	    else
 	    {
 		stringBuilder.append
-		    (decimalFormat.format(v / (1.0 * 1024 * 1024 * 1024)));
+		    (decimalFormat.
+		     format(v / (1.0 * 1024.0 * 1024.0 * 1024.0)));
 		stringBuilder.append(" GiB");
 	    }
 
@@ -297,7 +298,7 @@ public abstract class Miscellaneous
     public static long byteArrayToLong(byte bytes[])
     {
 	if(bytes == null || bytes.length != LONG_BYTES)
-	    return 0;
+	    return 0L;
 
 	try
 	{
@@ -309,7 +310,7 @@ public abstract class Miscellaneous
 	}
 	catch(Exception exception)
 	{
-	    return 0;
+	    return 0L;
 	}
     }
 

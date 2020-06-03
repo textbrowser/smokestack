@@ -58,7 +58,7 @@ public class TcpNeighbor extends Neighbor
     private final static int CONNECTION_TIMEOUT = 10000; // 10 Seconds
     private final static int HANDSHAKE_TIMEOUT = 10000; // 10 Seconds
     private final static long REQUEST_AUTHENTICATION_INTERVAL =
-	10000; // 10 Seconds
+	10000L; // 10 Seconds
     private int m_proxyPort = -1;
 
     private void prepareMRandom()
@@ -337,12 +337,12 @@ public class TcpNeighbor extends Neighbor
 			m_error = true;
 		    }
 
-		    long bytesRead = 0;
+		    long bytesRead = 0L;
 
 		    if(i < 0)
-			bytesRead = -1;
+			bytesRead = -1L;
 		    else if(i > 0)
-			bytesRead += i;
+			bytesRead += (long) i;
 
 		    if(bytesRead < 0)
 		    {
@@ -462,12 +462,12 @@ public class TcpNeighbor extends Neighbor
 			m_error = true;
 		    }
 
-		    long bytesRead = 0;
+		    long bytesRead = 0L;
 
 		    if(i < 0)
-			bytesRead = -1;
+			bytesRead = -1L;
 		    else if(i > 0)
-			bytesRead += i;
+			bytesRead += (long) i;
 
 		    if(bytesRead < 0)
 		    {

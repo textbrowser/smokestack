@@ -50,8 +50,8 @@ public class NeighborElement
     public String m_uptime = "";
     public byte m_remoteCertificate[] = null;
     public int m_oid = -1;
-    public long m_outboundEchoQueued = 0;
-    public long m_outboundQueued = 0;
+    public long m_outboundEchoQueued = 0L;
+    public long m_outboundQueued = 0L;
 
     public NeighborElement()
     {
