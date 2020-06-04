@@ -344,14 +344,14 @@ public class TcpNeighbor extends Neighbor
 		    else if(i > 0)
 			bytesRead += (long) i;
 
-		    if(bytesRead < 0)
+		    if(bytesRead < 0L)
 		    {
 			m_error = true;
 			setError("A socket read() error occurred.");
 			disconnect();
 			return;
 		    }
-		    else if(bytesRead == 0)
+		    else if(bytesRead == 0L)
 			return;
 
 		    m_bytesRead.getAndAdd(bytesRead);
@@ -469,14 +469,14 @@ public class TcpNeighbor extends Neighbor
 		    else if(i > 0)
 			bytesRead += (long) i;
 
-		    if(bytesRead < 0)
+		    if(bytesRead < 0L)
 		    {
 			m_error = true;
 			setError("A socket read() error occurred.");
 			disconnect();
 			return;
 		    }
-		    else if(bytesRead == 0)
+		    else if(bytesRead == 0L)
 			return;
 
 		    m_bytesRead.getAndAdd(bytesRead);
