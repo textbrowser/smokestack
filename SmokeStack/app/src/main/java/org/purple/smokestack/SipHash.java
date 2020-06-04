@@ -51,7 +51,7 @@ public class SipHash
     private long byteArrayToLong(byte bytes[], int offset)
     {
 	if(bytes == null || (bytes.length - offset) < Miscellaneous.LONG_BYTES)
-	    return 0;
+	    return 0L;
 
 	long value = 0L;
 
@@ -131,7 +131,7 @@ public class SipHash
     public synchronized long hmac(byte data[], byte key[])
     {
 	if(data == null || key == null || key.length != KEY_LENGTH)
-	    return 0;
+	    return 0L;
 
 	/*
 	** Initialization
@@ -225,7 +225,7 @@ public class SipHash
 	** Finalization
 	*/
 
-	m_v2 ^= 0xff;
+	m_v2 ^= 0xffL;
 
 	switch(D_ROUNDS[m_d_rounds_index])
 	{
