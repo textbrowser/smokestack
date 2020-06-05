@@ -4,7 +4,8 @@ Completed Items
 - Create a single statement in purgeReleasedMessages() to delete specific OIDs.
 - Decrease the lock area of m_stringBuilder in Neighbor.java.
 - Discovery via cryptography.
-- Dialogs are not dismissed correctly on rotation changes.
+- Dialogs are not dismissed correctly on rotation changes. Unable to
+  reproduce.
 - Display the number of internal Neighbors.
 - Echo shared Smoke identities.
 - Entries in routing_identities expire.
