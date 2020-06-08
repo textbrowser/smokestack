@@ -87,6 +87,7 @@ public class Settings extends AppCompatActivity
 	public final static int DELETE_PARTICIPANT = 4;
 	public final static int NEW_NAME = 5;
 	public final static int RESET_RETRIEVAL_STATE = 6;
+	public final static int TOGGLE_LISTENER_PRIVACY = 7;
     }
 
     private static class ListenersLinearLayoutManager
@@ -2126,14 +2127,6 @@ public class Settings extends AppCompatActivity
 	finish();
     }
 
-    private void showSteamActivity()
-    {
-	Intent intent = new Intent(Settings.this, Steam.class);
-
-	startActivity(intent);
-	finish();
-    }
-
     private void startGeneralTimer()
     {
 	if(m_generalScheduler == null)
@@ -2716,17 +2709,6 @@ public class Settings extends AppCompatActivity
 	    {
 		switch(groupId)
 	        {
-		case ContextMenuEnumerator.DELETE_OZONE:
-		    if(State.getInstance().getString("dialog_accepted").
-		       equals("true"))
-			if(m_databaseHelper.
-			   deleteEntry(String.valueOf(itemId), "ozones"))
-			{
-			    Kernel.getInstance().populateOzones();
-			    populateOzoneAddresses();
-			}
-
-		    break;
 		case ContextMenuEnumerator.DELETE_ALL_MESSAGES:
 		    if(State.getInstance().getString("dialog_accepted").
 		       equals("true"))
@@ -2764,6 +2746,17 @@ public class Settings extends AppCompatActivity
 				textView.setText("0 / 0 / 0");
 				break;
 			    }
+			}
+
+		    break;
+		case ContextMenuEnumerator.DELETE_OZONE:
+		    if(State.getInstance().getString("dialog_accepted").
+		       equals("true"))
+			if(m_databaseHelper.
+			   deleteEntry(String.valueOf(itemId), "ozones"))
+			{
+			    Kernel.getInstance().populateOzones();
+			    populateOzoneAddresses();
 			}
 
 		    break;
@@ -2846,20 +2839,40 @@ public class Settings extends AppCompatActivity
 
 	switch(groupId)
 	{
-	case ContextMenuEnumerator.DELETE_OZONE:
-	    Miscellaneous.showPromptDialog
-		(Settings.this,
-		 listener,
-		 "Are you sure that you " +
-		 "wish to delete the Ozone " +
-		 menuItem.getTitle().toString().replace("Delete Ozone (", "").
-		 replace(")", "") + "?");
-	    break;
 	case ContextMenuEnumerator.DELETE_ALL_MESSAGES:
 	    Miscellaneous.showPromptDialog
 		(Settings.this,
 		 listener,
 		 "Are you sure that you wish to delete all messages?");
+	    break;
+	case ContextMenuEnumerator.DELETE_LISTENER:
+	    ArrayList<ListenerElement> arrayList = m_databaseHelper.
+		readListeners(s_cryptography, itemId);
+
+	    if(m_databaseHelper.
+	       deleteEntry(String.valueOf(itemId), "listeners"))
+	    {
+		/*
+		** Prepare the kernel's listeners container
+		** if a listener was deleted as the OID
+		** field may represent a recycled value.
+		*/
+
+		if(arrayList != null && !arrayList.isEmpty())
+		    if(m_databaseHelper.deleteOzone(s_cryptography,
+						    arrayList.get(0)))
+		    {
+			Kernel.getInstance().populateOzones();
+			populateOzoneAddresses();
+		    }
+
+		TableLayout tableLayout = (TableLayout)
+		    findViewById(R.id.listeners);
+		TableRow row = (TableRow) findViewById(itemId);
+
+		tableLayout.removeView(row);
+	    }
+
 	    break;
 	case ContextMenuEnumerator.DELETE_MESSAGES:
 	    Miscellaneous.showPromptDialog
@@ -2869,6 +2882,15 @@ public class Settings extends AppCompatActivity
 		 "wish to delete the messages of participant " +
 		 menuItem.getTitle().toString().
 		 replace("Delete Messages (", "").
+		 replace(")", "") + "?");
+	    break;
+	case ContextMenuEnumerator.DELETE_OZONE:
+	    Miscellaneous.showPromptDialog
+		(Settings.this,
+		 listener,
+		 "Are you sure that you " +
+		 "wish to delete the Ozone " +
+		 menuItem.getTitle().toString().replace("Delete Ozone (", "").
 		 replace(")", "") + "?");
 	    break;
 	case ContextMenuEnumerator.DELETE_PARTICIPANT:
@@ -2902,34 +2924,13 @@ public class Settings extends AppCompatActivity
 		 replace("Reset Retrieval State (", "").
 		 replace(")", "") + "?");
 	    break;
-	case ContextMenuEnumerator.DELETE_LISTENER:
-	    ArrayList<ListenerElement> arrayList = m_databaseHelper.
-		readListeners(s_cryptography, itemId);
-
-	    if(m_databaseHelper.
-	       deleteEntry(String.valueOf(itemId), "listeners"))
+	case ContextMenuEnumerator.TOGGLE_LISTENER_PRIVACY:
+	    if(m_databaseHelper.toggleListenerPrivacy(s_cryptography, itemId))
 	    {
-		/*
-		** Prepare the kernel's listeners container
-		** if a listener was deleted as the OID
-		** field may represent a recycled value.
-		*/
-
-		if(arrayList != null && !arrayList.isEmpty())
-		    if(m_databaseHelper.deleteOzone(s_cryptography,
-						    arrayList.get(0)))
-		    {
-			Kernel.getInstance().populateOzones();
-			populateOzoneAddresses();
-		    }
-
-		TableLayout tableLayout = (TableLayout)
-		    findViewById(R.id.listeners);
-		TableRow row = (TableRow) findViewById(itemId);
-
-		tableLayout.removeView(row);
 	    }
 
+	    break;
+	default:
 	    break;
 	}
 
@@ -2952,9 +2953,6 @@ public class Settings extends AppCompatActivity
 	    case R.id.action_exit:
 		SmokeStack.exit(Settings.this);
 		return true;
-	    case R.id.action_steam:
-		showSteamActivity();
-		return true;
 	    default:
 		break;
 	    }
@@ -2975,7 +2973,6 @@ public class Settings extends AppCompatActivity
 	    isAuthenticated = true;
 
 	menu.findItem(R.id.action_authenticate).setEnabled(!isAuthenticated);
-	menu.findItem(R.id.action_steam).setVisible(false);
 	return true;
     }
 
@@ -2996,10 +2993,16 @@ public class Settings extends AppCompatActivity
 	    try
 	    {
 		if(v.getParent().getParent() == findViewById(R.id.listeners))
+		{
 		    menu.add(ContextMenuEnumerator.DELETE_LISTENER,
 			     v.getId(),
 			     0,
 			     "Delete Listener (" + tag + ")");
+		    menu.add(ContextMenuEnumerator.TOGGLE_LISTENER_PRIVACY,
+			     v.getId(),
+			     0,
+			     "Toggle Privacy (" + tag + ")");
+		}
 		else if(v.getParent().getParent() == findViewById(R.id.ozones))
 		    menu.add(ContextMenuEnumerator.DELETE_OZONE,
 			     v.getId(),

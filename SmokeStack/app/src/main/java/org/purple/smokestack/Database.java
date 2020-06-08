@@ -298,6 +298,14 @@ public class Database extends SQLiteOpenHelper
 	return false;
     }
 
+    public boolean toggleListenerPrivacy(Cryptography cryptography, int oid)
+    {
+	if(cryptography == null || m_db == null)
+	    return false;
+
+	return true;
+    }
+
     public boolean writePublicKeyPairs
 	(Cryptography cryptography, String sipHashId, String strings[])
     {

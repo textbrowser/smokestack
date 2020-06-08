@@ -7,8 +7,4 @@
         android:id="@+id/action_settings"
         android:orderInCategory="200"
         android:title="@string/action_settings" />
-    <item
-        android:id="@+id/action_steam"
-        android:orderInCategory="300"
-        android:title="@string/steam" />
 </menu>
