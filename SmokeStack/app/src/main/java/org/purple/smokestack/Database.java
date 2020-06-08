@@ -303,6 +303,30 @@ public class Database extends SQLiteOpenHelper
 	if(cryptography == null || m_db == null)
 	    return false;
 
+	try
+	{
+	    ArrayList<ListenerElement> arrayList = readListeners
+		(cryptography, oid);
+	    ContentValues values = new ContentValues();
+	    byte bytes[] = cryptography.etm
+		(arrayList.get(0).m_isPrivate ?
+		 "false".getBytes() : "true".getBytes());
+
+	    if(bytes == null)
+		throw new Exception();
+
+	    values.put("is_private",
+		       Base64.encodeToString(bytes, Base64.DEFAULT));
+	    m_db.update("listeners",
+			values,
+			"OID = ?",
+			new String[] {String.valueOf(oid)});
+	}
+	catch(Exception exception)
+	{
+	    return false;
+	}
+
 	return true;
     }
 
