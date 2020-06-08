@@ -307,7 +307,10 @@ public class Database extends SQLiteOpenHelper
 	{
 	    ArrayList<ListenerElement> arrayList = readListeners
 		(cryptography, oid);
-	    ContentValues values = new ContentValues();
+
+	    if(arrayList == null || arrayList.isEmpty())
+		throw new Exception();
+
 	    byte bytes[] = cryptography.etm
 		(arrayList.get(0).m_isPrivate ?
 		 "false".getBytes() : "true".getBytes());
@@ -315,12 +318,15 @@ public class Database extends SQLiteOpenHelper
 	    if(bytes == null)
 		throw new Exception();
 
-	    values.put("is_private",
-		       Base64.encodeToString(bytes, Base64.DEFAULT));
-	    m_db.update("listeners",
-			values,
-			"OID = ?",
-			new String[] {String.valueOf(oid)});
+	    ContentValues values = new ContentValues();
+
+	    values.put
+		("is_private", Base64.encodeToString(bytes, Base64.DEFAULT));
+	    m_db.update
+		("listeners",
+		 values,
+		 "OID = ?",
+		 new String[] {String.valueOf(oid)});
 	}
 	catch(Exception exception)
 	{
