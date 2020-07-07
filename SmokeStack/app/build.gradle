@@ -39,8 +39,8 @@ dependencies {
     implementation 'com.android.support:design:25.4.0'
     testImplementation 'junit:junit:4.12'
     implementation 'com.android.support:support-v4:25.4.0'
-    implementation files('libs/bcprov-ext-jdk15on-165.jar')
-    implementation files('libs/bcpkix-jdk15on-165.jar')
+    implementation files('libs/bcprov-ext-jdk15on-166.jar')
+    implementation files('libs/bcpkix-jdk15on-166.jar')
 }
 
 tasks.withType(JavaCompile) {

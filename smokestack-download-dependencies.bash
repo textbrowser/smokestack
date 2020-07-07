@@ -4,10 +4,10 @@
 
 # Bouncy Castle
 
-bouncycastle1=bcpkix-jdk15on-165.jar
-bouncycastle2=bcpkix-jdk15on-165.tar.gz
-bouncycastle3=bcprov-ext-jdk15on-165.jar
-bouncycastle4=bcprov-jdk15on-165.tar.gz
+bouncycastle1=bcpkix-jdk15on-166.jar
+bouncycastle2=bcpkix-jdk15on-166.tar.gz
+bouncycastle3=bcprov-ext-jdk15on-166.jar
+bouncycastle4=bcprov-jdk15on-166.tar.gz
 
 rm -f $bouncycastle1
 rm -f $bouncycastle2
