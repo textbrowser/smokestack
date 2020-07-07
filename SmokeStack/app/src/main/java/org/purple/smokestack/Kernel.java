@@ -459,6 +459,17 @@ public class Kernel
 	{
 	    m_releaseMessagesSchedulersMutex.writeLock().unlock();
 	}
+
+	synchronized(m_releaseMessagesSchedulersMutex)
+	{
+	    try
+	    {
+		m_releaseMessagesSchedulersMutex.notify();
+	    }
+	    catch(Exception exception)
+	    {
+	    }
+	}
     }
 
     private void prepareSchedulers()
@@ -532,6 +543,17 @@ public class Kernel
 		{
 		    try
 		    {
+			synchronized(m_releaseMessagesSchedulersMutex)
+			{
+			    try
+			    {
+				m_releaseMessagesSchedulersMutex.wait();
+			    }
+			    catch(Exception exception)
+			    {
+			    }
+			}
+
 			m_releaseMessagesSchedulersMutex.writeLock().lock();
 
 			try
