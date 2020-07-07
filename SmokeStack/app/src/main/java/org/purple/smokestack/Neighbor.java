@@ -27,6 +27,9 @@
 
 package org.purple.smokestack;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.util.Base64;
 import java.util.ArrayList;
 import java.util.UUID;
@@ -73,6 +76,7 @@ public abstract class Neighbor
     protected String m_ipPort = "";
     protected String m_version = "";
     protected UUID m_uuid = null;
+    protected final Object m_mutex = new Object();
     protected final Object m_parsingSchedulerObject = new Object();
     protected final ScheduledExecutorService m_readSocketScheduler =
 	Executors.newSingleThreadScheduledExecutor();
@@ -161,6 +165,18 @@ public abstract class Neighbor
 	    {
 		try
 		{
+		    if(!connected() && !m_aborted.get())
+			synchronized(m_mutex)
+			{
+			    try
+			    {
+				m_mutex.wait();
+			    }
+			    catch(Exception exception)
+			    {
+			    }
+			}
+
 		    if(!connected() || m_aborted.get())
 			return;
 
@@ -307,6 +323,18 @@ public abstract class Neighbor
 	    {
 		try
 		{
+		    if(!connected() && !m_aborted.get())
+			synchronized(m_mutex)
+			{
+			    try
+			    {
+				m_mutex.wait();
+			    }
+			    catch(Exception exception)
+			    {
+			    }
+			}
+
 		    if(!connected() || m_aborted.get())
 			return;
 
@@ -449,9 +477,33 @@ public abstract class Neighbor
     protected abstract int getRemotePort();
     protected abstract void connect();
 
+    protected boolean isNetworkConnected()
+    {
+	try
+	{
+	    ConnectivityManager connectivityManager = (ConnectivityManager)
+		SmokeStack.getApplication().getApplicationContext().
+		getSystemService(Context.CONNECTIVITY_SERVICE);
+	    NetworkInfo networkInfo = connectivityManager.
+		getActiveNetworkInfo();
+
+	    return networkInfo != null && networkInfo.isConnected();
+	}
+	catch(Exception exception)
+	{
+	}
+
+	return false;
+    }
+
     protected void abort()
     {
 	m_aborted.set(true);
+
+	synchronized(m_mutex)
+	{
+	    m_mutex.notifyAll();
+	}
 
 	synchronized(m_parsingScheduler)
 	{
@@ -526,6 +578,11 @@ public abstract class Neighbor
     protected void disconnect()
     {
 	m_databaseHelper.deleteEchoQueue(m_oid.get());
+
+	synchronized(m_mutex)
+	{
+	    m_mutex.notifyAll();
+	}
 
 	synchronized(m_parsingSchedulerObject)
 	{

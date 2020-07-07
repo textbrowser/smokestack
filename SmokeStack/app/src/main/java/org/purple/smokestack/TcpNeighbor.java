@@ -47,6 +47,7 @@ import javax.net.ssl.X509TrustManager;
 
 public class TcpNeighbor extends Neighbor
 {
+    private AtomicBoolean m_handshakeCompleted = null;
     private AtomicBoolean m_isValidCertificate = null;
     private InetSocketAddress m_proxyInetSocketAddress = null;
     private SSLSocket m_socket = null;
@@ -137,10 +138,11 @@ public class TcpNeighbor extends Neighbor
     {
 	try
 	{
-	    return m_isValidCertificate.get() &&
-		m_socket != null && !m_socket.isClosed() &&
-		m_socket.getSession() != null &&
-		m_socket.getSession().isValid();
+	    return isNetworkConnected() &&
+		m_handshakeCompleted.get() &&
+		m_isValidCertificate.get() &&
+		m_socket != null &&
+		!m_socket.isClosed();
 	}
 	catch(Exception exception)
 	{
@@ -217,6 +219,8 @@ public class TcpNeighbor extends Neighbor
 	}
 	finally
 	{
+	    m_handshakeCompleted.set(false);
+
 	    if(m_oid.get() >= 0)
 		m_isValidCertificate.set(false);
 
@@ -234,6 +238,7 @@ public class TcpNeighbor extends Neighbor
 	*/
 
 	super("", "", "", "TCP", "", isPrivateServer, false, oid);
+	m_handshakeCompleted = new AtomicBoolean(true);
 	m_isValidCertificate = new AtomicBoolean(true);
 	m_socket = socket;
 	m_userDefined.set(false);
@@ -249,10 +254,16 @@ public class TcpNeighbor extends Neighbor
 			    public void handshakeCompleted
 				(HandshakeCompletedEvent event)
 			    {
+				m_handshakeCompleted.set(true);
 				prepareMRandom();
 				scheduleSend
 				    (Messages.
 				     requestAuthentication(m_randomBuffer));
+
+				synchronized(m_mutex)
+				{
+				    m_mutex.notifyAll();
+				}
 			    }
 			});
 
@@ -279,6 +290,18 @@ public class TcpNeighbor extends Neighbor
 		{
 		    try
 		    {
+			if(!connected() && !m_aborted.get())
+			    synchronized(m_mutex)
+			    {
+				try
+				{
+				    m_mutex.wait();
+				}
+				catch(Exception exception)
+				{
+				}
+			    }
+
 			if(connected() && !m_remoteUserAuthenticated.get())
 			{
 			    prepareMRandom();
@@ -305,6 +328,18 @@ public class TcpNeighbor extends Neighbor
 	    {
 		try
 		{
+		    if(!connected() && !m_aborted.get())
+			synchronized(m_mutex)
+			{
+			    try
+			    {
+				m_mutex.wait();
+			    }
+			    catch(Exception exception)
+			    {
+			    }
+			}
+
 		    if(!connected())
 			return;
 		    else if(m_error)
@@ -389,12 +424,17 @@ public class TcpNeighbor extends Neighbor
 		       int oid)
     {
 	super(ipAddress, ipPort, scopeId, "TCP", version, false, true, oid);
+	m_handshakeCompleted = new AtomicBoolean(false);
 	m_isValidCertificate = new AtomicBoolean(false);
 
-	if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+	if(Build.VERSION.RELEASE.startsWith("10"))
+	    m_protocols = new String[]
+		{"TLSv1", "TLSv1.1", "TLSv1.2", "TLSv1.3"};
+	else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
 	    m_protocols = new String[] {"TLSv1", "TLSv1.1", "TLSv1.2"};
 	else
-	    m_protocols = new String[] {"SSLv3", "TLSv1", "TLSv1.1", "TLSv1.2"};
+	    m_protocols = new String[]
+		{"SSLv3", "TLSv1", "TLSv1.1", "TLSv1.2"};
 
 	m_proxyIpAddress = proxyIpAddress;
 
@@ -430,6 +470,18 @@ public class TcpNeighbor extends Neighbor
 	    {
 		try
 		{
+		    if(!connected() && !m_aborted.get())
+			synchronized(m_mutex)
+			{
+			    try
+			    {
+				m_mutex.wait();
+			    }
+			    catch(Exception exception)
+			    {
+			    }
+			}
+
 		    if(!connected())
 			return;
 		    else if(m_error)
@@ -574,6 +626,7 @@ public class TcpNeighbor extends Neighbor
     {
 	disconnect();
 	super.abort();
+	m_handshakeCompleted.set(false);
 
 	if(m_oid.get() >= 0)
 	    m_isValidCertificate.set(false);
@@ -633,6 +686,7 @@ public class TcpNeighbor extends Neighbor
 	{
 	    m_bytesRead.set(0);
 	    m_bytesWritten.set(0);
+	    m_handshakeCompleted.set(false);
 	    m_lastParsed.set(System.currentTimeMillis());
 	    m_lastTimeRead.set(System.nanoTime());
 
@@ -670,11 +724,31 @@ public class TcpNeighbor extends Neighbor
 		    createSocket(socket, m_proxyIpAddress, m_proxyPort, true);
 	    }
 
+	    m_socket.addHandshakeCompletedListener
+		(new HandshakeCompletedListener()
+		{
+		    @Override
+		    public void handshakeCompleted
+			(HandshakeCompletedEvent event)
+		    {
+			m_handshakeCompleted.set(true);
+
+			synchronized(m_mutex)
+			{
+			    m_mutex.notifyAll();
+			}
+		    }
+		});
 	    m_socket.setEnabledProtocols(m_protocols);
 	    m_socket.setSoTimeout(HANDSHAKE_TIMEOUT); // SSL/TLS process.
 	    m_socket.setTcpNoDelay(true);
 	    m_startTime.set(System.nanoTime());
 	    setError("");
+
+	    synchronized(m_mutex)
+	    {
+		m_mutex.notifyAll();
+	    }
 	}
 	catch(Exception exception)
 	{

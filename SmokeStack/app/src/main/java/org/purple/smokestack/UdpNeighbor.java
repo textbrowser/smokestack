@@ -63,7 +63,9 @@ public class UdpNeighbor extends Neighbor
     {
 	try
 	{
-	    return m_socket != null && !m_socket.isClosed();
+	    return isNetworkConnected() &&
+		m_socket != null &&
+		!m_socket.isClosed();
 	}
 	catch(Exception exception)
 	{
@@ -175,6 +177,18 @@ public class UdpNeighbor extends Neighbor
 
 		try
 		{
+		    if(!connected() && !m_aborted.get())
+			synchronized(m_mutex)
+			{
+			    try
+			    {
+				m_mutex.wait();
+			    }
+			    catch(Exception exception)
+			    {
+			    }
+			}
+
 		    if(!connected())
 			return;
 		    else if(m_error)
@@ -294,6 +308,11 @@ public class UdpNeighbor extends Neighbor
 	    m_socket.setSoTimeout(SO_TIMEOUT);
 	    m_startTime.set(System.nanoTime());
 	    setError("");
+
+	    synchronized(m_mutex)
+	    {
+		m_mutex.notifyAll();
+	    }
 	}
 	catch(Exception exception)
 	{
