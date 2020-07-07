@@ -32,6 +32,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 public class About
 {
@@ -43,22 +44,32 @@ public class About
 
     public static synchronized String about()
     {
-	if(s_about.isEmpty())
+	try
 	{
-	    SimpleDateFormat simpleDateFormat = new
-		SimpleDateFormat("yyyy-MM-dd h:mm:ss", Locale.getDefault());
+	    if(s_about.isEmpty())
+	    {
+		SimpleDateFormat simpleDateFormat = new
+		    SimpleDateFormat("yyyy-MM-dd h:mm:ss", Locale.getDefault());
 
-	    simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+		simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
 
-	    // Must agree with SmokeStack/app/build.gradle.
+		// Must agree with SmokeStack/app/build.gradle.
 
-	    s_about = "Version 2020.07.07 Java July " +
-                (BuildConfig.DEBUG ? "(Debug) " : "(Release)") +
-                "\nBuild Date " +
-                simpleDateFormat.format(new Date(BuildConfig.BUILD_TIME)) +
-                " UTC\nAndroid " + Build.VERSION.RELEASE +
-                (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP ?
-                 "\nAndroid version not supported." : "");
+		s_about = "Bouncy Castle Version " +
+		    new BouncyCastleProvider().getVersion() +
+		    "\nSmokeStack Version 2020.07.07 Java July " +
+		    (BuildConfig.DEBUG ? "(Debug) " : "(Release)") +
+		    "\nBuild Date " +
+		    simpleDateFormat.format(new Date(BuildConfig.BUILD_TIME)) +
+		    " UTC\nAndroid " + Build.VERSION.RELEASE +
+		    (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP ?
+		     "\nAndroid version not supported." : "");
+	    }
+	}
+	catch(Exception exception)
+	{
+	    if(s_about.isEmpty())
+		s_about = "SmokeStack Version 2020.07.07 Java July";
 	}
 
 	return s_about;
