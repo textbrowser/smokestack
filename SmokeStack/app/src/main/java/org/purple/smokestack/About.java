@@ -57,7 +57,7 @@ public class About
 
 		s_about = "Bouncy Castle Version " +
 		    new BouncyCastleProvider().getVersion() +
-		    "\nSmokeStack Version 2020.07.07 Java July " +
+		    "\nSmokeStack Version 2020.07.11 Java July " +
 		    (BuildConfig.DEBUG ? "(Debug) " : "(Release)") +
 		    "\nBuild Date " +
 		    simpleDateFormat.format(new Date(BuildConfig.BUILD_TIME)) +
@@ -69,7 +69,7 @@ public class About
 	catch(Exception exception)
 	{
 	    if(s_about.isEmpty())
-		s_about = "SmokeStack Version 2020.07.07 Java July";
+		s_about = "SmokeStack Version 2020.07.11 Java July";
 	}
 
 	return s_about;

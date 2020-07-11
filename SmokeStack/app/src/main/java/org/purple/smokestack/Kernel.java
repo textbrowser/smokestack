@@ -387,7 +387,8 @@ public class Kernel
     private void prepareReleaseMessagesScheduler(final String sipHashIdDigest,
 						 final byte identity[])
     {
-	if(identity == null ||
+	if(!isNetworkAvailable() ||
+	   identity == null ||
 	   identity.length == 0 ||
 	   sipHashIdDigest == null ||
 	   sipHashIdDigest.isEmpty())
@@ -543,16 +544,31 @@ public class Kernel
 		{
 		    try
 		    {
-			synchronized(m_releaseMessagesSchedulersMutex)
+			boolean empty = true;
+
+			m_releaseMessagesSchedulersMutex.readLock().lock();
+
+			try
 			{
-			    try
-			    {
-				m_releaseMessagesSchedulersMutex.wait();
-			    }
-			    catch(Exception exception)
-			    {
-			    }
+			    empty = m_releaseMessagesSchedulers.isEmpty();
 			}
+			finally
+			{
+			    m_releaseMessagesSchedulersMutex.readLock().
+				unlock();
+			}
+
+			if(empty)
+			    synchronized(m_releaseMessagesSchedulersMutex)
+			    {
+				try
+				{
+				    m_releaseMessagesSchedulersMutex.wait();
+				}
+				catch(Exception exception)
+				    {
+				    }
+			    }
 
 			m_releaseMessagesSchedulersMutex.writeLock().lock();
 
