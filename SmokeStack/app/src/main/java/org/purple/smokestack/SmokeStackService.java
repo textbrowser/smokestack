@@ -39,12 +39,6 @@ public class SmokeStackService extends Service
 {
     private final static int NOTIFICATION_ID = 796325177;
 
-    @Override
-    public IBinder onBind(Intent intent)
-    {
-	return null;
-    }
-
     private void prepareNotification()
     {
 	Intent notificationIntent = new Intent(this, Settings.class);
@@ -86,6 +80,12 @@ public class SmokeStackService extends Service
     {
 	stopForeground(true);
 	stopSelf();
+    }
+
+    @Override
+    public IBinder onBind(Intent intent)
+    {
+	return null;
     }
 
     @Override
