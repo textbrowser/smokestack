@@ -37,10 +37,16 @@ import android.os.IBinder;
 
 public class SmokeStackService extends Service
 {
+    private boolean m_isRunning = false;
     private final static int NOTIFICATION_ID = 796325177;
 
     private void prepareNotification()
     {
+	if(m_isRunning)
+	    return;
+	else
+	    m_isRunning = true;
+
 	Intent notificationIntent = new Intent(this, Settings.class);
 	Notification.Builder builder = new Notification.Builder(this);
 	PendingIntent pendingIntent = PendingIntent.getActivity
@@ -78,6 +84,7 @@ public class SmokeStackService extends Service
 
     private void stop()
     {
+	m_isRunning = false;
 	stopForeground(true);
 	stopSelf();
     }
@@ -133,5 +140,13 @@ public class SmokeStackService extends Service
     public void onCreate()
     {
 	super.onCreate();
+	start();
+    }
+
+    @Override
+    public void onDestroy()
+    {
+	m_isRunning = false;
+	super.onDestroy();
     }
 }
