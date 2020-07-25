@@ -2109,8 +2109,8 @@ public class Settings extends AppCompatActivity
 
 	if(m_receiverRegistered)
 	{
-	    LocalBroadcastManager.getInstance(this).unregisterReceiver
-		(m_receiver);
+	    LocalBroadcastManager.getInstance(getApplicationContext()).
+		unregisterReceiver(m_receiver);
 	    m_receiverRegistered = false;
 	}
 
@@ -2633,8 +2633,8 @@ public class Settings extends AppCompatActivity
 		("org.purple.smokestack.populate_ozones_participants");
 	    intentFilter.addAction
 		("org.purple.smokestack.populate_participants");
-	    LocalBroadcastManager.getInstance(this).registerReceiver
-		(m_receiver, intentFilter);
+	    LocalBroadcastManager.getInstance(getApplicationContext()).
+		registerReceiver(m_receiver, intentFilter);
 	    m_receiverRegistered = true;
 	}
 
@@ -3056,8 +3056,8 @@ public class Settings extends AppCompatActivity
 		("org.purple.smokestack.populate_ozones_participants");
 	    intentFilter.addAction
 		("org.purple.smokestack.populate_participants");
-	    LocalBroadcastManager.getInstance(this).registerReceiver
-		(m_receiver, intentFilter);
+	    LocalBroadcastManager.getInstance(getApplicationContext()).
+		registerReceiver(m_receiver, intentFilter);
 	    m_receiverRegistered = true;
 	}
 
