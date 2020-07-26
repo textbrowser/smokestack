@@ -619,6 +619,7 @@ public class TcpListener
 	    {
 		m_socket = (SSLServerSocket)
 		    sslContext.getServerSocketFactory().createServerSocket();
+		m_socket.setReceiveBufferSize(Neighbor.SO_RCVBUF);
 		m_socket.setReuseAddress(true);
 		m_socket.bind
 		    (new InetSocketAddress(InetAddress.getByName(m_ipAddress),

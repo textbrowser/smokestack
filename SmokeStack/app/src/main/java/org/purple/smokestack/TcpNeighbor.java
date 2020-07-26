@@ -267,6 +267,7 @@ public class TcpNeighbor extends Neighbor
 			    }
 			});
 
+		m_socket.setKeepAlive(false);
 		m_socket.setSoLinger(true, 0);
 		m_socket.setSoTimeout(HANDSHAKE_TIMEOUT);
 		m_socket.setTcpNoDelay(true);
@@ -706,6 +707,7 @@ public class TcpNeighbor extends Neighbor
 	    {
 		m_socket = (SSLSocket) sslContext.getSocketFactory().
 		    createSocket();
+		m_socket.setReceiveBufferSize(SO_RCVBUF);
 		m_socket.connect(inetSocketAddress, CONNECTION_TIMEOUT);
 	    }
 	    else
@@ -719,6 +721,7 @@ public class TcpNeighbor extends Neighbor
 		    socket = new Socket
 			(new Proxy(Proxy.Type.SOCKS, m_proxyInetSocketAddress));
 
+		socket.setReceiveBufferSize(SO_RCVBUF);
 		socket.connect(inetSocketAddress, CONNECTION_TIMEOUT);
 		m_socket = (SSLSocket) sslContext.getSocketFactory().
 		    createSocket(socket, m_proxyIpAddress, m_proxyPort, true);
@@ -740,6 +743,8 @@ public class TcpNeighbor extends Neighbor
 		    }
 		});
 	    m_socket.setEnabledProtocols(m_protocols);
+	    m_socket.setKeepAlive(false);
+	    m_socket.setSoLinger(true, 0);
 	    m_socket.setSoTimeout(HANDSHAKE_TIMEOUT); // SSL/TLS process.
 	    m_socket.setTcpNoDelay(true);
 	    m_startTime.set(System.nanoTime());
