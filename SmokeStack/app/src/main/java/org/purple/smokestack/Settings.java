@@ -2155,6 +2155,7 @@ public class Settings extends AppCompatActivity
 			m_databaseHelper.cleanDanglingMessages();
 			m_databaseHelper.cleanDanglingOutboundQueued();
 			m_databaseHelper.cleanDanglingParticipants();
+			m_databaseHelper.purgeReleasedMessages(s_cryptography);
 			Settings.this.runOnUiThread(new Runnable()
 			{
 			    @Override

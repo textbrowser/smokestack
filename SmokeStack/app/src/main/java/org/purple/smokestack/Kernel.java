@@ -566,8 +566,8 @@ public class Kernel
 				    m_releaseMessagesSchedulersMutex.wait();
 				}
 				catch(Exception exception)
-				    {
-				    }
+				{
+				}
 			    }
 
 			m_releaseMessagesSchedulersMutex.writeLock().lock();
@@ -602,15 +602,6 @@ public class Kernel
 			{
 			    m_releaseMessagesSchedulersMutex.writeLock().
 				unlock();
-			}
-
-			try
-			{
-			    s_databaseHelper.purgeReleasedMessages
-				(s_cryptography);
-			}
-			catch(Exception exception)
-			{
 			}
 		    }
 		    catch(Exception exception)

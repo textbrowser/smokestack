@@ -77,17 +77,25 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="5dp" />
 
-                <Button
-                    android:id="@+id/clear_log"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/clear_log" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
 
-                <Button
-                    android:id="@+id/gc"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/recycle_memory" />
+                    <Button
+                        android:id="@+id/clear_log"
+                        style="@style/Widget.AppCompat.Button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/clear_log" />
+
+                    <Button
+                        android:id="@+id/gc"
+                        style="@style/Widget.AppCompat.Button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/recycle_memory" />
+                </LinearLayout>
 
                 <TextView
                     android:layout_width="match_parent"
