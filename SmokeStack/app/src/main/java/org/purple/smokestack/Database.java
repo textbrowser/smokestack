@@ -4120,8 +4120,9 @@ public class Database extends SQLiteOpenHelper
 	if(cryptography == null || m_db == null)
 	    return;
 
+	m_db.beginTransactionNonExclusive();
+
 	Cursor cursor = null;
-	StringBuilder stringBuilder = new StringBuilder();
 
 	try
 	{
@@ -4139,31 +4140,24 @@ public class Database extends SQLiteOpenHelper
 
 	    while(cursor != null && cursor.moveToNext())
 	    {
+		String oid = String.valueOf(cursor.getInt(1));
 		byte bytes[] = cryptography.mtd
 		    (Base64.decode(cursor.getString(0).getBytes(),
 				   Base64.DEFAULT));
 
 		if(bytes == null)
-		{
-		    if(stringBuilder.length() > 0)
-			stringBuilder.append(",");
-
-		    stringBuilder.append(cursor.getInt(1));
-		}
+		    m_db.delete("stack", "OID = ?", new String[] {oid});
 		else
 		{
 		    long timestamp = Miscellaneous.byteArrayToLong(bytes);
 
 		    if(Math.abs(System.currentTimeMillis() - timestamp) >
 		       ONE_WEEK)
-		    {
-			if(stringBuilder.length() > 0)
-			    stringBuilder.append(",");
-
-			stringBuilder.append(cursor.getInt(1));
-		    }
+			m_db.delete("stack", "OID = ?", new String[] {oid});
 		}
 	    }
+
+	    m_db.setTransactionSuccessful();
 	}
 	catch(Exception exception)
 	{
@@ -4177,26 +4171,8 @@ public class Database extends SQLiteOpenHelper
 		if(cursor.isClosed())
 		    m_cursorsClosed.getAndIncrement();
 	    }
-	}
 
-	if(stringBuilder.length() > 0)
-	{
-	    m_db.beginTransactionNonExclusive();
-
-	    try
-	    {
-		m_db.delete
-		    ("stack", "OID IN (" + stringBuilder.toString() + ")",
-		     null);
-		m_db.setTransactionSuccessful();
-	    }
-	    catch(Exception exception)
-	    {
-	    }
-	    finally
-	    {
-		m_db.endTransaction();
-	    }
+	    m_db.endTransaction();
 	}
     }
 
