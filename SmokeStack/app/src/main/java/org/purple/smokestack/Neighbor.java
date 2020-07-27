@@ -85,9 +85,10 @@ public abstract class Neighbor
     protected final StringBuffer m_stringBuffer = new StringBuffer();
     protected final static int BYTES_PER_READ = 1024 * 1024; // 1 MiB
     protected final static int MAXIMUM_BYTES = LANE_WIDTH;
-    protected final static int SO_RCVBUF = 32 * 1024; // 32 KiB
+    protected final static int SO_SNDBUF = 32 * 1024; // 32 KiB
     protected final static int SO_TIMEOUT = 0; // 0 Seconds
     protected final static long READ_SOCKET_INTERVAL = 50L; // 50 Milliseconds
+    public final static int SO_RCVBUF = 32 * 1024; // 32 KiB
 
     private void saveStatistics()
     {
