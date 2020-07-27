@@ -1654,6 +1654,19 @@ public class Settings extends AppCompatActivity
 	    }
 	});
 
+	button1 = (Button) findViewById(R.id.gc);
+	button1.setOnClickListener(new View.OnClickListener()
+	{
+	    public void onClick(View view)
+	    {
+		if(Settings.this.isFinishing())
+		    return;
+
+		Database.releaseMemory();
+		System.gc();
+	    }
+	});
+
 	button1 = (Button) findViewById(R.id.refresh_listeners);
 	button1.setOnClickListener(new View.OnClickListener()
 	{

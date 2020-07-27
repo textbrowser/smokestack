@@ -44,4 +44,5 @@
     <string name="smoke_id">Smoke ID</string>
     <string name="steam">Steam</string>
     <string name="exit">Exit</string>
+    <string name="recycle_memory">Recycle Memory</string>
 </resources>
