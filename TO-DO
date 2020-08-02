@@ -8,6 +8,7 @@ Completed Items
   reproduce.
 - Display the number of internal Neighbors.
 - Echo shared Smoke identities.
+- Enable android:largeHeap=true.
 - Entries in routing_identities expire.
 - Fire compatibility.
 - Listeners.
@@ -30,5 +31,4 @@ Remaining Items
 
 - Abnormal native termination on Android 8.x. SSL/TLS and/or libc.
 - Distribute routing identity algorithms.
-- Enable android:largeHeap=true.
 - The Settings activity has many views (ANDROID_LINT_MAX_VIEW_COUNT).
