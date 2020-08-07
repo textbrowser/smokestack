@@ -2574,6 +2574,44 @@ public class Settings extends AppCompatActivity
     }
 
     @Override
+    protected void onPause()
+    {
+	super.onPause();
+	releaseResources();
+    }
+
+    @Override
+    protected void onResume()
+    {
+	super.onResume();
+
+	if(!m_receiverRegistered)
+	{
+	    IntentFilter intentFilter = new IntentFilter();
+
+	    intentFilter.addAction
+		("org.purple.smokestack.populate_ozones_participants");
+	    intentFilter.addAction
+		("org.purple.smokestack.populate_participants");
+	    LocalBroadcastManager.getInstance(getApplicationContext()).
+		registerReceiver(m_receiver, intentFilter);
+	    m_receiverRegistered = true;
+	}
+
+	try
+	{
+	    m_listenersAdapter.notifyDataSetChanged();
+	    m_listenersLayoutManager.smoothScrollToPosition
+		(m_listenersRecyclerView,
+		 null,
+		 m_listenersAdapter.getItemCount() - 1);
+	}
+	catch(Exception exception)
+	{
+	}
+    }
+
+    @Override
     protected void onStart()
     {
 	super.onStart();
@@ -2694,13 +2732,6 @@ public class Settings extends AppCompatActivity
 	else
 	    ((TextView) findViewById(R.id.internal_neighbors)).setText
 		("Internal Neighbors Container Size: 0");
-    }
-
-    @Override
-    protected void onStop()
-    {
-	super.onStop();
-	releaseResources();
     }
 
     @Override
@@ -3054,37 +3085,6 @@ public class Settings extends AppCompatActivity
 	    catch(Exception exception)
 	    {
 	    }
-	}
-    }
-
-    @Override
-    public void onResume()
-    {
-	super.onResume();
-
-	if(!m_receiverRegistered)
-	{
-	    IntentFilter intentFilter = new IntentFilter();
-
-	    intentFilter.addAction
-		("org.purple.smokestack.populate_ozones_participants");
-	    intentFilter.addAction
-		("org.purple.smokestack.populate_participants");
-	    LocalBroadcastManager.getInstance(getApplicationContext()).
-		registerReceiver(m_receiver, intentFilter);
-	    m_receiverRegistered = true;
-	}
-
-	try
-	{
-	    m_listenersAdapter.notifyDataSetChanged();
-	    m_listenersLayoutManager.smoothScrollToPosition
-		(m_listenersRecyclerView,
-		 null,
-		 m_listenersAdapter.getItemCount() - 1);
-	}
-	catch(Exception exception)
-	{
 	}
     }
 
