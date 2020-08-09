@@ -443,7 +443,7 @@ public class Kernel
 				enqueueMessage(message);
 				s_databaseHelper.timestampReleasedMessage
 				    (s_cryptography, arrayList.get(1));
-				Thread.sleep(200);
+				Thread.sleep(250);
 				arrayList.clear();
 			    }
 			}
@@ -451,7 +451,7 @@ public class Kernel
 			{
 			}
 		    }
-		}, 1500L, TimeUnit.MILLISECONDS));
+		}, 5000L, TimeUnit.MILLISECONDS));
 	}
 	catch(Exception exception)
 	{
