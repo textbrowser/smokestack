@@ -5,6 +5,7 @@ Summary of SmokeStack
 <li>Client and/or server functionality.</li>
 <li>Congestion control.</li>
 <li>Cryptographic discovery.</li>
+<li>Eventful tasks. Limit polling.</li>
 <li>Infinite participants.</li>
 <li>Local data is recorded in SQLite via authenticated encryption.</li>
 <li>McEliece support.</li>
