@@ -956,7 +956,8 @@ public class Kernel
 		    if(aes256 == null)
 			return true;
 
-		    if(aes256[0] == Messages.CHAT_MESSAGE_RETRIEVAL[0])
+		    if(aes256[0] == Messages.CHAT_MESSAGE_READ[0] ||
+		       aes256[0] == Messages.CHAT_MESSAGE_RETRIEVAL[0])
 		    {
 			long current = System.currentTimeMillis();
 			long timestamp = Miscellaneous.byteArrayToLong
@@ -1004,16 +1005,24 @@ public class Kernel
 			    (s_cryptography,
 			     Arrays.copyOfRange(aes256, 73, 73 + 64));
 
-			/*
-			** Tag all of sipHashIdDigest's messages for release.
-			*/
+			if(aes256[0] == Messages.CHAT_MESSAGE_READ[0])
+			{
+			}
+			else
+			{
+			    /*
+			    ** Tag all of sipHashIdDigest's messages for
+			    ** release.
+			    */
 
-			s_databaseHelper.tagMessagesForRelease
-			    (s_cryptography, sipHashIdDigest);
+			    prepareReleaseMessagesScheduler
+				(sipHashIdDigest, identity);
+			    s_databaseHelper.tagMessagesForRelease
+				(s_cryptography, sipHashIdDigest);
+			}
+
 			s_databaseHelper.updateSipHashIdTimestamp
 			    (sipHashIdDigest.getBytes());
-			prepareReleaseMessagesScheduler
-			    (sipHashIdDigest, identity);
 			return true;
 		    }
 		    else if(aes256[0] == Messages.PKP_MESSAGE_REQUEST[0])

@@ -6,7 +6,8 @@ id := siphash(public-encryption-key || public-signature-key,
 		     4096,       // Iteration Count
 		     128))       // Bits (16 Bytes)
 
-Generating of non-confidential authentication and encryption key streams from SipHash identities:
+Generating of non-confidential authentication and encryption key streams from
+SipHash identities:
 
 keystream1 := pbkdf2(sha512(id), // Salt
 		     id,

@@ -3,7 +3,7 @@ Summary of SmokeStack
 <ul>
 <li>BouncyCastle.</li>
 <li>Client and/or server functionality.</li>
-<li>Congestion control.</li>
+<li>Congestion control via SipHash.</li>
 <li>Cryptographic discovery.</li>
 <li>Eventful tasks. Limit polling.</li>
 <li>Infinite participants.</li>
