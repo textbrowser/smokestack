@@ -1373,7 +1373,8 @@ public class Database extends SQLiteOpenHelper
     }
 
     public ArrayList<byte[]> readTaggedMessage(String sipHashIdDigest,
-					       Cryptography cryptography)
+					       Cryptography cryptography,
+					       int oid)
     {
 	if(cryptography == null || m_db == null)
 	    return null;
@@ -1384,14 +1385,16 @@ public class Database extends SQLiteOpenHelper
 	try
 	{
 	    cursor = m_db.rawQuery
-		("SELECT message, message_digest " +
+		("SELECT message, message_digest, OID " +
 		 "FROM stack WHERE siphash_id_digest = ? AND " +
-		 "timestamp IS NULL AND verified_digest = ? ORDER BY OID",
+		 "timestamp IS NULL AND verified_digest = ? AND " +
+		 "OID > CAST(? AS INTEGER) ORDER BY OID",
 		 new String[] {sipHashIdDigest,
 			       Base64.
 			       encodeToString(cryptography.
 					      hmac("true".getBytes()),
-					      Base64.DEFAULT)});
+					      Base64.DEFAULT),
+			       String.valueOf(oid)});
 
 	    if(cursor != null)
 		m_cursorsOpened.getAndIncrement();
@@ -1422,6 +1425,10 @@ public class Database extends SQLiteOpenHelper
 			break;
 		    case 1:
 			arrayList.add(cursor.getString(i).getBytes());
+			break;
+		    case 2:
+			arrayList.add
+			    (Miscellaneous.intToByteArray(cursor.getInt(i)));
 			break;
 		    }
 
@@ -4731,7 +4738,7 @@ public class Database extends SQLiteOpenHelper
 				       Base64.DEFAULT));
 	    values.put
 		("message_digest",
-		 Base64.encodeToString(cryptography.hmac(message),
+		 Base64.encodeToString(Cryptography.sha512(message),
 				       Base64.DEFAULT));
 	    values.put
 		("siphash_id",

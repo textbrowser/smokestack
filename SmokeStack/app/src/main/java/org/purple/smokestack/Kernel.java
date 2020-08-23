@@ -51,6 +51,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class Kernel
@@ -406,11 +407,15 @@ public class Kernel
 		 Executors.newSingleThreadScheduledExecutor().
 		 schedule(new Runnable()
 		{
+		    private AtomicInteger m_oid = new AtomicInteger(-1);
+
 		    @Override
 		    public void run()
 		    {
 			try
 			{
+			    m_oid.set(-1);
+
 			    while(true)
 			    {
 				if(!isNetworkAvailable())
@@ -418,12 +423,14 @@ public class Kernel
 
 				ArrayList<byte[]> arrayList = s_databaseHelper.
 				    readTaggedMessage
-				    (sipHashIdDigest, s_cryptography);
+				    (sipHashIdDigest,
+				     s_cryptography,
+				     m_oid.get());
 
 				if(arrayList == null)
 				    break;
 
-				if(arrayList.size() != 2)
+				if(arrayList.size() != 3)
 				{
 				    arrayList.clear();
 				    break;
@@ -441,9 +448,10 @@ public class Kernel
 						    destination));
 
 				enqueueMessage(message);
-				s_databaseHelper.timestampReleasedMessage
-				    (s_cryptography, arrayList.get(1));
 				Thread.sleep(250);
+				m_oid.set
+				    (Miscellaneous.
+				     byteArrayToInt(arrayList.get(2)));
 				arrayList.clear();
 			    }
 			}
@@ -1006,8 +1014,8 @@ public class Kernel
 			     Arrays.copyOfRange(aes256, 73, 73 + 64));
 
 			if(aes256[0] == Messages.CHAT_MESSAGE_READ[0])
-			{
-			}
+			    s_databaseHelper.timestampReleasedMessage
+				(s_cryptography, identity);
 			else
 			{
 			    /*

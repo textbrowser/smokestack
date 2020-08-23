@@ -292,6 +292,25 @@ public abstract class Miscellaneous
 	return count;
     }
 
+    public static int byteArrayToInt(byte bytes[])
+    {
+	if(bytes == null || bytes.length != INTEGER_BYTES)
+	    return 0;
+
+	try
+	{
+	    ByteBuffer byteBuffer = ByteBuffer.allocate(INTEGER_BYTES);
+
+	    byteBuffer.put(bytes);
+	    byteBuffer.flip();
+	    return byteBuffer.getInt();
+	}
+	catch(Exception exception)
+	{
+	    return 0;
+	}
+    }
+
     public static long byteArrayToLong(byte bytes[])
     {
 	if(bytes == null || bytes.length != LONG_BYTES)
