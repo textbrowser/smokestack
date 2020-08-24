@@ -4035,11 +4035,12 @@ public class Database extends SQLiteOpenHelper
 
 	str = "CREATE TABLE IF NOT EXISTS stack (" +
 	    "message TEXT NOT NULL, " +
-	    "message_digest TEXT NOT NULL PRIMARY KEY, " +
+	    "message_digest TEXT NOT NULL, " +
 	    "siphash_id TEXT NOT NULL, " +
 	    "siphash_id_digest TEXT NOT NULL, " +
 	    "timestamp TEXT DEFAULT NULL, " +
 	    "verified_digest TEXT NOT NULL, " +
+	    "PRIMARY KEY (message_digest, siphash_id_digest), " +
 	    "FOREIGN KEY (siphash_id_digest) REFERENCES " +
 	    "siphash_ids (siphash_id_digest) ON DELETE CASCADE)";
 
@@ -4474,7 +4475,7 @@ public class Database extends SQLiteOpenHelper
 	    m_db.update
 		("stack", values, "message_digest = ? AND " +
 		 "timestamp IS NULL AND verified_digest = ?",
-		 new String[] {new String(digest),
+		 new String[] {Base64.encodeToString(digest, Base64.DEFAULT),
 			       Base64.encodeToString(cryptography.
 						     hmac("true".getBytes()),
 						     Base64.DEFAULT)});
