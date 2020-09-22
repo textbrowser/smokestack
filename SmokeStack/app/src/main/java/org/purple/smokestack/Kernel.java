@@ -774,10 +774,11 @@ public class Kernel
 	if(buffer == null)
 	    return true;
 
-	long value = s_congestionSipHash.hmac(buffer.getBytes());
-
 	try
 	{
+	    long value = s_congestionSipHash.hmac
+		(buffer.getBytes(), Cryptography.SIPHASH_OUTPUT_LENGTH / 2)[0];
+
 	    if(!userDefined)
 		/*
 		** A server socket!
@@ -1244,15 +1245,30 @@ public class Kernel
     public static void writeCongestionDigest(String message)
     {
 	if(message != null)
-	    s_databaseHelper.writeCongestionDigest
-		(s_congestionSipHash.hmac(message.getBytes()));
+	    try
+	    {
+		s_databaseHelper.writeCongestionDigest
+		    (s_congestionSipHash.
+		     hmac(message.getBytes(),
+			  Cryptography.SIPHASH_OUTPUT_LENGTH)[0]);
+	    }
+	    catch(Exception exception)
+	    {
+	    }
     }
 
     public static void writeCongestionDigest(byte data[])
     {
 	if(data != null)
-	    s_databaseHelper.writeCongestionDigest
-		(s_congestionSipHash.hmac(data));
+	    try
+	    {
+		s_databaseHelper.writeCongestionDigest
+		    (s_congestionSipHash.
+		     hmac(data, Cryptography.SIPHASH_OUTPUT_LENGTH)[0]);
+	    }
+	    catch(Exception exception)
+	    {
+	    }
     }
 
     public void clearNeighborQueues()

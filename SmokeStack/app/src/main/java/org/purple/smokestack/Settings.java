@@ -1307,6 +1307,10 @@ public class Settings extends AppCompatActivity
 
                     textView.setCompoundDrawablePadding(5);
 		    textView.setGravity(Gravity.CENTER_VERTICAL);
+		    textView.setLayoutParams
+			(new TableRow.LayoutParams(0,
+						   LayoutParams.WRAP_CONTENT,
+						   1));
                     textView.setText(sipHashIdElement.m_sipHashId);
                     break;
                 case 2:

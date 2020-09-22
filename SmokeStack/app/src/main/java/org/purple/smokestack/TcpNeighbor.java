@@ -701,7 +701,7 @@ public class TcpNeighbor extends Neighbor
 		sslContext = SSLContext.getInstance("SSL");
 
 	    sslContext.init
-		(null, m_trustManagers, SecureRandom.getInstance("SHA1PRNG"));
+		(null, m_trustManagers, new SecureRandom());
 
 	    if(m_proxyInetSocketAddress == null)
 	    {

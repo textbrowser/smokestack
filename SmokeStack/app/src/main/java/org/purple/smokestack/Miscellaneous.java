@@ -214,8 +214,10 @@ public abstract class Miscellaneous
 	SipHash sipHash = new SipHash();
 
 	return byteArrayAsHexStringDelimited
-	    (longToByteArray(sipHash.
-			     hmac(bytes, Cryptography.keyForSipHash(bytes))),
+	    (longArrayToByteArray(sipHash.
+				  hmac(bytes,
+				       Cryptography.keyForSipHash(bytes),
+				       Cryptography.SIPHASH_OUTPUT_LENGTH)),
 	     '-', 4);
     }
 
@@ -258,6 +260,24 @@ public abstract class Miscellaneous
 		}
 
 	    return bytes; // data[0] + data[1] + ... + data[n - 1]
+	}
+	catch(Exception exception)
+	{
+	    return null;
+	}
+    }
+
+    public static byte[] longArrayToByteArray(long value[])
+    {
+	try
+	{
+	    ByteBuffer byteBuffer = ByteBuffer.allocate
+		(LONG_BYTES * value.length);
+
+	    for(long l : value)
+		byteBuffer.putLong(l);
+
+	    return byteBuffer.array();
 	}
 	catch(Exception exception)
 	{

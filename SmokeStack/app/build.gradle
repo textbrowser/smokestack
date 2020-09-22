@@ -9,8 +9,8 @@ android {
         multiDexEnabled true
         targetSdkVersion 26
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        versionCode 20200830
-        versionName "2020.08.30"
+        versionCode 20200930
+        versionName "2020.09.30"
     }
     dexOptions {
         javaMaxHeapSize "8g"
