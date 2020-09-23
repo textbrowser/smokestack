@@ -851,14 +851,18 @@ public class Kernel
 	    }
 
 	    byte data[] = Arrays.copyOfRange // Blocks #1, #2, etc.
-		(bytes, 0, bytes.length - 128);
+		(bytes, 0, bytes.length - 2 * Cryptography.HASH_KEY_LENGTH);
 	    byte hmac[] = Arrays.copyOfRange // Second to the last block.
-		(bytes, bytes.length - 128, bytes.length - 64);
+		(bytes,
+		 bytes.length - 2 * Cryptography.HASH_KEY_LENGTH,
+		 bytes.length - Cryptography.HASH_KEY_LENGTH);
 
 	    if(arrayList1 != null && arrayList1.size() > 0)
 	    {
 		byte destination[] = Arrays.copyOfRange
-		    (bytes, bytes.length - 64, bytes.length);
+		    (bytes,
+		     bytes.length - Cryptography.HASH_KEY_LENGTH,
+		     bytes.length);
 
 		for(SipHashIdElement sipHashIdElement : arrayList1)
 		{
@@ -872,7 +876,8 @@ public class Kernel
 				Cryptography.hmac(data, Arrays.
 						  copyOfRange(sipHashIdElement.
 							      m_stream,
-							      32,
+							      Cryptography.
+							      CIPHER_KEY_LENGTH,
 							      sipHashIdElement.
 							      m_stream.
 							      length))) &&
@@ -882,7 +887,8 @@ public class Kernel
 				hmac(Arrays.
 				     copyOfRange(bytes,
 						 0,
-						 bytes.length - 64),
+						 bytes.length -
+						 Cryptography.HASH_KEY_LENGTH),
 				     Cryptography.
 				     sha512(sipHashIdElement.
 					    m_sipHashId.
@@ -894,7 +900,9 @@ public class Kernel
 
 		    byte aes256[] = Cryptography.decrypt
 			(data,
-			 Arrays.copyOfRange(sipHashIdElement.m_stream, 0, 32));
+			 Arrays.copyOfRange(sipHashIdElement.m_stream,
+					    0,
+					    Cryptography.CIPHER_KEY_LENGTH));
 
 		    if(s_databaseHelper.
 		       writeParticipant(s_cryptography,
@@ -939,8 +947,12 @@ public class Kernel
 	    if(arrayList2 == null || arrayList2.size() == 0)
 		return false;
 
-	    data = Arrays.copyOfRange(bytes, 0, bytes.length - 64);
-	    hmac = Arrays.copyOfRange(bytes, bytes.length - 64, bytes.length);
+	    data = Arrays.copyOfRange
+		(bytes, 0, bytes.length - Cryptography.HASH_KEY_LENGTH);
+	    hmac = Arrays.copyOfRange
+		(bytes,
+		 bytes.length - Cryptography.HASH_KEY_LENGTH,
+		 bytes.length);
 
 	    for(OzoneElement ozoneElement : arrayList2)
 	    {
@@ -951,16 +963,17 @@ public class Kernel
 		   memcmp(hmac,
 			  Cryptography.
 			  hmac(data,
-			       Arrays.copyOfRange(ozoneElement.m_addressStream,
-						  32,
-						  ozoneElement.m_addressStream.
-						  length))))
+			       Arrays.
+			       copyOfRange(ozoneElement.m_addressStream,
+					   Cryptography.CIPHER_KEY_LENGTH,
+					   ozoneElement.m_addressStream.
+					   length))))
 		{
 		    byte aes256[] = Cryptography.decrypt
 			(data,
 			 Arrays.copyOfRange(ozoneElement.m_addressStream,
 					    0,
-					    32));
+					    Cryptography.CIPHER_KEY_LENGTH));
 
 		    if(aes256 == null)
 			return true;
@@ -970,7 +983,7 @@ public class Kernel
 		    {
 			long current = System.currentTimeMillis();
 			long timestamp = Miscellaneous.byteArrayToLong
-			    (Arrays.copyOfRange(aes256, 1, 1 + 8));
+			    (Arrays.copyOfRange(aes256, 1, 9));
 
 			if(current - timestamp < 0L)
 			{
