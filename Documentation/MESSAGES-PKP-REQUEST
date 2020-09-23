@@ -2,8 +2,8 @@
 {
 	0x01 (1)						1 Byte
 	A Timestamp (2)						8 Bytes
-	Destination SipHash Identity (3)			19 Bytes
-	Requested SipHash Identity (4)				19 Bytes
+	Destination SipHash Identity (3)			Variable
+	Requested SipHash Identity (4)				Variable
 }
 
 [SHA-512 HMAC] (2)						64 Bytes

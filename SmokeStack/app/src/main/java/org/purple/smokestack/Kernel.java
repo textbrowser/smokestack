@@ -850,14 +850,14 @@ public class Kernel
 		m_sipHashIdsMutex.readLock().unlock();
 	    }
 
-	    byte array1[] = Arrays.copyOfRange // Blocks #1, #2, etc.
+	    byte data[] = Arrays.copyOfRange // Blocks #1, #2, etc.
 		(bytes, 0, bytes.length - 128);
-	    byte array2[] = Arrays.copyOfRange // Second to the last block.
+	    byte hmac[] = Arrays.copyOfRange // Second to the last block.
 		(bytes, bytes.length - 128, bytes.length - 64);
 
 	    if(arrayList1 != null && arrayList1.size() > 0)
 	    {
-		byte array3[] = Arrays.copyOfRange
+		byte destination[] = Arrays.copyOfRange
 		    (bytes, bytes.length - 64, bytes.length);
 
 		for(SipHashIdElement sipHashIdElement : arrayList1)
@@ -868,8 +868,8 @@ public class Kernel
 			continue;
 
 		    if(!(Cryptography.
-			 memcmp(array2,
-				Cryptography.hmac(array1, Arrays.
+			 memcmp(hmac,
+				Cryptography.hmac(data, Arrays.
 						  copyOfRange(sipHashIdElement.
 							      m_stream,
 							      32,
@@ -877,7 +877,7 @@ public class Kernel
 							      m_stream.
 							      length))) &&
 			 Cryptography.
-			 memcmp(array3,
+			 memcmp(destination,
 				Cryptography.
 				hmac(Arrays.
 				     copyOfRange(bytes,
@@ -893,7 +893,7 @@ public class Kernel
 		    s_databaseHelper.writeCongestionDigest(value);
 
 		    byte aes256[] = Cryptography.decrypt
-			(array1,
+			(data,
 			 Arrays.copyOfRange(sipHashIdElement.m_stream, 0, 32));
 
 		    if(s_databaseHelper.
@@ -939,8 +939,8 @@ public class Kernel
 	    if(arrayList2 == null || arrayList2.size() == 0)
 		return false;
 
-	    array1 = Arrays.copyOfRange(bytes, 0, bytes.length - 64);
-	    array2 = Arrays.copyOfRange(bytes, bytes.length - 64, bytes.length);
+	    data = Arrays.copyOfRange(bytes, 0, bytes.length - 64);
+	    hmac = Arrays.copyOfRange(bytes, bytes.length - 64, bytes.length);
 
 	    for(OzoneElement ozoneElement : arrayList2)
 	    {
@@ -948,16 +948,16 @@ public class Kernel
 		    continue;
 
 		if(Cryptography.
-		   memcmp(array2,
+		   memcmp(hmac,
 			  Cryptography.
-			  hmac(array1,
+			  hmac(data,
 			       Arrays.copyOfRange(ozoneElement.m_addressStream,
 						  32,
 						  ozoneElement.m_addressStream.
 						  length))))
 		{
 		    byte aes256[] = Cryptography.decrypt
-			(array1,
+			(data,
 			 Arrays.copyOfRange(ozoneElement.m_addressStream,
 					    0,
 					    32));
@@ -1055,7 +1055,11 @@ public class Kernel
 			    return true;
 
 			String sipHashId = new String
-			    (Arrays.copyOfRange(aes256, 28, aes256.length),
+			    (Arrays.copyOfRange(aes256,
+						9 +
+						Cryptography.
+						SIPHASH_IDENTITY_LENGTH,
+						aes256.length),
 			     StandardCharsets.UTF_8);
 			String array[] = s_databaseHelper.readPublicKeyPair
 			    (s_cryptography, sipHashId);
@@ -1067,8 +1071,8 @@ public class Kernel
 			    (Arrays.
 			     copyOfRange(aes256,
 					 9,
-					 9 + Cryptography.
-					 SIPHASH_IDENTITY_LENGTH));
+					 9 +
+					 Cryptography.SIPHASH_IDENTITY_LENGTH));
 
 			String message = Messages.bytesToMessageString
 			    (Messages.epksMessage(sipHashId, array));
@@ -1097,8 +1101,8 @@ public class Kernel
 			    (Arrays.
 			     copyOfRange(aes256,
 					 9,
-					 9 + Cryptography.
-					 SIPHASH_IDENTITY_LENGTH),
+					 9 +
+					 Cryptography.SIPHASH_IDENTITY_LENGTH),
 			     StandardCharsets.UTF_8);
 
 			name = sipHashId.toUpperCase().trim();
@@ -1128,7 +1132,9 @@ public class Kernel
 			}
 
 			byte identity[] = Arrays.copyOfRange
-			    (aes256, 28, 28 + 8);
+			    (aes256,
+			     9 + Cryptography.SIPHASH_IDENTITY_LENGTH,
+			     9 + Cryptography.SIPHASH_IDENTITY_LENGTH + 8);
 
 			bytes = Messages.shareSipHashIdMessageConfirmation
 			    (s_cryptography,
@@ -1158,11 +1164,11 @@ public class Kernel
 
 			for(int i = 0; i < 2; i++)
 			    if(Cryptography.
-			       memcmp(array2,
+			       memcmp(hmac,
 				      Cryptography.
 				      hmac(Miscellaneous.
 					   joinByteArrays
-					   (array1,
+					   (data,
 					    sipHashIdElement.
 					    m_sipHashId.
 					    getBytes(StandardCharsets.UTF_8),
@@ -1184,7 +1190,7 @@ public class Kernel
 				s_databaseHelper.writeMessage
 				    (s_cryptography,
 				     sipHashIdElement.m_sipHashId,
-				     array1);
+				     data);
 				return true;
 			    }
 		    }

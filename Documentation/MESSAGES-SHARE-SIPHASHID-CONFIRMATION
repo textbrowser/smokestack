@@ -2,7 +2,7 @@
 {
 	0x03 (1)						1 Byte
 	A Timestamp (2)						8 Bytes
-	SipHash Identity (3)					19 Bytes
+	SipHash Identity (3)					Variable
 	Temporary Identity (4)					8 Bytes
 }
 
