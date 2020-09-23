@@ -982,8 +982,7 @@ public class Kernel
 				CHAT_MESSAGE_RETRIEVAL_WINDOW)
 			    return true;
 
-			byte identity[] = Arrays.copyOfRange
-			    (aes256, 9, 9 + 64);
+			byte identity[] = Arrays.copyOfRange(aes256, 9, 73);
 
 			if(identity == null || identity.length != 64)
 			    return true;
@@ -991,7 +990,7 @@ public class Kernel
 			PublicKey signatureKey = s_databaseHelper.
 			    signatureKeyForDigest
 			    (s_cryptography,
-			     Arrays.copyOfRange(aes256, 73, 73 + 64));
+			     Arrays.copyOfRange(aes256, 73, 137));
 
 			if(signatureKey == null)
 			    return true;
@@ -1042,7 +1041,7 @@ public class Kernel
 
 			long current = System.currentTimeMillis();
 			long timestamp = Miscellaneous.byteArrayToLong
-			    (Arrays.copyOfRange(aes256, 1, 1 + 8));
+			    (Arrays.copyOfRange(aes256, 1, 9));
 
 			if(current - timestamp < 0L)
 			{
@@ -1084,7 +1083,7 @@ public class Kernel
 		    {
 			long current = System.currentTimeMillis();
 			long timestamp = Miscellaneous.byteArrayToLong
-			    (Arrays.copyOfRange(aes256, 1, 1 + 8));
+			    (Arrays.copyOfRange(aes256, 1, 9));
 
 			if(current - timestamp < 0L)
 			{
