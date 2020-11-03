@@ -562,8 +562,8 @@ public class Kernel
 			}
 			finally
 			{
-			    m_releaseMessagesSchedulersMutex.readLock().
-				unlock();
+			    m_releaseMessagesSchedulersMutex.
+				readLock().unlock();
 			}
 
 			if(empty)
@@ -608,8 +608,8 @@ public class Kernel
 			}
 			finally
 			{
-			    m_releaseMessagesSchedulersMutex.writeLock().
-				unlock();
+			    m_releaseMessagesSchedulersMutex.
+				writeLock().unlock();
 			}
 		    }
 		    catch(Exception exception)
