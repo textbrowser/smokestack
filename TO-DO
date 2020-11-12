@@ -25,6 +25,7 @@ Completed Items
 - Share-identity confirmation.
 - Signed release.
 - TLS 1.3 and Android 10.
+- Verify status of requested messages. Smoke also.
 - m_isValidCertificate should be an AtomicBoolean.
 
 Remaining Items
@@ -33,4 +34,3 @@ Remaining Items
 - Distribute routing identity algorithms.
 - Integrate EOM in Messages.java.
 - The Settings activity has many views (ANDROID_LINT_MAX_VIEW_COUNT).
-- Verify status of requested messages. Smoke also.
