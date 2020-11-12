@@ -4,10 +4,10 @@
 
 # Bouncy Castle
 
-bouncycastle1=bcpkix-jdk15on-166.jar
-bouncycastle2=bcpkix-jdk15on-166.tar.gz
-bouncycastle3=bcprov-ext-jdk15on-166.jar
-bouncycastle4=bcprov-jdk15on-166.tar.gz
+bouncycastle1=bcpkix-jdk15on-167.jar
+bouncycastle2=bcpkix-jdk15on-167.tar.gz
+bouncycastle3=bcprov-ext-jdk15on-167.jar
+bouncycastle4=bcprov-jdk15on-167.tar.gz
 
 rm -f $bouncycastle1
 rm -f $bouncycastle2
@@ -42,4 +42,4 @@ else
     echo "Cannot read $bouncycastle4."
 fi
 
-echo "Please review SmokeStack/app/build.gradle!"
+echo "Please review SmokeStack/app/build.gradle and SmokeStack/app/libs!"
