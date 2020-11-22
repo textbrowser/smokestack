@@ -33,9 +33,12 @@ debug-with-source: clean all
 	Documentation \
 	Makefile \
 	Makefile.linux \
+	README.md \
+	Scripts \
 	SmokeStack \
 	TO-DO \
 	adb.bash \
+	smokestack-download-dependencies.bash \
 	-x *.git* -x *.gradle* -x *.idea* \
 	&& mv smokestack.src.d.zip SmokeStack/app/src/main/assets/.
 	$(GRADLEW) -Dorg.gradle.java.home=$(JDK) \
