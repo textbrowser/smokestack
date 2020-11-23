@@ -38,6 +38,7 @@ debug-with-source: clean all
 	SmokeStack \
 	TO-DO \
 	adb.bash \
+	fastlane \
 	smokestack-download-dependencies.bash \
 	-x *.git* -x *.gradle* -x *.idea* \
 	&& mv smokestack.src.d.zip SmokeStack/app/src/main/assets/.
