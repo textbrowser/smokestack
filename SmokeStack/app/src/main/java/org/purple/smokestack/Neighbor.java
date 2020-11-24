@@ -630,7 +630,7 @@ public abstract class Neighbor
     {
 	return "Local: " + getLocalIp() +
 	    ":" + getLocalPort() +
-	    " Remote: " + getRemoteIp() +
+	    "\nRemote: " + getRemoteIp() +
 	    ":" + getRemotePort();
     }
 
