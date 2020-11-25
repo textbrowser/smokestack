@@ -11,6 +11,7 @@ Completed Items
 - Enable android:largeHeap=true.
 - Entries in routing_identities expire.
 - Fire compatibility.
+- Integrate EOM in Messages.java.
 - Listeners.
 - Message accounting.
 - Optional signatures on shared key pairs.
@@ -33,5 +34,4 @@ Remaining Items
 - Abnormal native termination on Android 8.x. SSL/TLS and/or libc.
 - Distribute routing identity algorithms.
 - Future-proof.
-- Integrate EOM in Messages.java.
 - The Settings activity has many views (ANDROID_LINT_MAX_VIEW_COUNT).

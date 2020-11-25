@@ -57,12 +57,12 @@ public class Messages
 		("Content-Type: application/x-www-form-urlencoded\r\n");
 	    results.append("Content-Length: %1\r\n");
 	    results.append("\r\n");
-	    results.append("content=%2\r\n");
-	    results.append("\r\n\r\n");
+	    results.append("content=%2");
+	    results.append(EOM);
 
 	    String base64 = Base64.encodeToString(bytes, Base64.NO_WRAP);
 	    int indexOf = results.indexOf("%1");
-	    int length = base64.length() + "content=\r\n\r\n\r\n".length();
+	    int length = EOM.length() + base64.length() + "content=".length();
 
 	    results = results.replace
 		(indexOf, indexOf + 2, String.valueOf(length));
@@ -91,13 +91,14 @@ public class Messages
 		("Content-Type: application/x-www-form-urlencoded\r\n");
 	    results.append("Content-Length: %1\r\n");
 	    results.append("\r\n");
-	    results.append("type=0095b&content=%2\r\n");
-	    results.append("\r\n\r\n");
+	    results.append("type=0095b&content=%2");
+	    results.append(EOM);
 
 	    String base64 = Base64.encodeToString(bytes, Base64.NO_WRAP);
 	    int indexOf = results.indexOf("%1");
-	    int length = base64.length() +
-		"type=0095b&content=\r\n\r\n\r\n".length();
+	    int length = EOM.length() +
+		base64.length() +
+		"type=0095b&content=".length();
 
 	    results = results.replace
 		(indexOf, indexOf + 2, String.valueOf(length));
@@ -126,12 +127,13 @@ public class Messages
 		("Content-Type: application/x-www-form-urlencoded\r\n");
 	    results.append("Content-Length: %1\r\n");
 	    results.append("\r\n");
-	    results.append("type=0097a&content=%2\r\n");
-	    results.append("\r\n\r\n");
+	    results.append("type=0097a&content=%2");
+	    results.append(EOM);
 
 	    int indexOf = results.indexOf("%1");
-	    int length = stringBuffer.length() +
-		"type=0097a&content=\r\n\r\n\r\n".length();
+	    int length = EOM.length() +
+		stringBuffer.length() +
+		"type=0097a&content=".length();
 
 	    results = results.replace
 		(indexOf, indexOf + 2, String.valueOf(length));
@@ -158,14 +160,15 @@ public class Messages
 		("Content-Type: application/x-www-form-urlencoded\r\n");
 	    results.append("Content-Length: %1\r\n");
 	    results.append("\r\n");
-	    results.append("type=0096&content=%2\r\n");
-	    results.append("\r\n\r\n");
+	    results.append("type=0096&content=%2");
+	    results.append(EOM);
 
 	    String base64 = Base64.encodeToString
 		("true".getBytes(), Base64.NO_WRAP);
 	    int indexOf = results.indexOf("%1");
-	    int length = base64.length() +
-		"type=0096&content=\r\n\r\n\r\n".length();
+	    int length = EOM.length() +
+		base64.length() +
+		"type=0096&content=".length();
 
 	    results = results.replace
 		(indexOf, indexOf + 2, String.valueOf(length));
