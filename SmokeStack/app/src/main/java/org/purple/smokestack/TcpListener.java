@@ -501,6 +501,11 @@ public class TcpListener
 	return 0;
     }
 
+    public int oid()
+    {
+	return m_oid.get();
+    }
+
     public void abort()
     {
 	disconnect();
@@ -695,5 +700,10 @@ public class TcpListener
 	{
 	    m_neighborsMutex.readLock().unlock();
 	}
+    }
+
+    public void togglePrivacy()
+    {
+	m_isPrivateServer.set(!m_isPrivateServer.get());
     }
 }

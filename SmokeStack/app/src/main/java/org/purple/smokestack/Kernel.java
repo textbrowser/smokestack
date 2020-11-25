@@ -68,6 +68,8 @@ public class Kernel
     private ScheduledExecutorService m_purgeReleasedMessagesScheduler = null;
     private WakeLock m_wakeLock = null;
     private WifiLock m_wifiLock = null;
+    private final ReentrantReadWriteLock m_listenersMutex = new
+	ReentrantReadWriteLock();
     private final ReentrantReadWriteLock m_ozonesMutex = new
 	ReentrantReadWriteLock();
     private final ReentrantReadWriteLock m_releaseMessagesSchedulersMutex = new
@@ -197,7 +199,9 @@ public class Kernel
 	    return;
 	}
 
-	synchronized(m_listeners)
+	m_listenersMutex.writeLock().lock();
+
+	try
 	{
 	    for(int i = m_listeners.size() - 1; i >= 0; i--)
 	    {
@@ -228,6 +232,10 @@ public class Kernel
 		}
 	    }
 	}
+	finally
+	{
+	    m_listenersMutex.writeLock().unlock();
+	}
 
 	for(ListenerElement listenerElement : listeners)
 	{
@@ -235,10 +243,16 @@ public class Kernel
 		continue;
 	    else
 	    {
-		synchronized(m_listeners)
+		m_listenersMutex.readLock().lock();
+
+		try
 		{
 		    if(m_listeners.get(listenerElement.m_oid) != null)
 			continue;
+		}
+		finally
+		{
+		    m_listenersMutex.readLock().unlock();
 		}
 
 		if(listenerElement.m_statusControl.toLowerCase().
@@ -271,9 +285,15 @@ public class Kernel
 		 listenerElement.m_publicKey,
 		 listenerElement.m_oid);
 
-	    synchronized(m_listeners)
+	    m_listenersMutex.writeLock().lock();
+
+	    try
 	    {
 		m_listeners.append(listenerElement.m_oid, listener);
+	    }
+	    finally
+	    {
+		m_listenersMutex.writeLock().unlock();
 	    }
 	}
 
@@ -648,7 +668,9 @@ public class Kernel
 	** Disconnect all existing sockets.
 	*/
 
-	synchronized(m_listeners)
+	m_listenersMutex.writeLock().lock();
+
+	try
 	{
 	    int size = m_listeners.size();
 
@@ -661,6 +683,10 @@ public class Kernel
 	    }
 
 	    m_listeners.clear();
+	}
+	finally
+	{
+	    m_listenersMutex.writeLock().unlock();
 	}
     }
 
@@ -736,7 +762,9 @@ public class Kernel
     {
 	ArrayList<String> arrayList = new ArrayList<>();
 
-	synchronized(m_listeners)
+	m_listenersMutex.readLock().lock();
+
+	try
 	{
 	    int size = m_listeners.size();
 
@@ -756,6 +784,10 @@ public class Kernel
 		    }
 		}
 	    }
+	}
+	finally
+	{
+	    m_listenersMutex.readLock().unlock();
 	}
 
 	Collections.sort(arrayList);
@@ -1218,9 +1250,15 @@ public class Kernel
 
     public int listenersCount()
     {
-	synchronized(m_listeners)
+	m_listenersMutex.readLock().lock();
+
+	try
 	{
 	    return m_listeners.size();
+	}
+	finally
+	{
+	    m_listenersMutex.readLock().unlock();
 	}
     }
 
@@ -1236,7 +1274,9 @@ public class Kernel
     {
 	int count = 0;
 
-	synchronized(m_listeners)
+	m_listenersMutex.readLock().lock();
+
+	try
 	{
 	    int size = m_listeners.size();
 
@@ -1247,6 +1287,10 @@ public class Kernel
 		if(m_listeners.get(j) != null)
 		    count += m_listeners.get(j).clientsCount();
 	    }
+	}
+	finally
+	{
+	    m_listenersMutex.readLock().unlock();
 	}
 
 	return count;
@@ -1313,7 +1357,9 @@ public class Kernel
 	if(message == null || message.trim().isEmpty())
 	    return;
 
-	synchronized(m_listeners)
+	m_listenersMutex.readLock().lock();
+
+	try
 	{
 	    int size = m_listeners.size();
 
@@ -1324,6 +1370,10 @@ public class Kernel
 		if(m_listeners.get(j) != null)
 		    m_listeners.get(j).scheduleEchoSend(message, oid);
 	    }
+	}
+	finally
+	{
+	    m_listenersMutex.readLock().unlock();
 	}
 
 	synchronized(m_neighbors)
@@ -1346,7 +1396,9 @@ public class Kernel
 	if(!isNetworkAvailable() || message == null || message.trim().isEmpty())
 	    return;
 
-	synchronized(m_listeners)
+	m_listenersMutex.readLock().lock();
+
+	try
 	{
 	    int size = m_listeners.size();
 
@@ -1357,6 +1409,10 @@ public class Kernel
 		if(m_listeners.get(j) != null)
 		    m_listeners.get(j).scheduleSend(message);
 	    }
+	}
+	finally
+	{
+	    m_listenersMutex.readLock().unlock();
 	}
 
 	ArrayList<NeighborElement> arrayList =
@@ -1411,6 +1467,32 @@ public class Kernel
 	finally
 	{
 	    m_sipHashIdsMutex.writeLock().unlock();
+	}
+    }
+
+    public void toggleListenerPrivacy(int oid)
+    {
+	m_listenersMutex.readLock().lock();
+
+	try
+	{
+	    int size = m_listeners.size();
+
+	    for(int i = 0; i < size; i++)
+	    {
+		int j = m_listeners.keyAt(i);
+
+		if(m_listeners.get(j) != null &&
+		   m_listeners.get(j).oid() == oid)
+		{
+		    m_listeners.get(j).togglePrivacy();
+		    break;
+		}
+	    }
+	}
+	finally
+	{
+	    m_listenersMutex.readLock().unlock();
 	}
     }
 }

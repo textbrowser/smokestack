@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_marginStart="10dp"
+    android:layout_marginEnd="10dp"
     android:fadeScrollbars="false">
 
     <android.support.design.widget.AppBarLayout
@@ -23,10 +25,6 @@
         android:layout_height="match_parent"
         android:background="@android:color/transparent"
         android:fadeScrollbars="false"
-        android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingTop="@dimen/activity_vertical_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin"
-        android:paddingBottom="@dimen/activity_vertical_margin"
         tools:context="org.purple.smokestack.Settings">
 
         <ScrollView
@@ -87,14 +85,16 @@
                         style="@style/Widget.AppCompat.Button"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/clear_log" />
+                        android:text="@string/clear_log"
+                        android:textAllCaps="false" />
 
                     <Button
                         android:id="@+id/gc"
                         style="@style/Widget.AppCompat.Button"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/recycle_memory" />
+                        android:text="@string/recycle_memory"
+                        android:textAllCaps="false" />
                 </LinearLayout>
 
                 <TextView
@@ -157,7 +157,8 @@
                     style="@style/Widget.AppCompat.Button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/refresh" />
+                    android:text="@string/refresh"
+                    android:textAllCaps="false" />
 
                 <EditText
                     android:id="@+id/listeners_ip_address"
@@ -239,14 +240,16 @@
                         style="@style/Widget.AppCompat.Button"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/add" />
+                        android:text="@string/add"
+                        android:textAllCaps="false" />
 
                     <Button
                         android:id="@+id/reset_listener_fields"
                         style="@style/Widget.AppCompat.Button"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/reset_fields" />
+                        android:text="@string/reset_fields"
+                        android:textAllCaps="false" />
                 </LinearLayout>
 
                 <TextView
@@ -335,7 +338,8 @@
                         style="@style/Widget.AppCompat.Button"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/refresh_neighbors" />
+                        android:text="@string/refresh_neighbors"
+                        android:textAllCaps="false" />
 
                 </LinearLayout>
 
@@ -450,14 +454,16 @@
                         style="@style/Widget.AppCompat.Button"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/add" />
+                        android:text="@string/add"
+                        android:textAllCaps="false" />
 
                     <Button
                         android:id="@+id/reset_neighbor_fields"
                         style="@style/Widget.AppCompat.Button"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/reset_fields" />
+                        android:text="@string/reset_fields"
+                        android:textAllCaps="false" />
                 </LinearLayout>
 
                 <TextView
@@ -498,7 +504,8 @@
                         android:id="@+id/refresh_ozones"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/refresh" />
+                        android:text="@string/refresh"
+                        android:textAllCaps="false" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -521,7 +528,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="5dp"
-                        android:text="@string/save" />
+                        android:text="@string/save"
+                        android:textAllCaps="false" />
                 </LinearLayout>
 
                 <TextView
@@ -600,7 +608,8 @@
                         style="@style/Widget.AppCompat.Button"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/refresh_participants" />
+                        android:text="@string/refresh_participants"
+                        android:textAllCaps="false" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -634,7 +643,8 @@
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="5dp"
                         android:layout_weight="0"
-                        android:background="@android:color/transparent" />
+                        android:background="@android:color/transparent"
+                        android:textAllCaps="false" />
 
                 </LinearLayout>
 
@@ -654,14 +664,16 @@
                         style="@style/Widget.AppCompat.Button"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/add" />
+                        android:text="@string/add"
+                        android:textAllCaps="false" />
 
                     <Button
                         android:id="@+id/reset_participants_fields"
                         style="@style/Widget.AppCompat.Button"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/reset_fields" />
+                        android:text="@string/reset_fields"
+                        android:textAllCaps="false" />
                 </LinearLayout>
 
                 <TextView
@@ -728,7 +740,8 @@
                         android:id="@+id/set_password"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/set_password" />
+                        android:text="@string/set_password"
+                        android:textAllCaps="false" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -741,7 +754,8 @@
                         style="@style/Widget.AppCompat.Button.Colored"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/reset_smokestack" />
+                        android:text="@string/reset_smokestack"
+                        android:textAllCaps="false" />
 
                 </LinearLayout>
 

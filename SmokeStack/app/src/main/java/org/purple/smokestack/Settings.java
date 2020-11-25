@@ -2976,6 +2976,8 @@ public class Settings extends AppCompatActivity
 	case ContextMenuEnumerator.TOGGLE_LISTENER_PRIVACY:
 	    if(m_databaseHelper.toggleListenerPrivacy(s_cryptography, itemId))
 	    {
+		Kernel.getInstance().toggleListenerPrivacy(itemId);
+
 		CheckBox checkBox = (CheckBox) findViewById
 		    (R.id.automatic_refresh_listeners);
 
