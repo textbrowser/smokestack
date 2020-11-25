@@ -32,5 +32,6 @@ Remaining Items
 
 - Abnormal native termination on Android 8.x. SSL/TLS and/or libc.
 - Distribute routing identity algorithms.
+- Future-proof.
 - Integrate EOM in Messages.java.
 - The Settings activity has many views (ANDROID_LINT_MAX_VIEW_COUNT).

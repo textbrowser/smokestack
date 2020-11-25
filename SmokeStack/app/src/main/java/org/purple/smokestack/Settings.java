@@ -380,7 +380,8 @@ public class Settings extends AppCompatActivity
 	{
 	    Miscellaneous.showErrorDialog
 		(Settings.this,
-		 "A Smoke ID must be of the form 0102-0304-0506-0708.");
+		 "A Smoke ID must be of the form " +
+		 "HHHH-HHHH-HHHH-HHHH-HHHH-HHHH-HHHH-HHHH.");
 	    return;
 	}
 
@@ -1968,12 +1969,11 @@ public class Settings extends AppCompatActivity
 		     (int) (10 * density),
 		     (int) (10 * density));
 		textView.setText
-		    ("A Smoke ID is a sequence of digits and " +
-		     "letters assigned to a specific subscriber " +
+		    ("A Smoke ID is a sequence of hexadecimal characters " +
+		     "assigned to a specific subscriber " +
 		     "(public key pair). " +
 		     "The tokens allow participants to exchange public " +
-		     "key pairs via the EPKS protocol. " +
-		     "An example Smoke ID is ABAB-0101-CDCD-0202.");
+		     "key pairs via the EPKS protocol.");
 		textView.setTextSize(16);
 		popupWindow.setContentView(textView);
 		popupWindow.setOutsideTouchable(true);
