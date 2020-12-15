@@ -86,6 +86,8 @@ public class Cryptography
     private final static int SIPHASH_STREAM_CREATION_ITERATION_COUNT = 4096;
     private static Cryptography s_instance = null;
     private static SecureRandom s_secureRandom = null;
+    private final static String PBKDF2_ALGORITHM = "PBKDF2WithHmacSHA1";
+    public final static int CIPHER_IV_LENGTH = 16;
     public final static int CIPHER_KEY_LENGTH = 32;
     public final static int HASH_KEY_LENGTH = 64;
 
@@ -155,7 +157,7 @@ public class Cryptography
 	    if(m_encryptionKey == null)
 		return null;
 
-	    byte iv[] = new byte[16];
+	    byte iv[] = new byte[CIPHER_IV_LENGTH];
 
 	    s_secureRandom.nextBytes(iv);
 
@@ -425,7 +427,7 @@ public class Cryptography
 
 	KeySpec keySpec = new PBEKeySpec(password, salt, iterations, 256);
 	SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance
-	    ("PBKDF2WithHmacSHA1");
+	    (PBKDF2_ALGORITHM);
 
 	return secretKeyFactory.generateSecret(keySpec);
     }
@@ -440,7 +442,7 @@ public class Cryptography
 
 	KeySpec keySpec = new PBEKeySpec(password, salt, iterations, 512);
 	SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance
-	    ("PBKDF2WithHmacSHA1");
+	    (PBKDF2_ALGORITHM);
 
 	return secretKeyFactory.generateSecret(keySpec);
     }
@@ -530,12 +532,12 @@ public class Cryptography
 	    Cipher cipher = Cipher.getInstance(SYMMETRIC_CIPHER_TRANSFORMATION);
 	    SecretKey secretKey = new SecretKeySpec
 		(keyBytes, SYMMETRIC_ALGORITHM);
-	    byte iv[] = Arrays.copyOf(data, 16);
+	    byte iv[] = Arrays.copyOf(data, CIPHER_IV_LENGTH);
 
 	    cipher.init
 		(Cipher.DECRYPT_MODE, secretKey, new IvParameterSpec(iv));
 	    return cipher.doFinal
-		(Arrays.copyOfRange(data, 16, data.length));
+		(Arrays.copyOfRange(data, CIPHER_IV_LENGTH, data.length));
 	}
 	catch(Exception exception)
 	{
@@ -556,7 +558,7 @@ public class Cryptography
 	    SecretKey secretKey = new SecretKeySpec
 		(keyBytes, SYMMETRIC_ALGORITHM);
 	    byte bytes[] = null;
-	    byte iv[] = new byte[16];
+	    byte iv[] = new byte[CIPHER_IV_LENGTH];
 
 	    s_secureRandom.nextBytes(iv);
 
@@ -652,7 +654,7 @@ public class Cryptography
 	    KeySpec keySpec = new PBEKeySpec
 		(password, salt, iterations, length);
 	    SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance
-		("PBKDF2WithHmacSHA1");
+		(PBKDF2_ALGORITHM);
 
 	    return secretKeyFactory.generateSecret(keySpec).getEncoded();
 	}
