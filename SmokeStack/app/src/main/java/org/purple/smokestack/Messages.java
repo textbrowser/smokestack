@@ -276,7 +276,9 @@ public class Messages
 
 	    byte aes256[] = Cryptography.encrypt
 		(stringBuilder.toString().getBytes(),
-		 Arrays.copyOfRange(keyStream, 0, 32));
+		 Arrays.copyOfRange(keyStream,
+				    0,
+				    Cryptography.CIPHER_KEY_LENGTH));
 
 	    stringBuilder.delete(0, stringBuilder.length());
 
@@ -289,7 +291,9 @@ public class Messages
 
 	    byte sha512[] = Cryptography.hmac
 		(aes256,
-		 Arrays.copyOfRange(keyStream, 32, keyStream.length));
+		 Arrays.copyOfRange(keyStream,
+				    Cryptography.CIPHER_KEY_LENGTH,
+				    keyStream.length));
 
 	    if(sha512 == null)
 		return null;
@@ -354,7 +358,9 @@ public class Messages
 	    */
 
 	    byte aes256[] = Cryptography.encrypt
-		(bytes, Arrays.copyOfRange(keyStream, 0, 32));
+		(bytes, Arrays.copyOfRange(keyStream,
+					   0,
+					   Cryptography.CIPHER_KEY_LENGTH));
 
 	    if(aes256 == null)
 		return null;
@@ -364,7 +370,9 @@ public class Messages
 	    */
 
 	    byte sha512[] = Cryptography.hmac
-		(aes256, Arrays.copyOfRange(keyStream, 32, keyStream.length));
+		(aes256, Arrays.copyOfRange(keyStream,
+					    Cryptography.CIPHER_KEY_LENGTH,
+					    keyStream.length));
 
 	    if(sha512 == null)
 		return null;
