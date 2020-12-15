@@ -272,7 +272,7 @@ public class Cryptography
 	    byte digest2[] = null; // Computed digest.
 
 	    digest1 = Arrays.copyOfRange
-		(data, data.length - 512 / 8, data.length);
+		(data, data.length - HASH_KEY_LENGTH, data.length);
 	    m_macKeyMutex.readLock().lock();
 
 	    try
@@ -284,7 +284,7 @@ public class Cryptography
 
 		mac.init(m_macKey);
 		digest2 = mac.doFinal
-		    (Arrays.copyOf(data, data.length - 512 / 8));
+		    (Arrays.copyOf(data, data.length - HASH_KEY_LENGTH));
 	    }
 	    catch(Exception exception)
 	    {
@@ -311,12 +311,14 @@ public class Cryptography
 		return null;
 
 	    Cipher cipher = Cipher.getInstance(SYMMETRIC_CIPHER_TRANSFORMATION);
-	    byte iv[] = Arrays.copyOf(data, 16);
+	    byte iv[] = Arrays.copyOf(data, CIPHER_IV_LENGTH);
 
 	    cipher.init
 		(Cipher.DECRYPT_MODE, m_encryptionKey, new IvParameterSpec(iv));
 	    return cipher.doFinal
-		(Arrays.copyOfRange(data, 16, data.length - 512 / 8));
+		(Arrays.copyOfRange(data,
+				    CIPHER_IV_LENGTH,
+				    data.length - HASH_KEY_LENGTH));
 	}
 	catch(Exception exception)
 	{
