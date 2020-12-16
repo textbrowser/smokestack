@@ -93,6 +93,17 @@ public class TcpListener
 	new ReentrantReadWriteLock();
     private final String JCACONTENTSIGNER_ALGORITHM =
 	"SHA512WithRSAEncryption";
+    private final String TLS_LEGACY[] = new String[] {"SSLv3",
+						      "TLSv1",
+						      "TLSv1.1",
+						      "TLSv1.2"};
+    private final String TLS_NEW[] = new String[] {"TLSv1",
+						   "TLSv1.1",
+						   "TLSv1.2",
+						   "TLSv1.3"};
+    private final String TLS_V1_V2[] = new String[] {"TLSv1",
+						     "TLSv1.1",
+						     "TLSv1.2"};
     private final StringBuilder m_error = new StringBuilder();
     private final static int RSA_KEY_SIZE = 3072;
     private final static int SO_TIMEOUT = 5000; // 5 Seconds
@@ -634,17 +645,11 @@ public class TcpListener
 		     0);
 
 		if(Build.VERSION.SDK_INT >= 29) // Android 10
-		    m_socket.setEnabledProtocols
-			(new String[] {"TLSv1",
-				       "TLSv1.1",
-				       "TLSv1.2",
-				       "TLSv1.3"});
+		    m_socket.setEnabledProtocols(TLS_NEW);
 		else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-		    m_socket.setEnabledProtocols
-			(new String[] {"TLSv1", "TLSv1.1", "TLSv1.2"});
+		    m_socket.setEnabledProtocols(TLS_V1_V2);
 		else
-		    m_socket.setEnabledProtocols
-			(new String[] {"SSLv3", "TLSv1", "TLSv1.1", "TLSv1.2"});
+		    m_socket.setEnabledProtocols(TLS_LEGACY);
 
 		m_socket.setNeedClientAuth(false);
 		m_socket.setSoTimeout(SO_TIMEOUT);
