@@ -84,6 +84,7 @@ public class Kernel
     private final static SipHash s_congestionSipHash = new SipHash
 	(Cryptography.randomBytes(SipHash.KEY_LENGTH));
     private final static int CONGESTION_LIFETIME = 60;
+    private final static int IDENTITY_LENGTH = 64; // Sender's Identity
     private final static int ROUTING_ENTRY_LIFETIME = CONGESTION_LIFETIME;
     private final static long CHAT_MESSAGE_RETRIEVAL_WINDOW = 30000L; /*
 								      ** 30
@@ -1027,15 +1028,22 @@ public class Kernel
 				CHAT_MESSAGE_RETRIEVAL_WINDOW)
 			    return true;
 
-			byte identity[] = Arrays.copyOfRange(aes256, 9, 73);
+			byte identity[] = Arrays.copyOfRange
+			    (aes256, 9, IDENTITY_LENGTH + 9);
 
-			if(identity == null || identity.length != 64)
+			if(identity == null ||
+			   identity.length != IDENTITY_LENGTH)
 			    return true;
 
 			PublicKey signatureKey = s_databaseHelper.
 			    signatureKeyForDigest
 			    (s_cryptography,
-			     Arrays.copyOfRange(aes256, 73, 137));
+			     Arrays.
+			     copyOfRange(aes256,
+					 IDENTITY_LENGTH + 9,
+					 Cryptography.HASH_KEY_LENGTH +
+					 IDENTITY_LENGTH +
+					 9));
 
 			if(signatureKey == null)
 			    return true;
@@ -1043,12 +1051,18 @@ public class Kernel
 			if(!Cryptography.
 			   verifySignature(signatureKey,
 					   Arrays.copyOfRange(aes256,
-							      137,
+							      Cryptography.
+							      HASH_KEY_LENGTH +
+							      IDENTITY_LENGTH +
+							      9,
 							      aes256.length),
 					   Arrays.
 					   copyOfRange(aes256,
 						       0,
-						       137)))
+						       Cryptography.
+						       HASH_KEY_LENGTH +
+						       IDENTITY_LENGTH +
+						       9)))
 			    return true;
 
 			s_databaseHelper.writeCongestionDigest(value);
@@ -1056,7 +1070,12 @@ public class Kernel
 			String sipHashIdDigest = s_databaseHelper.
 			    sipHashIdDigestFromDigest
 			    (s_cryptography,
-			     Arrays.copyOfRange(aes256, 73, 73 + 64));
+			     Arrays.
+			     copyOfRange(aes256,
+					 IDENTITY_LENGTH + 9,
+					 Cryptography.HASH_KEY_LENGTH +
+					 IDENTITY_LENGTH +
+					 9));
 
 			if(aes256[0] == Messages.CHAT_MESSAGE_READ[0])
 			    s_databaseHelper.timestampReleasedMessage
