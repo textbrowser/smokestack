@@ -3177,12 +3177,14 @@ public class Database extends SQLiteOpenHelper
 		    if (temporary != null)
 			bytes = cryptography.etm
 			    (Cryptography.
-			     pbkdf2(salt,
-				    Base64.encodeToString(temporary,
-							  Base64.NO_WRAP).
-				    toCharArray(),
-				    1,
-				    768)); // 8 * (32 + 64) bits.
+			     pbkdf2
+			     (salt,
+			      Base64.encodeToString(temporary,
+						    Base64.NO_WRAP).
+			      toCharArray(),
+			      1,
+			      8 * (Cryptography.CIPHER_KEY_LENGTH +
+				   Cryptography.HASH_KEY_LENGTH))); // Bits.
 
 		    break;
 		}
