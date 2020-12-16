@@ -1409,7 +1409,8 @@ public class Settings extends AppCompatActivity
 
 		try
 		{
-		    encryptionSalt = Cryptography.randomBytes(32);
+		    encryptionSalt = Cryptography.randomBytes
+			(Cryptography.CIPHER_KEY_LENGTH);
 		    encryptionKey = Cryptography.
 			generateEncryptionKey
 			(encryptionSalt,
@@ -1423,7 +1424,8 @@ public class Settings extends AppCompatActivity
 			return;
 		    }
 
-		    macSalt = Cryptography.randomBytes(64);
+		    macSalt = Cryptography.randomBytes
+			(Cryptography.HASH_KEY_LENGTH);
 		    macKey = Cryptography.generateMacKey
 			(macSalt,
 			 m_password.toCharArray(),
