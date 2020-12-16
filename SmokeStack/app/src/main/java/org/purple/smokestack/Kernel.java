@@ -1221,7 +1221,8 @@ public class Kernel
 					    (i + minutes)),
 					   Arrays.copyOfRange(ozoneElement.
 							      m_addressStream,
-							      32,
+							      Cryptography.
+							      CIPHER_KEY_LENGTH,
 							      ozoneElement.
 							      m_addressStream.
 							      length))))

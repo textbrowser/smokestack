@@ -427,7 +427,8 @@ public class Cryptography
 	if(salt == null)
 	    return null;
 
-	KeySpec keySpec = new PBEKeySpec(password, salt, iterations, 256);
+	KeySpec keySpec = new PBEKeySpec
+	    (password, salt, iterations, 8 * CIPHER_KEY_LENGTH);
 	SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance
 	    (PBKDF2_ALGORITHM);
 
@@ -442,7 +443,8 @@ public class Cryptography
 	if(salt == null)
 	    return null;
 
-	KeySpec keySpec = new PBEKeySpec(password, salt, iterations, 512);
+	KeySpec keySpec = new PBEKeySpec
+	    (password, salt, iterations, 8 * HASH_KEY_LENGTH);
 	SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance
 	    (PBKDF2_ALGORITHM);
 
