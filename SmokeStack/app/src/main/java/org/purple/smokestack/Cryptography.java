@@ -597,11 +597,12 @@ public class Cryptography
 		     160); // SHA-1
 
 	    if(bytes != null)
-		bytes = pbkdf2(salt,
-			       Base64.encodeToString(bytes, Base64.NO_WRAP).
-			       toCharArray(),
-			       1,
-			       768); // 8 * (32 + 64) bits.
+		bytes = pbkdf2
+		    (salt,
+		     Base64.encodeToString(bytes, Base64.NO_WRAP).
+		     toCharArray(),
+		     1,
+		     8 * (CIPHER_KEY_LENGTH + HASH_KEY_LENGTH)); // Bits.
 
 	    return bytes;
 	}
@@ -724,7 +725,7 @@ public class Cryptography
 		     Base64.encodeToString(temporary, Base64.NO_WRAP).
 		     toCharArray(),
 		     1,
-		     768); // 8 * (32 + 64) bits.
+		     8 * (CIPHER_KEY_LENGTH + HASH_KEY_LENGTH)); // Bits.
 
 	    return bytes;
 	}
