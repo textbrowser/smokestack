@@ -73,7 +73,7 @@ public class TcpListener
     }
 
     private AtomicBoolean m_isPrivateServer = null;
-    private AtomicInteger m_oid;
+    private AtomicInteger m_oid = null;
     private KeyStore m_keyStore = null;
     private SSLServerSocket m_socket = null;
     private final ScheduledExecutorService m_acceptScheduler =

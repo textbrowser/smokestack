@@ -2673,10 +2673,7 @@ public class Settings extends AppCompatActivity
 	    int index = arrayAdapter.getPosition
 		(m_databaseHelper.readSetting(null, "iterationCount"));
 
-	    if(index >= 0)
-		spinner1.setSelection(index);
-	    else
-		spinner1.setSelection(0);
+	    spinner1.setSelection(Math.max(0, index));
 	}
 	catch(Exception exception)
 	{

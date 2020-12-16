@@ -427,7 +427,7 @@ public class Kernel
 		 Executors.newSingleThreadScheduledExecutor().
 		 schedule(new Runnable()
 		{
-		    private AtomicInteger m_oid = new AtomicInteger(-1);
+		    private final AtomicInteger m_oid = new AtomicInteger(-1);
 
 		    @Override
 		    public void run()
