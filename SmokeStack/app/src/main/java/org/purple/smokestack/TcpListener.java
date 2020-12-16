@@ -91,6 +91,8 @@ public class TcpListener
     private final Object m_socketMutex = new Object();
     private final ReentrantReadWriteLock m_neighborsMutex =
 	new ReentrantReadWriteLock();
+    private final String JCACONTENTSIGNER_ALGORITHM =
+	"SHA512WithRSAEncryption";
     private final StringBuilder m_error = new StringBuilder();
     private final static int RSA_KEY_SIZE = 3072;
     private final static int SO_TIMEOUT = 5000; // 5 Seconds
@@ -385,7 +387,7 @@ public class TcpListener
 		 subjectPublicKeyInfo);
 
 	    contentSigner = new JcaContentSignerBuilder
-		("SHA512WithRSAEncryption").setProvider("BC").build
+		(JCACONTENTSIGNER_ALGORITHM).setProvider("BC").build
 		(keyPair.getPrivate());
 
 	    X509Certificate certificate = null;
