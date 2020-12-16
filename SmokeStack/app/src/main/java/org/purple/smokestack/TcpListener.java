@@ -108,6 +108,7 @@ public class TcpListener
     private final static int RSA_KEY_SIZE = 3072;
     private final static int SO_TIMEOUT = 5000; // 5 Seconds
     private final static long ACCEPT_INTERVAL = 100L; // Milliseconds
+    private final static long ONE_YEAR = 24L * 60L * 60L * 365L * 1000L;
     private final static long TIMER_INTERVAL = 2500L; // 2.5 Seconds
 
     public TcpListener(String ipAddress,
@@ -373,10 +374,8 @@ public class TcpListener
 
 	try
 	{
-	    Date endDate = new Date
-		(System.currentTimeMillis() + 24L * 60L * 60L * 365L * 1000L);
-	    Date startDate = new Date
-		(System.currentTimeMillis() - 24L * 60L * 60L * 1000L);
+	    Date endDate = new Date(ONE_YEAR + System.currentTimeMillis());
+	    Date startDate = new Date(System.currentTimeMillis() - ONE_YEAR);
 	    X500NameBuilder nameBuilder = new X500NameBuilder(BCStyle.INSTANCE);
 
 	    /*
