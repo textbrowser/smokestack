@@ -1,0 +1,16 @@
+Future-proofing software is a difficult task. Cryptographic primitives
+and protocols are nearly impossible to safeguard.
+
+Import SmokeStack Files
+
+Authenticate (Default Iteration Count)
+Authenticate (SHA-512)
+Cryptography (Encrypt-Then-MAC)
+Cryptography (MAC-Then-Decrypt)
+Cryptography (Numeric Constants)
+Cryptography (PBKDF2)
+Cryptography (SHA-1)
+Cryptography (SHA-512)
+Cryptography (String Constants)
+Database (MAC-Then-Decrypt)
+Database (Encrypt-Then-MAC)
