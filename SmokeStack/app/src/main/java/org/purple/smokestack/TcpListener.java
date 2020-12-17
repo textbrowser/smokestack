@@ -93,23 +93,23 @@ public class TcpListener
 	new ReentrantReadWriteLock();
     private final String JCACONTENTSIGNER_ALGORITHM =
 	"SHA512WithRSAEncryption";
-    private final String TLS_LEGACY[] = new String[] {"SSLv3",
-						      "TLSv1",
-						      "TLSv1.1",
-						      "TLSv1.2"};
-    private final String TLS_NEW[] = new String[] {"TLSv1",
-						   "TLSv1.1",
-						   "TLSv1.2",
-						   "TLSv1.3"};
-    private final String TLS_V1_V2[] = new String[] {"TLSv1",
-						     "TLSv1.1",
-						     "TLSv1.2"};
     private final StringBuilder m_error = new StringBuilder();
     private final static int RSA_KEY_SIZE = 3072;
     private final static int SO_TIMEOUT = 5000; // 5 Seconds
     private final static long ACCEPT_INTERVAL = 100L; // Milliseconds
     private final static long ONE_YEAR = 24L * 60L * 60L * 365L * 1000L;
     private final static long TIMER_INTERVAL = 2500L; // 2.5 Seconds
+    public final static String TLS_LEGACY[] = new String[] {"SSLv3",
+							    "TLSv1",
+							    "TLSv1.1",
+							    "TLSv1.2"};
+    public final static String TLS_NEW[] = new String[] {"TLSv1",
+							 "TLSv1.1",
+							 "TLSv1.2",
+							 "TLSv1.3"};
+    public final static String TLS_V1_V2[] = new String[] {"TLSv1",
+							   "TLSv1.1",
+							   "TLSv1.2"};
 
     public TcpListener(String ipAddress,
 		       String ipPort,

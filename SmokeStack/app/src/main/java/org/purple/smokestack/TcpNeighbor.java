@@ -429,13 +429,11 @@ public class TcpNeighbor extends Neighbor
 	m_isValidCertificate = new AtomicBoolean(false);
 
 	if(Build.VERSION.RELEASE.startsWith("10"))
-	    m_protocols = new String[]
-		{"TLSv1", "TLSv1.1", "TLSv1.2", "TLSv1.3"};
+	    m_protocols = TcpListener.TLS_NEW;
 	else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-	    m_protocols = new String[] {"TLSv1", "TLSv1.1", "TLSv1.2"};
+	    m_protocols = TcpListener.TLS_V1_V2;
 	else
-	    m_protocols = new String[]
-		{"SSLv3", "TLSv1", "TLSv1.1", "TLSv1.2"};
+	    m_protocols = TcpListener.TLS_LEGACY;
 
 	m_proxyIpAddress = proxyIpAddress;
 

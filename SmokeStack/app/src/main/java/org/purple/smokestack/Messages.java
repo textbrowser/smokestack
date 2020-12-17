@@ -209,8 +209,8 @@ public class Messages
 
 	/*
 	** keyStream
-	** [0 ... 31] - AES-256 Encryption Key
-	** [32 ... 95] - SHA-512 HMAC Key
+	** [0 ... 31] - Encryption Key
+	** [32 ... 95] - HMAC Key
 	*/
 
 	try
@@ -274,7 +274,7 @@ public class Messages
 
 	    stringBuilder.append(strings[4]);
 
-	    byte aes256[] = Cryptography.encrypt
+	    byte cipher[] = Cryptography.encrypt
 		(stringBuilder.toString().getBytes(),
 		 Arrays.copyOfRange(keyStream,
 				    0,
@@ -282,20 +282,20 @@ public class Messages
 
 	    stringBuilder.delete(0, stringBuilder.length());
 
-	    if(aes256 == null)
+	    if(cipher == null)
 		return null;
 
 	    /*
-	    ** [ SHA-512 HMAC ]
+	    ** [ HMAC ]
 	    */
 
-	    byte sha512[] = Cryptography.hmac
-		(aes256,
+	    byte hmac[] = Cryptography.hmac
+		(cipher,
 		 Arrays.copyOfRange(keyStream,
 				    Cryptography.CIPHER_KEY_LENGTH,
 				    keyStream.length));
 
-	    if(sha512 == null)
+	    if(hmac == null)
 		return null;
 
 	    /*
@@ -303,11 +303,11 @@ public class Messages
 	    */
 
 	    byte destination[] = Cryptography.hmac
-		(Miscellaneous.joinByteArrays(aes256, sha512),
+		(Miscellaneous.joinByteArrays(cipher, hmac),
 		 Cryptography.
 		 sha512(sipHashId.getBytes(StandardCharsets.UTF_8)));
 
-	    return Miscellaneous.joinByteArrays(aes256, sha512, destination);
+	    return Miscellaneous.joinByteArrays(cipher, hmac, destination);
 	}
 	catch(Exception exception)
 	{
@@ -354,27 +354,27 @@ public class Messages
 		 identity);
 
 	    /*
-	    ** [ AES-256 ]
+	    ** [ Cipher ]
 	    */
 
-	    byte aes256[] = Cryptography.encrypt
+	    byte cipher[] = Cryptography.encrypt
 		(bytes, Arrays.copyOfRange(keyStream,
 					   0,
 					   Cryptography.CIPHER_KEY_LENGTH));
 
-	    if(aes256 == null)
+	    if(cipher == null)
 		return null;
 
 	    /*
-	    ** [ SHA-512 HMAC ]
+	    ** [ HMAC ]
 	    */
 
-	    byte sha512[] = Cryptography.hmac
-		(aes256, Arrays.copyOfRange(keyStream,
+	    byte hmac[] = Cryptography.hmac
+		(cipher, Arrays.copyOfRange(keyStream,
 					    Cryptography.CIPHER_KEY_LENGTH,
 					    keyStream.length));
 
-	    if(sha512 == null)
+	    if(hmac == null)
 		return null;
 
 	    /*
@@ -382,11 +382,11 @@ public class Messages
 	    */
 
 	    byte destination[] = Cryptography.hmac
-		(Miscellaneous.joinByteArrays(aes256, sha512),
+		(Miscellaneous.joinByteArrays(cipher, hmac),
 		 Cryptography.
 		 sha512(sipHashId.getBytes(StandardCharsets.UTF_8)));
 
-	    return Miscellaneous.joinByteArrays(aes256, sha512, destination);
+	    return Miscellaneous.joinByteArrays(cipher, hmac, destination);
 	}
 	catch(Exception exception)
 	{
