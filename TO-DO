@@ -16,6 +16,7 @@ Completed Items
 - Integrate EOM in Messages.java.
 - Listeners.
 - Message accounting.
+- Message retrieval is not immediate.
 - Optional signatures on shared key pairs.
 - Per-participant message retrieval schedulers.
 - Populate containers in the kernel as required.
@@ -35,5 +36,4 @@ Remaining Items
 
 - Abnormal native termination on Android 8.x. SSL/TLS and/or libc.
 - Distribute routing identity algorithms.
-- Message retrieval is not immediate.
 - The Settings activity has many views (ANDROID_LINT_MAX_VIEW_COUNT).
