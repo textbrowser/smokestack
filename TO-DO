@@ -7,10 +7,12 @@ Completed Items
 - Dialogs are not dismissed correctly on rotation changes. Unable to
   reproduce.
 - Display the number of internal Neighbors.
+- Document future-proof files.
 - Echo shared Smoke identities.
 - Enable android:largeHeap=true.
 - Entries in routing_identities expire.
 - Fire compatibility.
+- Future-proof.
 - Integrate EOM in Messages.java.
 - Listeners.
 - Message accounting.
@@ -33,6 +35,5 @@ Remaining Items
 
 - Abnormal native termination on Android 8.x. SSL/TLS and/or libc.
 - Distribute routing identity algorithms.
-- Document future-proof files.
-- Future-proof.
+- Message retrieval is not immediate.
 - The Settings activity has many views (ANDROID_LINT_MAX_VIEW_COUNT).
