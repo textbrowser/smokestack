@@ -77,7 +77,7 @@ public class Kernel
     private ScheduledExecutorService m_neighborsScheduler = null;
     private ScheduledExecutorService m_purgeExpiredRoutingEntriesScheduler =
 	null;
-    private ScheduledExecutorService m_releaseMessagesScheduler = null;
+    private ScheduledExecutorService m_releaseMessagesSchedulers[] = null;
     private WakeLock m_wakeLock = null;
     private WifiLock m_wifiLock = null;
     private final ReentrantReadWriteLock m_listenersMutex = new
@@ -97,6 +97,8 @@ public class Kernel
 	(Cryptography.randomBytes(SipHash.KEY_LENGTH));
     private final static int CONGESTION_LIFETIME = 60;
     private final static int IDENTITY_LENGTH = 64; // Sender's Identity
+    private final static int NUMBER_OF_CORES = Math.max
+	(4, Runtime.getRuntime().availableProcessors());
     private final static int ROUTING_ENTRY_LIFETIME = CONGESTION_LIFETIME;
     private final static long CHAT_MESSAGE_RETRIEVAL_WINDOW = 30000L; /*
 								      ** 30
@@ -443,7 +445,7 @@ public class Kernel
 	{
 	    try
 	    {
-		m_releaseMessagesQueueMutex.notify();
+		m_releaseMessagesQueueMutex.notifyAll();
 	    }
 	    catch(Exception exception)
 	    {
@@ -533,103 +535,112 @@ public class Kernel
 	    }, 1500L, ROUTING_INTERVAL, TimeUnit.MILLISECONDS);
 	}
 
-	if(m_releaseMessagesScheduler == null)
+	if(m_releaseMessagesSchedulers == null)
 	{
-	    m_releaseMessagesScheduler = Executors.
-		newSingleThreadScheduledExecutor();
-	    m_releaseMessagesScheduler.scheduleAtFixedRate(new Runnable()
+	    m_releaseMessagesSchedulers = new
+		ScheduledExecutorService[NUMBER_OF_CORES];
+
+	    for(int i = 0; i < m_releaseMessagesSchedulers.length; i++)
 	    {
-		private final AtomicInteger m_oid = new AtomicInteger(-1);
-
-		@Override
-		public void run()
+		m_releaseMessagesSchedulers[i] = Executors.
+		    newSingleThreadScheduledExecutor();
+	    
+		m_releaseMessagesSchedulers[i].scheduleAtFixedRate
+		    (new Runnable()
 		{
-		    try
-		    {
-			while(true)
+		    private final AtomicInteger m_oid = new AtomicInteger(-1);
+
+		    @Override
+		    public void run()
 			{
-			    if(!isNetworkAvailable())
+			try
+			{
+			    while(true)
 			    {
-				Thread.sleep(250);
-				continue;
-			    }
-
-			    SipHashIdentityPair pair = null;
-
-			    m_releaseMessagesQueueMutex.writeLock().lock();
-
-			    try
-			    {
-				if(!m_releaseMessagesQueue.isEmpty())
-				    pair = m_releaseMessagesQueue.remove();
-			    }
-			    finally
-			    {
-				m_releaseMessagesQueueMutex.writeLock().
-				    unlock();
-			    }
-
-			    if(pair == null)
-			    {
-				synchronized(m_releaseMessagesQueueMutex)
+				if(!isNetworkAvailable())
 				{
-				    try
-				    {
-					m_releaseMessagesQueueMutex.wait();
-				    }
-				    catch(Exception exception)
-				    {
-				    }
+				    Thread.sleep(250);
+				    continue;
 				}
 
-				continue;
-			    }
+				SipHashIdentityPair pair = null;
 
-			    do
-			    {
-				ArrayList<byte[]> arrayList = s_databaseHelper.
-				    readTaggedMessage
-				    (pair.m_sipHashIdDigest,
-				     s_cryptography,
-				     m_oid.get());
+				m_releaseMessagesQueueMutex.writeLock().lock();
 
-				if(arrayList == null)
+				try
 				{
-				    m_oid.set(-1);
-				    break;
+				    if(!m_releaseMessagesQueue.isEmpty())
+					pair = m_releaseMessagesQueue.remove();
+				}
+				finally
+				{
+				    m_releaseMessagesQueueMutex.writeLock().
+					unlock();
 				}
 
-				if(arrayList.size() != 3)
+				if(pair == null)
 				{
+				    synchronized(m_releaseMessagesQueueMutex)
+				    {
+					try
+					{
+					    m_releaseMessagesQueueMutex.wait();
+					}
+					catch(Exception exception)
+					{
+					}
+				    }
+
+				    continue;
+				}
+
+				do
+				{
+				    ArrayList<byte[]> arrayList =
+					s_databaseHelper.readTaggedMessage
+					(pair.m_sipHashIdDigest,
+					 s_cryptography,
+					 m_oid.get());
+
+				    if(arrayList == null)
+				    {
+					m_oid.set(-1);
+					break;
+				    }
+
+				    if(arrayList.size() != 3)
+				    {
+					arrayList.clear();
+					continue;
+				    }
+
+				    byte destination[] = Cryptography.hmac
+					(arrayList.get(0), pair.m_identity);
+
+				    if(destination == null)
+					continue;
+
+				    String message = Messages.
+					bytesToMessageString
+					(Miscellaneous.
+					 joinByteArrays(arrayList.get(0),
+							destination));
+
+				    enqueueMessage(message);
+				    m_oid.set
+					(Miscellaneous.
+					 byteArrayToInt(arrayList.get(2)));
 				    arrayList.clear();
-				    continue;
 				}
-
-				byte destination[] = Cryptography.hmac
-				    (arrayList.get(0), pair.m_identity);
-
-				if(destination == null)
-				    continue;
-
-				String message = Messages.bytesToMessageString
-				    (Miscellaneous.
-				     joinByteArrays(arrayList.get(0),
-						    destination));
-
-				enqueueMessage(message);
-				m_oid.set
-				    (Miscellaneous.
-				     byteArrayToInt(arrayList.get(2)));
-				arrayList.clear();
+				while(true);
 			    }
-			    while(true);
+			}
+			catch(Exception exception)
+			{
 			}
 		    }
-		    catch(Exception exception)
-		    {
-		    }
-		}
-	    }, 1500L, RELEASE_MESSAGES_INTERVAL, TimeUnit.MILLISECONDS);
+	        }, 1500L, RELEASE_MESSAGES_INTERVAL, TimeUnit.MILLISECONDS);
+	    }
 	}
     }
 
