@@ -931,7 +931,7 @@ public class Kernel
 
 		    s_databaseHelper.writeCongestionDigest(value);
 
-		    byte aes256[] = Cryptography.decrypt
+		    byte ciphertext[] = Cryptography.decrypt
 			(data,
 			 Arrays.copyOfRange(sipHashIdElement.m_stream,
 					    0,
@@ -941,7 +941,7 @@ public class Kernel
 		       writeParticipant(s_cryptography,
 					sipHashIdElement.
 					m_acceptWithoutSignatures,
-					aes256))
+					ciphertext))
 		    {
 			Intent intent = new Intent
 			    ("org.purple.smokestack.populate_participants");
@@ -1002,21 +1002,21 @@ public class Kernel
 					   ozoneElement.m_addressStream.
 					   length))))
 		{
-		    byte aes256[] = Cryptography.decrypt
+		    byte ciphertext[] = Cryptography.decrypt
 			(data,
 			 Arrays.copyOfRange(ozoneElement.m_addressStream,
 					    0,
 					    Cryptography.CIPHER_KEY_LENGTH));
 
-		    if(aes256 == null)
+		    if(ciphertext == null)
 			return true;
 
-		    if(aes256[0] == Messages.CHAT_MESSAGE_READ[0] ||
-		       aes256[0] == Messages.CHAT_MESSAGE_RETRIEVAL[0])
+		    if(ciphertext[0] == Messages.CHAT_MESSAGE_READ[0] ||
+		       ciphertext[0] == Messages.CHAT_MESSAGE_RETRIEVAL[0])
 		    {
 			long current = System.currentTimeMillis();
 			long timestamp = Miscellaneous.byteArrayToLong
-			    (Arrays.copyOfRange(aes256, 1, 9));
+			    (Arrays.copyOfRange(ciphertext, 1, 9));
 
 			if(current - timestamp < 0L)
 			{
@@ -1029,7 +1029,7 @@ public class Kernel
 			    return true;
 
 			byte identity[] = Arrays.copyOfRange
-			    (aes256, 9, IDENTITY_LENGTH + 9);
+			    (ciphertext, 9, IDENTITY_LENGTH + 9);
 
 			if(identity == null ||
 			   identity.length != IDENTITY_LENGTH)
@@ -1039,7 +1039,7 @@ public class Kernel
 			    signatureKeyForDigest
 			    (s_cryptography,
 			     Arrays.
-			     copyOfRange(aes256,
+			     copyOfRange(ciphertext,
 					 IDENTITY_LENGTH + 9,
 					 Cryptography.HASH_KEY_LENGTH +
 					 IDENTITY_LENGTH +
@@ -1050,14 +1050,15 @@ public class Kernel
 
 			if(!Cryptography.
 			   verifySignature(signatureKey,
-					   Arrays.copyOfRange(aes256,
+					   Arrays.copyOfRange(ciphertext,
 							      Cryptography.
 							      HASH_KEY_LENGTH +
 							      IDENTITY_LENGTH +
 							      9,
-							      aes256.length),
+							      ciphertext.
+							      length),
 					   Arrays.
-					   copyOfRange(aes256,
+					   copyOfRange(ciphertext,
 						       0,
 						       Cryptography.
 						       HASH_KEY_LENGTH +
@@ -1071,13 +1072,13 @@ public class Kernel
 			    sipHashIdDigestFromDigest
 			    (s_cryptography,
 			     Arrays.
-			     copyOfRange(aes256,
+			     copyOfRange(ciphertext,
 					 IDENTITY_LENGTH + 9,
 					 Cryptography.HASH_KEY_LENGTH +
 					 IDENTITY_LENGTH +
 					 9));
 
-			if(aes256[0] == Messages.CHAT_MESSAGE_READ[0])
+			if(ciphertext[0] == Messages.CHAT_MESSAGE_READ[0])
 			    s_databaseHelper.timestampReleasedMessage
 				(s_cryptography, identity);
 			else
@@ -1097,7 +1098,7 @@ public class Kernel
 			    (sipHashIdDigest.getBytes());
 			return true;
 		    }
-		    else if(aes256[0] == Messages.PKP_MESSAGE_REQUEST[0])
+		    else if(ciphertext[0] == Messages.PKP_MESSAGE_REQUEST[0])
 		    {
 			/*
 			** Request a public key pair.
@@ -1105,7 +1106,7 @@ public class Kernel
 
 			long current = System.currentTimeMillis();
 			long timestamp = Miscellaneous.byteArrayToLong
-			    (Arrays.copyOfRange(aes256, 1, 9));
+			    (Arrays.copyOfRange(ciphertext, 1, 9));
 
 			if(current - timestamp < 0L)
 			{
@@ -1118,11 +1119,11 @@ public class Kernel
 			    return true;
 
 			String sipHashId = new String
-			    (Arrays.copyOfRange(aes256,
+			    (Arrays.copyOfRange(ciphertext,
 						9 +
 						Cryptography.
 						SIPHASH_IDENTITY_LENGTH,
-						aes256.length),
+						ciphertext.length),
 			     StandardCharsets.UTF_8);
 			String array[] = s_databaseHelper.readPublicKeyPair
 			    (s_cryptography, sipHashId);
@@ -1132,7 +1133,7 @@ public class Kernel
 
 			sipHashId = new String
 			    (Arrays.
-			     copyOfRange(aes256,
+			     copyOfRange(ciphertext,
 					 9,
 					 9 +
 					 Cryptography.SIPHASH_IDENTITY_LENGTH));
@@ -1143,11 +1144,11 @@ public class Kernel
 			enqueueMessage(message);
 			return true;
 		    }
-		    else if(aes256[0] == Messages.SHARE_SIPHASH_ID[0])
+		    else if(ciphertext[0] == Messages.SHARE_SIPHASH_ID[0])
 		    {
 			long current = System.currentTimeMillis();
 			long timestamp = Miscellaneous.byteArrayToLong
-			    (Arrays.copyOfRange(aes256, 1, 9));
+			    (Arrays.copyOfRange(ciphertext, 1, 9));
 
 			if(current - timestamp < 0L)
 			{
@@ -1162,7 +1163,7 @@ public class Kernel
 			String name = "";
 			String sipHashId = new String
 			    (Arrays.
-			     copyOfRange(aes256,
+			     copyOfRange(ciphertext,
 					 9,
 					 9 +
 					 Cryptography.SIPHASH_IDENTITY_LENGTH),
@@ -1195,7 +1196,7 @@ public class Kernel
 			}
 
 			byte identity[] = Arrays.copyOfRange
-			    (aes256,
+			    (ciphertext,
 			     9 + Cryptography.SIPHASH_IDENTITY_LENGTH,
 			     9 + Cryptography.SIPHASH_IDENTITY_LENGTH + 8);
 

@@ -274,7 +274,7 @@ public class Messages
 
 	    stringBuilder.append(strings[4]);
 
-	    byte cipher[] = Cryptography.encrypt
+	    byte ciphertext[] = Cryptography.encrypt
 		(stringBuilder.toString().getBytes(),
 		 Arrays.copyOfRange(keyStream,
 				    0,
@@ -282,7 +282,7 @@ public class Messages
 
 	    stringBuilder.delete(0, stringBuilder.length());
 
-	    if(cipher == null)
+	    if(ciphertext == null)
 		return null;
 
 	    /*
@@ -290,7 +290,7 @@ public class Messages
 	    */
 
 	    byte hmac[] = Cryptography.hmac
-		(cipher,
+		(ciphertext,
 		 Arrays.copyOfRange(keyStream,
 				    Cryptography.CIPHER_KEY_LENGTH,
 				    keyStream.length));
@@ -303,11 +303,11 @@ public class Messages
 	    */
 
 	    byte destination[] = Cryptography.hmac
-		(Miscellaneous.joinByteArrays(cipher, hmac),
+		(Miscellaneous.joinByteArrays(ciphertext, hmac),
 		 Cryptography.
 		 sha512(sipHashId.getBytes(StandardCharsets.UTF_8)));
 
-	    return Miscellaneous.joinByteArrays(cipher, hmac, destination);
+	    return Miscellaneous.joinByteArrays(ciphertext, hmac, destination);
 	}
 	catch(Exception exception)
 	{
@@ -354,15 +354,15 @@ public class Messages
 		 identity);
 
 	    /*
-	    ** [ Cipher ]
+	    ** [ Ciphertext ]
 	    */
 
-	    byte cipher[] = Cryptography.encrypt
+	    byte ciphertext[] = Cryptography.encrypt
 		(bytes, Arrays.copyOfRange(keyStream,
 					   0,
 					   Cryptography.CIPHER_KEY_LENGTH));
 
-	    if(cipher == null)
+	    if(ciphertext == null)
 		return null;
 
 	    /*
@@ -370,7 +370,7 @@ public class Messages
 	    */
 
 	    byte hmac[] = Cryptography.hmac
-		(cipher, Arrays.copyOfRange(keyStream,
+		(ciphertext, Arrays.copyOfRange(keyStream,
 					    Cryptography.CIPHER_KEY_LENGTH,
 					    keyStream.length));
 
@@ -382,11 +382,11 @@ public class Messages
 	    */
 
 	    byte destination[] = Cryptography.hmac
-		(Miscellaneous.joinByteArrays(cipher, hmac),
+		(Miscellaneous.joinByteArrays(ciphertext, hmac),
 		 Cryptography.
 		 sha512(sipHashId.getBytes(StandardCharsets.UTF_8)));
 
-	    return Miscellaneous.joinByteArrays(cipher, hmac, destination);
+	    return Miscellaneous.joinByteArrays(ciphertext, hmac, destination);
 	}
 	catch(Exception exception)
 	{
