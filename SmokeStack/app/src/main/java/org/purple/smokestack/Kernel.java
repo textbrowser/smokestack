@@ -923,10 +923,10 @@ public class Kernel
 						 bytes.length -
 						 Cryptography.HASH_KEY_LENGTH),
 				     Cryptography.
-				     sha512(sipHashIdElement.
-					    m_sipHashId.
-					    getBytes(StandardCharsets.
-						     UTF_8))))))
+				     shaX512(sipHashIdElement.
+					     m_sipHashId.
+					     getBytes(StandardCharsets.
+						      UTF_8))))))
 			continue;
 
 		    s_databaseHelper.writeCongestionDigest(value);

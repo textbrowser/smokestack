@@ -305,7 +305,7 @@ public class Messages
 	    byte destination[] = Cryptography.hmac
 		(Miscellaneous.joinByteArrays(ciphertext, hmac),
 		 Cryptography.
-		 sha512(sipHashId.getBytes(StandardCharsets.UTF_8)));
+		 shaX512(sipHashId.getBytes(StandardCharsets.UTF_8)));
 
 	    return Miscellaneous.joinByteArrays(ciphertext, hmac, destination);
 	}
@@ -384,7 +384,7 @@ public class Messages
 	    byte destination[] = Cryptography.hmac
 		(Miscellaneous.joinByteArrays(ciphertext, hmac),
 		 Cryptography.
-		 sha512(sipHashId.getBytes(StandardCharsets.UTF_8)));
+		 shaX512(sipHashId.getBytes(StandardCharsets.UTF_8)));
 
 	    return Miscellaneous.joinByteArrays(ciphertext, hmac, destination);
 	}

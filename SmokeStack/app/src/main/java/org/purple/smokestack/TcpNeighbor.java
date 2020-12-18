@@ -74,7 +74,7 @@ public class TcpNeighbor extends Neighbor
 		 Miscellaneous.longToByteArray(System.currentTimeMillis()));
 
 	    m_randomBuffer.append
-		(Base64.encodeToString(Cryptography.sha512(bytes),
+		(Base64.encodeToString(Cryptography.shaX512(bytes),
 				       Base64.NO_WRAP));
 	}
 	catch(Exception exception)

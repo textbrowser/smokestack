@@ -94,7 +94,8 @@ public class TcpListener
     private final String JCACONTENTSIGNER_ALGORITHM =
 	"SHA512WithRSAEncryption";
     private final StringBuilder m_error = new StringBuilder();
-    private final static int RSA_KEY_SIZE = 3072;
+    private final static String PKI_KEY_ALGORITHM = "RSA";
+    private final static int PKI_KEY_SIZE = 3072;
     private final static int SO_TIMEOUT = 5000; // 5 Seconds
     private final static long ACCEPT_INTERVAL = 100L; // Milliseconds
     private final static long ONE_YEAR = 24L * 60L * 60L * 365L * 1000L;
@@ -318,11 +319,11 @@ public class TcpListener
 	       publicKey == null ||
 	       publicKey.length == 0)
 		keyPair = Cryptography.generatePrivatePublicKeyPair
-		    ("RSA", RSA_KEY_SIZE);
+		    (PKI_KEY_ALGORITHM, PKI_KEY_SIZE);
 	    else
 	    {
 		keyPair = Cryptography.generatePrivatePublicKeyPair
-		    ("RSA", privateKey, publicKey);
+		    (PKI_KEY_ALGORITHM, privateKey, publicKey);
 
 		if(keyPair != null)
 		{

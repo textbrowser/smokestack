@@ -87,6 +87,7 @@ public class Cryptography
     private static Cryptography s_instance = null;
     private static SecureRandom s_secureRandom = null;
     private final static String PBKDF2_ALGORITHM = "PBKDF2WithHmacSHA1";
+    private final static String SHAX_ALGORITHM = "SHA-512";
     public final static int CIPHER_IV_LENGTH = 16;
     public final static int CIPHER_KEY_LENGTH = 32;
     public final static int HASH_KEY_LENGTH = 64;
@@ -461,7 +462,7 @@ public class Cryptography
 
 	if(bytes != null)
 	{
-	    bytes = sha512(bytes);
+	    bytes = shaX512(bytes);
 
 	    if(bytes != null)
 		fingerprint = Miscellaneous.byteArrayAsHexString(bytes);
@@ -588,7 +589,7 @@ public class Cryptography
 	try
 	{
 	    byte bytes[] = null;
-	    byte salt[] = sha512
+	    byte salt[] = shaX512
 		(string.trim().getBytes(StandardCharsets.UTF_8));
 
 	    if(salt != null)
@@ -620,7 +621,7 @@ public class Cryptography
 	if(data == null)
 	    return null;
 
-	return pbkdf2(sha512(data),
+	return pbkdf2(shaX512(data),
 		      Miscellaneous.byteArrayAsHexString(data).toCharArray(),
 		      SIPHASH_STREAM_CREATION_ITERATION_COUNT,
 		      8 * SipHash.KEY_LENGTH);
@@ -691,11 +692,12 @@ public class Cryptography
 	return null;
     }
 
-    public static byte[] sha512(byte[] ... data)
+    public static byte[] shaX512(byte[] ... data)
     {
 	try
 	{
-	    MessageDigest messageDigest = MessageDigest.getInstance("SHA-512");
+	    MessageDigest messageDigest = MessageDigest.getInstance
+		(SHAX_ALGORITHM);
 
 	    for(byte b[] : data)
 		if(b != null)
@@ -715,7 +717,7 @@ public class Cryptography
 	try
 	{
 	    byte bytes[] = null;
-	    byte salt[] = sha512(sipHashId.getBytes(StandardCharsets.UTF_8));
+	    byte salt[] = shaX512(sipHashId.getBytes(StandardCharsets.UTF_8));
 	    byte temporary[] = pbkdf2(salt,
 				      sipHashId.toCharArray(),
 				      SIPHASH_STREAM_CREATION_ITERATION_COUNT,

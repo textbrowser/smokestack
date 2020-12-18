@@ -2834,11 +2834,11 @@ public class Database extends SQLiteOpenHelper
 			 "encryption_public_key_digest = ?)",
 			 new String[] {Base64.
 				       encodeToString(Cryptography.
-						      sha512(Base64.
-							     decode(string.
-								    getBytes(),
-								    Base64.
-								    NO_WRAP)),
+						      shaX512(Base64.
+							      decode(string.
+								     getBytes(),
+								     Base64.
+								     NO_WRAP)),
 						      Base64.DEFAULT)});
 
 		    if(cursor != null)
@@ -2878,11 +2878,11 @@ public class Database extends SQLiteOpenHelper
 			 "signature_public_key_digest = ?)",
 			 new String[] {Base64.
 				       encodeToString(Cryptography.
-						      sha512(Base64.
-							     decode(string.
-								    getBytes(),
-								    Base64.
-								    NO_WRAP)),
+						      shaX512(Base64.
+							      decode(string.
+								     getBytes(),
+								     Base64.
+								     NO_WRAP)),
 						      Base64.DEFAULT)});
 
 		    if(cursor != null)
@@ -2979,7 +2979,7 @@ public class Database extends SQLiteOpenHelper
 		    bytes = cryptography.etm(encryptionKey.getEncoded());
 		    break;
 		case "encryption_public_key_digest":
-		    bytes = Cryptography.sha512(encryptionKey.getEncoded());
+		    bytes = Cryptography.shaX512(encryptionKey.getEncoded());
 		    break;
 		case "function_digest":
 		    bytes = cryptography.hmac("chat".getBytes());
@@ -2988,7 +2988,7 @@ public class Database extends SQLiteOpenHelper
 		    bytes = cryptography.etm(signatureKey.getEncoded());
 		    break;
 		case "signature_public_key_digest":
-		    bytes = Cryptography.sha512(signatureKey.getEncoded());
+		    bytes = Cryptography.shaX512(signatureKey.getEncoded());
 		    break;
 		case "siphash_id":
 		    bytes = cryptography.etm
@@ -3166,7 +3166,7 @@ public class Database extends SQLiteOpenHelper
 			 simpleDateFormat.format(new Date()));
 		    continue;
 		default:
-		    byte salt[] = Cryptography.sha512
+		    byte salt[] = Cryptography.shaX512
 			(sipHashId.trim().getBytes(StandardCharsets.UTF_8));
 		    byte temporary[] = Cryptography.
 			pbkdf2(salt,
@@ -4741,7 +4741,7 @@ public class Database extends SQLiteOpenHelper
 				       Base64.DEFAULT));
 	    values.put
 		("message_digest",
-		 Base64.encodeToString(Cryptography.sha512(message),
+		 Base64.encodeToString(Cryptography.shaX512(message),
 				       Base64.DEFAULT));
 	    values.put
 		("siphash_id",

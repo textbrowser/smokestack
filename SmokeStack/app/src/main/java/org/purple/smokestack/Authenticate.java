@@ -88,7 +88,7 @@ public class Authenticate extends AppCompatActivity
 		    return;
 		}
 
-		byte saltedPassword[] = Cryptography.sha512
+		byte saltedPassword[] = Cryptography.shaX512
 		    (textView1.getText().toString().getBytes(),
 		     encryptionSalt,
 		     macSalt);
@@ -97,7 +97,7 @@ public class Authenticate extends AppCompatActivity
 		{
 		    Miscellaneous.showErrorDialog
 			(Authenticate.this,
-			 "An error occurred with sha512(). System failure.");
+			 "An error occurred with shaX512(). System failure.");
 		    textView1.requestFocus();
 		    return;
 		}

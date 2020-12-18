@@ -1411,8 +1411,7 @@ public class Settings extends AppCompatActivity
 		{
 		    encryptionSalt = Cryptography.randomBytes
 			(Cryptography.CIPHER_KEY_LENGTH);
-		    encryptionKey = Cryptography.
-			generateEncryptionKey
+		    encryptionKey = Cryptography.generateEncryptionKey
 			(encryptionSalt,
 			 m_password.toCharArray(),
 			 m_iterationCount);
@@ -1442,8 +1441,7 @@ public class Settings extends AppCompatActivity
 		    ** Prepare the Cryptography object's data.
 		    */
 
-		    s_cryptography.setEncryptionKey
-			(encryptionKey);
+		    s_cryptography.setEncryptionKey(encryptionKey);
 		    s_cryptography.setMacKey(macKey);
 
 		    /*
@@ -1465,10 +1463,8 @@ public class Settings extends AppCompatActivity
 			 Base64.encodeToString(macSalt,
 					       Base64.DEFAULT));
 
-		    byte saltedPassword[] = Cryptography.
-			sha512(m_password.getBytes(),
-			       encryptionSalt,
-			       macSalt);
+		    byte saltedPassword[] = Cryptography.shaX512
+			(m_password.getBytes(), encryptionSalt, macSalt);
 
 		    if(saltedPassword != null)
 			m_databaseHelper.writeSetting
@@ -1478,7 +1474,7 @@ public class Settings extends AppCompatActivity
 						   Base64.DEFAULT));
 		    else
 		    {
-			m_error = "sha512() failure";
+			m_error = "shaX512() failure";
 			s_cryptography.reset();
 		    }
 		}
@@ -2825,10 +2821,9 @@ public class Settings extends AppCompatActivity
 		    String string = State.getInstance().
 			getString("settings_participant_name_input");
 
-		    if(m_databaseHelper.
-		       writeParticipantName(s_cryptography,
-					    string,
-					    itemId))
+		    if(m_databaseHelper.writeParticipantName(s_cryptography,
+							     string,
+							     itemId))
 			populateParticipants();
 
 		    State.getInstance().removeKey
