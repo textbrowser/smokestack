@@ -1,0 +1,3 @@
+* Future-proofing.
+* New message-distribution implementation. Number of distribution
+  tasks depends upon the number of physical cores.
