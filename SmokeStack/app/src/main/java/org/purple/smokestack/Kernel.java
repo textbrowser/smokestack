@@ -552,16 +552,13 @@ public class Kernel
 
 		    @Override
 		    public void run()
-			{
+		    {
 			try
 			{
 			    while(true)
 			    {
 				if(!isNetworkAvailable())
-				{
-				    Thread.sleep(250);
-				    continue;
-				}
+				    return;
 
 				SipHashIdentityPair pair = null;
 
