@@ -419,8 +419,8 @@ public class Kernel
 	neighbors.clear();
     }
 
-    private void prepareReleaseMessagesPair(final String sipHashIdDigest,
-					    final byte identity[])
+    private void prepareReleaseMessagesPair(String sipHashIdDigest,
+					    byte identity[])
     {
 	if(!isNetworkAvailable() ||
 	   identity == null ||
