@@ -4,8 +4,8 @@
 
 # Bouncy Castle
 
-bouncycastle1=bcpkix-jdk15on-167.jar
-bouncycastle2=bcprov-ext-jdk15on-167.jar
+bouncycastle1=bcpkix-jdk15on-168.jar
+bouncycastle2=bcprov-ext-jdk15on-168.jar
 
 rm -f $bouncycastle1
 rm -f $bouncycastle2

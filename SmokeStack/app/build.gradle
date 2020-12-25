@@ -9,8 +9,8 @@ android {
         multiDexEnabled true
         targetSdkVersion 25
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        versionCode 20201220
-        versionName "2020.12.20"
+        versionCode 20201225
+        versionName "2020.12.25"
     }
     dexOptions {
         javaMaxHeapSize "8g"
@@ -38,8 +38,8 @@ dependencies {
     implementation 'com.android.support:design:25.4.0'
     implementation 'com.android.support:support-v4:25.4.0'
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation files('libs/bcpkix-jdk15on-167.jar')
-    implementation files('libs/bcprov-ext-jdk15on-167.jar')
+    implementation files('libs/bcpkix-jdk15on-168.jar')
+    implementation files('libs/bcprov-ext-jdk15on-168.jar')
     testImplementation 'junit:junit:4.12'
 }
 
