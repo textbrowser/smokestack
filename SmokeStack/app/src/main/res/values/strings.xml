@@ -12,13 +12,13 @@
     <string name="clear_log">Clear Log</string>
     <string name="control">Control</string>
     <string name="details">Details</string>
+    <string name="exit">Exit</string>
     <string name="ip_address">IP Address</string>
     <string name="ipv4">IPv4</string>
     <string name="ipv6">IPv6</string>
     <string name="iteration_count">Iteration Count</string>
     <string name="last_activity">Last Activity</string>
     <string name="listeners">Listeners</string>
-    <string name="remote_clients">Remote Clients</string>
     <string name="name">Name</string>
     <string name="neighbors">Neighbors</string>
     <string name="out_in_total">Out / In / Total</string>
@@ -30,10 +30,12 @@
     <string name="private_server">Private Server</string>
     <string name="proxy_ip_address">Proxy IP Address</string>
     <string name="proxy_port">Proxy Port</string>
+    <string name="recycle_memory">Recycle Memory</string>
     <string name="refresh">Refresh</string>
     <string name="refresh_neighbors">Refresh</string>
     <string name="refresh_participants">Refresh</string>
     <string name="remote">Remote</string>
+    <string name="remote_clients">Remote Clients</string>
     <string name="reset_fields">Reset Fields</string>
     <string name="reset_smokestack">Reset SmokeStack</string>
     <string name="retrieved_content_will_be_stored_for_approximately_one_week">Retrieved content will be stored for approximately one week.</string>
@@ -41,6 +43,4 @@
     <string name="scope_id">Scope ID</string>
     <string name="set_password">Set Password</string>
     <string name="smoke_id">Smoke ID</string>
-    <string name="exit">Exit</string>
-    <string name="recycle_memory">Recycle Memory</string>
 </resources>
