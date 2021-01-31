@@ -2149,6 +2149,8 @@ public class Settings extends AppCompatActivity
 	    m_generalScheduler = Executors.newSingleThreadScheduledExecutor();
 	    m_generalScheduler.scheduleAtFixedRate(new Runnable()
 	    {
+		private long m_start = System.currentTimeMillis();
+
 		@Override
 		public void run()
 		{
@@ -2179,6 +2181,12 @@ public class Settings extends AppCompatActivity
 				     " Database Cursors Opened");
 				((TextView) findViewById(R.id.memory)).setText
 				    (memory + " MiB Consumed (JVM)");
+				((TextView) findViewById(R.id.uptime)).setText
+				    ("Uptime: " +
+				     (System.currentTimeMillis() -
+				      m_start) / 60000L +
+				     " Minute(s)");
+
 				m_listenersAdapter.notifyDataSetChanged();
 			    }
 			});
