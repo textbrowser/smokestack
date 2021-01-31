@@ -257,6 +257,7 @@ public class Settings extends AppCompatActivity
     private final static int TEXTVIEW_WIDTH = 500;
     private final static long REFRESH_INTERVAL = 2500L; // 2.5 Seconds
     private final static long TIMER_INTERVAL = 2500L; // 2.5 Seconds
+    private final static long m_start = System.currentTimeMillis();
 
     private boolean generateOzone(String string)
     {
@@ -2149,8 +2150,6 @@ public class Settings extends AppCompatActivity
 	    m_generalScheduler = Executors.newSingleThreadScheduledExecutor();
 	    m_generalScheduler.scheduleAtFixedRate(new Runnable()
 	    {
-		private long m_start = System.currentTimeMillis();
-
 		@Override
 		public void run()
 		{
