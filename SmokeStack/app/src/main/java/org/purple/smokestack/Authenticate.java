@@ -310,7 +310,6 @@ public class Authenticate extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState)
     {
 	super.onCreate(savedInstanceState);
-	SmokeStackService.stopForegroundTask(getApplicationContext());
 
 	try
 	{

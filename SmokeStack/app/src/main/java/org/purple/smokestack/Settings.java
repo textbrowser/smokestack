@@ -2340,10 +2340,7 @@ public class Settings extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState)
     {
 	super.onCreate(savedInstanceState);
-
-	if(State.getInstance().isAuthenticated())
-	    SmokeStackService.startForegroundTask(getApplicationContext());
-
+	SmokeStackService.startForegroundTask(getApplicationContext());
         setContentView(R.layout.activity_settings);
 	m_listenersLayoutManager = new ListenersLinearLayoutManager
 	    (Settings.this);
