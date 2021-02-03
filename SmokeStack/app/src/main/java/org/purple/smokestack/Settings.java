@@ -2340,7 +2340,10 @@ public class Settings extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState)
     {
 	super.onCreate(savedInstanceState);
-	SmokeStackService.startForegroundTask(getApplicationContext());
+
+	if(State.getInstance().isAuthenticated())
+	    SmokeStackService.startForegroundTask(getApplicationContext());
+
         setContentView(R.layout.activity_settings);
 	m_listenersLayoutManager = new ListenersLinearLayoutManager
 	    (Settings.this);
@@ -2580,6 +2583,18 @@ public class Settings extends AppCompatActivity
 	    });
 	m_listenersRecyclerView.setAdapter(m_listenersAdapter);
 	m_listenersRecyclerView.setLayoutManager(m_listenersLayoutManager);
+    }
+
+    @Override
+    protected void onDestroy()
+    {
+	if(State.getInstance().exit())
+	    android.os.Process.killProcess(android.os.Process.myPid());
+	else
+	{
+	    releaseResources();
+	    super.onDestroy();
+	}
     }
 
     @Override
@@ -3008,6 +3023,7 @@ public class Settings extends AppCompatActivity
 	    switch(item.getItemId())
 	    {
 	    case R.id.action_exit:
+		State.getInstance().setExit(true);
 		SmokeStack.exit(Settings.this);
 		return true;
 	    default:

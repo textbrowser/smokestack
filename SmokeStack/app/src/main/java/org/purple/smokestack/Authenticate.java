@@ -333,6 +333,15 @@ public class Authenticate extends AppCompatActivity
     }
 
     @Override
+    protected void onDestroy()
+    {
+	if(State.getInstance().exit())
+	    android.os.Process.killProcess(android.os.Process.myPid());
+	else
+	    super.onDestroy();
+    }
+
+    @Override
     protected void onStart()
     {
 	super.onStart();
@@ -356,6 +365,7 @@ public class Authenticate extends AppCompatActivity
 	    switch(item.getItemId())
 	    {
 	    case R.id.action_exit:
+		State.getInstance().setExit(true);
 		SmokeStack.exit(Authenticate.this);
 		return true;
 	    case R.id.action_settings:

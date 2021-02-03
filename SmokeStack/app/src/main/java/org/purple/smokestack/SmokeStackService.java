@@ -48,33 +48,18 @@ public class SmokeStackService extends Service
 	    m_isRunning = true;
 
 	Intent notificationIntent = new Intent(this, Settings.class);
-	Notification.Builder builder = new Notification.Builder(this);
+	Notification notification = null;
 	PendingIntent pendingIntent = PendingIntent.getActivity
 	    (this, 0, notificationIntent, 0);
 
-	builder.setContentIntent(pendingIntent);
-	builder.setContentText("SmokeStack");
-	builder.setContentTitle("SmokeStack");
-	builder.setSmallIcon(R.drawable.smokestack);
-	builder.setTicker("SmokeStack");
-
-	/*
-	** Stop!
-	*/
-
-	Intent stopIntent = new Intent(this, SmokeStackService.class);
-
-        stopIntent.setAction("stop");
-
-	PendingIntent pendingStopIntent = PendingIntent.getService
-	    (this, 0, stopIntent, 0);
-
-	builder.addAction
-	    (new Notification.Action.
-	     Builder(Icon.createWithResource(this, R.drawable.smokestack),
-		     "Stop SmokeStack Foreground Service",
-		     pendingStopIntent).build());
-	startForeground(NOTIFICATION_ID, builder.build());
+	notification = new Notification.Builder(this).
+	    setContentIntent(pendingIntent).
+	    setContentText("SmokeStack Activity").
+	    setContentTitle("SmokeStack Activity").
+	    setSmallIcon(R.drawable.smokestack).
+	    setTicker("SmokeStack Activity").
+	    build();
+	startForeground(NOTIFICATION_ID, notification);
     }
 
     private void start()
@@ -106,7 +91,7 @@ public class SmokeStackService extends Service
 		break;
 	    case "stop":
 		stop();
-		break;
+		return START_NOT_STICKY;
 	    default:
 		break;
 	    }

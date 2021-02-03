@@ -93,6 +93,20 @@ public class State
 	}
     }
 
+    public boolean exit()
+    {
+	m_bundleMutex.readLock().lock();
+
+	try
+	{
+	    return m_bundle.getChar("exit", '0') == '1';
+	}
+	finally
+	{
+	    m_bundleMutex.readLock().unlock();
+	}
+    }
+
     public void removeKey(String key)
     {
 	m_bundleMutex.writeLock().lock();
@@ -128,6 +142,20 @@ public class State
 	try
 	{
 	    m_bundle.putChar("is_authenticated", state ? '1' : '0');
+	}
+	finally
+	{
+	    m_bundleMutex.writeLock().unlock();
+	}
+    }
+
+    public void setExit(boolean state)
+    {
+	m_bundleMutex.writeLock().lock();
+
+	try
+	{
+	    m_bundle.putChar("exit", state ? '1' : '0');
 	}
 	finally
 	{
