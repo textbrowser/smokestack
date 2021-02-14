@@ -646,7 +646,7 @@ public class TcpNeighbor extends Neighbor
 		try
 		{
 		    if(!m_requestAuthenticationScheduler.
-		       awaitTermination(60L, TimeUnit.SECONDS))
+		       awaitTermination(AWAIT_TERMINATION, TimeUnit.SECONDS))
 			m_requestAuthenticationScheduler.shutdownNow();
 		}
 		catch(Exception exception)
@@ -667,7 +667,7 @@ public class TcpNeighbor extends Neighbor
 	    try
 	    {
 		if(!m_readSocketScheduler.
-		   awaitTermination(60L, TimeUnit.SECONDS))
+		   awaitTermination(AWAIT_TERMINATION, TimeUnit.SECONDS))
 		    m_readSocketScheduler.shutdownNow();
 	    }
 	    catch(Exception exception)

@@ -87,6 +87,7 @@ public abstract class Neighbor
     protected final static int MAXIMUM_BYTES = LANE_WIDTH;
     protected final static int SO_SNDBUF = 32 * 1024; // 32 KiB
     protected final static int SO_TIMEOUT = 0; // 0 Seconds
+    protected final static long AWAIT_TERMINATION = 10L; // 10 Seconds
     protected final static long READ_SOCKET_INTERVAL = 50L; // 50 Milliseconds
     protected final static long WAIT_TIMEOUT = 10000L; // 10 Seconds
     public final static int SO_RCVBUF = 32 * 1024; // 32 KiB
@@ -527,7 +528,8 @@ public abstract class Neighbor
 	{
 	    try
 	    {
-		if(!m_parsingScheduler.awaitTermination(60L, TimeUnit.SECONDS))
+		if(!m_parsingScheduler.
+		   awaitTermination(AWAIT_TERMINATION, TimeUnit.SECONDS))
 		    m_parsingScheduler.shutdownNow();
 	    }
 	    catch(Exception exception)
@@ -547,7 +549,8 @@ public abstract class Neighbor
 
 	    try
 	    {
-		if(!m_scheduler.awaitTermination(60L, TimeUnit.SECONDS))
+		if(!m_scheduler.
+		   awaitTermination(AWAIT_TERMINATION, TimeUnit.SECONDS))
 		    m_scheduler.shutdownNow();
 	    }
 	    catch(Exception exception)
@@ -568,7 +571,7 @@ public abstract class Neighbor
 	    try
 	    {
 		if(!m_sendOutboundScheduler.
-		   awaitTermination(60L, TimeUnit.SECONDS))
+		   awaitTermination(AWAIT_TERMINATION, TimeUnit.SECONDS))
 		    m_sendOutboundScheduler.shutdownNow();
 	    }
 	    catch(Exception exception)

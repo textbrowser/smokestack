@@ -98,6 +98,7 @@ public class TcpListener
     private final static int PKI_KEY_SIZE = 3072;
     private final static int SO_TIMEOUT = 5000; // 5 Seconds
     private final static long ACCEPT_INTERVAL = 100L; // Milliseconds
+    private final static long AWAIT_TERMINATION = 10L; // 10 Seconds
     private final static long ONE_YEAR = 24L * 60L * 60L * 365L * 1000L;
     private final static long TIMER_INTERVAL = 2500L; // 2.5 Seconds
     public final static String TLS_LEGACY[] = new String[] {"SSLv3",
@@ -535,7 +536,8 @@ public class TcpListener
 
 	    try
 	    {
-		if(!m_acceptScheduler.awaitTermination(60L, TimeUnit.SECONDS))
+		if(!m_acceptScheduler.
+		   awaitTermination(AWAIT_TERMINATION, TimeUnit.SECONDS))
 		    m_acceptScheduler.shutdownNow();
 	    }
 	    catch(Exception exception)
@@ -555,7 +557,8 @@ public class TcpListener
 
 	    try
 	    {
-		if(!m_scheduler.awaitTermination(60L, TimeUnit.SECONDS))
+		if(!m_scheduler.
+		   awaitTermination(AWAIT_TERMINATION, TimeUnit.SECONDS))
 		    m_scheduler.shutdownNow();
 	    }
 	    catch(Exception exception)

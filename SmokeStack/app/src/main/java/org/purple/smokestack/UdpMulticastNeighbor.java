@@ -265,7 +265,7 @@ public class UdpMulticastNeighbor extends Neighbor
 	    try
 	    {
 		if(!m_readSocketScheduler.
-		   awaitTermination(60L, TimeUnit.SECONDS))
+		   awaitTermination(AWAIT_TERMINATION, TimeUnit.SECONDS))
 		    m_readSocketScheduler.shutdownNow();
 	    }
 	    catch(Exception exception)
