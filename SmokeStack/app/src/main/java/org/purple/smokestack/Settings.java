@@ -255,6 +255,7 @@ public class Settings extends AppCompatActivity
     private final static int MINIMUM_PASSWORD_LENGTH = 3;
     private final static int TEXTVIEW_TEXT_SIZE = 13;
     private final static int TEXTVIEW_WIDTH = 500;
+    private final static long AWAIT_TERMINATION = 10L; // 10 Seconds
     private final static long REFRESH_INTERVAL = 2500L; // 2.5 Seconds
     private final static long TIMER_INTERVAL = 2500L; // 2.5 Seconds
     private final static long m_start = System.currentTimeMillis();
@@ -2270,7 +2271,8 @@ public class Settings extends AppCompatActivity
 
 	try
 	{
-	    if(!m_generalScheduler.awaitTermination(60L, TimeUnit.SECONDS))
+	    if(!m_generalScheduler.
+	       awaitTermination(AWAIT_TERMINATION, TimeUnit.SECONDS))
 		m_generalScheduler.shutdownNow();
 	}
 	catch(Exception exception)
@@ -2297,7 +2299,8 @@ public class Settings extends AppCompatActivity
 
 	try
 	{
-	    if(!m_listenersScheduler.awaitTermination(60L, TimeUnit.SECONDS))
+	    if(!m_listenersScheduler.
+	       awaitTermination(AWAIT_TERMINATION, TimeUnit.SECONDS))
 		m_listenersScheduler.shutdownNow();
 	}
 	catch(Exception exception)
@@ -2324,7 +2327,8 @@ public class Settings extends AppCompatActivity
 
 	try
 	{
-	    if(!m_neighborsScheduler.awaitTermination(60L, TimeUnit.SECONDS))
+	    if(!m_neighborsScheduler.
+	       awaitTermination(AWAIT_TERMINATION, TimeUnit.SECONDS))
 		m_neighborsScheduler.shutdownNow();
 	}
 	catch(Exception exception)
