@@ -2340,6 +2340,18 @@ public class Settings extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState)
     {
 	super.onCreate(savedInstanceState);
+
+	/*
+	** Show the Authenticate activity if an account is present.
+	*/
+
+	if(!State.getInstance().isAuthenticated())
+	    if(m_databaseHelper.accountPrepared())
+	    {
+		showAuthenticateActivity();
+		return;
+	    }
+
 	SmokeStackService.startForegroundTask(getApplicationContext());
         setContentView(R.layout.activity_settings);
 	m_listenersLayoutManager = new ListenersLinearLayoutManager
