@@ -2344,12 +2344,13 @@ public class Settings extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState)
     {
 	super.onCreate(savedInstanceState);
-
-	/*
-	** Show the Authenticate activity if an account is present.
-	*/
+	m_databaseHelper = Database.getInstance(getApplicationContext());
 
 	if(!State.getInstance().isAuthenticated())
+	    /*
+	    ** Show the Authenticate activity if an account is present.
+	    */
+
 	    if(m_databaseHelper.accountPrepared())
 	    {
 		showAuthenticateActivity();
@@ -2357,7 +2358,7 @@ public class Settings extends AppCompatActivity
 	    }
 
 	SmokeStackService.startForegroundTask(getApplicationContext());
-        setContentView(R.layout.activity_settings);
+	setContentView(R.layout.activity_settings);
 	m_listenersLayoutManager = new ListenersLinearLayoutManager
 	    (Settings.this);
 	m_listenersLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -2652,7 +2653,6 @@ public class Settings extends AppCompatActivity
     protected void onStart()
     {
 	super.onStart();
-	m_databaseHelper = Database.getInstance(getApplicationContext());
 	m_databaseHelper.deleteSetting("prefer_active_screen");
 
 	/*
