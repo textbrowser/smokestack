@@ -1,0 +1,3 @@
+* Create service after authentication.
+* Decreased awaitTermination() value.
+* Uptime.
