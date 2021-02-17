@@ -1,189 +1,189 @@
 2021.02.20
 <br>
-<ol>
+<ul>
   <li>Create service after authentication.</li>
   <li>Decreased awaitTermination() value.</li>
   <li>Uptime.</li>
-</ol>
+</ul>
 2020.12.25
 <br>
-<ol>
+<ul>
   <li>Bouncy Castle 1.68.</li>
-</ol>
+</ul>
 2020.12.20
 <br>
-<ol>
+<ul>
   <li>Future-proofing.</li>
   <li>New message-distribution implementation. Number of distribution tasks depends upon the number of physical cores.</li>
-</ol>
+</ul>
 2020.11.15
 <br>
-<ol>
+<ul>
   <li>Bouncy Castle 1.67.</li>
   <li>SipHash-128.</li>
-</ol>
+</ul>
 2020.08.30
 <br>
-<ol>
+<ul>
   <li>Modified primary key on stack database table. SmokeStack must be reinstalled.</li>
   <li>Reliable message distribution.</li>
   <li>Removed SecureRandom.getInstance("SHA1PRNG").</li>
-</ol>
+</ul>
 2020.08.10
 <br>
-<ol>
+<ul>
   <li>Brief pause after message-retrieval request. Allows for distribution of random identities.</li>
-</ol>
+</ul>
 2020.08.08
 <br>
-<ol>
+<ul>
   <li>Configure SO_RCVBUF and SO_SNDBUF to 32 KiB.</li>
   <li>Deregister broadcast manager within onPause().</li>
   <li>Enabled large heap size.</li>
   <li>Improved removal of released messages.</li>
   <li>Manual garbage collection.</li>
-</ol>
+</ul>
 2020.07.11
 <br>
-<ol>
+<ul>
   <li>Pause if necessary.</li>
-</ol>
+</ul>
 2020.07.07
 <br>
-<ol>
+<ul>
   <li>Bouncy Castle 1.66!</li>
   <li>Eventful tasks.</li>
   <li>TLS 1.3.</li>
-</ol>
+</ul>
 2020.06.10
 <br>
-<ol>
+<ul>
   <li>Toggle listener privacy. New context menu item.</li>
-</ol>
+</ul>
 2020.05.15
 <br>
-<ol>
+<ul>
   <li>TLS 1.3 on Android 10. Android 10 or newer is required.</li>
-</ol>
+</ul>
 2020.04.22
 <br>
-<ol>
+<ul>
   <li>Bouncy Castle 1.65!</li>
   <li>Increased TLS public key sizes to 3048 bits. May not be supported by legacy Android versions.</li>
   <li>WakeLock and WifiLock Kernel members.</li>
-</ol>
+</ul>
 2020.04.04
 <br>
-<ol>
+<ul>
   <li>Create Ozone on Listener creation.</li>
-</ol>
+</ul>
 2020.02.25
 <br>
-<ol>
+<ul>
   <li>Depict remote peers.</li>
-</ol>
+</ul>
 2020.02.02
 <br>
-<ol>
+<ul>
   <li>Legacy devices. Replaced Integer.BYTES, Long.BYTES.</li>
-</ol>
+</ul>
 2019.12.10
 <br>
-<ol>
+<ul>
   <li>Bouncy Castle version 1.64.</li>
   <li>Corrected the private server authentication protocol.</li>
-</ol>
+</ul>
 2019.09.30
 <br>
-<ol>
+<ul>
   <li>Allocate resources in onStart().</li>
   <li>Bouncy Castle version 1.63.</li>
   <li>Corrected recording of shared public keys via EPKS. The previous implementation recorded keys within incorrect participants.</li>
   <li>Exit option. May be incomplete on some devices.</li>
   <li>New icons.</li>
   <li>Protect buffers against overflow.</li>
-</ol>
+</ul>
 2019.04.14
 <br>
-<ol>
+<ul>
   <li>Properly create strings from bytes.</li>
-</ol>
+</ul>
 2019.04.04
 <br>
-<ol>
+<ul>
   <li>Close Java streams.</li>
   <li>Release resources.</li>
   <li>Removed deepCopy().</li>
-</ol>
+</ul>
 2019.03.03
 <br>
-<ol>
+<ul>
   <li>Decreased buffer size from 32 MiB to 8 MiB.</li>
   <li>Purge buffer contents via delete() instead of setLength(0).</li>
-</ol>
+</ul>
 2019.02.25
 <br>
-<ol>
+<ul>
   <li>Bouncy Castle version 1.61.</li>
   <li>Foreground service.</li>
-</ol>
+</ul>
 2019.02.04
 <br>
-<ol>
+<ul>
   <li>Gather statistics in a timely manner.</li>
-</ol>
+</ul>
 2019.02.02
 <br>
-<ol>
+<ul>
   <li>Array lengths are positive or zero.</li>
   <li>Automatic removal of incorrect network data.</li>
   <li>Corrected conditional in UdpMulticastNeighbor::send().</li>
   <li>Replaced Spongy Castle with Bouncy Castle. Please replace existing listeners.</li>
   <li>Smaller lock regions.</li>
   <li>StringBuilder over StringBuffer, if possible.</li>
-</ol>
+</ul>
 2018.10.10
 <br>
-<ol>
+<ul>
   <li>Compute SHA-512 display digest of PEM(certificate).</li>
   <li>Initialize widgets within onResume().</li>
   <li>Inspect String::substring() parameters.</li>
   <li>New server (tulip-ipv4.tilaa.cloud).</li>
-</ol>
+</ul>
 2018.09.01
 <br>
-<ol>
+<ul>
   <li>Corrected echoing of data of remote peers.</li>
   <li>New message_digest field in the outbound_queue database table. SmokeStack must be reset.</li>
   <li>New statistics.</li>
-</ol>
+</ul>
 2018.08.29
 <br>
-<ol>
+<ul>
   <li>Lock SipHash::hmac().</li>
   <li>Removed the Echo Queue container from the Neighbor class. The database table outbound_queue has been modified. Please reset SmokeStack.</li>
-</ol>
+</ul>
 2018.08.26
 <br>
-<ol>
+<ul>
   <li>More socket writes per second.</li>
   <li>New statistics. SmokeStack must be reset.</li>
   <li>Notify Android system of software version.</li>
-</ol>
+</ul>
 2018.08.22
 <br>
-<ol>
+<ul>
   <li>Exceptions and optimizations.</li>
-</ol>
+</ul>
 2018.08.21
 <br>
-<ol>
+<ul>
   <li>Corrected password entry on new instances.</li>
   <li>Corrected widget states on new instances.</li>
-</ol>
+</ul>
 2018.08.19
 <br>
-<ol>
+<ul>
   <li>Blocking socket reads.</li>
   <li>Bouncy Castle has been upgraded to version 1.60.</li>
   <li>Broadcasting of device identities has been removed. Lighter cryptographic discovery.</li>
@@ -192,53 +192,53 @@
   <li>New Smoke identity format.</li>
   <li>Private servers.</li>
   <li>Some member variables in the Neighbor class were incorrectly defined as static.</li>
-</ol>
+</ul>
 2018.04.04
 <br>
-<ol>
+<ul>
   <li>Display the first discovered IP address of the device in the Listeners IP Address field.</li>
   <li>Limit the number of identities to 512.</li>
   <li>LocalBroadcastManager instances.</li>
-</ol>
+</ul>
 2018.03.20
 <br>
-<ol>
+<ul>
   <li>Replaced some insert() statements with insertOrThrow().</li>
-</ol>
+</ul>
 2018.03.03
 <br>
-<ol>
+<ul>
   <li>Corrected local echo behavior.</li>
   <li>Host translation must be performed before every socket connection attempt.</li>
   <li>Large-area congestion-control mutex.</li>
   <li>Partition data over UDP links into 576-byte datagrams.</li>
-</ol>
+</ul>
 2018.02.20
 <br>
-<ol>
+<ul>
   <li>Corrected abortive socket releases.</li>
   <li>Disconnect listeners on loss of WiFi.</li>
-</ol>
+</ul>
 2018.02.10
 <br>
-<ol>
+<ul>
   <li>Denote corrupted database values.</li>
   <li>McEliece support.</li>
-</ol>
+</ul>
 2018.01.01
 <br>
-<ol>
+<ul>
   <li>Spongy Castle archives prov and core have been upgraded to version 1.58.0.0.</li>
-</ol>
+</ul>
 2017.08.19
 <br>
-<ol>
+<ul>
   <li>Purge neighbor statistics shortly after launch.</li>
   <li>Set a non-zero SO_TIMEOUT as some devices do not unblock socket reads after sockets are closed.</li>
-</ol>
+</ul>
 2017.07.20
 <br>
-<ol>
+<ul>
   <li>Do not attempt to send duplicate data.</li>
   <li>Do not linger on server socket close.</li>
   <li>Do not specify timeouts in socket reads as separate threads are responsible for socket reads.</li>
@@ -248,23 +248,23 @@
   <li>Signed release.</li>
   <li>Some server socket operations must be performed before the sockets are bound.</li>
   <li>WiFi lock.</li>
-</ol>
+</ul>
 2017.07.16
 <br>
-<ol>
+<ul>
   <li>Corrected outbound-queued statistic.</li>
   <li>Less computations on disconnected neighbors.</li>
   <li>Per-participant message retrieval is too expensive. Replaced with single thread.</li>
-</ol>
+</ul>
 2017.07.09
 <br>
-<ol>
+<ul>
   <li>Allow renaming of existing participants.</li>
   <li>Discard duplicate public keys on arrival.</li>
   <li>Smaller database transaction areas.</li>
-</ol>
+</ul>
 2017.07.07
 <br>
-<ol>
+<ul>
   <li>SmokeStack as a private public key repository.</li>
-</ol>
+</ul>
