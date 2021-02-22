@@ -152,10 +152,11 @@
                     </TableLayout>
                 </android.support.v4.widget.NestedScrollView>
 
-                <CheckBox
+                <Switch
                     android:id="@+id/automatic_refresh_listeners"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layoutDirection="rtl"
                     android:text="@string/automatic_refresh" />
 
                 <Button
@@ -191,11 +192,12 @@
                         android:inputType="number"
                         android:nextFocusDown="@+id/listeners_scope_id" />
 
-                    <CheckBox
+                    <Switch
                         android:id="@+id/private_server"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
+                        android:layoutDirection="rtl"
                         android:text="@string/private_server" />
 
                     <EditText
@@ -319,17 +321,19 @@
                     android:orientation="horizontal"
                     android:weightSum="1">
 
-                    <CheckBox
+                    <Switch
                         android:id="@+id/automatic_refresh_neighbors"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
+                        android:layoutDirection="rtl"
                         android:text="@string/automatic_refresh" />
 
-                    <CheckBox
+                    <Switch
                         android:id="@+id/neighbor_details"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_marginEnd="5dp"
+                        android:layoutDirection="rtl"
                         android:text="@string/details" />
 
                 </LinearLayout>
@@ -654,10 +658,11 @@
 
                 </LinearLayout>
 
-                <CheckBox
+                <Switch
                     android:id="@+id/accept_without_signatures"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layoutDirection="rtl"
                     android:text="@string/accept_without_signatures" />
 
                 <LinearLayout
@@ -737,10 +742,11 @@
                     android:layout_height="match_parent"
                     android:orientation="horizontal">
 
-                    <CheckBox
+                    <Switch
                         android:id="@+id/overwrite"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:layoutDirection="rtl" />
 
                     <Button
                         android:id="@+id/set_password"
