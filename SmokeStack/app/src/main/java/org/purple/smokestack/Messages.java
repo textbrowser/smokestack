@@ -42,6 +42,7 @@ public class Messages
     public final static byte SHARE_SIPHASH_IDENTITY_CONFIRIMATION[] =
 	new byte[] {0x03};
     public final static int EPKS_GROUP_ONE_ELEMENT_COUNT = 7;
+    private final static int ETAG_LENGTH = 32;
 
     public static String bytesToMessageString(byte bytes[])
     {
@@ -53,10 +54,16 @@ public class Messages
 	    StringBuilder results = new StringBuilder();
 
 	    results.append("POST HTTP/1.1\r\n");
+	    results.append("Content-Length: %1\r\n");
 	    results.append
 		("Content-Type: application/x-www-form-urlencoded\r\n");
-	    results.append("Content-Length: %1\r\n");
 	    results.append("\r\n");
+	    results.append("ETag: ");
+	    results.append
+		(Miscellaneous.
+		 byteArrayAsHexString(Cryptography.
+				      randomBytes(ETAG_LENGTH / 2)));
+	    results.append("\r\n\r\n");
 	    results.append("content=%2");
 	    results.append(EOM);
 
@@ -87,9 +94,9 @@ public class Messages
 	    StringBuilder results = new StringBuilder();
 
 	    results.append("POST HTTP/1.1\r\n");
+	    results.append("Content-Length: %1\r\n");
 	    results.append
 		("Content-Type: application/x-www-form-urlencoded\r\n");
-	    results.append("Content-Length: %1\r\n");
 	    results.append("\r\n");
 	    results.append("type=0095b&content=%2");
 	    results.append(EOM);
@@ -123,9 +130,9 @@ public class Messages
 	    StringBuilder results = new StringBuilder();
 
 	    results.append("POST HTTP/1.1\r\n");
+	    results.append("Content-Length: %1\r\n");
 	    results.append
 		("Content-Type: application/x-www-form-urlencoded\r\n");
-	    results.append("Content-Length: %1\r\n");
 	    results.append("\r\n");
 	    results.append("type=0097a&content=%2");
 	    results.append(EOM);
@@ -156,9 +163,9 @@ public class Messages
 	    StringBuilder results = new StringBuilder();
 
 	    results.append("POST HTTP/1.1\r\n");
+	    results.append("Content-Length: %1\r\n");
 	    results.append
 		("Content-Type: application/x-www-form-urlencoded\r\n");
-	    results.append("Content-Length: %1\r\n");
 	    results.append("\r\n");
 	    results.append("type=0096&content=%2");
 	    results.append(EOM);

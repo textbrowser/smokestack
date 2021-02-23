@@ -838,8 +838,8 @@ public class Kernel
 	    if(s_databaseHelper.containsCongestionDigest(value))
 		return true;
 
-	    byte bytes[] =
-		Base64.decode(Messages.stripMessage(buffer), Base64.DEFAULT);
+	    byte bytes[] = Base64.decode
+		(Messages.stripMessage(buffer), Base64.DEFAULT);
 
 	    if(bytes == null || bytes.length < 128)
 		return false;
