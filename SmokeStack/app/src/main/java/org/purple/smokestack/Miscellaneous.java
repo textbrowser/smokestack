@@ -34,9 +34,9 @@ import android.content.DialogInterface;
 import android.text.InputType;
 import android.util.Base64;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.Switch;
 import java.nio.ByteBuffer;
 import java.text.DecimalFormat;
 
@@ -380,7 +380,7 @@ public abstract class Miscellaneous
 	    return;
 
 	AlertDialog alertDialog = new AlertDialog.Builder(context).create();
-	CheckBox checkBox = new CheckBox(context);
+	Switch switch1 = new Switch(context);
 
 	State.getInstance().removeKey("dialog_accepted");
 	alertDialog.setButton
@@ -409,14 +409,14 @@ public abstract class Miscellaneous
 							 ** for a response.
 							 */
 	alertDialog.setTitle("Confirmation");
-	alertDialog.setView(checkBox);
+	alertDialog.setView(switch1);
 	alertDialog.show();
 
 	final Button button = alertDialog.getButton
 	    (AlertDialog.BUTTON_POSITIVE);
 
 	button.setEnabled(false);
-	checkBox.setOnCheckedChangeListener
+	switch1.setOnCheckedChangeListener
 	    (new CompoundButton.OnCheckedChangeListener()
 	    {
 		@Override
@@ -426,7 +426,7 @@ public abstract class Miscellaneous
 		    button.setEnabled(isChecked);
 		}
 	    });
-	checkBox.setText("Confirm");
+	switch1.setText("Confirm");
     }
 
     public static void showTextInputDialog
