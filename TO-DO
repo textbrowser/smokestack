@@ -3,9 +3,9 @@ Completed Items
 - Allow removal of messages per participant.
 - Create a single statement in purgeReleasedMessages() to delete specific OIDs.
 - Decrease the lock area of m_stringBuilder in Neighbor.java.
-- Discovery via cryptography.
 - Dialogs are not dismissed correctly on rotation changes. Unable to
   reproduce.
+- Discovery via cryptography.
 - Display the number of internal Neighbors.
 - Document future-proof files.
 - Echo shared Smoke identities.
