@@ -38,8 +38,8 @@ dependencies {
     implementation 'com.android.support:design:25.4.0'
     implementation 'com.android.support:support-v4:25.4.0'
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation files('libs/bcpkix-jdk15on-168.jar')
-    implementation files('libs/bcprov-ext-jdk15on-168.jar')
+    implementation files('libs/bcpkix-jdk15on-169.jar')
+    implementation files('libs/bcprov-ext-jdk15on-169.jar')
     testImplementation 'junit:junit:4.12'
 }
 
