@@ -544,7 +544,6 @@ public class Kernel
 	    {
 		m_releaseMessagesSchedulers[i] = Executors.
 		    newSingleThreadScheduledExecutor();
-	    
 		m_releaseMessagesSchedulers[i].scheduleAtFixedRate
 		    (new Runnable()
 		{
