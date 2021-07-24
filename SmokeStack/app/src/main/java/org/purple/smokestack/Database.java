@@ -2171,8 +2171,9 @@ public class Database extends SQLiteOpenHelper
 
 	try
 	{
-	    m_db.execSQL
-		("DELETE FROM ozones WHERE ozone_address_digest IN " +
+	    m_db.delete
+		("ozones",
+		 "ozone_address_digest IN " +
 		 "(SELECT siphash_id_digest FROM siphash_ids WHERE OID = ?)",
 		 new String[] {oid});
 	    ok = m_db.delete("siphash_ids", "OID = ?", new String[] {oid}) > 0;

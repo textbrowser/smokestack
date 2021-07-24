@@ -14,6 +14,8 @@ Completed Items
 - Fire compatibility.
 - Future-proof.
 - Integrate EOM in Messages.java.
+- Limit execSQL to supported queries:
+  cannot be delete / insert / select / update.
 - Listeners.
 - Message accounting.
 - Message retrieval is not immediate.

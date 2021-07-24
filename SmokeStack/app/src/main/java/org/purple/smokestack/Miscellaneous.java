@@ -33,6 +33,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.text.InputType;
 import android.util.Base64;
+import android.util.LayoutDirection;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -416,6 +417,7 @@ public abstract class Miscellaneous
 	    (AlertDialog.BUTTON_POSITIVE);
 
 	button.setEnabled(false);
+	switch1.setLayoutDirection(LayoutDirection.RTL);
 	switch1.setOnCheckedChangeListener
 	    (new CompoundButton.OnCheckedChangeListener()
 	    {

@@ -44,6 +44,8 @@ public class About
 
     public static synchronized String about()
     {
+	// Must agree with SmokeStack/app/build.gradle.
+
 	try
 	{
 	    if(s_about.isEmpty())
@@ -52,12 +54,9 @@ public class About
 		    SimpleDateFormat("yyyy-MM-dd h:mm:ss", Locale.getDefault());
 
 		simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-
-		// Must agree with SmokeStack/app/build.gradle.
-
 		s_about = "Bouncy Castle Version " +
 		    new BouncyCastleProvider().getVersion() +
-		    "\nSmokeStack Version 2021.06.25 Stack Smash (Final) " +
+		    "\nSmokeStack Version 2021.07.25 Stack Smash (Final) " +
 		    (BuildConfig.DEBUG ? "(Debug) " : "(Release)") +
 		    "\nBuild Date " +
 		    simpleDateFormat.format(new Date(BuildConfig.BUILD_TIME)) +
@@ -69,7 +68,7 @@ public class About
 	catch(Exception exception)
 	{
 	    if(s_about.isEmpty())
-		s_about = "SmokeStack Version 2021.06.25 Stack Smash (Final)";
+		s_about = "SmokeStack Version 2021.07.25 Stack Smash (Final)";
 	}
 
 	return s_about;
