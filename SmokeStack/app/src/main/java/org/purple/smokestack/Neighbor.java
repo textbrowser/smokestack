@@ -33,6 +33,7 @@ import android.net.NetworkInfo;
 import android.util.Base64;
 import java.util.ArrayList;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -42,8 +43,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public abstract class Neighbor
 {
-    private ArrayList<String> m_queue = null;
-    private final Object m_queueMutex = new Object();
+    private ConcurrentLinkedQueue<String> m_queue = null;
     private final ScheduledExecutorService m_parsingScheduler =
 	Executors.newSingleThreadScheduledExecutor();
     private final ScheduledExecutorService m_scheduler =
@@ -96,15 +96,10 @@ public abstract class Neighbor
     {
 	String localIp = getLocalIp();
 	String localPort = String.valueOf(getLocalPort());
-	String queueSize = "";
+	String queueSize = String.valueOf(m_queue.size());
 	String sessionCiper = getSessionCipher();
 	boolean connected = connected();
 	long uptime = System.nanoTime() - m_startTime.get();
-
-	synchronized(m_queueMutex)
-	{
-	    queueSize = String.valueOf(m_queue.size());
-	}
 
 	m_databaseHelper.saveNeighborInformation
 	    (m_cryptography,
@@ -149,7 +144,7 @@ public abstract class Neighbor
 	m_lastParsed = new AtomicLong(System.currentTimeMillis());
 	m_lastTimeRead = new AtomicLong(System.nanoTime());
 	m_oid = new AtomicInteger(oid);
-	m_queue = new ArrayList<> ();
+	m_queue = new ConcurrentLinkedQueue<> ();
 	m_remoteUserAuthenticated = new AtomicBoolean(userDefined);
 	m_requestUnsolicitedSent = new AtomicBoolean(false);
 	m_startTime = new AtomicLong(System.nanoTime());
@@ -414,11 +409,8 @@ public abstract class Neighbor
 		    ** Transfer real-time packets.
 		    */
 
-		    synchronized(m_queueMutex)
-		    {
-			if(!m_queue.isEmpty())
-			    send(m_queue.remove(0)); // Ignore the results.
-		    }
+		    if(!m_queue.isEmpty())
+			send(m_queue.poll()); // Ignore the results.
 		}
 		catch(Exception exception)
 		{
@@ -594,11 +586,7 @@ public abstract class Neighbor
 	    m_parsingSchedulerObject.notify();
 	}
 
-	synchronized(m_queueMutex)
-	{
-	    m_queue.clear();
-	}
-
+	m_queue.clear();
 	m_stringBuffer.delete(0, m_stringBuffer.length());
 	m_stringBuffer.trimToSize();
     }
@@ -649,10 +637,7 @@ public abstract class Neighbor
 
     public void clearQueue()
     {
-	synchronized(m_queueMutex)
-	{
-	    m_queue.clear();
-	}
+	m_queue.clear();
     }
 
     public void scheduleEchoSend(String message)
@@ -669,9 +654,6 @@ public abstract class Neighbor
 	if(!connected() || message == null || message.trim().isEmpty())
 	    return;
 
-	synchronized(m_queueMutex)
-	{
-	    m_queue.add(message);
-	}
+	m_queue.add(message);
     }
 }
