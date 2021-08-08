@@ -3,10 +3,10 @@ Summary of SmokeStack
 <ul>
 <li>BouncyCastle.</li>
 <li>Client and server functionality.</li>
+<li>Concurrent collections.</li>
 <li>Congestion control via SipHash.</li>
 <li>Cryptographic discovery.</li>
 <li>Eventful tasks. Limited polling.</li>
-<li>F-Droid.</li>
 <li>Infinite participants.</li>
 <li>Local data recorded in SQLite via authenticated encryption.</li>
 <li>McEliece support.</li>
