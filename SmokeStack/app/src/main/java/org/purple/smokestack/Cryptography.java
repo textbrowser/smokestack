@@ -73,12 +73,16 @@ public class Cryptography
     private final static String HMAC_ALGORITHM = "HmacSHA512";
     private final static String PKI_ECDSA_SIGNATURE_ALGORITHM =
 	"SHA512withECDSA";
+    private final static String PKI_RAINBOW_SIGNATURE_ALGORITHM =
+	"SHA512WITHRainbow";
     private final static String PKI_RSA_SIGNATURE_ALGORITHM =
 	/*
 	** SHA512withRSA/PSS requires API 23+.
 	*/
 
 	"SHA512withRSA";
+    private final static String PKI_SPHINCS_SIGNATURE_ALGORITHM =
+	"SHA3-512withSPHINCS256";
     private final static String SYMMETRIC_ALGORITHM = "AES";
     private final static String SYMMETRIC_CIPHER_TRANSFORMATION =
 	"AES/CBC/PKCS7Padding";
@@ -386,32 +390,30 @@ public class Cryptography
 
 	try
 	{
-	    EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(publicBytes);
+	    KeyFactory generator = null;
+	    int length = publicBytes.length;
 
-	    for(int i = 0; i < 3; i++)
-		try
-		{
-		    KeyFactory keyFactory = null;
+	    if(length < 200)
+		generator = KeyFactory.getInstance("EC");
+	    else if(length < 600)
+		generator = KeyFactory.getInstance("RSA");
+	    else if(length < 1200)
+		generator = KeyFactory.getInstance
+		    ("SPHINCS256", BouncyCastlePQCProvider.PROVIDER_NAME);
+	    else if(length < 110000)
+		generator = KeyFactory.getInstance
+		    (PQCObjectIdentifiers.mcElieceCca2.getId(),
+		     BouncyCastlePQCProvider.PROVIDER_NAME);
+	    else if(length < 160000)
+		generator = KeyFactory.getInstance
+		    ("Rainbow", BouncyCastlePQCProvider.PROVIDER_NAME);
+	    else
+		generator = KeyFactory.getInstance
+		    (PQCObjectIdentifiers.mcElieceCca2.getId(),
+		     BouncyCastlePQCProvider.PROVIDER_NAME);
 
-		    switch(i)
-		    {
-		    case 0:
-			keyFactory = KeyFactory.getInstance("EC");
-			break;
-		    case 1:
-			keyFactory = KeyFactory.getInstance
-			    (PQCObjectIdentifiers.mcElieceCca2.getId());
-			break;
-		    default:
-			keyFactory = KeyFactory.getInstance("RSA");
-			break;
-		    }
-
-		    return keyFactory.generatePublic(publicKeySpec);
-		}
-		catch(Exception exception)
-		{
-		}
+	    return generator.generatePublic
+		(new X509EncodedKeySpec(publicBytes));
 	}
 	catch(Exception exception)
 	{
@@ -510,11 +512,27 @@ public class Cryptography
 	{
 	    Signature signature = null;
 
-	    if(publicKey.getAlgorithm().equals("EC"))
+	    switch(publicKey.getAlgorithm())
+	    {
+	    case "EC":
 		signature = Signature.getInstance
 		    (PKI_ECDSA_SIGNATURE_ALGORITHM);
-	    else
-		signature = Signature.getInstance(PKI_RSA_SIGNATURE_ALGORITHM);
+		break;
+	    case "RSA":
+		signature = Signature.getInstance
+		    (PKI_RSA_SIGNATURE_ALGORITHM);
+		break;
+	    case "Rainbow":
+		signature = Signature.getInstance
+		    (PKI_RAINBOW_SIGNATURE_ALGORITHM,
+		     BouncyCastlePQCProvider.PROVIDER_NAME);
+		break;
+	    default:
+		signature = Signature.getInstance
+		    (PKI_SPHINCS_SIGNATURE_ALGORITHM,
+		     BouncyCastlePQCProvider.PROVIDER_NAME);
+		break;
+	    }
 
 	    signature.initVerify(publicKey);
 	    signature.update(data);
