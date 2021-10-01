@@ -84,7 +84,7 @@ public class UdpNeighbor extends Neighbor
 
 	    while(stringBuilder.length() > 0)
 	    {
-		if(m_aborted.get())
+		if(m_disconnected.get())
 		    return false;
 
 		byte bytes[] = stringBuilder.substring
@@ -177,7 +177,7 @@ public class UdpNeighbor extends Neighbor
 
 		try
 		{
-		    if(!connected() && !m_aborted.get())
+		    if(!connected() && !m_disconnected.get())
 			synchronized(m_mutex)
 			{
 			    try

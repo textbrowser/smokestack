@@ -293,7 +293,7 @@ public class TcpNeighbor extends Neighbor
 		{
 		    try
 		    {
-			if(!connected() && !m_aborted.get())
+			if(!connected() && !m_disconnected.get())
 			    synchronized(m_mutex)
 			    {
 				try
@@ -331,7 +331,7 @@ public class TcpNeighbor extends Neighbor
 	    {
 		try
 		{
-		    if(!connected() && !m_aborted.get())
+		    if(!connected() && !m_disconnected.get())
 			synchronized(m_mutex)
 			{
 			    try
@@ -471,7 +471,7 @@ public class TcpNeighbor extends Neighbor
 	    {
 		try
 		{
-		    if(!connected() && !m_aborted.get())
+		    if(!connected() && !m_disconnected.get())
 			synchronized(m_mutex)
 			{
 			    try
