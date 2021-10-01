@@ -43,13 +43,13 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLServerSocket;
@@ -74,6 +74,7 @@ public class TcpListener
 
     private AtomicBoolean m_isPrivateServer = null;
     private AtomicInteger m_oid = null;
+    private ConcurrentHashMap<Integer, TcpNeighbor> m_neighbors = null;
     private KeyStore m_keyStore = null;
     private SSLServerSocket m_socket = null;
     private final ScheduledExecutorService m_acceptScheduler =
@@ -82,15 +83,12 @@ public class TcpListener
 	Executors.newSingleThreadScheduledExecutor();
     private String m_ipAddress = "";
     private String m_ipPort = "";
-    private final ArrayList<TcpNeighbor> m_neighbors = new ArrayList<> ();
     private final AtomicBoolean m_listen = new AtomicBoolean(false);
     private final AtomicInteger m_neighborCounter = new AtomicInteger(0);
     private final AtomicLong m_startTime = new AtomicLong(System.nanoTime());
     private final Cryptography m_cryptography = Cryptography.getInstance();
     private final Database m_databaseHelper = Database.getInstance();
     private final Object m_socketMutex = new Object();
-    private final ReentrantReadWriteLock m_neighborsMutex =
-	new ReentrantReadWriteLock();
     private final String JCACONTENTSIGNER_ALGORITHM =
 	"SHA512WithRSAEncryption";
     private final StringBuilder m_error = new StringBuilder();
@@ -123,6 +121,7 @@ public class TcpListener
 		       byte publicKey[],
 		       int oid)
     {
+	m_neighbors = new ConcurrentHashMap<> ();
 	m_oid = new AtomicInteger(oid);
 	prepareCertificate(certificate, privateKey, publicKey);
 	m_ipAddress = ipAddress;
@@ -164,26 +163,21 @@ public class TcpListener
 		    if(sslSocket == null)
 			return;
 
-		    TcpNeighbor neighbor = new TcpNeighbor
-			(sslSocket,
-			 m_isPrivateServer.get(),
-			 -m_neighborCounter.incrementAndGet());
+		    TcpNeighbor neighbor = null;
+		    int counter = m_neighborCounter.incrementAndGet();
 
-		    m_neighborsMutex.writeLock().lock();
+		    neighbor = new TcpNeighbor
+			(sslSocket, m_isPrivateServer.get(), -counter);
 
 		    try
 		    {
-			m_neighbors.add(neighbor);
+			m_neighbors.put(counter, neighbor);
 		    }
 		    catch(Exception exception)
 		    {
-			m_neighbors.remove(neighbor);
+			m_neighbors.remove(counter);
 			neighbor.abort();
 			neighbor = null;
-		    }
-		    finally
-		    {
-			m_neighborsMutex.writeLock().unlock();
 		    }
 		}
 		catch(Exception exception1)
@@ -231,30 +225,24 @@ public class TcpListener
 			return;
 		    }
 
-		    m_neighborsMutex.writeLock().lock();
-
 		    try
 		    {
-			for(int i = m_neighbors.size() - 1; i >= 0; i--)
+			for(Integer key : m_neighbors.keySet())
 			{
-			    TcpNeighbor neighbor = m_neighbors.get(i);
+			    TcpNeighbor value = m_neighbors.get(key);
 
-			    if(neighbor == null)
-				m_neighbors.remove(i);
-			    else if(!neighbor.connected())
+			    if(value == null)
+				m_neighbors.remove(key);
+			    else if(!value.connected())
 			    {
-				m_neighbors.remove(i);
-				neighbor.abort();
-				neighbor = null;
+				m_neighbors.remove(key);
+				value.abort();
+				value = null;
 			    }
 			}
 		    }
 		    catch(Exception exception)
 		    {
-		    }
-		    finally
-		    {
-			m_neighborsMutex.writeLock().unlock();
 		    }
 
 		    saveStatistics();
@@ -433,23 +421,12 @@ public class TcpListener
     private void saveStatistics()
     {
 	String error = "";
-	String peersCount = "";
+	String peersCount = String.valueOf(m_neighbors.size());
 	long uptime = System.nanoTime() - m_startTime.get();
 
 	synchronized(m_error)
 	{
 	    error = m_error.toString();
-	}
-
-	m_neighborsMutex.readLock().lock();
-
-	try
-	{
-	    peersCount = String.valueOf(m_neighbors.size());
-	}
-	finally
-	{
-	    m_neighborsMutex.readLock().unlock();
 	}
 
 	m_databaseHelper.saveListenerInformation
@@ -475,22 +452,18 @@ public class TcpListener
     {
 	ArrayList<String> arrayList = new ArrayList<> ();
 
-	m_neighborsMutex.readLock().lock();
-
 	try
 	{
-	    int size = m_neighbors.size();
+	    for(Integer key : m_neighbors.keySet())
+	    {
+		TcpNeighbor value = m_neighbors.get(key);
 
-	    for(int i = 0; i < size; i++)
-		if(m_neighbors.get(i) != null)
-		    arrayList.add(m_neighbors.get(i).address());
+		if(value != null)
+		    arrayList.add(value.address());
+	    }
 	}
 	catch(Exception exception)
 	{
-	}
-	finally
-	{
-	    m_neighborsMutex.readLock().unlock();
 	}
 
 	return arrayList;
@@ -498,21 +471,7 @@ public class TcpListener
 
     public int clientsCount()
     {
-	m_neighborsMutex.readLock().lock();
-
-	try
-	{
-	    return m_neighbors.size();
-	}
-	catch(Exception exception)
-	{
-	}
-	finally
-	{
-	    m_neighborsMutex.readLock().unlock();
-	}
-
-	return 0;
+	return m_neighbors.size();
     }
 
     public int oid()
@@ -587,26 +546,20 @@ public class TcpListener
 	    }
 	}
 
-	m_neighborsMutex.writeLock().lock();
-
 	try
 	{
-	    for(int i = m_neighbors.size() - 1; i >= 0; i--)
+	    for(Integer key : m_neighbors.keySet())
 	    {
-		TcpNeighbor neighbor = m_neighbors.remove(i);
+		TcpNeighbor value = m_neighbors.remove(key);
 
-		if(neighbor != null)
-		    neighbor.abort();
+		if(value != null)
+		    value.abort();
 
-		neighbor = null;
+		value = null;
 	    }
 	}
 	catch(Exception exception)
 	{
-	}
-	finally
-	{
-	    m_neighborsMutex.writeLock().unlock();
 	}
 
 	m_startTime.set(System.nanoTime());
@@ -671,44 +624,35 @@ public class TcpListener
 
     public void scheduleEchoSend(String message, int oid)
     {
-	m_neighborsMutex.readLock().lock();
-
 	try
 	{
-	    int size = m_neighbors.size();
+	    for(Integer key : m_neighbors.keySet())
+	    {
+		TcpNeighbor value = m_neighbors.get(key);
 
-	    for(int i = 0; i < size; i++)
-		if(m_neighbors.get(i) != null)
-		    if(m_neighbors.get(i).getOid() != oid)
-			m_neighbors.get(i).scheduleEchoSend(message);
+		if(value != null && oid != value.getOid())
+		    value.scheduleEchoSend(message);
+	    }
 	}
 	catch(Exception exception)
 	{
-	}
-	finally
-	{
-	    m_neighborsMutex.readLock().unlock();
 	}
     }
 
     public void scheduleSend(String message)
     {
-	m_neighborsMutex.readLock().lock();
-
 	try
 	{
-	    int size = m_neighbors.size();
+	    for(Integer key : m_neighbors.keySet())
+	    {
+		TcpNeighbor value = m_neighbors.get(key);
 
-	    for(int i = 0; i < size; i++)
-		if(m_neighbors.get(i) != null)
-		    m_neighbors.get(i).scheduleSend(message);
+		if(value != null)
+		    value.scheduleSend(message);
+	    }
 	}
 	catch(Exception exception)
 	{
-	}
-	finally
-	{
-	    m_neighborsMutex.readLock().unlock();
 	}
     }
 
