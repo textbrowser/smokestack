@@ -575,6 +575,7 @@ public abstract class Neighbor
     protected void disconnect()
     {
 	m_databaseHelper.deleteEchoQueue(m_oid.get());
+	m_disconnected.set(true);
 
 	synchronized(m_mutex)
 	{

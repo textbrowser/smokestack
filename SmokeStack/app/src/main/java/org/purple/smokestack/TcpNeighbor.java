@@ -695,10 +695,10 @@ public class TcpNeighbor extends Neighbor
 		new InetSocketAddress(m_ipAddress, Integer.parseInt(m_ipPort));
 	    SSLContext sslContext = null;
 
-	    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-		sslContext = SSLContext.getInstance("TLS");
-	    else
+	    if(Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
 		sslContext = SSLContext.getInstance("SSL");
+	    else
+		sslContext = SSLContext.getInstance("TLS");
 
 	    sslContext.init
 		(null, m_trustManagers, new SecureRandom());
@@ -736,6 +736,7 @@ public class TcpNeighbor extends Neighbor
 		    public void handshakeCompleted
 			(HandshakeCompletedEvent event)
 		    {
+			m_disconnected.set(false);
 			m_handshakeCompleted.set(true);
 
 			synchronized(m_mutex)
