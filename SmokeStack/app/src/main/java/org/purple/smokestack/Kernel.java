@@ -46,6 +46,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -69,6 +70,7 @@ public class Kernel
 
     private ArrayList<OzoneElement> m_ozones = null;
     private ArrayList<SipHashIdElement> m_sipHashIds = null;
+    private ConcurrentHashMap<Integer, TcpListener> m_listeners = null;
     private LinkedList<SipHashIdentityPair> m_releaseMessagesQueue = null;
     private ScheduledExecutorService m_congestionScheduler = null;
     private ScheduledExecutorService m_listenersScheduler = null;
@@ -78,8 +80,6 @@ public class Kernel
     private ScheduledExecutorService m_releaseMessagesSchedulers[] = null;
     private WakeLock m_wakeLock = null;
     private WifiLock m_wifiLock = null;
-    private final ReentrantReadWriteLock m_listenersMutex = new
-	ReentrantReadWriteLock();
     private final ReentrantReadWriteLock m_ozonesMutex = new
 	ReentrantReadWriteLock();
     private final ReentrantReadWriteLock m_releaseMessagesQueueMutex = new
@@ -87,7 +87,6 @@ public class Kernel
     private final ReentrantReadWriteLock m_sipHashIdsMutex = new
 	ReentrantReadWriteLock();
     private final SparseArray<Neighbor> m_neighbors = new SparseArray<> ();
-    private final SparseArray<TcpListener> m_listeners = new SparseArray<> ();
     private final static Database s_databaseHelper = Database.getInstance();
     private final static Cryptography s_cryptography =
 	Cryptography.getInstance();
@@ -115,6 +114,7 @@ public class Kernel
 
     private Kernel()
     {
+	m_listeners = new ConcurrentHashMap<> ();
 	m_releaseMessagesQueue = new LinkedList<> ();
 
 	/*
@@ -211,25 +211,23 @@ public class Kernel
 	    return;
 	}
 
-	m_listenersMutex.writeLock().lock();
-
 	try
 	{
-	    for(int i = m_listeners.size() - 1; i >= 0; i--)
+	    for(Integer key : m_listeners.keySet())
 	    {
 		/*
 		** Remove listener objects which do not exist in the database.
 		** Also removed will be listeners having disconnected statuses.
 		*/
 
+		TcpListener value = m_listeners.get(key);
 		boolean found = false;
-		int oid = m_listeners.keyAt(i);
 
 		for(ListenerElement listenerElement : listeners)
-		    if(listenerElement != null && listenerElement.m_oid == oid)
+		    if(listenerElement != null && key == listenerElement.m_oid)
 		    {
-			if(!listenerElement.m_statusControl.toLowerCase().
-			   equals("disconnect"))
+			if(!listenerElement.m_statusControl.
+			   equalsIgnoreCase("disconnect"))
 			    found = true;
 
 			break;
@@ -237,16 +235,15 @@ public class Kernel
 
 		if(!found)
 		{
-		    if(m_listeners.get(oid) != null)
-			m_listeners.get(oid).abort();
+		    if(value != null)
+			value.abort();
 
-		    m_listeners.remove(oid);
+		    m_listeners.remove(key);
 		}
 	    }
 	}
-	finally
+	catch(Exception exception)
 	{
-	    m_listenersMutex.writeLock().unlock();
 	}
 
 	for(ListenerElement listenerElement : listeners)
@@ -255,16 +252,13 @@ public class Kernel
 		continue;
 	    else
 	    {
-		m_listenersMutex.readLock().lock();
-
 		try
 		{
 		    if(m_listeners.get(listenerElement.m_oid) != null)
 			continue;
 		}
-		finally
+		catch(Exception exception)
 		{
-		    m_listenersMutex.readLock().unlock();
 		}
 
 		if(listenerElement.m_statusControl.toLowerCase().
@@ -297,15 +291,12 @@ public class Kernel
 		 listenerElement.m_publicKey,
 		 listenerElement.m_oid);
 
-	    m_listenersMutex.writeLock().lock();
-
 	    try
 	    {
-		m_listeners.append(listenerElement.m_oid, listener);
+		m_listeners.put(listenerElement.m_oid, listener);
 	    }
-	    finally
+	    catch(Exception exception)
 	    {
-		m_listenersMutex.writeLock().unlock();
 	    }
 	}
 
@@ -644,25 +635,20 @@ public class Kernel
 	** Disconnect all existing sockets.
 	*/
 
-	m_listenersMutex.writeLock().lock();
-
 	try
 	{
-	    int size = m_listeners.size();
-
-	    for(int i = 0; i < size; i++)
+	    for(Integer key : m_listeners.keySet())
 	    {
-		int j = m_listeners.keyAt(i);
+		TcpListener value = m_listeners.get(key);
 
-		if(m_listeners.get(j) != null)
-		    m_listeners.get(j).abort();
+		if(value != null)
+		    value.abort();
 	    }
 
 	    m_listeners.clear();
 	}
-	finally
+	catch(Exception exception)
 	{
-	    m_listenersMutex.writeLock().unlock();
 	}
     }
 
@@ -738,20 +724,15 @@ public class Kernel
     {
 	ArrayList<String> arrayList = new ArrayList<>();
 
-	m_listenersMutex.readLock().lock();
-
 	try
 	{
-	    int size = m_listeners.size();
-
-	    for(int i = 0; i < size; i++)
+	    for(Integer key : m_listeners.keySet())
 	    {
-		int j = m_listeners.keyAt(i);
+		TcpListener value = m_listeners.get(key);
 
-		if(m_listeners.get(j) != null)
+		if(value != null)
 		{
-		    ArrayList<String> addresses =
-			m_listeners.get(j).clientsAddresses();
+		    ArrayList<String> addresses = value.clientsAddresses();
 
 		    if(addresses != null)
 		    {
@@ -761,9 +742,8 @@ public class Kernel
 		}
 	    }
 	}
-	finally
+	catch(Exception exception)
 	{
-	    m_listenersMutex.readLock().unlock();
 	}
 
 	Collections.sort(arrayList);
@@ -1246,16 +1226,7 @@ public class Kernel
 
     public int listenersCount()
     {
-	m_listenersMutex.readLock().lock();
-
-	try
-	{
-	    return m_listeners.size();
-	}
-	finally
-	{
-	    m_listenersMutex.readLock().unlock();
-	}
+	return m_listeners.size();
     }
 
     public int neighborsCount()
@@ -1270,23 +1241,18 @@ public class Kernel
     {
 	int count = 0;
 
-	m_listenersMutex.readLock().lock();
-
 	try
 	{
-	    int size = m_listeners.size();
-
-	    for(int i = 0; i < size; i++)
+	    for(Integer key : m_listeners.keySet())
 	    {
-		int j = m_listeners.keyAt(i);
+		TcpListener value = m_listeners.get(key);
 
-		if(m_listeners.get(j) != null)
-		    count += m_listeners.get(j).clientsCount();
+		if(value != null)
+		    count += value.clientsCount();
 	    }
 	}
-	finally
+	catch(Exception exception)
 	{
-	    m_listenersMutex.readLock().unlock();
 	}
 
 	return count;
@@ -1353,23 +1319,18 @@ public class Kernel
 	if(message == null || message.trim().isEmpty())
 	    return;
 
-	m_listenersMutex.readLock().lock();
-
 	try
 	{
-	    int size = m_listeners.size();
-
-	    for(int i = 0; i < size; i++)
+	    for(Integer key : m_listeners.keySet())
 	    {
-		int j = m_listeners.keyAt(i);
+		TcpListener value = m_listeners.get(key);
 
-		if(m_listeners.get(j) != null)
-		    m_listeners.get(j).scheduleEchoSend(message, oid);
+		if(value != null)
+		    value.scheduleEchoSend(message, oid);
 	    }
 	}
-	finally
+	catch(Exception exception)
 	{
-	    m_listenersMutex.readLock().unlock();
 	}
 
 	synchronized(m_neighbors)
@@ -1392,23 +1353,18 @@ public class Kernel
 	if(!isNetworkAvailable() || message == null || message.trim().isEmpty())
 	    return;
 
-	m_listenersMutex.readLock().lock();
-
 	try
 	{
-	    int size = m_listeners.size();
-
-	    for(int i = 0; i < size; i++)
+	    for(Integer key : m_listeners.keySet())
 	    {
-		int j = m_listeners.keyAt(i);
+		TcpListener value = m_listeners.get(key);
 
-		if(m_listeners.get(j) != null)
-		    m_listeners.get(j).scheduleSend(message);
+		if(value != null)
+		    value.scheduleSend(message);
 	    }
 	}
-	finally
+	catch(Exception exception)
 	{
-	    m_listenersMutex.readLock().unlock();
 	}
 
 	ArrayList<NeighborElement> arrayList =
@@ -1468,27 +1424,21 @@ public class Kernel
 
     public void toggleListenerPrivacy(int oid)
     {
-	m_listenersMutex.readLock().lock();
-
 	try
 	{
-	    int size = m_listeners.size();
-
-	    for(int i = 0; i < size; i++)
+	    for(Integer key : m_listeners.keySet())
 	    {
-		int j = m_listeners.keyAt(i);
+		TcpListener value = m_listeners.get(key);
 
-		if(m_listeners.get(j) != null &&
-		   m_listeners.get(j).oid() == oid)
+		if(value != null && oid == value.oid())
 		{
-		    m_listeners.get(j).togglePrivacy();
+		    value.togglePrivacy();
 		    break;
 		}
 	    }
 	}
-	finally
+	catch(Exception exception)
 	{
-	    m_listenersMutex.readLock().unlock();
 	}
     }
 }
