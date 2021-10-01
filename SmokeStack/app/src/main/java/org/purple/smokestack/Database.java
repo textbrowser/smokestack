@@ -1550,23 +1550,25 @@ public class Database extends SQLiteOpenHelper
 				   Base64.DEFAULT));
 
 		if(bytes != null)
-		    for(int i = 0; i < 2; i++)
-			try
-			{
-			    if(i == 0)
-				publicKey = KeyFactory.getInstance("EC").
-				    generatePublic
-				    (new X509EncodedKeySpec(bytes));
-			    else
-				publicKey = KeyFactory.getInstance("RSA").
-				    generatePublic
-				    (new X509EncodedKeySpec(bytes));
+		{
+		    int length = bytes.length;
 
-			    break;
-			}
-			catch(Exception exception)
-			{
-			}
+		    if(length < 200)
+			publicKey = KeyFactory.getInstance("EC").
+			    generatePublic(new X509EncodedKeySpec(bytes));
+		    else if(length < 600)
+			publicKey = KeyFactory.getInstance("RSA").
+			    generatePublic(new X509EncodedKeySpec(bytes));
+		    else if(length < 1200)
+			publicKey = KeyFactory.getInstance
+			    ("SPHINCS256",
+			     BouncyCastlePQCProvider.PROVIDER_NAME).
+			    generatePublic(new X509EncodedKeySpec(bytes));
+		    else
+			publicKey = KeyFactory.getInstance
+			    ("Rainbow", BouncyCastlePQCProvider.PROVIDER_NAME).
+			    generatePublic(new X509EncodedKeySpec(bytes));
+		}
 	    }
 	}
 	catch(Exception exception)
