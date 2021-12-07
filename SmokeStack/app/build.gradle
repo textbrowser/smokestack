@@ -12,9 +12,6 @@ android {
         versionCode 20211205
         versionName "2021.12.05"
     }
-    dexOptions {
-        javaMaxHeapSize "8g"
-    }
     buildTypes {
         android.applicationVariants.all { variant ->
             variant.outputs.all {
