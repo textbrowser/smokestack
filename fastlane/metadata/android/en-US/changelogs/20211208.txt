@@ -1,0 +1,1 @@
+* Downgraded Bouncy Castle to 1.68. Problematic JcaContentSignerBuilder.

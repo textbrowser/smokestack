@@ -37,12 +37,12 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.security.KeyPair;
 import java.security.KeyStore;
+import java.security.SecureRandom;
 import java.security.Security;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -90,7 +90,7 @@ public class TcpListener
     private final Database m_databaseHelper = Database.getInstance();
     private final Object m_socketMutex = new Object();
     private final String JCACONTENTSIGNER_ALGORITHM =
-	"SHA512WithRSAEncryption";
+	"SHA512WithRSA";
     private final StringBuilder m_error = new StringBuilder();
     private final static String PKI_KEY_ALGORITHM = "RSA";
     private final static int PKI_KEY_SIZE = 3072;
@@ -373,7 +373,7 @@ public class TcpListener
 	    */
 
 	    ContentSigner contentSigner = null;
-	    Random random = new Random();
+	    SecureRandom random = new SecureRandom();
 	    SubjectPublicKeyInfo subjectPublicKeyInfo = SubjectPublicKeyInfo.
 		getInstance(keyPair.getPublic().getEncoded());
 	    X500Name name = nameBuilder.build();
