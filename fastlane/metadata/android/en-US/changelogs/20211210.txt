@@ -1,0 +1,1 @@
+* Upgraded Bouncy Castle to 1.70. Corrected loading of classes.
