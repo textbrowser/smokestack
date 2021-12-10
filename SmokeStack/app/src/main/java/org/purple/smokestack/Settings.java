@@ -1531,6 +1531,17 @@ public class Settings extends AppCompatActivity
 				    startNeighborsTimers();
 				else
 				    populateNeighbors(null);
+
+				Switch switch1 = (Switch) findViewById
+				    (R.id.automatic_refresh_listeners);
+				Switch switch2 = (Switch) findViewById
+				    (R.id.automatic_refresh_neighbors);
+
+				if(switch1.isChecked())
+				    startListenersTimers();
+
+				if(switch2.isChecked())
+				    startNeighborsTimers();
 			    }
 			}
 			catch(Exception exception)
