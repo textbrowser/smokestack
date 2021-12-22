@@ -259,8 +259,8 @@ public class TcpListener
 	try
 	{
 	    ConnectivityManager connectivityManager = (ConnectivityManager)
-		SmokeStack.getApplication().getApplicationContext().
-		getSystemService(Context.CONNECTIVITY_SERVICE);
+		SmokeStack.getApplication().getSystemService
+		(Context.CONNECTIVITY_SERVICE);
 	    NetworkInfo networkInfo = connectivityManager.
 		getActiveNetworkInfo();
 

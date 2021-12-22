@@ -1973,8 +1973,7 @@ public class Settings extends AppCompatActivity
 
 		PopupWindow popupWindow = new PopupWindow(Settings.this);
 		TextView textView = new TextView(Settings.this);
-		float density = getApplicationContext().getResources().
-		    getDisplayMetrics().density;
+		float density = getResources().getDisplayMetrics().density;
 
 		textView.setBackgroundColor(Color.rgb(232, 234, 246));
 		textView.setPaddingRelative
@@ -2140,7 +2139,7 @@ public class Settings extends AppCompatActivity
 
 	if(m_receiverRegistered)
 	{
-	    LocalBroadcastManager.getInstance(getApplicationContext()).
+	    LocalBroadcastManager.getInstance(Settings.this).
 		unregisterReceiver(m_receiver);
 	    m_receiverRegistered = false;
 	}
@@ -2371,7 +2370,7 @@ public class Settings extends AppCompatActivity
 		return;
 	    }
 
-	SmokeStackService.startForegroundTask(getApplicationContext());
+	SmokeStackService.startForegroundTask(Settings.this);
 	setContentView(R.layout.activity_settings);
 	m_listenersLayoutManager = new ListenersLinearLayoutManager
 	    (Settings.this);
@@ -2645,7 +2644,7 @@ public class Settings extends AppCompatActivity
 		("org.purple.smokestack.populate_ozones_participants");
 	    intentFilter.addAction
 		("org.purple.smokestack.populate_participants");
-	    LocalBroadcastManager.getInstance(getApplicationContext()).
+	    LocalBroadcastManager.getInstance(Settings.this).
 		registerReceiver(m_receiver, intentFilter);
 	    m_receiverRegistered = true;
 	}
@@ -2733,7 +2732,7 @@ public class Settings extends AppCompatActivity
 		("org.purple.smokestack.populate_ozones_participants");
 	    intentFilter.addAction
 		("org.purple.smokestack.populate_participants");
-	    LocalBroadcastManager.getInstance(getApplicationContext()).
+	    LocalBroadcastManager.getInstance(Settings.this).
 		registerReceiver(m_receiver, intentFilter);
 	    m_receiverRegistered = true;
 	}

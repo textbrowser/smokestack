@@ -124,8 +124,8 @@ public class Kernel
 	try
 	{
 	    PowerManager powerManager = (PowerManager)
-		SmokeStack.getApplication().getApplicationContext().
-		getSystemService(Context.POWER_SERVICE);
+		SmokeStack.getApplication().getSystemService
+		(Context.POWER_SERVICE);
 
 	    if(powerManager != null)
 		m_wakeLock = powerManager.newWakeLock
@@ -145,8 +145,8 @@ public class Kernel
 	try
 	{
 	    WifiManager wifiManager = (WifiManager)
-		SmokeStack.getApplication().getApplicationContext().
-		getSystemService(Context.WIFI_SERVICE);
+		SmokeStack.getApplication().getSystemService
+		(Context.WIFI_SERVICE);
 
 	    if(wifiManager != null)
 		m_wifiLock = wifiManager.createWifiLock
@@ -177,8 +177,8 @@ public class Kernel
 	try
 	{
 	    ConnectivityManager connectivityManager = (ConnectivityManager)
-		SmokeStack.getApplication().getApplicationContext().
-		getSystemService(Context.CONNECTIVITY_SERVICE);
+		SmokeStack.getApplication().getSystemService
+		(Context.CONNECTIVITY_SERVICE);
 	    NetworkInfo networkInfo = connectivityManager.
 		getActiveNetworkInfo();
 
