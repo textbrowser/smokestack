@@ -13,6 +13,7 @@ Summary of SmokeStack
 <li>Private and public post offices via Ozone addresses.</li>
 <li>Private and public servers.</li>
 <li>Public-key server.</li>
+<li>Rainbow and Sphincs digital signatures.</li>
 <li>Reliable distribution of messages.</li>
 <li>SSL, TLS 1.0, 1.1, 1.2, 1.3, &#8734;.</li>
 <li>SipHash-128.</li>
