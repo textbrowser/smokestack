@@ -10,6 +10,7 @@ Summary of SmokeStack
 <li>Infinite participants.</li>
 <li>Local data recorded in SQLite via authenticated encryption.</li>
 <li>McEliece support.</li>
+<li>Only 16,000 lines of source!</li>
 <li>Private and public post offices via Ozone addresses.</li>
 <li>Private and public servers.</li>
 <li>Public-key server.</li>
