@@ -9,8 +9,8 @@ android {
         multiDexEnabled true
         targetSdkVersion 25
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        versionCode 20220214
-        versionName "2022.02.14"
+        versionCode 20220305
+        versionName "2022.03.05"
     }
     buildTypes {
         android.applicationVariants.all { variant ->
