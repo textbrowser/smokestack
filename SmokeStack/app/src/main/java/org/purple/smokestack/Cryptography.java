@@ -404,13 +404,13 @@ public class Cryptography
 		generator = KeyFactory.getInstance
 		    (PQCObjectIdentifiers.mcElieceCca2.getId(),
 		     BouncyCastlePQCProvider.PROVIDER_NAME);
-	    else if(length < 160000)
-		generator = KeyFactory.getInstance
-		    ("Rainbow", BouncyCastlePQCProvider.PROVIDER_NAME);
-	    else
+	    else if(length < 335000)
 		generator = KeyFactory.getInstance
 		    (PQCObjectIdentifiers.mcElieceCca2.getId(),
 		     BouncyCastlePQCProvider.PROVIDER_NAME);
+	    else
+		generator = KeyFactory.getInstance
+		    ("Rainbow", BouncyCastlePQCProvider.PROVIDER_NAME);
 
 	    return generator.generatePublic
 		(new X509EncodedKeySpec(publicBytes));
