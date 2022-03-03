@@ -44,7 +44,7 @@ public class About
 
     public static synchronized String about()
     {
-	// Must agree with SmokeStack/app/build.gradle.
+	// The versions must agree with SmokeStack/app/build.gradle.
 
 	try
 	{
