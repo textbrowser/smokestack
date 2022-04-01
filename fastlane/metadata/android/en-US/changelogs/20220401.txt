@@ -1,0 +1,1 @@
+* Disconnect a socket if an invalid TLS certificate is discovered.
