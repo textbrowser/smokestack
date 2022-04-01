@@ -615,9 +615,13 @@ public class TcpNeighbor extends Neighbor
 		    }
 
 		    if(!m_isValidCertificate.get())
+		    {
+			disconnect();
+
 			if(m_error.length() == 0)
 			    m_error.append
 				("A generic certificate error occurred.");
+		    }
 		}
 	    }
 	};
