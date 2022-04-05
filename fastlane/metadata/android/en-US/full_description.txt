@@ -2,17 +2,19 @@ Summary of SmokeStack
 
 * BouncyCastle.
 * Client and server functionality.
+* Concurrent collections.
 * Congestion control via SipHash.
 * Cryptographic discovery.
 * Eventful tasks. Limited polling.
-* F-Droid.
 * Infinite participants.
 * Local data recorded in SQLite via authenticated encryption.
 * McEliece support.
+* Only 16,000 lines of source!
 * Private and public post offices via Ozone addresses.
 * Private and public servers.
 * Public-key server.
+* Rainbow and Sphincs digital signatures.
 * Reliable distribution of messages.
-* SSL, TLS 1.0, 1.1, 1.2, 1.3.
+* SSL, TLS 1.0, 1.1, 1.2, 1.3, ∞.
 * SipHash-128.
 * UDP multicast and unicast client services.
