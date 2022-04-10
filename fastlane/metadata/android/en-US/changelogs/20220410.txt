@@ -1,2 +1,1 @@
-* Bouncy Castle 1.71!
 * Disconnect a socket if an invalid TLS certificate is discovered.
