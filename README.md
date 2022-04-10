@@ -1,3 +1,6 @@
+SmokeStack
+----------
+
 Summary of SmokeStack
 
 <ul>
@@ -20,3 +23,7 @@ Summary of SmokeStack
 <li>SipHash-128.</li>
 <li>UDP multicast and unicast client services.</li>
 </ul>
+
+[<img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png"
+     alt="Get it on F-Droid"
+     height="80">](https://f-droid.org/packages/org.purple.smokestack/)
