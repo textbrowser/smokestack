@@ -203,6 +203,30 @@ public class Settings extends AppCompatActivity
     private boolean m_receiverRegistered = false;
     private final static Cryptography s_cryptography =
 	Cryptography.getInstance();
+    private final static InputFilter s_maximumClientsFilter = new InputFilter()
+    {
+	public CharSequence filter(CharSequence source,
+				   int start,
+				   int end,
+				   Spanned dest,
+				   int dstart,
+				   int dend)
+	{
+	    try
+	    {
+		int maximumClients = Integer.parseInt
+		    (dest.toString() + source.toString());
+
+		if(maximumClients >= 1 && maximumClients <= 50)
+		    return null;
+	    }
+	    catch(Exception exception)
+	    {
+	    }
+
+	    return "";
+	}
+    };
     private final static InputFilter s_portFilter = new InputFilter()
     {
 	public CharSequence filter(CharSequence source,
@@ -284,8 +308,10 @@ public class Settings extends AppCompatActivity
 	    (R.id.automatic_refresh_listeners);
 	Switch switch2 = (Switch) findViewById(R.id.private_server);
 	TextView textView1 = (TextView) findViewById(R.id.listeners_ip_address);
-	TextView textView2 = (TextView) findViewById(R.id.listeners_port);
-	TextView textView3 = (TextView) findViewById(R.id.listeners_scope_id);
+	TextView textView2 = (TextView) findViewById
+	    (R.id.listeners_maximum_clients);
+	TextView textView3 = (TextView) findViewById(R.id.listeners_port);
+	TextView textView4 = (TextView) findViewById(R.id.listeners_scope_id);
 
 	if(radioGroup1.getCheckedRadioButtonId() == R.id.listeners_ipv4)
 	    ipVersion = "IPv4";
@@ -298,13 +324,14 @@ public class Settings extends AppCompatActivity
 	else if(!m_databaseHelper.
 		writeListener(s_cryptography,
 			      textView1.getText().toString(),
-			      textView2.getText().toString(),
 			      textView3.getText().toString(),
+			      textView4.getText().toString(),
+			      textView2.getText().toString(),
 			      ipVersion,
 			      switch2.isChecked()))
 	    Miscellaneous.showErrorDialog
 		(Settings.this,
-		 "An error occurred while saving the listener information.");
+		 "An error occurred while saving the listener's information.");
 	else
 	{
 	    if(generateOzone(textView1.getText().toString() +
@@ -1783,15 +1810,18 @@ public class Settings extends AppCompatActivity
 		TextView textView1 = (TextView) findViewById
 		    (R.id.listeners_ip_address);
 		TextView textView2 = (TextView) findViewById
-		    (R.id.listeners_port);
+		    (R.id.listeners_maximum_clients);
 		TextView textView3 = (TextView) findViewById
+		    (R.id.listeners_port);
+		TextView textView4 = (TextView) findViewById
 		    (R.id.listeners_scope_id);
 
 		switch1.setChecked(false);
 		radioButton1.setChecked(true);
 		textView1.setText("");
-		textView2.setText("4710");
-		textView3.setText("");
+		textView2.setText("5");
+		textView3.setText("4710");
+		textView4.setText("");
 		textView1.requestFocus();
 		prepareListenerIpAddress();
 	    }
@@ -2539,6 +2569,9 @@ public class Settings extends AppCompatActivity
 
 	textView1 = (TextView) findViewById(R.id.about);
 	textView1.setText(About.about());
+	textView1 = (TextView) findViewById(R.id.listeners_maximum_clients);
+	textView1.setFilters(new InputFilter[] { s_maximumClientsFilter });
+        textView1.setText("5");
 	textView1 = (TextView) findViewById(R.id.listeners_scope_id);
         textView1.setEnabled(false);
 	textView1 = (TextView) findViewById(R.id.neighbors_scope_id);

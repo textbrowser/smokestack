@@ -169,16 +169,35 @@
                     android:text="@string/refresh"
                     android:textAllCaps="false" />
 
-                <EditText
-                    android:id="@+id/listeners_ip_address"
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="5dp"
-                    android:ems="10"
-                    android:hint="@string/ip_address"
-                    android:inputType="textPersonName"
-                    android:minHeight="48dp"
-                    android:nextFocusDown="@+id/listeners_port" />
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <EditText
+                        android:id="@+id/listeners_ip_address"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:ems="10"
+                        android:hint="@string/ip_address"
+                        android:inputType="textPersonName"
+                        android:minHeight="48dp"
+                        android:nextFocusDown="@+id/listeners_maximum_clients" />
+
+                    <EditText
+                        android:id="@+id/listeners_maximum_clients"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="5dp"
+                        android:layout_weight="1"
+                        android:ems="10"
+                        android:hint="@string/maximum_clients"
+                        android:inputType="number"
+                        android:minHeight="48dp"
+                        android:nextFocusDown="@+id/listeners_port"
+                        tools:ignore="TextContrastCheck" />
+                </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"

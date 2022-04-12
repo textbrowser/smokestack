@@ -2296,6 +2296,7 @@ public class Database extends SQLiteOpenHelper
 				 String ipAddress,
 				 String ipPort,
 				 String ipScopeId,
+				 String maximumClients,
 				 String version,
 				 boolean isPrivate)
     {
@@ -2335,12 +2336,13 @@ public class Database extends SQLiteOpenHelper
 	    sparseArray.append(6, "local_port");
 	    sparseArray.append(7, "local_port_digest");
 	    sparseArray.append(8, "local_scope_id");
-	    sparseArray.append(9, "peers_count");
-	    sparseArray.append(10, "private_key");
-	    sparseArray.append(11, "public_key");
-            sparseArray.append(12, "status");
-            sparseArray.append(13, "status_control");
-	    sparseArray.append(14, "uptime");
+	    sparseArray.append(9, "maximum_clients");
+	    sparseArray.append(10, "peers_count");
+	    sparseArray.append(11, "private_key");
+	    sparseArray.append(12, "public_key");
+            sparseArray.append(13, "status");
+            sparseArray.append(14, "status_control");
+	    sparseArray.append(15, "uptime");
 
 	    if(!ipAddress.toLowerCase().trim().matches(".*[a-z].*"))
 	    {
@@ -2382,6 +2384,9 @@ public class Database extends SQLiteOpenHelper
 		    break;
 		case "local_scope_id":
 		    bytes = cryptography.etm(ipScopeId.trim().getBytes());
+		    break;
+		case "maximum_clients":
+		    bytes = cryptography.etm(maximumClients.getBytes());
 		    break;
 		case "peers_count":
 		    bytes = cryptography.etm("0".getBytes());
