@@ -55,6 +55,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="5dp"
+                    android:minHeight="48dp"
                     android:textIsSelectable="true" />
 
                 <TextView
@@ -157,6 +158,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layoutDirection="rtl"
+                    android:minHeight="48dp"
                     android:text="@string/automatic_refresh" />
 
                 <Button
@@ -175,6 +177,7 @@
                     android:ems="10"
                     android:hint="@string/ip_address"
                     android:inputType="textPersonName"
+                    android:minHeight="48dp"
                     android:nextFocusDown="@+id/listeners_port" />
 
                 <LinearLayout
@@ -185,7 +188,7 @@
                     <EditText
                         android:id="@+id/listeners_port"
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
+                        android:layout_height="48dp"
                         android:layout_weight="1"
                         android:ems="10"
                         android:hint="@string/port"
@@ -203,7 +206,7 @@
                     <EditText
                         android:id="@+id/listeners_scope_id"
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
+                        android:layout_height="48dp"
                         android:layout_marginEnd="5dp"
                         android:layout_weight="1"
                         android:ems="10"
