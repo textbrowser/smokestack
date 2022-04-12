@@ -183,7 +183,7 @@ public class Database extends SQLiteOpenHelper
     private final static ReentrantReadWriteLock s_congestionControlMutex =
 	new ReentrantReadWriteLock();
     private final static String DATABASE_NAME = "smokestack.db";
-    private final static int DATABASE_VERSION = 1;
+    private final static int DATABASE_VERSION = 10;
     private final static int SIPHASH_STREAM_CREATION_ITERATION_COUNT = 4096;
     private final static long ONE_WEEK = 604800000L;
     private final static long WRITE_PARTICIPANT_TIME_DELTA =
@@ -3841,6 +3841,7 @@ public class Database extends SQLiteOpenHelper
 	    "local_port TEXT NOT NULL, " +
 	    "local_port_digest TEXT NOT NULL, " +
 	    "local_scope_id TEXT NOT NULL, " +
+	    "maximum_clients TEXT NOT NULL, " +
 	    "peers_count TEXT NOT NULL, " +
 	    "private_key TEXT NOT NULL, " +
 	    "public_key TEXT NOT NULL, " +
@@ -4071,6 +4072,16 @@ public class Database extends SQLiteOpenHelper
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion)
     {
         onCreate(db);
+
+	String str = "ALTER TABLE listeners ADD maximum_clients TEXT";
+
+	try
+	{
+	    db.execSQL(str);
+	}
+	catch(Exception exception)
+	{
+	}
     }
 
     public void purgeCongestion(int lifetime)
