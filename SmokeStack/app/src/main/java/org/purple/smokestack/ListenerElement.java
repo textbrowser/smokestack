@@ -34,6 +34,7 @@ public class ListenerElement
     public String m_localIpAddress = "";
     public String m_localPort = "";
     public String m_localScopeId = "";
+    public String m_maximumClients = "";
     public String m_status = "";
     public String m_statusControl = "";
     public String m_uptime = "";

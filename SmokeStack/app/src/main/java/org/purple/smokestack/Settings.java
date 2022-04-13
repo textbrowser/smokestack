@@ -336,7 +336,7 @@ public class Settings extends AppCompatActivity
 	{
 	    if(generateOzone(textView1.getText().toString() +
 			     ":" +
-			     textView2.getText().toString() +
+			     textView3.getText().toString() +
 			     ":TCP"))
 	    {
 		Kernel.getInstance().populateOzones();
@@ -790,6 +790,8 @@ public class Settings extends AppCompatActivity
 				 getBytes()));
 	    }
 
+	    stringBuilder.append("\nMaximum Clients: ");
+	    stringBuilder.append(listenerElement.m_maximumClients);
 	    stringBuilder.append("\nPeers Count: ");
 	    stringBuilder.append(listenerElement.m_peersCount);
 	    stringBuilder.append("\nPrivate: ");

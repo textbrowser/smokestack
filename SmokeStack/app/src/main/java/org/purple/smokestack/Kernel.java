@@ -283,6 +283,7 @@ public class Kernel
 	    TcpListener listener = new TcpListener
 		(listenerElement.m_localIpAddress,
 		 listenerElement.m_localPort,
+		 listenerElement.m_maximumClients,
 		 listenerElement.m_localScopeId,
 		 listenerElement.m_ipVersion,
 		 listenerElement.m_isPrivate,

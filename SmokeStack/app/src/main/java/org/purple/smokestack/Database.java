@@ -529,6 +529,7 @@ public class Database extends SQLiteOpenHelper
 		     "local_ip_address, " +
 		     "local_port, " +
 		     "local_scope_id, " +
+		     "maximum_clients, " +
 		     "peers_count, " +
 		     "private_key, " +
 		     "public_key, " +
@@ -547,6 +548,7 @@ public class Database extends SQLiteOpenHelper
 		     "local_ip_address, " +
 		     "local_port, " +
 		     "local_scope_id, " +
+		     "maximum_clients, " +
 		     "peers_count, " +
 		     "private_key, " +
 		     "public_key, " +
@@ -648,6 +650,20 @@ public class Database extends SQLiteOpenHelper
 
 			break;
 		    case 7:
+			if(bytes != null)
+			{
+			    listenerElement.m_maximumClients = new String
+				(bytes);
+
+			    if(listenerElement.m_maximumClients.isEmpty())
+				listenerElement.m_maximumClients = "5";
+			}
+			else
+			    listenerElement.m_maximumClients =
+				"error (" + oid + ")";
+
+			break;
+		    case 8:
 			try
 			{
 			    if(bytes != null)
@@ -662,17 +678,17 @@ public class Database extends SQLiteOpenHelper
 			}
 
 			break;
-		    case 8:
+		    case 9:
 			if(bytes != null)
 			    listenerElement.m_privateKey = bytes;
 
 			break;
-		    case 9:
+		    case 10:
 			if(bytes != null)
 			    listenerElement.m_publicKey = bytes;
 
 			break;
-		    case 10:
+		    case 11:
 			if(bytes != null)
 			    listenerElement.m_status = new String(bytes);
 			else
@@ -680,7 +696,7 @@ public class Database extends SQLiteOpenHelper
 				"error (" + oid + ")";
 
 			break;
-		    case 11:
+		    case 12:
 			if(bytes != null)
 			    listenerElement.m_statusControl = new String
 				(bytes);
@@ -689,7 +705,7 @@ public class Database extends SQLiteOpenHelper
 				"error (" + oid + ")";
 
 			break;
-		    case 12:
+		    case 13:
 			if(bytes != null)
 			    listenerElement.m_uptime = new String(bytes);
 			else
@@ -4077,16 +4093,6 @@ public class Database extends SQLiteOpenHelper
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion)
     {
         onCreate(db);
-
-	String str = "ALTER TABLE listeners ADD maximum_clients TEXT";
-
-	try
-	{
-	    db.execSQL(str);
-	}
-	catch(Exception exception)
-	{
-	}
     }
 
     public void purgeCongestion(int lifetime)

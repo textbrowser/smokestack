@@ -84,6 +84,7 @@ public class TcpListener
     private String m_ipAddress = "";
     private String m_ipPort = "";
     private final AtomicBoolean m_listen = new AtomicBoolean(false);
+    private final AtomicInteger m_maximumClients = new AtomicInteger(5);
     private final AtomicInteger m_neighborCounter = new AtomicInteger(0);
     private final AtomicLong m_startTime = new AtomicLong(System.nanoTime());
     private final Cryptography m_cryptography = Cryptography.getInstance();
@@ -113,6 +114,7 @@ public class TcpListener
 
     public TcpListener(String ipAddress,
 		       String ipPort,
+		       String maximumClients,
 		       String scopeId,
 		       String version,
 		       boolean isPrivateServer,
@@ -127,6 +129,15 @@ public class TcpListener
 	m_ipAddress = ipAddress;
 	m_ipPort = ipPort;
 	m_isPrivateServer = new AtomicBoolean(isPrivateServer);
+
+	try
+	{
+	    m_maximumClients.set(Integer.parseInt(maximumClients));
+	}
+	catch(Exception exception)
+	{
+	    m_maximumClients.set(5);
+	}
 
 	/*
 	** Launch the schedulers.
@@ -149,7 +160,8 @@ public class TcpListener
 
 		try
 		{
-		    if(!m_listen.get())
+		    if(!m_listen.get() ||
+		       m_maximumClients.get() <= m_neighbors.size())
 			return;
 
 		    synchronized(m_socketMutex)
