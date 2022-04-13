@@ -6,7 +6,9 @@ Summary of SmokeStack
 * Congestion control via SipHash.
 * Cryptographic discovery.
 * Eventful tasks. Limited polling.
+* F-Droid.
 * Infinite participants.
+* Limit number of clients per listener.
 * Local data recorded in SQLite via authenticated encryption.
 * McEliece support.
 * Only 16,000 lines of source!
