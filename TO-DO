@@ -38,5 +38,7 @@ Remaining Items
 
 - Abnormal native termination on Android 8.x. SSL/TLS and/or libc.
 - Distribute routing identity algorithms.
+- Gradle --build-file is deprecated.
 - Maximum clients: close listener socket?
 - The Settings activity has many views (ANDROID_LINT_MAX_VIEW_COUNT).
+- jcenter() is deprecated.
