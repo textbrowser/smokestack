@@ -211,8 +211,7 @@
                         android:layout_weight="1"
                         android:ems="10"
                         android:hint="@string/port"
-                        android:inputType="number"
-                        android:nextFocusDown="@+id/listeners_scope_id" />
+                        android:inputType="number" />
 
                     <Switch
                         android:id="@+id/private_server"

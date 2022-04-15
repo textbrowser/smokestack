@@ -1,1 +1,2 @@
 * Listeners maximum clients. New database field. Reinstall SmokeStack.
+* Prevent focus exceptions.
