@@ -51,7 +51,7 @@ public abstract class Neighbor
     private final ScheduledExecutorService m_sendOutboundScheduler =
 	Executors.newSingleThreadScheduledExecutor();
     private final static int LANE_WIDTH = 8 * 1024 * 1024; // 8 MiB
-    private final static long DATA_LIFETIME = 120000L; // 120 Seconds
+    private final static long DATA_LIFETIME = 60000L; // 60 Seconds
     private final static long PARSING_INTERVAL = 100L; // Milliseconds
     private final static long SEND_OUTBOUND_TIMER_INTERVAL =
 	25L; // Milliseconds
