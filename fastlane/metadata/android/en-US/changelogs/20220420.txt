@@ -1,0 +1,2 @@
+* Corrected sharing of Rainbow keys. Data discarded because of brief
+  lifespans.
