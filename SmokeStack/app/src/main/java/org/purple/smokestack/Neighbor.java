@@ -51,7 +51,7 @@ public abstract class Neighbor
     private final ScheduledExecutorService m_sendOutboundScheduler =
 	Executors.newSingleThreadScheduledExecutor();
     private final static int LANE_WIDTH = 8 * 1024 * 1024; // 8 MiB
-    private final static long DATA_LIFETIME = 15000L; // 15 Seconds
+    private final static long DATA_LIFETIME = 120000L; // 120 Seconds
     private final static long PARSING_INTERVAL = 100L; // Milliseconds
     private final static long SEND_OUTBOUND_TIMER_INTERVAL =
 	25L; // Milliseconds
@@ -85,12 +85,12 @@ public abstract class Neighbor
     protected final StringBuffer m_stringBuffer = new StringBuffer();
     protected final static int BYTES_PER_READ = 1024 * 1024; // 1 MiB
     protected final static int MAXIMUM_BYTES = LANE_WIDTH;
-    protected final static int SO_SNDBUF = 32 * 1024; // 32 KiB
+    protected final static int SO_SNDBUF = 65536;
     protected final static int SO_TIMEOUT = 0; // 0 Seconds
-    protected final static long AWAIT_TERMINATION = 10L; // 10 Seconds
-    protected final static long READ_SOCKET_INTERVAL = 50L; // 50 Milliseconds
+    protected final static long AWAIT_TERMINATION = 5L; // 5 Seconds
+    protected final static long READ_SOCKET_INTERVAL = 100L; // 100 Milliseconds
     protected final static long WAIT_TIMEOUT = 10000L; // 10 Seconds
-    public final static int SO_RCVBUF = 32 * 1024; // 32 KiB
+    public final static int SO_RCVBUF = 65536;
 
     private void saveStatistics()
     {

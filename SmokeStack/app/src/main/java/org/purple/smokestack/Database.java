@@ -183,11 +183,11 @@ public class Database extends SQLiteOpenHelper
     private final static ReentrantReadWriteLock s_congestionControlMutex =
 	new ReentrantReadWriteLock();
     private final static String DATABASE_NAME = "smokestack.db";
-    private final static int DATABASE_VERSION = 10;
+    private final static int DATABASE_VERSION = 20220420;
     private final static int SIPHASH_STREAM_CREATION_ITERATION_COUNT = 4096;
     private final static long ONE_WEEK = 604800000L;
     private final static long WRITE_PARTICIPANT_TIME_DELTA =
-	60000L; // 60 Seconds
+	120000L; // 60 Seconds
     private static Database s_instance = null;
 
     private Database(Context context)
@@ -254,13 +254,14 @@ public class Database extends SQLiteOpenHelper
 		{
 		    int length = bytes.length;
 
-		    if(length < 200)
+		    if(length < Cryptography.PKIKeySizeBounds.PUBLIC_EC)
 			publicKey = KeyFactory.getInstance("EC").
 			    generatePublic(new X509EncodedKeySpec(bytes));
-		    else if(length < 600)
+		    else if(length < Cryptography.PKIKeySizeBounds.PUBLIC_RSA)
 			publicKey = KeyFactory.getInstance("RSA").
 			    generatePublic(new X509EncodedKeySpec(bytes));
-		    else if(length < 1200)
+		    else if(length <
+			    Cryptography.PKIKeySizeBounds.PUBLIC_SPHINCS)
 			publicKey = KeyFactory.getInstance
 			    ("SPHINCS256",
 			     BouncyCastlePQCProvider.PROVIDER_NAME).
@@ -1569,13 +1570,14 @@ public class Database extends SQLiteOpenHelper
 		{
 		    int length = bytes.length;
 
-		    if(length < 200)
+		    if(length < Cryptography.PKIKeySizeBounds.PUBLIC_EC)
 			publicKey = KeyFactory.getInstance("EC").
 			    generatePublic(new X509EncodedKeySpec(bytes));
-		    else if(length < 600)
+		    else if(length < Cryptography.PKIKeySizeBounds.PUBLIC_RSA)
 			publicKey = KeyFactory.getInstance("RSA").
 			    generatePublic(new X509EncodedKeySpec(bytes));
-		    else if(length < 1200)
+		    else if(length <
+			    Cryptography.PKIKeySizeBounds.PUBLIC_SPHINCS)
 			publicKey = KeyFactory.getInstance
 			    ("SPHINCS256",
 			     BouncyCastlePQCProvider.PROVIDER_NAME).
