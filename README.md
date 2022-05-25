@@ -33,3 +33,7 @@ Summary of SmokeStack
 Adding a Listener
 
 https://user-images.githubusercontent.com/10701156/170349739-a63b0be6-314c-44c1-b299-ea1c50ea5561.mp4
+
+Connected Client
+
+https://user-images.githubusercontent.com/10701156/170350418-6538f737-a02f-4a01-b758-d66af08e8297.mp4
