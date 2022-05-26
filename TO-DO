@@ -42,4 +42,5 @@ Remaining Items
 - Improve reading of socket data.
 - Maximum clients: close listener socket?
 - The Settings activity has many views (ANDROID_LINT_MAX_VIEW_COUNT).
+- Video tutorials.
 - jcenter() is deprecated.
