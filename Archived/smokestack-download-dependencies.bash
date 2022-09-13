@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Alexis Megas.
 
 # Must be executed in the top-level source directory.
