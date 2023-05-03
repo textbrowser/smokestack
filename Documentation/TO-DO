@@ -1,3 +1,9 @@
+Archived Items
+
+- Distribute routing identity algorithms.
+- Improve reading of socket data.
+- Video tutorials.
+
 Completed Items
 
 - Allow removal of messages per participant.
@@ -13,10 +19,12 @@ Completed Items
 - Entries in routing_identities expire.
 - Fire compatibility.
 - Future-proof.
+- Gradle --build-file is deprecated. Never ending.
 - Integrate EOM in Messages.java.
 - Limit execSQL to supported queries:
   cannot be delete / insert / select / update.
 - Listeners.
+- Maximum clients: close listener socket.
 - Message accounting.
 - Message retrieval is not immediate.
 - Optional signatures on shared key pairs.
@@ -32,13 +40,9 @@ Completed Items
 - Signed release.
 - TLS 1.3 and Android 10.
 - Verify status of requested messages. Smoke also.
+- jcenter() is deprecated. Never ending.
 - m_isValidCertificate should be an AtomicBoolean.
 
 Remaining Items
 
-- Distribute routing identity algorithms.
-- Gradle --build-file is deprecated.
-- Improve reading of socket data.
-- Maximum clients: close listener socket?
-- Video tutorials.
-- jcenter() is deprecated.
+- Completed!
