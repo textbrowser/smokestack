@@ -2,6 +2,7 @@ Summary of SmokeStack
 
 * BouncyCastle.
 * Client and server functionality.
+* Completed.
 * Concurrent collections.
 * Congestion control via SipHash.
 * Cryptographic discovery.
