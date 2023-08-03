@@ -1,11 +1,7 @@
-# Please have at least one AVD defined.
-
 ADB = ~/Android/Sdk/platform-tools/adb
-EMULATOR = ~/Android/Sdk/tools/emulator
 GRADLEW = ./SmokeStack/gradlew
-JARSIGNER = "/snap/android-studio/current/android-studio/jre/bin/jarsigner"
-JDK = "/snap/android-studio/current/android-studio/jre"
-export JAVA_HOME = /snap/android-studio/current/android-studio/jre
+JDK = "/snap/android-studio/current/android-studio/jbr"
+export JAVA_HOME = /snap/android-studio/current/android-studio/jbr
 
 all:
 	$(GRADLEW) -Dorg.gradle.java.home=$(JDK) \
@@ -19,7 +15,7 @@ clean:
 	$(GRADLEW) --build-file SmokeStack/build.gradle clean
 
 clear-smokestack:
-	./adb.bash shell pm clear org.purple.smokestack
+	$(ADB) shell pm clear org.purple.smokestack
 
 copy-apk: all
 	cp ./SmokeStack/app/build/outputs/apk/debug/apk/smokestack.apk \
@@ -37,7 +33,6 @@ debug-with-source: clean all
 	Scripts \
 	SmokeStack \
 	TO-DO \
-	adb.bash \
 	fastlane \
 	smokestack-download-dependencies.bash \
 	-x *.git* -x *.gradle* -x *.idea* \
@@ -56,56 +51,34 @@ kill-adb-server:
 kill-gradle-daemon:
 	$(GRADLEW) --stop
 
-launch-emulator:
-	$(EMULATOR) -netdelay none -netspeed full -avd \
-	`$(EMULATOR) -list-avds | sort | sed "1q;d"` &
-
 list-devices:
 	$(ADB) devices -l
 
 list-files:
-	./adb.bash shell run-as org.purple.smokestack \
+	$(ADB) shell run-as org.purple.smokestack \
 	ls -l /data/data/org.purple.smokestack/databases
 
 load-apk: all
-	./adb.bash install -r \
+	$(ADB) install \
 	./SmokeStack/app/build/outputs/apk/debug/apk/smokestack.apk
-	./adb.bash shell am start -S -W \
-	-n org.purple.smokestack/org.purple.smokestack.Settings \
-	-a android.intent.action.MAIN -c android.intent.category.LAUNCHER
-
-load-apk-release: release
-	$(JARSIGNER) -verbose -keystore \
-	~/Android-Keys/smokestack-release.keystore \
-	./SmokeStack/app/build/outputs/apk/release/apk/smokestack.apk \
-	smokestack
-	$(JARSIGNER) -verify \
-	./SmokeStack/app/build/outputs/apk/release/apk/smokestack.apk
-	./adb.bash install -r \
-	./SmokeStack/app/build/outputs/apk/release/apk/smokestack.apk
-	./adb.bash shell am start -S -W \
-	-n org.purple.smokestack/org.purple.smokestack.Settings \
-	-a android.intent.action.MAIN -c android.intent.category.LAUNCHER
+	$(ADB) shell am start \
+	-a android.intent.action.MAIN \
+	-c android.intent.category.LAUNCHER \
+	-n "org.purple.smokestack/org.purple.smokestack.Settings"
 
 pull-database:
-	./adb.bash exec-out run-as org.purple.smokestack cat \
-	/data/data/org.purple.smokestack/databases/smokestack.db > smokestack.db
+	$(ADB) exec-out run-as org.purple.smokestack \
+	cat /data/data/org.purple.smokestack/databases/smokestack.db \
+	> smokestack.db
 
 purge:
 	find . -name '*~*' -exec rm -f {} \;
 
-release: clean
-	rm -rf SmokeStack/build SmokeStack/captures
-	$(GRADLEW) -Dorg.gradle.java.home=$(JDK) \
-	--build-file SmokeStack/build.gradle assembleRelease \
-	--configure-on-demand --daemon --parallel
-	rm -f SmokeStack/app/src/main/assets/smokestack.src.d.zip
-
 remove-database:
-	./adb.bash shell run-as org.purple.smokestack \
+	$(ADB) shell run-as org.purple.smokestack \
 	rm -f /data/data/org.purple.smokestack/databases/smokestack.db
-	./adb.bash shell run-as org.purple.smokestack \
+	$(ADB) shell run-as org.purple.smokestack \
 	rm -f /data/data/org.purple.smokestack/databases/smokestack.db-journal
 
 stop-smokestack:
-	./adb.bash shell am force-stop org.purple.smokestack
+	$(ADB) shell am force-stop org.purple.smokestack
