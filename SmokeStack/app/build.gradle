@@ -3,10 +3,9 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 28
     defaultConfig {
-	buildConfigField "long", "BUILD_TIME", System.currentTimeMillis() + "L"
         applicationId "org.purple.smokestack"
+	buildConfigField "long", "BUILD_TIME", System.currentTimeMillis() + "L"
         minSdkVersion 25
-        multiDexEnabled true
         targetSdkVersion 28
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         versionCode 2023.08.05
@@ -15,7 +14,7 @@ android {
     buildTypes {
         android.applicationVariants.all { variant ->
             variant.outputs.all {
-                outputFileName = "./apk/smokestack.apk"
+                outputFileName = "smokestack.apk"
             }
         }
 
@@ -24,7 +23,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    namespace 'org.purple.smokestack'
+    lint {
+        disable 'MissingTranslation'
+    }
+    namespace 'org.purple.smoke'
 }
 
 dependencies {
