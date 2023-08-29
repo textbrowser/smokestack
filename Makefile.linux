@@ -7,12 +7,12 @@ all:
 	$(GRADLEW) -Dorg.gradle.java.home=$(JDK) \
 	-Dorg.gradle.warning.mode=all \
 	--build-file SmokeStack/build.gradle assembleDebug \
-	--configure-on-demand --daemon --parallel
+	--configure-on-demand --daemon --parallel --warning-mode all
 
 clean:
 	rm -f SmokeStack/app/src/main/assets/smokestack.src.d.zip
 	rm -f smokestack.src.d.zip
-	$(GRADLEW) --build-file SmokeStack/build.gradle clean
+	$(GRADLEW) --build-file SmokeStack/build.gradle clean --warning-mode all
 
 clear-smokestack:
 	$(ADB) shell pm clear org.purple.smokestack

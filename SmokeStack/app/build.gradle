@@ -1,13 +1,15 @@
 apply plugin: 'com.android.application'
 
 android {
+    buildFeatures {
+        buildConfig = true
+    }
     compileSdkVersion 28
     defaultConfig {
         applicationId "org.purple.smokestack"
 	buildConfigField "long", "BUILD_TIME", System.currentTimeMillis() + "L"
         minSdkVersion 25
         targetSdkVersion 28
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         versionCode 20230805
         versionName "2023.08.05"
     }
