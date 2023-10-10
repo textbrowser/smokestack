@@ -30,9 +30,6 @@ kill-adb-server:
 kill-gradle-daemon:
 	$(MAKE) -f $(MAKEFILE) kill-gradle-daemon
 
-launch-emulator:
-	$(MAKE) -f $(MAKEFILE) launch-emulator
-
 list-devices:
 	$(MAKE) -f $(MAKEFILE) list-devices
 
