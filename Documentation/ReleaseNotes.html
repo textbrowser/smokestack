@@ -1,12 +1,14 @@
 2022.04.20
 <br>
 <ul>
-  <li>Corrected sharing of Rainbow keys. Data discarded because of brief lifespans.</li>
+  <li>Corrected sharing of Rainbow keys. Data discarded because of brief
+    lifespans.</li>
 </ul>
 2022.04.15
 <br>
 <ul>
-  <li>Listeners maximum clients. New database field. Reinstall SmokeStack.</li>
+  <li>Listeners maximum clients. New database field. Reinstall
+    SmokeStack.</li>
   <li>Prevent focus exceptions.</li>
 </ul>
 2022.04.10
@@ -37,7 +39,8 @@
 2021.12.08
 <br>
 <ul>
-  <li>Downgraded Bouncy Castle to 1.68. Problematic JcaContentSignerBuilder.</li>
+  <li>Downgraded Bouncy Castle to 1.68. Problematic
+    JcaContentSignerBuilder.</li>
 </ul>
 2021.12.05
 <br>
@@ -58,7 +61,8 @@
 2021.07.25
 <br>
 <ul>
-  <li>Limit execSQL() to supported queries: cannot be delete / insert / select / update.</li>
+  <li>Limit execSQL() to supported queries: cannot be delete / insert /
+    select / update.</li>
 </ul>
 2021.06.25
 <br>
@@ -87,7 +91,8 @@
 <br>
 <ul>
   <li>Future-proofing.</li>
-  <li>New message-distribution implementation. Number of distribution tasks depends upon the number of physical cores.</li>
+  <li>New message-distribution implementation. Number of distribution tasks
+    depends upon the number of physical cores.</li>
 </ul>
 2020.11.15
 <br>
@@ -98,14 +103,16 @@
 2020.08.30
 <br>
 <ul>
-  <li>Modified primary key on stack database table. SmokeStack must be reinstalled.</li>
+  <li>Modified primary key on stack database table. SmokeStack must be
+    reinstalled.</li>
   <li>Reliable message distribution.</li>
   <li>Removed SecureRandom.getInstance("SHA1PRNG").</li>
 </ul>
 2020.08.10
 <br>
 <ul>
-  <li>Brief pause after message-retrieval request. Allows for distribution of random identities.</li>
+  <li>Brief pause after message-retrieval request. Allows for distribution
+    of random identities.</li>
 </ul>
 2020.08.08
 <br>
@@ -142,7 +149,8 @@
 <br>
 <ul>
   <li>Bouncy Castle 1.65!</li>
-  <li>Increased TLS public key sizes to 3048 bits. May not be supported by legacy Android versions.</li>
+  <li>Increased TLS public key sizes to 3048 bits. May not be supported by
+    legacy Android versions.</li>
   <li>WakeLock and WifiLock Kernel members.</li>
 </ul>
 2020.04.04
@@ -171,7 +179,8 @@
 <ul>
   <li>Allocate resources in onStart().</li>
   <li>Bouncy Castle version 1.63.</li>
-  <li>Corrected recording of shared public keys via EPKS. The previous implementation recorded keys within incorrect participants.</li>
+  <li>Corrected recording of shared public keys via EPKS. The previous
+    implementation recorded keys within incorrect participants.</li>
   <li>Exit option. May be incomplete on some devices.</li>
   <li>New icons.</li>
   <li>Protect buffers against overflow.</li>
@@ -211,7 +220,8 @@
   <li>Array lengths are positive or zero.</li>
   <li>Automatic removal of incorrect network data.</li>
   <li>Corrected conditional in UdpMulticastNeighbor::send().</li>
-  <li>Replaced Spongy Castle with Bouncy Castle. Please replace existing listeners.</li>
+  <li>Replaced Spongy Castle with Bouncy Castle. Please replace existing
+    listeners.</li>
   <li>Smaller lock regions.</li>
   <li>StringBuilder over StringBuffer, if possible.</li>
 </ul>
@@ -227,14 +237,16 @@
 <br>
 <ul>
   <li>Corrected echoing of data of remote peers.</li>
-  <li>New message_digest field in the outbound_queue database table. SmokeStack must be reset.</li>
+  <li>New message_digest field in the outbound_queue database table.
+    SmokeStack must be reset.</li>
   <li>New statistics.</li>
 </ul>
 2018.08.29
 <br>
 <ul>
   <li>Lock SipHash::hmac().</li>
-  <li>Removed the Echo Queue container from the Neighbor class. The database table outbound_queue has been modified. Please reset SmokeStack.</li>
+  <li>Removed the Echo Queue container from the Neighbor class. The database
+    table outbound_queue has been modified. Please reset SmokeStack.</li>
 </ul>
 2018.08.26
 <br>
@@ -259,17 +271,20 @@
 <ul>
   <li>Blocking socket reads.</li>
   <li>Bouncy Castle has been upgraded to version 1.60.</li>
-  <li>Broadcasting of device identities has been removed. Lighter cryptographic discovery.</li>
+  <li>Broadcasting of device identities has been removed. Lighter
+    cryptographic discovery.</li>
   <li>Fire is now compatible with SmokeStack.</li>
   <li>Material Design-compliant colors.</li>
   <li>New Smoke identity format.</li>
   <li>Private servers.</li>
-  <li>Some member variables in the Neighbor class were incorrectly defined as static.</li>
+  <li>Some member variables in the Neighbor class were incorrectly defined
+    as static.</li>
 </ul>
 2018.04.04
 <br>
 <ul>
-  <li>Display the first discovered IP address of the device in the Listeners IP Address field.</li>
+  <li>Display the first discovered IP address of the device in the Listeners
+    IP Address field.</li>
   <li>Limit the number of identities to 512.</li>
   <li>LocalBroadcastManager instances.</li>
 </ul>
@@ -282,7 +297,8 @@
 <br>
 <ul>
   <li>Corrected local echo behavior.</li>
-  <li>Host translation must be performed before every socket connection attempt.</li>
+  <li>Host translation must be performed before every socket connection
+    attempt.</li>
   <li>Large-area congestion-control mutex.</li>
   <li>Partition data over UDP links into 576-byte datagrams.</li>
 </ul>
@@ -301,25 +317,30 @@
 2018.01.01
 <br>
 <ul>
-  <li>Spongy Castle archives prov and core have been upgraded to version 1.58.0.0.</li>
+  <li>Spongy Castle archives prov and core have been upgraded to version
+    1.58.0.0.</li>
 </ul>
 2017.08.19
 <br>
 <ul>
   <li>Purge neighbor statistics shortly after launch.</li>
-  <li>Set a non-zero SO_TIMEOUT as some devices do not unblock socket reads after sockets are closed.</li>
+  <li>Set a non-zero SO_TIMEOUT as some devices do not unblock socket reads
+    after sockets are closed.</li>
 </ul>
 2017.07.20
 <br>
 <ul>
   <li>Do not attempt to send duplicate data.</li>
   <li>Do not linger on server socket close.</li>
-  <li>Do not specify timeouts in socket reads as separate threads are responsible for socket reads.</li>
+  <li>Do not specify timeouts in socket reads as separate threads are
+    responsible for socket reads.</li>
   <li>Per-participant message retrieval is fine.</li>
   <li>Removed non-necessary Thread.sleep() instances.</li>
-  <li>Replaced StringBuilder Neighbor member with StringBuffer. StringBuffer is thread-safe.</li>
+  <li>Replaced StringBuilder Neighbor member with StringBuffer.
+    StringBuffer is thread-safe.</li>
   <li>Signed release.</li>
-  <li>Some server socket operations must be performed before the sockets are bound.</li>
+  <li>Some server socket operations must be performed before the sockets
+    are bound.</li>
   <li>WiFi lock.</li>
 </ul>
 2017.07.16
@@ -327,7 +348,8 @@
 <ul>
   <li>Corrected outbound-queued statistic.</li>
   <li>Less computations on disconnected neighbors.</li>
-  <li>Per-participant message retrieval is too expensive. Replaced with single thread.</li>
+  <li>Per-participant message retrieval is too expensive. Replaced with
+    single thread.</li>
 </ul>
 2017.07.09
 <br>
