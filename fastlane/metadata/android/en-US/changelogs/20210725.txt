@@ -1,1 +1,2 @@
-* Limit execSQL() to supported queries: cannot be delete / insert / select / update.
+* Limit execSQL() to supported queries: cannot be delete / insert /
+  select / update.
