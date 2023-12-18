@@ -1,7 +1,7 @@
 ADB = ~/Android/Sdk/platform-tools/adb
 GRADLEW = ./SmokeStack/gradlew
-JDK = "/snap/android-studio/current/android-studio/jbr"
-export JAVA_HOME = /snap/android-studio/current/android-studio/jbr
+JDK = "/snap/android-studio/current/jbr"
+export JAVA_HOME = /snap/android-studio/current/jbr
 
 all:
 	$(GRADLEW) -Dorg.gradle.java.home=$(JDK) \
