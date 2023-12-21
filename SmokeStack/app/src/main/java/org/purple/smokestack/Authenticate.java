@@ -27,7 +27,6 @@
 
 package org.purple.smokestack;
 
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -137,17 +136,6 @@ public class Authenticate extends AppCompatActivity
 		    return;
 		}
 
-		final ProgressDialog dialog = new ProgressDialog
-		    (Authenticate.this);
-
-		dialog.setCancelable(false);
-		dialog.setIndeterminate(true);
-		dialog.setMessage
-		    ("Generating confidential data. Please be patient " +
-		     "and do not rotate the device while the process " +
-		     "executes.");
-		dialog.show();
-
 		class SingleShot implements Runnable
 		{
 		    private String m_error = "";
@@ -214,8 +202,6 @@ public class Authenticate extends AppCompatActivity
 			    {
 				try
 				{
-				    dialog.dismiss();
-
 				    if(!m_error.isEmpty())
 					Miscellaneous.showErrorDialog
 					    (Authenticate.this,
@@ -361,18 +347,21 @@ public class Authenticate extends AppCompatActivity
     public boolean onOptionsItemSelected(MenuItem item)
     {
 	if(item != null)
-	    switch(item.getItemId())
+	{
+	    int itemId = item.getItemId();
+
+	    if(itemId == R.id.action_exit)
 	    {
-	    case R.id.action_exit:
 		State.getInstance().setExit(true);
 		SmokeStack.exit(Authenticate.this);
 		return true;
-	    case R.id.action_settings:
+	    }
+	    else if(itemId == R.id.action_settings)
+	    {
 		showSettingsActivity();
 		return true;
-	    default:
-		break;
 	    }
+	}
 
         return super.onOptionsItemSelected(item);
     }

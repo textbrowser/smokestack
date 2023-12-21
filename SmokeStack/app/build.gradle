@@ -10,8 +10,8 @@ android {
 	buildConfigField "long", "BUILD_TIME", System.currentTimeMillis() + "L"
         minSdkVersion 25
         targetSdkVersion 28
-        versionCode 20230805
-        versionName "2023.08.05"
+        versionCode 20231225
+        versionName "2023.12.25"
     }
     buildTypes {
         android.applicationVariants.all { variant ->

@@ -27,7 +27,6 @@
 
 package org.purple.smokestack;
 
-import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -415,15 +414,6 @@ public class Settings extends AppCompatActivity
 	    return;
 	}
 
-	final ProgressDialog dialog = new ProgressDialog(Settings.this);
-
-	dialog.setCancelable(false);
-	dialog.setIndeterminate(true);
-	dialog.setMessage("Generating key material. Please be patient and " +
-			  "do not rotate the device while the process " +
-			  "executes.");
-	dialog.show();
-
 	class SingleShot implements Runnable
 	{
 	    private String m_name = "";
@@ -459,8 +449,6 @@ public class Settings extends AppCompatActivity
 			@Override
 			public void run()
 			{
-			    dialog.dismiss();
-
 			    if(m_error)
 				Miscellaneous.showErrorDialog
 				    (Settings.this,
@@ -1395,7 +1383,6 @@ public class Settings extends AppCompatActivity
 	if(Settings.this.isFinishing())
 	    return;
 
-	final ProgressDialog dialog = new ProgressDialog(Settings.this);
 	final Spinner spinner1 = (Spinner) findViewById(R.id.iteration_count);
 	final TextView textView1 = (TextView) findViewById
 	    (R.id.password1);
@@ -1412,13 +1399,6 @@ public class Settings extends AppCompatActivity
 	{
 	    iterationCount = 1000;
 	}
-
-	dialog.setCancelable(false);
-	dialog.setIndeterminate(true);
-	dialog.setMessage
-	    ("Generating confidential material. Please be patient and " +
-	     "do not rotate the device while the process executes.");
-	dialog.show();
 
 	class SingleShot implements Runnable
 	{
@@ -1525,8 +1505,6 @@ public class Settings extends AppCompatActivity
 		    {
 			try
 			{
-			    dialog.dismiss();
-
 			    if(!m_error.isEmpty())
 				Miscellaneous.showErrorDialog
 				    (Settings.this,
@@ -3080,16 +3058,12 @@ public class Settings extends AppCompatActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
-	if(item != null)
-	    switch(item.getItemId())
-	    {
-	    case R.id.action_exit:
-		State.getInstance().setExit(true);
-		SmokeStack.exit(Settings.this);
-		return true;
-	    default:
-		break;
-	    }
+	if(item != null && item.getItemId() == R.id.action_exit)
+	{
+	    State.getInstance().setExit(true);
+	    SmokeStack.exit(Settings.this);
+	    return true;
+	}
 
         return super.onOptionsItemSelected(item);
     }

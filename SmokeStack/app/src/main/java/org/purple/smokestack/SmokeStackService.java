@@ -11,7 +11,7 @@
 **    notice, this list of conditions and the following disclaimer in the
 **    documentation and/or other materials provided with the distribution.
 ** 3. The name of the author may not be used to endorse or promote products
-**    derived from Smoke without specific prior written permission.
+**    derived from SmokeStack without specific prior written permission.
 **
 ** SMOKESTACK IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
 ** IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
@@ -28,19 +28,21 @@
 package org.purple.smokestack;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.Icon;
 import android.os.IBinder;
 
 public class SmokeStackService extends Service
 {
     private boolean m_isRunning = false;
-    private final static int NOTIFICATION_ID = 796325177;
+    private final static String NOTIFICATION_ID_STRING = "12345";
+    private final static int NOTIFICATION_ID = 12345;
 
-    private void prepareNotification()
+    private void start()
     {
 	if(m_isRunning)
 	    return;
@@ -49,22 +51,31 @@ public class SmokeStackService extends Service
 
 	Intent notificationIntent = new Intent(this, Settings.class);
 	Notification notification = null;
+	NotificationChannel channel = null;
+	NotificationManager manager = (NotificationManager)
+	    getSystemService(Context.NOTIFICATION_SERVICE);
 	PendingIntent pendingIntent = PendingIntent.getActivity
-	    (this, 0, notificationIntent, 0);
+	    (this, 0, notificationIntent, PendingIntent.FLAG_ONE_SHOT);
 
-	notification = new Notification.Builder(this).
+	channel = new NotificationChannel
+	    (NOTIFICATION_ID_STRING,
+	     "SmokeStackService",
+	     NotificationManager.IMPORTANCE_HIGH);
+	channel.setLockscreenVisibility(Notification.VISIBILITY_SECRET);
+	manager.createNotificationChannel(channel);
+	notification = new Notification.Builder(this, NOTIFICATION_ID_STRING).
+	    setCategory(Notification.CATEGORY_SERVICE).
+            setChannelId(NOTIFICATION_ID_STRING).
 	    setContentIntent(pendingIntent).
 	    setContentText("SmokeStack Activity").
 	    setContentTitle("SmokeStack Activity").
+	    setOngoing(true).
 	    setSmallIcon(R.drawable.smokestack).
 	    setTicker("SmokeStack Activity").
 	    build();
-	startForeground(NOTIFICATION_ID, notification);
-    }
 
-    private void start()
-    {
-	prepareNotification();
+	if(notification != null)
+	    startForeground(NOTIFICATION_ID, notification);
     }
 
     private void stop()

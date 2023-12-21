@@ -18,8 +18,7 @@ clear-smokestack:
 	$(ADB) shell pm clear org.purple.smokestack
 
 copy-apk: all
-	cp ./SmokeStack/app/build/outputs/apk/debug/apk/smokestack.apk \
-	~/Desktop/.
+	cp ./SmokeStack/app/build/outputs/apk/debug/smokestack.apk ~/Desktop/.
 
 debug-with-source: clean all
 	rm -rf SmokeStack/build SmokeStack/captures
@@ -59,8 +58,7 @@ list-files:
 	ls -l /data/data/org.purple.smokestack/databases
 
 load-apk: all
-	$(ADB) install \
-	./SmokeStack/app/build/outputs/apk/debug/apk/smokestack.apk
+	$(ADB) install ./SmokeStack/app/build/outputs/apk/debug/smokestack.apk
 	$(ADB) shell am start \
 	-a android.intent.action.MAIN \
 	-c android.intent.category.LAUNCHER \

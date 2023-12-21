@@ -1,6 +1,7 @@
 Completed Items
 
 - Allow removal of messages per participant.
+- Android API 28.
 - Create a single statement in purgeReleasedMessages() to delete specific OIDs.
 - Decrease the lock area of m_stringBuilder in Neighbor.java.
 - Dialogs are not dismissed correctly on rotation changes. Unable to
@@ -25,7 +26,7 @@ Completed Items
 - Per-participant message retrieval schedulers.
 - Populate containers in the kernel as required.
 - Private servers are susceptible to replay attacks.
-- Private servers. SHA-512 (Random || Time).
+- Private servers: SHA-512 (Random || Time).
 - Purge expired messages.
 - Refresh Ozones.
 - Rename participant in Participants section.
@@ -38,5 +39,3 @@ Completed Items
 - m_isValidCertificate should be an AtomicBoolean.
 
 Remaining Items
-
-- Android API 28.

@@ -30,7 +30,8 @@ package org.purple.smokestack;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
+import android.net.Network;
+import android.net.NetworkCapabilities;
 import android.net.wifi.WifiManager.WifiLock;
 import android.net.wifi.WifiManager;
 import android.os.PowerManager.WakeLock;
@@ -170,28 +171,6 @@ public class Kernel
 	populateOzones();
 	populateSipHashIds();
 	prepareSchedulers();
-    }
-
-    public boolean isNetworkAvailable()
-    {
-	try
-	{
-	    ConnectivityManager connectivityManager = (ConnectivityManager)
-		SmokeStack.getApplication().getSystemService
-		(Context.CONNECTIVITY_SERVICE);
-	    NetworkInfo networkInfo = connectivityManager.
-		getActiveNetworkInfo();
-
-	    if(networkInfo.getState() !=
-	       android.net.NetworkInfo.State.CONNECTED)
-		return false;
-	}
-	catch(Exception exception)
-	{
-	    return false;
-	}
-
-	return true;
     }
 
     private void prepareListeners()
@@ -1257,6 +1236,38 @@ public class Kernel
 	}
 
 	return count;
+    }
+
+    public static boolean isNetworkAvailable()
+    {
+	try
+	{
+	    ConnectivityManager connectivityManager = (ConnectivityManager)
+		SmokeStack.getApplication().getSystemService
+		(Context.CONNECTIVITY_SERVICE);
+	    Network network = connectivityManager.getActiveNetwork();
+
+	    if(network == null)
+		return false;
+
+	    NetworkCapabilities networkCapabilities = connectivityManager.
+		getNetworkCapabilities(network);
+
+	    if(networkCapabilities == null)
+		return false;
+
+	    return networkCapabilities.
+		hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) ||
+		networkCapabilities.
+		hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) ||
+		networkCapabilities.
+		hasTransport(NetworkCapabilities.TRANSPORT_WIFI);
+	}
+	catch(Exception exception)
+	{
+	}
+
+	return false;
     }
 
     public static synchronized Kernel getInstance()
