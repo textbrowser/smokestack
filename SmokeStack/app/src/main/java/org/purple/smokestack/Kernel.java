@@ -50,7 +50,6 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -60,14 +59,14 @@ public class Kernel
     private static class SipHashIdentityPair
     {
 	public String m_sipHashIdDigest = "";
-	public byte m_identity[] = null;
+	public byte[] m_identity = null;
 
-	public SipHashIdentityPair(String sipHashIdDigest, byte identity[])
+	public SipHashIdentityPair(String sipHashIdDigest, byte[] identity)
 	{
 	    m_identity = identity;
 	    m_sipHashIdDigest = sipHashIdDigest;
 	}
-    };
+    }
 
     private ArrayList<OzoneElement> m_ozones = null;
     private ArrayList<SipHashIdElement> m_sipHashIds = null;
@@ -78,7 +77,7 @@ public class Kernel
     private ScheduledExecutorService m_neighborsScheduler = null;
     private ScheduledExecutorService m_purgeExpiredRoutingEntriesScheduler =
 	null;
-    private ScheduledExecutorService m_releaseMessagesSchedulers[] = null;
+    private ScheduledExecutorService[] m_releaseMessagesSchedulers = null;
     private WakeLock m_wakeLock = null;
     private WifiLock m_wifiLock = null;
     private final ReentrantReadWriteLock m_ozonesMutex = new
@@ -240,13 +239,12 @@ public class Kernel
 		{
 		}
 
-		if(listenerElement.m_statusControl.toLowerCase().
-		   equals("delete") ||
-		   listenerElement.m_statusControl.toLowerCase().
-		   equals("disconnect"))
+		if(listenerElement.m_statusControl.equalsIgnoreCase("delete") ||
+		   listenerElement.m_statusControl.
+		   equalsIgnoreCase("disconnect"))
 		{
-		    if(listenerElement.m_statusControl.toLowerCase().
-		       equals("disconnect"))
+		    if(listenerElement.m_statusControl.
+		       equalsIgnoreCase("disconnect"))
 			s_databaseHelper.saveListenerInformation
 			    (s_cryptography,
 			     "",              // Error
@@ -308,13 +306,12 @@ public class Kernel
 			continue;
 		}
 
-		if(neighborElement.m_statusControl.toLowerCase().
-		   equals("delete") ||
-		   neighborElement.m_statusControl.toLowerCase().
-		   equals("disconnect"))
+		if(neighborElement.m_statusControl.equalsIgnoreCase("delete") ||
+		   neighborElement.m_statusControl.
+		   equalsIgnoreCase("disconnect"))
 		{
-		    if(neighborElement.m_statusControl.toLowerCase().
-		       equals("disconnect"))
+		    if(neighborElement.m_statusControl.
+		       equalsIgnoreCase("disconnect"))
 		    {
 			s_databaseHelper.deleteEchoQueue
 			    (neighborElement.m_oid);
@@ -389,7 +386,7 @@ public class Kernel
     }
 
     private void prepareReleaseMessagesPair(String sipHashIdDigest,
-					    byte identity[])
+					    byte[] identity)
     {
 	if(!isNetworkAvailable() ||
 	   identity == null ||
@@ -579,7 +576,7 @@ public class Kernel
 					continue;
 				    }
 
-				    byte destination[] = Cryptography.hmac
+				    byte[] destination = Cryptography.hmac
 					(arrayList.get(0), pair.m_identity);
 
 				    if(destination == null)
@@ -680,8 +677,8 @@ public class Kernel
 		for(NeighborElement neighborElement : neighbors)
 		    if(neighborElement != null && neighborElement.m_oid == oid)
 		    {
-			if(!neighborElement.m_statusControl.toLowerCase().
-			   equals("disconnect"))
+			if(!neighborElement.m_statusControl.
+			   equalsIgnoreCase("disconnect"))
 			    found = true;
 
 			break;
@@ -779,7 +776,7 @@ public class Kernel
 		    s_databaseHelper.deleteRoutingEntry
 			(clientIdentity.toString());
 
-		    byte bytes[] = Base64.decode
+		    byte[] bytes = Base64.decode
 			(Messages.stripMessage(buffer), Base64.DEFAULT);
 
 		    s_databaseHelper.writeIdentities(clientIdentity, bytes);
@@ -795,7 +792,7 @@ public class Kernel
 	    if(s_databaseHelper.containsCongestionDigest(value))
 		return true;
 
-	    byte bytes[] = Base64.decode
+	    byte[] bytes = Base64.decode
 		(Messages.stripMessage(buffer), Base64.DEFAULT);
 
 	    if(bytes == null || bytes.length < 128)
@@ -818,16 +815,16 @@ public class Kernel
 		m_sipHashIdsMutex.readLock().unlock();
 	    }
 
-	    byte data[] = Arrays.copyOfRange // Blocks #1, #2, etc.
+	    byte[] data = Arrays.copyOfRange // Blocks #1, #2, etc.
 		(bytes, 0, bytes.length - 2 * Cryptography.HASH_KEY_LENGTH);
-	    byte hmac[] = Arrays.copyOfRange // Second to the last block.
+	    byte[] hmac = Arrays.copyOfRange // Second to the last block.
 		(bytes,
 		 bytes.length - 2 * Cryptography.HASH_KEY_LENGTH,
 		 bytes.length - Cryptography.HASH_KEY_LENGTH);
 
 	    if(arrayList1 != null && arrayList1.size() > 0)
 	    {
-		byte destination[] = Arrays.copyOfRange
+		byte[] destination = Arrays.copyOfRange
 		    (bytes,
 		     bytes.length - Cryptography.HASH_KEY_LENGTH,
 		     bytes.length);
@@ -866,7 +863,7 @@ public class Kernel
 
 		    s_databaseHelper.writeCongestionDigest(value);
 
-		    byte ciphertext[] = Cryptography.decrypt
+		    byte[] ciphertext = Cryptography.decrypt
 			(data,
 			 Arrays.copyOfRange(sipHashIdElement.m_stream,
 					    0,
@@ -937,7 +934,7 @@ public class Kernel
 					   ozoneElement.m_addressStream.
 					   length))))
 		{
-		    byte ciphertext[] = Cryptography.decrypt
+		    byte[] ciphertext = Cryptography.decrypt
 			(data,
 			 Arrays.copyOfRange(ozoneElement.m_addressStream,
 					    0,
@@ -963,7 +960,7 @@ public class Kernel
 				CHAT_MESSAGE_RETRIEVAL_WINDOW)
 			    return true;
 
-			byte identity[] = Arrays.copyOfRange
+			byte[] identity = Arrays.copyOfRange
 			    (ciphertext, 9, IDENTITY_LENGTH + 9);
 
 			if(identity == null ||
@@ -1060,7 +1057,7 @@ public class Kernel
 						SIPHASH_IDENTITY_LENGTH,
 						ciphertext.length),
 			     StandardCharsets.UTF_8);
-			String array[] = s_databaseHelper.readPublicKeyPair
+			String[] array = s_databaseHelper.readPublicKeyPair
 			    (s_cryptography, sipHashId);
 
 			if(array == null)
@@ -1130,7 +1127,7 @@ public class Kernel
 			    localBroadcastManager.sendBroadcast(intent);
 			}
 
-			byte identity[] = Arrays.copyOfRange
+			byte[] identity = Arrays.copyOfRange
 			    (ciphertext,
 			     9 + Cryptography.SIPHASH_IDENTITY_LENGTH,
 			     9 + Cryptography.SIPHASH_IDENTITY_LENGTH + 8);
@@ -1293,7 +1290,7 @@ public class Kernel
 	    }
     }
 
-    public static void writeCongestionDigest(byte data[])
+    public static void writeCongestionDigest(byte[] data)
     {
 	if(data != null)
 	    try
@@ -1388,8 +1385,7 @@ public class Kernel
 
 	    for(int i = 0; i < size; i++)
 		if(arrayList.get(i) != null &&
-		   arrayList.get(i).m_statusControl.toLowerCase().
-		   equals("connect"))
+		   arrayList.get(i).m_statusControl.equalsIgnoreCase("connect"))
 		    s_databaseHelper.enqueueOutboundMessage
 			(s_cryptography,
 			 message,

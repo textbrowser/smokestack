@@ -34,17 +34,17 @@ import java.util.Arrays;
 public class Messages
 {
     public final static String EOM = "\r\n\r\n\r\n";
-    public final static byte CHAT_KEY_TYPE[] = new byte[] {0x00};
-    public final static byte CHAT_MESSAGE_READ[] = new byte[] {0x04};
-    public final static byte CHAT_MESSAGE_RETRIEVAL[] = new byte[] {0x00};
-    public final static byte PKP_MESSAGE_REQUEST[] = new byte[] {0x01};
-    public final static byte SHARE_SIPHASH_ID[] = new byte[] {0x02};
-    public final static byte SHARE_SIPHASH_IDENTITY_CONFIRIMATION[] =
+    public final static byte[] CHAT_KEY_TYPE = new byte[] {0x00};
+    public final static byte[] CHAT_MESSAGE_READ = new byte[] {0x04};
+    public final static byte[] CHAT_MESSAGE_RETRIEVAL = new byte[] {0x00};
+    public final static byte[] PKP_MESSAGE_REQUEST = new byte[] {0x01};
+    public final static byte[] SHARE_SIPHASH_ID = new byte[] {0x02};
+    public final static byte[] SHARE_SIPHASH_IDENTITY_CONFIRIMATION =
 	new byte[] {0x03};
     public final static int EPKS_GROUP_ONE_ELEMENT_COUNT = 7;
     private final static int ETAG_LENGTH = 32;
 
-    public static String bytesToMessageString(byte bytes[])
+    public static String bytesToMessageString(byte[] bytes)
     {
 	if(bytes == null || bytes.length == 0)
 	    return "";
@@ -84,7 +84,7 @@ public class Messages
 	return "";
     }
 
-    public static String identitiesMessage(byte bytes[])
+    public static String identitiesMessage(byte[] bytes)
     {
 	if(bytes == null || bytes.length == 0)
 	    return "";
@@ -207,8 +207,7 @@ public class Messages
 	return message.trim();
     }
 
-    public static byte[] epksMessage(String sipHashId,
-				     String strings[])
+    public static byte[] epksMessage(String sipHashId, String[] strings)
     {
 	if(strings == null ||
 	   strings.length != EPKS_GROUP_ONE_ELEMENT_COUNT - 1)
@@ -222,7 +221,7 @@ public class Messages
 
 	try
 	{
-	    byte keyStream[] = Cryptography.sipHashIdStream(sipHashId);
+	    byte[] keyStream = Cryptography.sipHashIdStream(sipHashId);
 
 	    if(keyStream == null)
 		return null;
@@ -281,7 +280,7 @@ public class Messages
 
 	    stringBuilder.append(strings[4]);
 
-	    byte ciphertext[] = Cryptography.encrypt
+	    byte[] ciphertext = Cryptography.encrypt
 		(stringBuilder.toString().getBytes(),
 		 Arrays.copyOfRange(keyStream,
 				    0,
@@ -296,7 +295,7 @@ public class Messages
 	    ** [ HMAC ]
 	    */
 
-	    byte hmac[] = Cryptography.hmac
+	    byte[] hmac = Cryptography.hmac
 		(ciphertext,
 		 Arrays.copyOfRange(keyStream,
 				    Cryptography.CIPHER_KEY_LENGTH,
@@ -309,7 +308,7 @@ public class Messages
 	    ** [ Destination ]
 	    */
 
-	    byte destination[] = Cryptography.hmac
+	    byte[] destination = Cryptography.hmac
 		(Miscellaneous.joinByteArrays(ciphertext, hmac),
 		 Cryptography.
 		 shaX512(sipHashId.getBytes(StandardCharsets.UTF_8)));
@@ -326,15 +325,15 @@ public class Messages
     public static byte[] shareSipHashIdMessageConfirmation
 	(Cryptography cryptography,
 	 String sipHashId,
-	 byte identity[],
-	 byte keyStream[])
+	 byte[] identity,
+	 byte[] keyStream)
     {
 	if(cryptography == null)
 	    return null;
 
 	try
 	{
-	    byte bytes[] = Miscellaneous.joinByteArrays
+	    byte[] bytes = Miscellaneous.joinByteArrays
 		(
 		 /*
 		 ** [ A Byte ]
@@ -364,7 +363,7 @@ public class Messages
 	    ** [ Ciphertext ]
 	    */
 
-	    byte ciphertext[] = Cryptography.encrypt
+	    byte[] ciphertext = Cryptography.encrypt
 		(bytes, Arrays.copyOfRange(keyStream,
 					   0,
 					   Cryptography.CIPHER_KEY_LENGTH));
@@ -376,7 +375,7 @@ public class Messages
 	    ** [ HMAC ]
 	    */
 
-	    byte hmac[] = Cryptography.hmac
+	    byte[] hmac = Cryptography.hmac
 		(ciphertext, Arrays.copyOfRange(keyStream,
 					    Cryptography.CIPHER_KEY_LENGTH,
 					    keyStream.length));
@@ -388,7 +387,7 @@ public class Messages
 	    ** [ Destination ]
 	    */
 
-	    byte destination[] = Cryptography.hmac
+	    byte[] destination = Cryptography.hmac
 		(Miscellaneous.joinByteArrays(ciphertext, hmac),
 		 Cryptography.
 		 shaX512(sipHashId.getBytes(StandardCharsets.UTF_8)));

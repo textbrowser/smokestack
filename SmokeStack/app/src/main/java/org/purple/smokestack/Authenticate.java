@@ -56,7 +56,7 @@ public class Authenticate extends AppCompatActivity
 		if(Authenticate.this.isFinishing())
 		    return;
 
-		byte encryptionSalt[] = Base64.decode
+		byte[] encryptionSalt = Base64.decode
 		    (m_databaseHelper.
 		     readSetting(null, "encryptionSalt").getBytes(),
 		     Base64.DEFAULT);
@@ -74,7 +74,7 @@ public class Authenticate extends AppCompatActivity
 		    return;
 		}
 
-		byte macSalt[] = Base64.decode
+		byte[] macSalt = Base64.decode
 		    (m_databaseHelper.readSetting(null, "macSalt").getBytes(),
 		     Base64.DEFAULT);
 
@@ -87,7 +87,7 @@ public class Authenticate extends AppCompatActivity
 		    return;
 		}
 
-		byte saltedPassword[] = Cryptography.shaX512
+		byte[] saltedPassword = Cryptography.shaX512
 		    (textView1.getText().toString().getBytes(),
 		     encryptionSalt,
 		     macSalt);
@@ -140,13 +140,13 @@ public class Authenticate extends AppCompatActivity
 		{
 		    private String m_error = "";
 		    private String m_password = "";
-		    private byte m_encryptionSalt[] = null;
-		    private byte m_macSalt[] = null;
+		    private byte[] m_encryptionSalt = null;
+		    private byte[] m_macSalt = null;
 		    private int m_iterationCount = 1000;
 
 		    SingleShot(String password,
-			       byte encryptionSalt[],
-			       byte macSalt[],
+			       byte[] encryptionSalt,
+			       byte[] macSalt,
 			       int iterationCount)
 		    {
 			m_encryptionSalt = encryptionSalt;

@@ -43,7 +43,6 @@ import android.text.InputFilter;
 import android.text.InputType;
 import android.text.Spanned;
 import android.util.Base64;
-import android.util.LayoutDirection;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.ContextMenu;
 import android.view.Gravity;
@@ -286,7 +285,7 @@ public class Settings extends AppCompatActivity
 
     private boolean generateOzone(String string)
     {
-	byte bytes[] = Cryptography.generateOzone(string);
+	byte[] bytes = Cryptography.generateOzone(string);
 
 	if(bytes != null)
 	    return m_databaseHelper.writeOzone
@@ -688,7 +687,7 @@ public class Settings extends AppCompatActivity
 		row.setId(listenerElement.m_oid);
 		row.setLayoutParams(layoutParams);
 		switch1 = new Switch(Settings.this);
-		switch1.setLayoutDirection(LayoutDirection.RTL);
+		switch1.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
 		switch1.setOnCheckedChangeListener
 		    (new CompoundButton.OnCheckedChangeListener()
 		    {
@@ -807,8 +806,7 @@ public class Settings extends AppCompatActivity
 
 	    stringBuilder.append(" Min.\n");
 	    switch1.setChecked
-		(listenerElement.m_statusControl.toLowerCase().
-		 equals("listen"));
+		(listenerElement.m_statusControl.equalsIgnoreCase("listen"));
 	    switch1.setGravity(Gravity.CENTER_VERTICAL);
 	    switch1.setId(listenerElement.m_oid);
 	    switch1.setLayoutParams
@@ -962,7 +960,7 @@ public class Settings extends AppCompatActivity
 		spinner = new Spinner(Settings.this);
 
 		ArrayAdapter<String> arrayAdapter = null;
-		String array[] = null;
+		String[] array = null;
 
 		if(neighborElement.m_transport.equals("TCP"))
 		    array = new String[]
@@ -1418,8 +1416,8 @@ public class Settings extends AppCompatActivity
 	    {
 		SecretKey encryptionKey = null;
 		SecretKey macKey = null;
-		byte encryptionSalt[] = null;
-		byte macSalt[] = null;
+		byte[] encryptionSalt = null;
+		byte[] macSalt = null;
 
 		try
 		{
@@ -1477,7 +1475,7 @@ public class Settings extends AppCompatActivity
 			 Base64.encodeToString(macSalt,
 					       Base64.DEFAULT));
 
-		    byte saltedPassword[] = Cryptography.shaX512
+		    byte[] saltedPassword = Cryptography.shaX512
 			(m_password.getBytes(), encryptionSalt, macSalt);
 
 		    if(saltedPassword != null)
@@ -2440,7 +2438,7 @@ public class Settings extends AppCompatActivity
         radioButton1.setEnabled(isAuthenticated);
 
 	Spinner spinner1 = (Spinner) findViewById(R.id.proxy_type);
-        String array[] = new String[]
+        String[] array = new String[]
 	{
 	    "HTTP", "SOCKS"
 	};
@@ -2698,28 +2696,17 @@ public class Settings extends AppCompatActivity
 	Switch switch1 = null;
 
 	switch1 = (Switch) findViewById(R.id.automatic_refresh_listeners);
-
-	if(m_databaseHelper.
-	   readSetting(null, "automatic_listeners_refresh").equals("true"))
-	    switch1.setChecked(true);
-	else
-	    switch1.setChecked(false);
-
+	switch1.setChecked
+	    (m_databaseHelper.
+	     readSetting(null, "automatic_listeners_refresh").equals("true"));
 	switch1 = (Switch) findViewById(R.id.automatic_refresh_neighbors);
-
-	if(m_databaseHelper.
-	   readSetting(null, "automatic_neighbors_refresh").equals("true"))
-	    switch1.setChecked(true);
-	else
-	    switch1.setChecked(false);
-
+	switch1.setChecked
+	    (m_databaseHelper.
+	     readSetting(null, "automatic_neighbors_refresh").equals("true"));
 	switch1 = (Switch) findViewById(R.id.neighbor_details);
-
-	if(m_databaseHelper.
-	   readSetting(null, "neighbors_details").equals("true"))
-	    switch1.setChecked(true);
-	else
-	    switch1.setChecked(false);
+	switch1.setChecked
+	    (m_databaseHelper.
+	     readSetting(null, "neighbors_details").equals("true"));
 
 	Spinner spinner1 = (Spinner) findViewById(R.id.iteration_count);
 

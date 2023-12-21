@@ -35,8 +35,8 @@ public class SipHashIdElement
     public boolean m_acceptWithoutSignatures = false;
     public boolean m_epksCompleted = false;
     public boolean m_keysSigned = false;
-    public byte m_chatEncryptionKeyDigest[] = null;
-    public byte m_stream[] = null;
+    public byte[] m_chatEncryptionKeyDigest = null;
+    public byte[] m_stream = null;
     public int m_oid = -1;
     public long m_inMessages = 0L;
     public long m_outMessages = 0L;

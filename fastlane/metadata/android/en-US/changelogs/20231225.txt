@@ -8,3 +8,6 @@
 * New SmokeStackService implementation.
 * New network-availability logic.
 * Removed ProgressDialog as it's deprecated.
+* Removed imports.
+* Removed redundant casts.
+* Replaced StringBuilder with String in some instances.

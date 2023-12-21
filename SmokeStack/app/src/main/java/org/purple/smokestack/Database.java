@@ -73,9 +73,9 @@ public class Database extends SQLiteOpenHelper
 
 		try
 		{
-		    byte bytes1[] = InetAddress.getByName(e1.m_localIpAddress).
+		    byte[] bytes1 = InetAddress.getByName(e1.m_localIpAddress).
 		    getAddress();
-		    byte bytes2[] = InetAddress.getByName(e2.m_localIpAddress).
+		    byte[] bytes2 = InetAddress.getByName(e2.m_localIpAddress).
 		    getAddress();
 		    int length = Math.max(bytes1.length, bytes2.length);
 
@@ -114,9 +114,9 @@ public class Database extends SQLiteOpenHelper
 
 		try
 		{
-		    byte bytes1[] = InetAddress.getByName(e1.m_remoteIpAddress).
+		    byte[] bytes1 = InetAddress.getByName(e1.m_remoteIpAddress).
 		    getAddress();
-		    byte bytes2[] = InetAddress.getByName(e2.m_remoteIpAddress).
+		    byte[] bytes2 = InetAddress.getByName(e2.m_remoteIpAddress).
 		    getAddress();
 		    int length = Math.max(bytes1.length, bytes2.length);
 
@@ -220,19 +220,19 @@ public class Database extends SQLiteOpenHelper
 
 	try
 	{
-	    byte buffer[] = Base64.decode(data.getBytes(), Base64.NO_WRAP);
+	    byte[] buffer = Base64.decode(data.getBytes(), Base64.NO_WRAP);
 
 	    if(buffer.length < 129)
 		// Random (64) + Signature Key Digest (64) + Signature (?)
 		return false;
 
-	    byte random[] = Arrays.copyOfRange(buffer, 0, 64);
+	    byte[] random = Arrays.copyOfRange(buffer, 0, 64);
 
 	    if(Cryptography.memcmp(random, stringBuffer.toString().getBytes()))
 		return false;
 
-	    byte signature[] = Arrays.copyOfRange(buffer, 128, buffer.length);
-	    byte signatureKeyDigest[] = Arrays.copyOfRange(buffer, 64, 128);
+	    byte[] signature = Arrays.copyOfRange(buffer, 128, buffer.length);
+	    byte[] signatureKeyDigest = Arrays.copyOfRange(buffer, 64, 128);
 
 	    cursor = m_db.rawQuery
 		("SELECT signature_public_key FROM participants " +
@@ -246,7 +246,7 @@ public class Database extends SQLiteOpenHelper
 	    while(cursor != null && cursor.moveToNext())
 	    {
 		PublicKey publicKey = null;
-		byte bytes[] = cryptography.mtd
+		byte[] bytes = cryptography.mtd
 		    (Base64.decode(cursor.getString(0).getBytes(),
 				   Base64.DEFAULT));
 
@@ -315,7 +315,7 @@ public class Database extends SQLiteOpenHelper
 	    if(arrayList == null || arrayList.isEmpty())
 		throw new Exception();
 
-	    byte bytes[] = cryptography.etm
+	    byte[] bytes = cryptography.etm
 		(arrayList.get(0).m_isPrivate ?
 		 "false".getBytes() : "true".getBytes());
 
@@ -341,7 +341,7 @@ public class Database extends SQLiteOpenHelper
     }
 
     public boolean writePublicKeyPairs
-	(Cryptography cryptography, String sipHashId, String strings[])
+	(Cryptography cryptography, String sipHashId, String[] strings)
     {
 	if(cryptography == null ||
 	   m_db == null ||
@@ -359,7 +359,7 @@ public class Database extends SQLiteOpenHelper
 	{
 	    ContentValues values = new ContentValues();
 	    SparseArray<String> sparseArray = new SparseArray<> ();
-	    byte bytes[] = null;
+	    byte[] bytes = null;
 
 	    /*
 	    ** strings[0] - A Timestamp
@@ -478,7 +478,7 @@ public class Database extends SQLiteOpenHelper
 
 	    while(cursor != null && cursor.moveToNext())
 	    {
-		byte bytes[] = Base64.decode
+		byte[] bytes = Base64.decode
 		    (cursor.getString(0).getBytes(), Base64.DEFAULT);
 
 		if(bytes != null)
@@ -579,19 +579,18 @@ public class Database extends SQLiteOpenHelper
 			continue;
 		    }
 
-		    byte bytes[] = cryptography.mtd
+		    byte[] bytes = cryptography.mtd
 			(Base64.decode(cursor.getString(i).getBytes(),
 				       Base64.DEFAULT));
 
 		    if(bytes == null)
 		    {
-			StringBuilder stringBuilder = new StringBuilder();
+			String string = "Database::readListeners(): " +
+			    "error on column " +
+			    cursor.getColumnName(i) +
+			    ".";
 
-			stringBuilder.append("Database::readListeners(): ");
-			stringBuilder.append("error on column ");
-			stringBuilder.append(cursor.getColumnName(i));
-			stringBuilder.append(".");
-			writeLog(stringBuilder.toString());
+			writeLog(string);
 		    }
 
 		    switch(i)
@@ -779,7 +778,7 @@ public class Database extends SQLiteOpenHelper
 			continue;
 		    }
 
-		    byte bytes[] = cryptography.mtd
+		    byte[] bytes = cryptography.mtd
 			(Base64.decode(cursor.getString(i).getBytes(),
 				       Base64.DEFAULT));
 
@@ -787,22 +786,18 @@ public class Database extends SQLiteOpenHelper
 		    {
 			error = true;
 
-			StringBuilder stringBuilder = new StringBuilder();
+			String string = "Database::readNeighborOids(): " +
+			    "error on column " +
+			    cursor.getColumnName(i) +
+			    ".";
 
-			stringBuilder.append
-			    ("Database::readNeighborOids(): ");
-			stringBuilder.append("error on column ");
-			stringBuilder.append(cursor.getColumnName(i));
-			stringBuilder.append(".");
-			writeLog(stringBuilder.toString());
+			writeLog(string);
 			break;
 		    }
 
-		    switch(i)
+		    if(i == 0)
 		    {
-		    case 0:
 			neighborElement.m_statusControl = new String(bytes);
-			break;
 		    }
 		}
 
@@ -895,7 +890,7 @@ public class Database extends SQLiteOpenHelper
 			continue;
 		    }
 
-		    byte bytes[] = null;
+		    byte[] bytes = null;
 
 		    if(i != 0 && i != 1)
 			bytes = cryptography.mtd
@@ -904,13 +899,12 @@ public class Database extends SQLiteOpenHelper
 
 		    if(bytes == null && i != 0 && i != 1)
 		    {
-			StringBuilder stringBuilder = new StringBuilder();
+			String string = "Database::readNeighbors(): " +
+			    "error on column " +
+			    cursor.getColumnName(i) +
+			    ".";
 
-			stringBuilder.append("Database::readNeighbors(): ");
-			stringBuilder.append("error on column ");
-			stringBuilder.append(cursor.getColumnName(i));
-			stringBuilder.append(".");
-			writeLog(stringBuilder.toString());
+			writeLog(string);
 		    }
 
 		    switch(i)
@@ -1157,20 +1151,18 @@ public class Database extends SQLiteOpenHelper
 			continue;
 		    }
 
-		    byte bytes[] = cryptography.mtd
+		    byte[] bytes = cryptography.mtd
 			(Base64.decode(cursor.getString(i).getBytes(),
 				       Base64.DEFAULT));
 
 		    if(bytes == null)
 		    {
-			StringBuilder stringBuilder = new StringBuilder();
+			String string = "Database::readOzones(): " +
+			    "error on column " +
+			    cursor.getColumnName(i) +
+			    ".";
 
-			stringBuilder.append
-			    ("Database::readOzones(): ");
-			stringBuilder.append("error on column ");
-			stringBuilder.append(cursor.getColumnName(i));
-			stringBuilder.append(".");
-			writeLog(stringBuilder.toString());
+			writeLog(string);
 		    }
 
 		    switch(i)
@@ -1306,20 +1298,18 @@ public class Database extends SQLiteOpenHelper
 			continue;
 		    }
 
-		    byte bytes[] = cryptography.mtd
+		    byte[] bytes = cryptography.mtd
 			(Base64.decode(cursor.getString(i).getBytes(),
 				       Base64.DEFAULT));
 
 		    if(bytes == null)
 		    {
-			StringBuilder stringBuilder = new StringBuilder();
+			String string = "Database::readSipHashIds(): " +
+			    "error on column " +
+			    cursor.getColumnName(i) +
+			    ".";
 
-			stringBuilder.append
-			    ("Database::readSipHashIds(): ");
-			stringBuilder.append("error on column ");
-			stringBuilder.append(cursor.getColumnName(i));
-			stringBuilder.append(".");
-			writeLog(stringBuilder.toString());
+			writeLog(string);
 		    }
 
 		    switch(i)
@@ -1428,7 +1418,7 @@ public class Database extends SQLiteOpenHelper
 
 		for(int i = 0; i < count; i++)
 		{
-		    byte bytes[] = null;
+		    byte[] bytes = null;
 
 		    switch(i)
 		    {
@@ -1538,7 +1528,7 @@ public class Database extends SQLiteOpenHelper
     }
 
     public PublicKey signatureKeyForDigest(Cryptography cryptography,
-					   byte digest[])
+					   byte[] digest)
     {
 	if(cryptography == null ||
 	   digest == null ||
@@ -1562,7 +1552,7 @@ public class Database extends SQLiteOpenHelper
 
 	    if(cursor != null && cursor.moveToFirst())
 	    {
-		byte bytes[] = cryptography.mtd
+		byte[] bytes = cryptography.mtd
 		    (Base64.decode(cursor.getString(0).getBytes(),
 				   Base64.DEFAULT));
 
@@ -1680,7 +1670,7 @@ public class Database extends SQLiteOpenHelper
 
 	    if(cursor != null && cursor.moveToFirst())
 	    {
-		byte bytes[] = cryptography.mtd
+		byte[] bytes = cryptography.mtd
 		    (Base64.decode(cursor.getString(0).getBytes(),
 				   Base64.DEFAULT));
 
@@ -1725,7 +1715,7 @@ public class Database extends SQLiteOpenHelper
 
 	    if(cursor != null && cursor.moveToFirst())
 	    {
-		byte bytes[] = cryptography.mtd
+		byte[] bytes = cryptography.mtd
 		    (Base64.decode(cursor.getString(0).getBytes(),
 				   Base64.DEFAULT));
 
@@ -1766,7 +1756,7 @@ public class Database extends SQLiteOpenHelper
 		     new String[] {name});
 	    else
 	    {
-		byte bytes[] = cryptography.hmac(name.getBytes());
+		byte[] bytes = cryptography.hmac(name.getBytes());
 
 		if(bytes != null)
 		    cursor = m_db.rawQuery
@@ -1783,7 +1773,7 @@ public class Database extends SQLiteOpenHelper
 		    str = cursor.getString(0);
 		else
 		{
-		    byte bytes[] = cryptography.mtd
+		    byte[] bytes = cryptography.mtd
 			(Base64.decode(cursor.getString(0).getBytes(),
 				       Base64.DEFAULT));
 
@@ -1817,7 +1807,7 @@ public class Database extends SQLiteOpenHelper
     }
 
     public String sipHashIdDigestFromDigest(Cryptography cryptography,
-					    byte digest[])
+					    byte[] digest)
     {
 	if(cryptography == null ||
 	   digest == null ||
@@ -1865,7 +1855,7 @@ public class Database extends SQLiteOpenHelper
 	    return null;
 
 	Cursor cursor = null;
-	String array[] = null;
+	String[] array = null;
 
 	try
 	{
@@ -1910,7 +1900,7 @@ public class Database extends SQLiteOpenHelper
 	    return null;
 
 	Cursor cursor = null;
-	String array[] = null;
+	String[] array = null;
 
 	try
 	{
@@ -1941,7 +1931,7 @@ public class Database extends SQLiteOpenHelper
 
 		for(int i = 0; i < count; i++)
 		{
-		    byte bytes[] = cryptography.mtd
+		    byte[] bytes = cryptography.mtd
 			(Base64.decode(cursor.getString(i).getBytes(),
 				       Base64.DEFAULT));
 
@@ -1949,13 +1939,12 @@ public class Database extends SQLiteOpenHelper
 		    {
 			error = true;
 
-			StringBuilder stringBuilder = new StringBuilder();
+			String string = "Database::readPublicKeyPair(): " +
+			    "error on column " +
+			    cursor.getColumnName(i) +
+			    ".";
 
-			stringBuilder.append("Database::readPublicKeyPair(): ");
-			stringBuilder.append("error on column ");
-			stringBuilder.append(cursor.getColumnName(i));
-			stringBuilder.append(".");
-			writeLog(stringBuilder.toString());
+			writeLog(string);
 			break;
 		    }
 		    else
@@ -2061,9 +2050,9 @@ public class Database extends SQLiteOpenHelper
 
 	try
 	{
-	    String strings[] = Messages.stripMessage(message).split("\\n");
-	    byte array1[] = null;
-	    byte array2[] = null;
+	    String[] strings = Messages.stripMessage(message).split("\\n");
+	    byte[] array1 = null;
+	    byte[] array2 = null;
 
 	    if(strings != null && strings.length == 3) // Buzz, Fire
 	    {
@@ -2074,7 +2063,7 @@ public class Database extends SQLiteOpenHelper
 	    }
 	    else
 	    {
-		byte data[] = Base64.decode
+		byte[] data = Base64.decode
 		    (Messages.stripMessage(message), Base64.DEFAULT);
 
 		array1 = Arrays.copyOfRange(data, 0, data.length - 64);
@@ -2091,7 +2080,7 @@ public class Database extends SQLiteOpenHelper
 
 	    while(cursor != null && cursor.moveToNext())
 	    {
-		byte bytes[] = Base64.decode
+		byte[] bytes = Base64.decode
 		    (cursor.getString(0), Base64.DEFAULT);
 
 		if(Cryptography.
@@ -2343,7 +2332,7 @@ public class Database extends SQLiteOpenHelper
 	try
 	{
 	    SparseArray<String> sparseArray = new SparseArray<> ();
-	    byte bytes[] = null;
+	    byte[] bytes = null;
 
 	    sparseArray.append(0, "certificate");
 	    sparseArray.append(1, "ip_version");
@@ -2368,7 +2357,7 @@ public class Database extends SQLiteOpenHelper
 
 		if(!matcher.matches())
 		{
-		    if(version.toLowerCase().equals("ipv4"))
+		    if(version.equalsIgnoreCase("ipv4"))
 			ipAddress = "0.0.0.0";
 		    else
 			ipAddress = "0:0:0:0:0:ffff:0:0";
@@ -2424,13 +2413,11 @@ public class Database extends SQLiteOpenHelper
 		{
 		    sparseArray.clear();
 
-		    StringBuilder stringBuilder = new StringBuilder();
+		    String string = "Database::writeListener(): error with " +
+			sparseArray.get(i) +
+			" field.";
 
-		    stringBuilder.append
-			("Database::writeListener(): error with ");
-		    stringBuilder.append(sparseArray.get(i));
-		    stringBuilder.append(" field.");
-		    writeLog(stringBuilder.toString());
+		    writeLog(string);
 		    throw new Exception();
 		}
 
@@ -2507,7 +2494,7 @@ public class Database extends SQLiteOpenHelper
 	try
 	{
 	    SparseArray<String> sparseArray = new SparseArray<> ();
-	    byte bytes[] = null;
+	    byte[] bytes = null;
 
 	    sparseArray.append(0, "bytes_buffered");
 	    sparseArray.append(1, "bytes_read");
@@ -2552,7 +2539,7 @@ public class Database extends SQLiteOpenHelper
 
 		if(!matcher.matches())
 		{
-		    if(version.toLowerCase().equals("ipv4"))
+		    if(version.equalsIgnoreCase("ipv4"))
 			remoteIpAddress = "0.0.0.0";
 		    else
 			remoteIpAddress = "0:0:0:0:0:ffff:0:0";
@@ -2628,13 +2615,11 @@ public class Database extends SQLiteOpenHelper
 		{
 		    sparseArray.clear();
 
-		    StringBuilder stringBuilder = new StringBuilder();
+		    String string = "Database::writeNeighbor(): error with " +
+			sparseArray.get(i) +
+			" field.";
 
-		    stringBuilder.append
-			("Database::writeNeighbor(): error with ");
-		    stringBuilder.append(sparseArray.get(i));
-		    stringBuilder.append(" field.");
-		    writeLog(stringBuilder.toString());
+		    writeLog(string);
 		    throw new Exception();
 		}
 
@@ -2678,7 +2663,7 @@ public class Database extends SQLiteOpenHelper
 
     public boolean writeOzone(Cryptography cryptography,
 			      String address,
-			      byte addressStream[])
+			      byte[] addressStream)
     {
 	if(address == null ||
 	   address.trim().isEmpty() ||
@@ -2710,7 +2695,7 @@ public class Database extends SQLiteOpenHelper
 	try
 	{
 	    SparseArray<String> sparseArray = new SparseArray<> ();
-	    byte bytes[] = null;
+	    byte[] bytes = null;
 
 	    sparseArray.append(0, "ozone_address");
 	    sparseArray.append(1, "ozone_address_digest");
@@ -2739,13 +2724,11 @@ public class Database extends SQLiteOpenHelper
 		{
 		    sparseArray.clear();
 
-		    StringBuilder stringBuilder = new StringBuilder();
+		    String string = "Database::writeOzone(): error with " +
+			sparseArray.get(i) +
+			" field.";
 
-		    stringBuilder.append
-			("Database::writeOzone(): error with ");
-		    stringBuilder.append(sparseArray.get(i));
-		    stringBuilder.append(" field.");
-		    writeLog(stringBuilder.toString());
+		    writeLog(string);
 		    throw new Exception();
 		}
 
@@ -2787,7 +2770,7 @@ public class Database extends SQLiteOpenHelper
 
     public boolean writeParticipant(Cryptography cryptography,
 				    boolean ignoreSignatures,
-				    byte data[])
+				    byte[] data)
     {
 	if(cryptography == null ||
 	   data == null ||
@@ -2800,7 +2783,7 @@ public class Database extends SQLiteOpenHelper
 
 	try
 	{
-	    String strings[] = new String(data).split("\\n");
+	    String[] strings = new String(data).split("\\n");
 
 	    if(strings.length != Messages.EPKS_GROUP_ONE_ELEMENT_COUNT)
 		return false;
@@ -2809,10 +2792,10 @@ public class Database extends SQLiteOpenHelper
 	    PublicKey signatureKey = null;
 	    String sipHashId = "";
 	    boolean exists = false;
-	    byte keyType[] = null;
-	    byte encryptionKeySignature[] = null;
-	    byte signatureKeySignature[] = null;
-	    byte sipHashIdBytes[] = null;
+	    byte[] keyType = null;
+	    byte[] encryptionKeySignature = null;
+	    byte[] signatureKeySignature = null;
+	    byte[] sipHashIdBytes = null;
 	    int ii = 0;
 
 	    for(String string : strings)
@@ -3000,7 +2983,7 @@ public class Database extends SQLiteOpenHelper
 
 	    for(int i = 0; i < size; i++)
 	    {
-		byte bytes[] = null;
+		byte[] bytes = null;
 
 		switch(sparseArray.get(i))
 		{
@@ -3148,7 +3131,7 @@ public class Database extends SQLiteOpenHelper
 	try
 	{
 	    SparseArray<String> sparseArray = new SparseArray<> ();
-	    byte bytes[] = null;
+	    byte[] bytes = null;
 
 	    name = name.trim();
 
@@ -3195,9 +3178,9 @@ public class Database extends SQLiteOpenHelper
 			 simpleDateFormat.format(new Date()));
 		    continue;
 		default:
-		    byte salt[] = Cryptography.shaX512
+		    byte[] salt = Cryptography.shaX512
 			(sipHashId.trim().getBytes(StandardCharsets.UTF_8));
-		    byte temporary[] = Cryptography.
+		    byte[] temporary = Cryptography.
 			pbkdf2(salt,
 			       sipHashId.toCharArray(),
 			       SIPHASH_STREAM_CREATION_ITERATION_COUNT,
@@ -3222,13 +3205,12 @@ public class Database extends SQLiteOpenHelper
 		{
 		    sparseArray.clear();
 
-		    StringBuilder stringBuilder = new StringBuilder();
+		    String string =
+			"Database::writeSipHashParticipant(): error with " +
+			sparseArray.get(i) +
+			" field.";
 
-		    stringBuilder.append
-			("Database::writeSipHashParticipant(): error with ");
-		    stringBuilder.append(sparseArray.get(i));
-		    stringBuilder.append(" field.");
-		    writeLog(stringBuilder.toString());
+		    writeLog(string);
 		    throw new Exception();
 		}
 
@@ -3285,7 +3267,7 @@ public class Database extends SQLiteOpenHelper
 	    return null;
 
 	Cursor cursor = null;
-	byte bytes[] = null;
+	byte[] bytes = null;
 
 	try
 	{
@@ -3329,11 +3311,9 @@ public class Database extends SQLiteOpenHelper
 
 	try
 	{
-	    StringBuilder stringBuilder = new StringBuilder();
+	    String string = "SELECT COUNT(*) FROM " + table;
 
-	    stringBuilder.append("SELECT COUNT(*) FROM ");
-	    stringBuilder.append(table);
-	    cursor = m_db.rawQuery(stringBuilder.toString(), null);
+	    cursor = m_db.rawQuery(string, null);
 
 	    if(cursor != null)
 		m_cursorsOpened.getAndIncrement();
@@ -3734,7 +3714,7 @@ public class Database extends SQLiteOpenHelper
 
     public void neighborRecordCertificate(Cryptography cryptography,
 					  String oid,
-					  byte certificate[])
+					  byte[] certificate)
     {
 	if(cryptography == null || m_db == null)
 	    return;
@@ -4181,7 +4161,7 @@ public class Database extends SQLiteOpenHelper
 	    while(cursor != null && cursor.moveToNext())
 	    {
 		String oid = String.valueOf(cursor.getInt(1));
-		byte bytes[] = cryptography.mtd
+		byte[] bytes = cryptography.mtd
 		    (Base64.decode(cursor.getString(0).getBytes(),
 				   Base64.DEFAULT));
 
@@ -4225,7 +4205,7 @@ public class Database extends SQLiteOpenHelper
 
 	try
 	{
-	    String tables[] = new String[]
+	    String[] tables = new String[]
 		{"congestion_control",
 		 "listeners",
 		 "log",
@@ -4266,7 +4246,7 @@ public class Database extends SQLiteOpenHelper
 	if(m_db == null)
 	    return;
 
-	String strings[] = new String[]
+	String[] strings = new String[]
 	    {"DROP TABLE IF EXISTS congestion_control",
 	     "DROP TABLE IF EXISTS listeners",
 	     "DROP TABLE IF EXISTS log",
@@ -4482,7 +4462,7 @@ public class Database extends SQLiteOpenHelper
     }
 
     public void timestampReleasedMessage(Cryptography cryptography,
-					 byte digest[])
+					 byte[] digest)
     {
 	if(cryptography == null ||
 	   digest == null ||
@@ -4522,7 +4502,7 @@ public class Database extends SQLiteOpenHelper
 	}
     }
 
-    public void updateSipHashIdTimestamp(byte digest[])
+    public void updateSipHashIdTimestamp(byte[] digest)
     {
 	if(digest == null || digest.length == 0 || m_db == null)
 	    return;
@@ -4589,7 +4569,7 @@ public class Database extends SQLiteOpenHelper
 	}
     }
 
-    public void writeIdentities(UUID clientIdentity, byte bytes[])
+    public void writeIdentities(UUID clientIdentity, byte[] bytes)
     {
 	if(bytes == null ||
 	   bytes.length == 0 ||
@@ -4677,9 +4657,9 @@ public class Database extends SQLiteOpenHelper
     }
 
     public void writeListenerCertificateDetails(Cryptography cryptography,
-						byte certificate[],
-						byte privateKey[],
-						byte publicKey[],
+						byte[] certificate,
+						byte[] privateKey,
+						byte[] publicKey,
 						int oid)
     {
 	if(cryptography == null ||
@@ -4751,7 +4731,7 @@ public class Database extends SQLiteOpenHelper
 
     public void writeMessage(Cryptography cryptography,
 			     String sipHashId,
-			     byte message[])
+			     byte[] message)
     {
 	if(cryptography == null ||
 	   m_db == null ||
@@ -4816,7 +4796,7 @@ public class Database extends SQLiteOpenHelper
 
 	    if(cryptography != null)
 	    {
-		byte bytes[] = null;
+		byte[] bytes = null;
 
 		bytes = cryptography.etm(a.getBytes());
 

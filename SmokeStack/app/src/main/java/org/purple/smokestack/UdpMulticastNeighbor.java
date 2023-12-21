@@ -76,7 +76,7 @@ public class UdpMulticastNeighbor extends Neighbor
 		if(m_disconnected.get())
 		    return false;
 
-		byte bytes[] = stringBuilder.substring
+		byte[] bytes = stringBuilder.substring
 		    (0, Math.min(576, stringBuilder.length())).getBytes();
 
 		m_socket.send
@@ -184,7 +184,7 @@ public class UdpMulticastNeighbor extends Neighbor
 		    }
 
 		    DatagramPacket datagramPacket = null;
-		    byte bytes[] = new byte[BYTES_PER_READ];
+		    byte[] bytes = new byte[BYTES_PER_READ];
 
 		    datagramPacket = new DatagramPacket(bytes, bytes.length);
 
@@ -227,7 +227,7 @@ public class UdpMulticastNeighbor extends Neighbor
 		    if(byteArrayOutputStream != null &&
 		       m_stringBuffer.length() < MAXIMUM_BYTES)
 			m_stringBuffer.append
-			    (new String(byteArrayOutputStream.toByteArray()));
+			    (byteArrayOutputStream);
 		}
 		catch(Exception exception)
 		{

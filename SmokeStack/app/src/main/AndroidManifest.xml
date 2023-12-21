@@ -17,7 +17,6 @@
             android:name=".Authenticate"
             android:noHistory="true" />
         <activity
-            android:label="@string/app_name"
             android:name=".Settings"
             android:noHistory="true">
             <intent-filter>

@@ -58,7 +58,7 @@ import org.bouncycastle.pqc.jcajce.provider.BouncyCastlePQCProvider;
 
 public class Cryptography
 {
-    public class PKIKeySizeBounds
+    public static class PKIKeySizeBounds
     {
 	/*
 	** Public Keys
@@ -68,7 +68,7 @@ public class Cryptography
 	public final static int PUBLIC_MCELIECE = 335000;
 	public final static int PUBLIC_RSA = 600;
 	public final static int PUBLIC_SPHINCS = 1200;
-    };
+    }
 
     static
     {
@@ -132,7 +132,7 @@ public class Cryptography
 	}
     }
 
-    public byte[] etm(byte data[]) // Encrypt-Then-MAC
+    public byte[] etm(byte[] data) // Encrypt-Then-MAC
     {
 	/*
 	** Encrypt-then-MAC.
@@ -165,7 +165,7 @@ public class Cryptography
 	    m_macKeyMutex.readLock().unlock();
 	}
 
-	byte bytes[] = null;
+	byte[] bytes = null;
 
 	m_encryptionKeyMutex.readLock().lock();
 
@@ -174,7 +174,7 @@ public class Cryptography
 	    if(m_encryptionKey == null)
 		return null;
 
-	    byte iv[] = new byte[CIPHER_IV_LENGTH];
+	    byte[] iv = new byte[CIPHER_IV_LENGTH];
 
 	    s_secureRandom.nextBytes(iv);
 
@@ -218,7 +218,7 @@ public class Cryptography
 	return null;
     }
 
-    public byte[] hmac(byte data[])
+    public byte[] hmac(byte[] data)
     {
 	if(data == null)
 	    return null;
@@ -246,7 +246,7 @@ public class Cryptography
 	return null;
     }
 
-    public byte[] mtd(byte data[]) // MAC-Then-Decrypt
+    public byte[] mtd(byte[] data) // MAC-Then-Decrypt
     {
 	/*
 	** MAC-then-decrypt.
@@ -285,8 +285,8 @@ public class Cryptography
 	    ** Verify the computed digest with the provided digest.
 	    */
 
-	    byte digest1[] = null; // Provided digest.
-	    byte digest2[] = null; // Computed digest.
+	    byte[] digest1 = null; // Provided digest.
+	    byte[] digest2 = null; // Computed digest.
 
 	    digest1 = Arrays.copyOfRange
 		(data, data.length - HASH_KEY_LENGTH, data.length);
@@ -328,7 +328,7 @@ public class Cryptography
 		return null;
 
 	    Cipher cipher = Cipher.getInstance(SYMMETRIC_CIPHER_TRANSFORMATION);
-	    byte iv[] = Arrays.copyOf(data, CIPHER_IV_LENGTH);
+	    byte[] iv = Arrays.copyOf(data, CIPHER_IV_LENGTH);
 
 	    cipher.init
 		(Cipher.DECRYPT_MODE, m_encryptionKey, new IvParameterSpec(iv));
@@ -369,8 +369,8 @@ public class Cryptography
     }
 
     public static KeyPair generatePrivatePublicKeyPair(String algorithm,
-						       byte privateBytes[],
-						       byte publicBytes[])
+                                                       byte[] privateBytes,
+                                                       byte[] publicBytes)
     {
 	try
 	{
@@ -395,7 +395,7 @@ public class Cryptography
 	return null;
     }
 
-    public static PublicKey publicKeyFromBytes(byte publicBytes[])
+    public static PublicKey publicKeyFromBytes(byte[] publicBytes)
     {
 	if(publicBytes == null)
 	    return null;
@@ -430,9 +430,9 @@ public class Cryptography
 	return null;
     }
 
-    public static SecretKey generateEncryptionKey(byte salt[],
-						  char password[],
-						  int iterations)
+    public static SecretKey generateEncryptionKey(byte[] salt,
+                                                  char[] password,
+                                                  int iterations)
 	throws InvalidKeySpecException, NoSuchAlgorithmException
     {
 	if(salt == null)
@@ -446,9 +446,9 @@ public class Cryptography
 	return secretKeyFactory.generateSecret(keySpec);
     }
 
-    public static SecretKey generateMacKey(byte salt[],
-					   char password[],
-					   int iterations)
+    public static SecretKey generateMacKey(byte[] salt,
+                                           char[] password,
+                                           int iterations)
 	throws InvalidKeySpecException, NoSuchAlgorithmException
     {
 	if(salt == null)
@@ -462,7 +462,7 @@ public class Cryptography
 	return secretKeyFactory.generateSecret(keySpec);
     }
 
-    public static String fingerPrint(byte bytes[])
+    public static String fingerPrint(byte[] bytes)
     {
 	String fingerprint =
 	    "cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc" +
@@ -495,7 +495,7 @@ public class Cryptography
 	return stringBuilder.toString();
     }
 
-    public static boolean memcmp(byte a[], byte b[])
+    public static boolean memcmp(byte[] a, byte[] b)
     {
 	if(a == null || b == null)
 	    return false;
@@ -510,8 +510,8 @@ public class Cryptography
     }
 
     public static boolean verifySignature(PublicKey publicKey,
-					  byte bytes[],
-					  byte data[])
+                                          byte[] bytes,
+                                          byte[] data)
     {
 	if(bytes == null || data == null || publicKey == null)
 	    return false;
@@ -553,7 +553,7 @@ public class Cryptography
 	return false;
     }
 
-    public static byte[] decrypt(byte data[], byte keyBytes[])
+    public static byte[] decrypt(byte[] data, byte[] keyBytes)
     {
 	if(data == null || keyBytes == null)
 	    return null;
@@ -563,7 +563,7 @@ public class Cryptography
 	    Cipher cipher = Cipher.getInstance(SYMMETRIC_CIPHER_TRANSFORMATION);
 	    SecretKey secretKey = new SecretKeySpec
 		(keyBytes, SYMMETRIC_ALGORITHM);
-	    byte iv[] = Arrays.copyOf(data, CIPHER_IV_LENGTH);
+	    byte[] iv = Arrays.copyOf(data, CIPHER_IV_LENGTH);
 
 	    cipher.init
 		(Cipher.DECRYPT_MODE, secretKey, new IvParameterSpec(iv));
@@ -577,7 +577,7 @@ public class Cryptography
 	return null;
     }
 
-    public static byte[] encrypt(byte data[], byte keyBytes[])
+    public static byte[] encrypt(byte[] data, byte[] keyBytes)
     {
 	if(data == null || keyBytes == null)
 	    return null;
@@ -588,8 +588,8 @@ public class Cryptography
 	{
 	    SecretKey secretKey = new SecretKeySpec
 		(keyBytes, SYMMETRIC_ALGORITHM);
-	    byte bytes[] = null;
-	    byte iv[] = new byte[CIPHER_IV_LENGTH];
+	    byte[] bytes = null;
+	    byte[] iv = new byte[CIPHER_IV_LENGTH];
 
 	    s_secureRandom.nextBytes(iv);
 
@@ -614,8 +614,8 @@ public class Cryptography
 
 	try
 	{
-	    byte bytes[] = null;
-	    byte salt[] = shaX512
+	    byte[] bytes = null;
+	    byte[] salt = shaX512
 		(string.trim().getBytes(StandardCharsets.UTF_8));
 
 	    if(salt != null)
@@ -642,7 +642,7 @@ public class Cryptography
 	return null;
     }
 
-    public static byte[] keyForSipHash(byte data[])
+    public static byte[] keyForSipHash(byte[] data)
     {
 	if(data == null)
 	    return null;
@@ -653,7 +653,7 @@ public class Cryptography
 		      8 * SipHash.KEY_LENGTH);
     }
 
-    public static byte[] hmac(byte data[], byte keyBytes[])
+    public static byte[] hmac(byte[] data, byte[] keyBytes)
     {
 	if(data == null || keyBytes == null)
 	    return null;
@@ -673,10 +673,10 @@ public class Cryptography
 	return null;
     }
 
-    public static byte[] pbkdf2(byte salt[],
-				char password[],
-				int iterations,
-				int length)
+    public static byte[] pbkdf2(byte[] salt,
+                                char[] password,
+                                int iterations,
+                                int length)
     {
 	if(password == null || salt == null)
 	    return null;
@@ -706,7 +706,7 @@ public class Cryptography
 
 	try
 	{
-	    byte bytes[] = new byte[length];
+	    byte[] bytes = new byte[length];
 
 	    s_secureRandom.nextBytes(bytes);
 	    return bytes;
@@ -725,7 +725,7 @@ public class Cryptography
 	    MessageDigest messageDigest = MessageDigest.getInstance
 		(SHAX_ALGORITHM);
 
-	    for(byte b[] : data)
+	    for(byte[] b : data)
 		if(b != null)
 		    messageDigest.update(b);
 
@@ -742,9 +742,9 @@ public class Cryptography
     {
 	try
 	{
-	    byte bytes[] = null;
-	    byte salt[] = shaX512(sipHashId.getBytes(StandardCharsets.UTF_8));
-	    byte temporary[] = pbkdf2(salt,
+	    byte[] bytes = null;
+	    byte[] salt = shaX512(sipHashId.getBytes(StandardCharsets.UTF_8));
+	    byte[] temporary = pbkdf2(salt,
 				      sipHashId.toCharArray(),
 				      SIPHASH_STREAM_CREATION_ITERATION_COUNT,
 				      160); // SHA-1

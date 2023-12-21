@@ -30,7 +30,7 @@ package org.purple.smokestack;
 public class OzoneElement
 {
     public String m_address = "";
-    public byte m_addressStream[] = null;
+    public byte[] m_addressStream = null;
     public int m_oid = -1;
 
     public OzoneElement()

@@ -30,7 +30,6 @@ package org.purple.smokestack;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
-import android.os.Build;
 
 public class SmokeStack extends Application
 {

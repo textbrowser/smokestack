@@ -39,9 +39,9 @@ public class ListenerElement
     public String m_statusControl = "";
     public String m_uptime = "";
     public boolean m_isPrivate = false;
-    public byte m_certificate[] = null;
-    public byte m_privateKey[] = null;
-    public byte m_publicKey[] = null;
+    public byte[] m_certificate = null;
+    public byte[] m_privateKey = null;
+    public byte[] m_publicKey = null;
     public int m_oid = -1;
     public long m_peersCount = 0L;
 

@@ -33,7 +33,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.text.InputType;
 import android.util.Base64;
-import android.util.LayoutDirection;
+import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -47,7 +47,7 @@ public abstract class Miscellaneous
     public static final int LONG_BYTES = 8;
     public static final long LONG_LONG_BYTES = 8L;
 
-    public static String byteArrayAsHexString(byte bytes[])
+    public static String byteArrayAsHexString(byte[] bytes)
     {
 	if(bytes == null || bytes.length == 0)
 	    return "";
@@ -67,7 +67,7 @@ public abstract class Miscellaneous
 	}
     }
 
-    public static String byteArrayAsHexStringDelimited(byte bytes[],
+    public static String byteArrayAsHexStringDelimited(byte[] bytes,
 						       char delimiter,
 						       int offset)
     {
@@ -174,7 +174,7 @@ public abstract class Miscellaneous
 	}
     }
 
-    public static String pemFormat(byte bytes[])
+    public static String pemFormat(byte[] bytes)
     {
 	if(bytes == null || bytes.length == 0)
 	    return "";
@@ -210,7 +210,7 @@ public abstract class Miscellaneous
 	}
     }
 
-    public static String sipHashIdFromData(byte bytes[])
+    public static String sipHashIdFromData(byte[] bytes)
     {
 	SipHash sipHash = new SipHash();
 
@@ -243,17 +243,17 @@ public abstract class Miscellaneous
 	{
 	    int length = 0;
 
-	    for(byte b[] : data)
+	    for(byte[] b : data)
 		if(b != null && b.length > 0)
 		    length += b.length;
 
 	    if(length == 0)
 		return null;
 
-	    byte bytes[] = new byte[length];
+	    byte[] bytes = new byte[length];
 	    int i = 0;
 
-	    for(byte b[] : data)
+	    for(byte[] b : data)
 		if(b != null && b.length > 0)
 		{
 		    System.arraycopy(b, 0, bytes, i, b.length);
@@ -268,7 +268,7 @@ public abstract class Miscellaneous
 	}
     }
 
-    public static byte[] longArrayToByteArray(long value[])
+    public static byte[] longArrayToByteArray(long[] value)
     {
 	try
 	{
@@ -313,7 +313,7 @@ public abstract class Miscellaneous
 	return count;
     }
 
-    public static int byteArrayToInt(byte bytes[])
+    public static int byteArrayToInt(byte[] bytes)
     {
 	if(bytes == null || bytes.length != INTEGER_BYTES)
 	    return 0;
@@ -332,7 +332,7 @@ public abstract class Miscellaneous
 	}
     }
 
-    public static long byteArrayToLong(byte bytes[])
+    public static long byteArrayToLong(byte[] bytes)
     {
 	if(bytes == null || bytes.length != LONG_BYTES)
 	    return 0L;
@@ -417,7 +417,7 @@ public abstract class Miscellaneous
 	    (AlertDialog.BUTTON_POSITIVE);
 
 	button.setEnabled(false);
-	switch1.setLayoutDirection(LayoutDirection.RTL);
+	switch1.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
 	switch1.setOnCheckedChangeListener
 	    (new CompoundButton.OnCheckedChangeListener()
 	    {

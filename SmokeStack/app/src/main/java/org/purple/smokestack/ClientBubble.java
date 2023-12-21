@@ -56,7 +56,7 @@ public class ClientBubble extends View
 
     public void setAddress(String address)
     {
-	TextView textView = (TextView) m_view.findViewById(R.id.address);
+	TextView textView = m_view.findViewById(R.id.address);
 
 	textView.setText(address);
     }

@@ -60,9 +60,7 @@ public class About
 		    (BuildConfig.DEBUG ? "(Debug) " : "(Release)") +
 		    "\nBuild Date " +
 		    simpleDateFormat.format(new Date(BuildConfig.BUILD_TIME)) +
-		    " UTC\nAndroid " + Build.VERSION.RELEASE +
-		    (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP ?
-		     "\nAndroid version not supported." : "");
+		    " UTC\nAndroid " + Build.VERSION.RELEASE;
 	    }
 	}
 	catch(Exception exception)

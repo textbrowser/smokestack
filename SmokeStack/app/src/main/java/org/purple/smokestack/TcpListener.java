@@ -27,7 +27,6 @@
 
 package org.purple.smokestack;
 
-import android.content.Context;
 import android.os.Build;
 import java.io.ByteArrayInputStream;
 import java.math.BigInteger;
@@ -98,15 +97,15 @@ public class TcpListener
     private final static long AWAIT_TERMINATION = 10L; // 10 Seconds
     private final static long ONE_YEAR = 24L * 60L * 60L * 365L * 1000L;
     private final static long TIMER_INTERVAL = 2500L; // 2.5 Seconds
-    public final static String TLS_LEGACY[] = new String[] {"SSLv3",
+    public final static String[] TLS_LEGACY = new String[] {"SSLv3",
 							    "TLSv1",
 							    "TLSv1.1",
 							    "TLSv1.2"};
-    public final static String TLS_NEW[] = new String[] {"TLSv1",
+    public final static String[] TLS_NEW = new String[] {"TLSv1",
 							 "TLSv1.1",
 							 "TLSv1.2",
 							 "TLSv1.3"};
-    public final static String TLS_V1_V2[] = new String[] {"TLSv1",
+    public final static String[] TLS_V1_V2 = new String[] {"TLSv1",
 							   "TLSv1.1",
 							   "TLSv1.2"};
 
@@ -116,9 +115,9 @@ public class TcpListener
 		       String scopeId,
 		       String version,
 		       boolean isPrivateServer,
-		       byte certificate[],
-		       byte privateKey[],
-		       byte publicKey[],
+		       byte[] certificate,
+		       byte[] privateKey,
+		       byte[] publicKey,
 		       int oid)
     {
 	m_neighbors = new ConcurrentHashMap<> ();
@@ -285,9 +284,9 @@ public class TcpListener
 	return false;
     }
 
-    private void prepareCertificate(byte certificateBytes[],
-				    byte privateKey[],
-				    byte publicKey[])
+    private void prepareCertificate(byte[] certificateBytes,
+				    byte[] privateKey,
+				    byte[] publicKey)
     {
 	if(m_keyStore != null)
 	    return;

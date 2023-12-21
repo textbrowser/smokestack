@@ -31,7 +31,6 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Base64;
-import java.util.ArrayList;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executors;
@@ -353,7 +352,7 @@ public abstract class Neighbor
 			** Retrieve the first database message.
 			*/
 
-			String array[] = m_databaseHelper.readOutboundMessage
+			String[] array = m_databaseHelper.readOutboundMessage
 			    (false, m_oid.get());
 
 			/*
@@ -370,7 +369,7 @@ public abstract class Neighbor
 		    ** Echo packets.
 		    */
 
-		    String array[] = m_databaseHelper.readOutboundMessage
+		    String[] array = m_databaseHelper.readOutboundMessage
 			(true, m_oid.get());
 
 		    if(array != null && array.length == 2)
@@ -423,13 +422,12 @@ public abstract class Neighbor
     {
 	try
 	{
-	    StringBuilder message = new StringBuilder();
 
-	    message.append(m_uuid.toString());
-	    message.append("\n");
-	    message.append(LANE_WIDTH);
-	    message.append("\n");
-	    message.append("full"); // Echo Mode
+	    String message = m_uuid.toString() +
+		"\n" +
+		LANE_WIDTH +
+		"\n" +
+		"full"; // Echo Mode
 
 	    StringBuilder results = new StringBuilder();
 
@@ -442,7 +440,7 @@ public abstract class Neighbor
 	    results.append("\r\n\r\n");
 
 	    String base64 = Base64.encodeToString
-		(message.toString().getBytes(), Base64.DEFAULT);
+		(message.getBytes(), Base64.DEFAULT);
 	    int indexOf = results.indexOf("%1");
 	    int length = base64.length() +
 		"type=0014&content=\r\n\r\n\r\n".length();
