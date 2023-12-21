@@ -28,8 +28,6 @@
 package org.purple.smokestack;
 
 import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Build;
 import java.io.ByteArrayInputStream;
 import java.math.BigInteger;
@@ -222,7 +220,7 @@ public class TcpListener
 			disconnect();
 			break;
 		    case "listen":
-			if(isNetworkConnected())
+			if(isNetworkAvailable())
 			    listen();
 			else
 			    disconnect();
@@ -266,24 +264,9 @@ public class TcpListener
 	}, 0L, TIMER_INTERVAL, TimeUnit.MILLISECONDS);
     }
 
-    protected boolean isNetworkConnected()
+    private boolean isNetworkAvailable()
     {
-	try
-	{
-	    ConnectivityManager connectivityManager = (ConnectivityManager)
-		SmokeStack.getApplication().getSystemService
-		(Context.CONNECTIVITY_SERVICE);
-	    NetworkInfo networkInfo = connectivityManager.
-		getActiveNetworkInfo();
-
-	    return networkInfo.getState() ==
-		android.net.NetworkInfo.State.CONNECTED;
-	}
-	catch(Exception exception)
-	{
-	}
-
-	return false;
+	return Kernel.isNetworkAvailable();
     }
 
     private boolean listening()
@@ -399,14 +382,14 @@ public class TcpListener
 		 subjectPublicKeyInfo);
 
 	    contentSigner = new JcaContentSignerBuilder
-		(JCACONTENTSIGNER_ALGORITHM).setProvider("BC").build
+		(JCACONTENTSIGNER_ALGORITHM).build
 		(keyPair.getPrivate());
 
 	    X509Certificate certificate = null;
 	    X509CertificateHolder certificateHolder = v3CertificateBuilder.
 		build(contentSigner);
 
-	    certificate = new JcaX509CertificateConverter().setProvider("BC").
+	    certificate = new JcaX509CertificateConverter().
 		getCertificate(certificateHolder);
 	    m_keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
 	    m_keyStore.load(null, null);
