@@ -1,7 +1,7 @@
 Summary of SmokeStack
 
 * BouncyCastle.
-* Client and server functionality.
+* Client and server modes.
 * Completed.
 * Concurrent collections.
 * Congestion control via SipHash.
