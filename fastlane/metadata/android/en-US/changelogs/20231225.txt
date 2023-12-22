@@ -1,7 +1,7 @@
 * API 28!
 * Android 10 and newer. Older machines are not available.
 * Corrected APK paths in Makefile.linux.
-* Corrected GitHub ticket #3 by removing BouncyCastle provider
+* Corrected GitHub ticket #3 by removing the BouncyCastle provider
   during certificate creation.
 * Eliminated constant-expression switch() warnings.
 * NetworkInfo is deprecated.
