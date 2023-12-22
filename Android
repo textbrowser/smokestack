@@ -1,7 +1,1 @@
-SmokeStack has been successfully tested on Android versions
-4.4, 5.0, 5.1, 6.0, 7.0, and 7.1.
-
-Android versions 4.4, 5.0, and 5.1 are not officially supported.
-
-According to https://developer.android.com/about/dashboards/index.html,
-SmokeStack supports 92.7% of all Android versions.
+SmokeStack has been successfully tested on Android version 10.

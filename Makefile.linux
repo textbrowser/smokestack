@@ -26,6 +26,7 @@ debug-with-source: clean all
 	zip -r smokestack.src.d.zip \
 	Android \
 	Documentation \
+	Images \
 	Makefile \
 	Makefile.linux \
 	README.md \
