@@ -11,3 +11,4 @@
 * Removed imports.
 * Removed redundant casts.
 * Replaced StringBuilder with String in some instances.
+* String comparisons and equalsIgnoreCase().
