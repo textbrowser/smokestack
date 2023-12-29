@@ -1,0 +1,2 @@
+* Minimum SDK of 25.
+* New application icon.
