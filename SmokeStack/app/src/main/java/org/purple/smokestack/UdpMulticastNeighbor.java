@@ -192,6 +192,12 @@ public class UdpMulticastNeighbor extends Neighbor
 		    {
 			m_socket.receive(datagramPacket);
 		    }
+		    catch(java.net.SocketTimeoutException exception)
+		    {
+			/*
+			** Ignore a timeout.
+			*/
+		    }
 		    catch(Exception exception)
 		    {
 			m_error = true;

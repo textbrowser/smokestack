@@ -81,7 +81,7 @@ public class TcpListener
     private String m_ipAddress = "";
     private String m_ipPort = "";
     private final AtomicBoolean m_listen = new AtomicBoolean(false);
-    private final AtomicInteger m_maximumClients = new AtomicInteger(5);
+    private final AtomicInteger m_maximumClients = new AtomicInteger(15);
     private final AtomicInteger m_neighborCounter = new AtomicInteger(0);
     private final AtomicLong m_startTime = new AtomicLong(System.nanoTime());
     private final Cryptography m_cryptography = Cryptography.getInstance();
@@ -133,7 +133,7 @@ public class TcpListener
 	}
 	catch(Exception exception)
 	{
-	    m_maximumClients.set(5);
+	    m_maximumClients.set(15);
 	}
 
 	/*

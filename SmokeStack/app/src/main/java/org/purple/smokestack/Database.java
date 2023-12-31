@@ -656,7 +656,7 @@ public class Database extends SQLiteOpenHelper
 				(bytes);
 
 			    if(listenerElement.m_maximumClients.isEmpty())
-				listenerElement.m_maximumClients = "5";
+				listenerElement.m_maximumClients = "15";
 			}
 			else
 			    listenerElement.m_maximumClients =

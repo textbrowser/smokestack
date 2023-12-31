@@ -215,7 +215,7 @@ public class Settings extends AppCompatActivity
 		int maximumClients = Integer.parseInt
 		    (dest.toString() + source.toString());
 
-		if(maximumClients >= 1 && maximumClients <= 50)
+		if(maximumClients >= 1 && maximumClients <= 100)
 		    return null;
 	    }
 	    catch(Exception exception)
@@ -1797,7 +1797,7 @@ public class Settings extends AppCompatActivity
 		switch1.setChecked(false);
 		radioButton1.setChecked(true);
 		textView1.setText("");
-		textView2.setText("5");
+		textView2.setText("15");
 		textView3.setText("4710");
 		textView4.setText("");
 		textView1.requestFocus();
@@ -2460,11 +2460,32 @@ public class Settings extends AppCompatActivity
         spinner1.setAdapter(arrayAdapter);
 	array = new String[]
 	{
-	    "1000", "2500", "5000", "7500", "10000", "12500",
-	    "15000", "17500", "20000", "25000", "30000", "35000",
-	    "40000", "45000", "50000", "55000", "60000", "65000",
-	    "70000", "75000", "85000", "100000", "150000", "250000",
-	    "500000", "1000000"
+	    "1000",
+	    "2500",
+	    "5000",
+	    "7500",
+	    "10000",
+	    "12500",
+	    "15000",
+	    "17500",
+	    "20000",
+	    "25000",
+	    "30000",
+	    "35000",
+	    "40000",
+	    "45000",
+	    "50000",
+	    "55000",
+	    "60000",
+	    "65000",
+	    "70000",
+	    "75000",
+	    "85000",
+	    "100000",
+	    "150000",
+	    "250000",
+	    "500000",
+	    "1000000"
 	};
 	arrayAdapter = new ArrayAdapter<>
 	    (Settings.this, android.R.layout.simple_spinner_item, array);
@@ -2548,20 +2569,20 @@ public class Settings extends AppCompatActivity
 	textView1 = (TextView) findViewById(R.id.about);
 	textView1.setText(About.about());
 	textView1 = (TextView) findViewById(R.id.listeners_maximum_clients);
-	textView1.setFilters(new InputFilter[] { s_maximumClientsFilter });
-        textView1.setText("5");
+	textView1.setFilters(new InputFilter[] {s_maximumClientsFilter});
+        textView1.setText("15");
 	textView1 = (TextView) findViewById(R.id.listeners_scope_id);
         textView1.setEnabled(false);
 	textView1 = (TextView) findViewById(R.id.neighbors_scope_id);
         textView1.setEnabled(false);
         textView1 = (TextView) findViewById(R.id.listeners_port);
         textView1.setEnabled(isAuthenticated);
-	textView1.setFilters(new InputFilter[] { s_portFilter });
+	textView1.setFilters(new InputFilter[] {s_portFilter});
         textView1.setText("4710");
         textView1 = (TextView) findViewById(R.id.neighbors_port);
 	textView1.setNextFocusDownId(R.id.proxy_ip_address);
         textView1.setEnabled(isAuthenticated);
-	textView1.setFilters(new InputFilter[] { s_portFilter });
+	textView1.setFilters(new InputFilter[] {s_portFilter});
         textView1.setText("4710");
         textView1 = (TextView) findViewById(R.id.listeners_ip_address);
 
@@ -2575,8 +2596,8 @@ public class Settings extends AppCompatActivity
 	textView1.setEnabled(isAuthenticated);
 	textView1 = (TextView) findViewById(R.id.participant_siphash_id);
 	textView1.setEnabled(isAuthenticated);
-	textView1.setFilters(new InputFilter[] { new InputFilter.AllCaps(),
-						 s_sipHashInputFilter });
+	textView1.setFilters(new InputFilter[] {new InputFilter.AllCaps(),
+						s_sipHashInputFilter});
 	textView1.setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS |
 			       InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
 	textView1 = (TextView) findViewById(R.id.password1);
@@ -2591,7 +2612,7 @@ public class Settings extends AppCompatActivity
 	textView1.setEnabled(isAuthenticated);
 	textView1 = (TextView) findViewById(R.id.proxy_port);
 	textView1.setEnabled(isAuthenticated);
-	textView1.setFilters(new InputFilter[] { s_portFilter });
+	textView1.setFilters(new InputFilter[] {s_portFilter});
 
 	/*
 	** Prepare recycler views.

@@ -370,6 +370,12 @@ public class TcpNeighbor extends Neighbor
 		    {
 			i = m_socket.getInputStream().read(bytes);
 		    }
+		    catch(java.net.SocketTimeoutException exception)
+		    {
+			/*
+			** Ignore a timeout.
+			*/
+		    }
 		    catch(Exception exception)
 		    {
 			i = -1;
@@ -509,6 +515,12 @@ public class TcpNeighbor extends Neighbor
 		    try
 		    {
 			i = m_socket.getInputStream().read(bytes);
+		    }
+		    catch(java.net.SocketTimeoutException exception)
+		    {
+			/*
+			** Ignore a timeout.
+			*/
 		    }
 		    catch(Exception exception)
 		    {
