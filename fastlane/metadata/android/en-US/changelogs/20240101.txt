@@ -1,0 +1,5 @@
+* Corrected F-Droid application icon.
+* Corrected application version in build.gradle.
+* Increased maximum TCP clients to 100.
+* New maximum TCP clients default of 15.
+* Partially-blocked TCP and UDP socket reads (read(), receive()).
