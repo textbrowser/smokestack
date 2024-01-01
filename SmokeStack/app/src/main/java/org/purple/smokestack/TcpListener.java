@@ -616,6 +616,7 @@ public class TcpListener
 	    }
 
 	    m_startTime.set(System.nanoTime());
+	    setError("");
 	}
 	catch(Exception exception)
 	{

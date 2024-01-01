@@ -707,9 +707,9 @@ public class Settings extends AppCompatActivity
 	    registerForContextMenu(switch1);
 
 	    if(listenerElement.m_status.equals("listening"))
-		switch1.setTextColor(Color.rgb(27, 94, 32)); // Dark Green
+		switch1.setTextColor(Color.rgb(0, 230, 118)); // #00e676
 	    else
-		switch1.setTextColor(Color.rgb(183, 28, 28)); // Dark Red
+		switch1.setTextColor(Color.rgb(255, 82, 82)); // #ff5252
 
 	    stringBuilder.delete(0, stringBuilder.length());
 	    stringBuilder.append("Control: ");
@@ -1053,13 +1053,10 @@ public class Settings extends AppCompatActivity
 	    switch(neighborElement.m_status)
 	    {
 	    case "connected":
-                textView.setTextColor(Color.rgb(27, 94, 32)); // Dark Green
-                break;
-            case "connecting":
-                textView.setTextColor(Color.rgb(255, 111, 0)); // Dark Orange
+		textView.setTextColor(Color.rgb(0, 230, 118)); // #00e676
                 break;
             default:
-                textView.setTextColor(Color.rgb(183, 28, 28)); // Dark Red
+		textView.setTextColor(Color.rgb(255, 82, 82)); // #ff5252
                 break;
 	    }
 
@@ -1983,7 +1980,6 @@ public class Settings extends AppCompatActivity
 		TextView textView = new TextView(Settings.this);
 		float density = getResources().getDisplayMetrics().density;
 
-		textView.setBackgroundColor(Color.rgb(232, 234, 246));
 		textView.setPaddingRelative
 		    ((int) (10 * density),
 		     (int) (10 * density),
