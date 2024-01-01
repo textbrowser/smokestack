@@ -150,13 +150,17 @@ public class UdpMulticastNeighbor extends Neighbor
 				int oid)
     {
 	super(ipAddress, ipPort, scopeId, "UDP", version, false, true, oid);
-	m_readSocketScheduler.scheduleAtFixedRate(new Runnable()
+	m_readSocketSchedulerFuture = m_readSocketScheduler.
+	    scheduleAtFixedRate(new Runnable()
 	{
 	    private boolean m_error = false;
 
 	    @Override
 	    public void run()
 	    {
+		if(m_shutdown.get())
+		    return;
+
 		ByteArrayOutputStream byteArrayOutputStream = null;
 
 		try

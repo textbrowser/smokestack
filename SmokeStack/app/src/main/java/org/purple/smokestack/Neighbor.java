@@ -35,6 +35,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -62,6 +63,7 @@ public abstract class Neighbor
     protected AtomicBoolean m_isPrivateServer = null;
     protected AtomicBoolean m_remoteUserAuthenticated = null;
     protected AtomicBoolean m_requestUnsolicitedSent = null;
+    protected AtomicBoolean m_shutdown = null;
     protected AtomicBoolean m_userDefined = null;
     protected AtomicInteger m_oid = null;
     protected AtomicLong m_bytesRead = null;
@@ -71,6 +73,10 @@ public abstract class Neighbor
     protected AtomicLong m_startTime = null;
     protected Cryptography m_cryptography = null;
     protected Database m_databaseHelper = null;
+    protected ScheduledFuture<?> m_parsingSchedulerFuture = null;
+    protected ScheduledFuture<?> m_readSocketSchedulerFuture = null;
+    protected ScheduledFuture<?> m_schedulerFuture = null;
+    protected ScheduledFuture<?> m_sendOutboundSchedulerFuture = null;
     protected String m_ipAddress = "";
     protected String m_ipPort = "";
     protected String m_version = "";
@@ -146,6 +152,7 @@ public abstract class Neighbor
 	m_queue = new ConcurrentLinkedQueue<> ();
 	m_remoteUserAuthenticated = new AtomicBoolean(userDefined);
 	m_requestUnsolicitedSent = new AtomicBoolean(false);
+	m_shutdown = new AtomicBoolean(false);
 	m_startTime = new AtomicLong(System.nanoTime());
 	m_userDefined = new AtomicBoolean(userDefined);
 	m_uuid = UUID.randomUUID();
@@ -155,13 +162,17 @@ public abstract class Neighbor
 	** Start the schedules.
 	*/
 
-	m_parsingScheduler.scheduleAtFixedRate(new Runnable()
+	m_parsingSchedulerFuture = m_parsingScheduler.scheduleAtFixedRate
+	    (new Runnable()
 	{
 	    @Override
 	    public void run()
 	    {
 		try
 		{
+		    if(m_shutdown.get())
+			return;
+
 		    if(!connected() && !m_disconnected.get())
 			synchronized(m_mutex)
 			{
@@ -270,13 +281,16 @@ public abstract class Neighbor
 		}
 	    }
 	}, 0L, PARSING_INTERVAL, TimeUnit.MILLISECONDS);
-	m_scheduler.scheduleAtFixedRate(new Runnable()
+	m_schedulerFuture = m_scheduler.scheduleAtFixedRate(new Runnable()
 	{
 	    @Override
 	    public void run()
 	    {
 		try
 		{
+		    if(m_shutdown.get())
+			return;
+
 		    if(m_oid.get() >= 0)
 		    {
 			String statusControl = m_databaseHelper.
@@ -311,7 +325,8 @@ public abstract class Neighbor
 		}
 	    }
 	}, 0L, TIMER_INTERVAL, TimeUnit.MILLISECONDS);
-	m_sendOutboundScheduler.scheduleAtFixedRate(new Runnable()
+	m_sendOutboundSchedulerFuture = m_sendOutboundScheduler.
+	    scheduleAtFixedRate(new Runnable()
 	{
 	    private long m_accumulatedTime = System.nanoTime();
 
@@ -320,6 +335,9 @@ public abstract class Neighbor
 	    {
 		try
 		{
+		    if(m_shutdown.get())
+			return;
+
 		    if(!connected() && !m_disconnected.get())
 			synchronized(m_mutex)
 			{
@@ -492,11 +510,15 @@ public abstract class Neighbor
     protected void abort()
     {
 	m_disconnected.set(true);
+	m_shutdown.set(true);
 
 	synchronized(m_mutex)
 	{
 	    m_mutex.notifyAll();
 	}
+
+	if(m_parsingSchedulerFuture != null)
+	    m_parsingSchedulerFuture.cancel(true);
 
 	synchronized(m_parsingScheduler)
 	{
@@ -527,6 +549,12 @@ public abstract class Neighbor
 	    }
 	}
 
+	if(m_readSocketSchedulerFuture != null)
+	    m_readSocketSchedulerFuture.cancel(true);
+
+	if(m_schedulerFuture != null)
+	    m_schedulerFuture.cancel(true);
+
 	synchronized(m_scheduler)
 	{
 	    try
@@ -547,6 +575,9 @@ public abstract class Neighbor
 	    {
 	    }
 	}
+
+	if(m_sendOutboundSchedulerFuture != null)
+	    m_sendOutboundSchedulerFuture.cancel(true);
 
 	synchronized(m_sendOutboundScheduler)
 	{

@@ -36,6 +36,7 @@ import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.net.ssl.HandshakeCompletedEvent;
@@ -52,6 +53,7 @@ public class TcpNeighbor extends Neighbor
     private InetSocketAddress m_proxyInetSocketAddress = null;
     private SSLSocket m_socket = null;
     private ScheduledExecutorService m_requestAuthenticationScheduler = null;
+    private ScheduledFuture<?> m_requestAuthenticationSchedulerFuture = null;
     private String[] m_protocols = null;
     private String m_proxyIpAddress = "";
     private String m_proxyType = "";
@@ -287,13 +289,18 @@ public class TcpNeighbor extends Neighbor
 	{
 	    m_requestAuthenticationScheduler = Executors.
 		newSingleThreadScheduledExecutor();
-	    m_requestAuthenticationScheduler.scheduleAtFixedRate(new Runnable()
+	    m_requestAuthenticationSchedulerFuture =
+		m_requestAuthenticationScheduler.scheduleAtFixedRate
+		(new Runnable()
 	    {
 		@Override
 		public void run()
 		{
 		    try
 		    {
+			if(m_shutdown.get())
+			    return;
+
 			if(!connected() && !m_disconnected.get())
 			    synchronized(m_mutex)
 			    {
@@ -323,7 +330,8 @@ public class TcpNeighbor extends Neighbor
 		TimeUnit.MILLISECONDS);
 	}
 
-	m_readSocketScheduler.scheduleAtFixedRate(new Runnable()
+	m_readSocketSchedulerFuture = m_readSocketScheduler.
+	    scheduleAtFixedRate(new Runnable()
 	{
 	    private boolean m_error = false;
 
@@ -332,6 +340,9 @@ public class TcpNeighbor extends Neighbor
 	    {
 		try
 		{
+		    if(m_shutdown.get())
+			return;
+
 		    if(!connected() && !m_disconnected.get())
 			synchronized(m_mutex)
 			{
@@ -469,7 +480,8 @@ public class TcpNeighbor extends Neighbor
 		m_proxyInetSocketAddress = null;
 	    }
 
-	m_readSocketScheduler.scheduleAtFixedRate(new Runnable()
+	m_readSocketSchedulerFuture = m_readSocketScheduler.
+	    scheduleAtFixedRate(new Runnable()
 	{
 	    private boolean m_error = false;
 
@@ -478,6 +490,9 @@ public class TcpNeighbor extends Neighbor
 	    {
 		try
 		{
+		    if(m_shutdown.get())
+			return;
+
 		    if(!connected() && !m_disconnected.get())
 			synchronized(m_mutex)
 			{
@@ -650,6 +665,10 @@ public class TcpNeighbor extends Neighbor
 	    m_isValidCertificate.set(false);
 
 	if(m_requestAuthenticationScheduler != null)
+	{
+	    if(m_requestAuthenticationSchedulerFuture != null)
+		m_requestAuthenticationSchedulerFuture.cancel(true);
+
 	    synchronized(m_requestAuthenticationSchedulerObject)
 	    {
 		try
@@ -670,6 +689,7 @@ public class TcpNeighbor extends Neighbor
 		{
 		}
 	    }
+	}
 
 	synchronized(m_readSocketScheduler)
 	{

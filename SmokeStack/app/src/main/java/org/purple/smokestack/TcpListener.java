@@ -43,6 +43,7 @@ import java.util.Date;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -74,6 +75,8 @@ public class TcpListener
     private ConcurrentHashMap<Integer, TcpNeighbor> m_neighbors = null;
     private KeyStore m_keyStore = null;
     private SSLServerSocket m_socket = null;
+    private ScheduledFuture<?> m_acceptSchedulerFuture = null;
+    private ScheduledFuture<?> m_schedulerFuture = null;
     private final ScheduledExecutorService m_acceptScheduler =
 	Executors.newSingleThreadScheduledExecutor();
     private final ScheduledExecutorService m_scheduler =
@@ -140,7 +143,8 @@ public class TcpListener
 	** Launch the schedulers.
 	*/
 
-	m_acceptScheduler.scheduleAtFixedRate(new Runnable()
+	m_acceptSchedulerFuture = m_acceptScheduler.scheduleAtFixedRate
+	    (new Runnable()
 	{
 	    @Override
 	    public void run()
@@ -202,7 +206,7 @@ public class TcpListener
 		}
 	    }
 	}, 0L, ACCEPT_INTERVAL, TimeUnit.MILLISECONDS);
-	m_scheduler.scheduleAtFixedRate(new Runnable()
+	m_schedulerFuture = m_scheduler.scheduleAtFixedRate(new Runnable()
 	{
 	    @Override
 	    public void run()
@@ -477,6 +481,9 @@ public class TcpListener
     {
 	disconnect();
 
+	if(m_acceptSchedulerFuture != null)
+	    m_acceptSchedulerFuture.cancel(true);
+
 	synchronized(m_acceptScheduler)
 	{
 	    try
@@ -497,6 +504,9 @@ public class TcpListener
 	    {
 	    }
 	}
+
+	if(m_schedulerFuture != null)
+	    m_schedulerFuture.cancel(true);
 
 	synchronized(m_scheduler)
 	{
