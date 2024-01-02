@@ -44,6 +44,9 @@ import java.util.concurrent.atomic.AtomicLong;
 public abstract class Neighbor
 {
     private ConcurrentLinkedQueue<String> m_queue = null;
+    private ScheduledFuture<?> m_parsingSchedulerFuture = null;
+    private ScheduledFuture<?> m_schedulerFuture = null;
+    private ScheduledFuture<?> m_sendOutboundSchedulerFuture = null;
     private final ScheduledExecutorService m_parsingScheduler =
 	Executors.newSingleThreadScheduledExecutor();
     private final ScheduledExecutorService m_scheduler =
@@ -73,10 +76,7 @@ public abstract class Neighbor
     protected AtomicLong m_startTime = null;
     protected Cryptography m_cryptography = null;
     protected Database m_databaseHelper = null;
-    protected ScheduledFuture<?> m_parsingSchedulerFuture = null;
     protected ScheduledFuture<?> m_readSocketSchedulerFuture = null;
-    protected ScheduledFuture<?> m_schedulerFuture = null;
-    protected ScheduledFuture<?> m_sendOutboundSchedulerFuture = null;
     protected String m_ipAddress = "";
     protected String m_ipPort = "";
     protected String m_version = "";
