@@ -5,7 +5,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <application
-        android:allowBackup="true"
+        android:allowBackup="false"
         android:icon="@drawable/smokestack"
         android:label="@string/app_name"
 	android:largeHeap="true"
