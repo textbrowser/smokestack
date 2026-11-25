@@ -500,13 +500,13 @@ public class Cryptography
 	if(a == null || b == null)
 	    return false;
 
-	int rc = 0;
+	int rc = a.length ^ b.length;
 	int size = java.lang.Math.max(a.length, b.length);
 
 	for(int i = 0; i < size; i++)
 	    rc |= (i < a.length ? a[i] : 0) ^ (i < b.length ? b[i] : 0);
 
-	return a.length == b.length && rc == 0;
+	return rc == 0;
     }
 
     public static boolean verifySignature(PublicKey publicKey,
