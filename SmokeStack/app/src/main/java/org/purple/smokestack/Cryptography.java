@@ -506,7 +506,7 @@ public class Cryptography
 	for(int i = 0; i < size; i++)
 	    rc |= (i < a.length ? a[i] : 0) ^ (i < b.length ? b[i] : 0);
 
-	return rc == 0;
+	return a.length == b.length && rc == 0;
     }
 
     public static boolean verifySignature(PublicKey publicKey,
